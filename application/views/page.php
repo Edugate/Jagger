@@ -46,23 +46,23 @@ $foundation = $base_url . 'foundation/';
     <meta charset="utf-8">
     <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
     <?php
-    echo '<title>' . $pageTitle . '</title>';
-    ?>
-    <meta content='rr' name='description'>
-    <meta content='' name='author'>
-    <meta content='width=device-width, initial-scale=1.0, user-scalable=0' name='viewport'>
-    <link rel="stylesheet" type="text/css" href="<?php echo $base_url; ?>styles/jquery-ui.css"/>
-    <?php
-    echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery.jqplot.min.css" />';
-    echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/idpselect.css" />';
-    echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/foundation-icons.css" />';
-    echo '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/' . $colorTheme . '.css" />';
-    echo '<script src="' . $base_url . 'js/modernizr.min.js"></script>';
+    echo '<title>' . $pageTitle . '</title>' . PHP_EOL .
+        '<meta content=\'rr\' name=\'description\'>' . PHP_EOL .
+        '<meta content=\'\' name=\'author\'>' . PHP_EOL .
+        '<meta content=\'width=device-width, initial-scale=1.0, user-scalable=0\' name=\'viewport\'>' . PHP_EOL .
+        '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery-ui.css"/>' . PHP_EOL .
+        '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery.jqplot.min.css" />' . PHP_EOL .
+        '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/idpselect.css" />' . PHP_EOL .
+        '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/foundation-icons.css" />' . PHP_EOL .
+        '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/' . $colorTheme . '.css" />' . PHP_EOL .
+        '<script src="' . $base_url . 'js/modernizr.min.js"></script>';
     ?>
 
 </head>
 <body>
-<noscript><div data-alert class="alert-box alert"><h5>JavaScript is not enabled in you browser!</h5></div></noscript>
+<noscript>
+    <div data-alert class="alert-box alert"><h5>JavaScript is not enabled in you browser!</h5></div>
+</noscript>
 <!--[if lt IE 10]>
 <div data-alert class="alert-box alert"><p>You are using an <strong>outdated</strong> browser. Please <a
     href="http://whatbrowser.org/">upgrade your browser</a> to improve your experience.</p></div>
@@ -192,7 +192,7 @@ if ($breadcrumbsEnabled === TRUE) {
                     $sideicons[] = '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpinactive"><i class="fi-info"></i></a>';
                 }
                 ?>
-            <?php
+                <?php
             }
             ?>
         </header>
@@ -290,9 +290,18 @@ if ($breadcrumbsEnabled === TRUE) {
 <?php
 // list js files to load 
 $jsToLoad1 = array(
-    'jquery.min.js', 'jquery-ui-1.10.4.custom.min.js', 'jquery.jqplot.min.js', 'jqplot.dateAxisRenderer.min.js',
-    'jqplot.cursor.min.js', 'jqplot.highlighter.min.js', 'jquery.tablesorter.js', 'jquery.searcher.min.js', 'fastclick.js',
-    'foundation.min.js', 'Chart.min.js','select2.min.js');
+    'jquery.min.js',
+    'jquery-ui-1.10.4.custom.min.js',
+    'jquery.jqplot.min.js',
+    'jqplot.dateAxisRenderer.min.js',
+    'jqplot.cursor.min.js',
+    'jqplot.highlighter.min.js',
+    'jquery.tablesorter.js',
+    'jquery.searcher.min.js',
+    'fastclick.js',
+    'foundation.min.js',
+    'Chart.min.js',
+    'select2.min.js');
 foreach ($jsToLoad1 as $jsFile) {
     echo '<script type="text/javascript" src="' . $base_url . 'js/' . $jsFile . '"></script>' . PHP_EOL;
 }
@@ -345,6 +354,6 @@ if (!empty($rawJs) && is_array($rawJs)) {
     echo '</script>';
 }
 ?>
-<div id="malert" data-reveal class="reveal-modal tiny" ></div>
+<div id="malert" data-reveal class="reveal-modal tiny"></div>
 </body>
 </html>

@@ -184,6 +184,20 @@ class User
         return $encrypted_password;
     }
 
+    /**
+     * @param $password
+     * @return bool
+     */
+    public function isPasswordMatch($password)
+    {
+        $encPass = $this->encryptPassword($password);
+        if($encPass === $this->password)
+        {
+            return true;
+        }
+        return false;
+    }
+
     public function setSalt()
     {
         log_message('debug', 'Model User: setSalt()');

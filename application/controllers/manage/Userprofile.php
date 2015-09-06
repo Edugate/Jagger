@@ -34,30 +34,47 @@ class Userprofile extends MY_Controller
     private function validate(models\User $user)
     {
 
+        $islocal = $user->getLocal();
         $this->form_validation->set_rules('username', 'Username', 'trim|required');
-        if($this->input->post('username') !== $user->getUsername())
-        {
+        if ($this->input->post('username') !== $user->getUsername()) {
             return false;
         }
-        $this->form_validation->set_rules('fname', 'First name', 'trim');
-        $this->form_validation->set_rules('sname', 'S name', 'trim');
-
-        $this->form_validation->set_rules('newpassword', 'New pass', 'trim');
-        $this->form_validation->set_rules('confirmnpassword', 'conf New pass', 'trim');
-
-        $npassword =  $this->input->post('npassword');
-        if(!empty($npassword))
-        {
-            $this->form_validation->set_rules('confirmnpassword', 'conf New pass', 'trim|required|matches[newpassword]');
-        }
+        $this->form_validation->set_rules('currentpass', 'Current Password', 'trim');
+        $this->form_validation->set_rules('fname', 'First name', 'trim|required');
+        $this->form_validation->set_rules('sname', 'S name', 'trim|required');
         $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+        $this->form_validation->set_rules('newpassword', 'New pass', 'trim');
+        $this->form_validation->set_rules('accesstype[]', 'Access type', 'trim|in_list[fed,local]');
+        $this->form_validation->set_rules('accessroles[]', 'Access role', 'trim[Administrator,Member,Guest]');
+        $this->form_validation->set_rules('secondf[]', 'second factor', 'trim');
+        $this->form_validation->run();
+
+        $accessroles = $this->input->post('accessroles[]');
+
+        $npassword = $this->input->post('newpassword');
+        if ($npassword !== null && $npassword !== '' && $islocal) {
+            $this->form_validation->set_rules('confirmnpassword', 'conf New pass', 'trim|required|matches[newpassword]');
+            if (!$this->isAdmin) {
+                $this->form_validation->set_message('currentpass_callable', 'Current password does not match');
+                $this->form_validation->set_rules('currentpass', 'Current Password',
+                    array(
+                        'trim',
+                        'required',
+                        array(
+                            'currentpass_callable',
+                            function ($value) use ($user) {
+                                return $user->isPasswordMatch($value);
+                            }),
+                    ));
+
+
+            }
+        }
         $emailForm = $this->input->post('email');
         $emailUser = $user->getEmail();
-        if($emailForm !== $emailUser)
-        {
+        if ($emailForm !== $emailUser) {
             $this->form_validation->set_rules('confirmemail', 'Confirm Email', 'trim|required|valid_email|matches[email]');
         }
-
 
 
         return $this->form_validation->run();
@@ -91,44 +108,47 @@ class Userprofile extends MY_Controller
         /**
          * @var models\User $user
          */
-        $user = $this->em->getRepository('models\User')->findOneBy(array('username' => $decodedUsername));
+        try {
+            $user = $this->em->getRepository('models\User')->findOneBy(array('username' => $decodedUsername));
+        }
+        catch(Exception $e)
+        {
+            log_message('error',__METHOD__.' '.$e);
+            show_error('Internal server error',500);
+        }
         if ($user === null) {
-            show_error('User not found',404);
+            show_error('User not found', 404);
         }
 
-        $this->title = ' '.html_escape($user->getUsername());
+        $this->title = ' ' . html_escape($user->getUsername());
 
         $data = array(
-            'username'=>$user->getUsername(),
-            'fname'=> $user->getGivenname(),
-            'sname'=>$user->getSurname(),
-            'email'=>$user->getEmail(),
-            'local'=>$user->getLocal(),
-            'federated'=>(bool) $user->getFederated(),
+            'username' => $user->getUsername(),
+            'fname' => $user->getGivenname(),
+            'sname' => $user->getSurname(),
+            'email' => $user->getEmail(),
+            'local' => $user->getLocal(),
+            'federated' => (bool)$user->getFederated(),
             'isadmin' => $this->isAdmin,
             'show2fa' => false,
             'user2factor' => $user->getSecondFactor(),
-            'content_view'=> 'manage/userprofile_edit',
-            'formaction'=>current_url(),
-            'userprofileurl'=>base_url('manage/users/show/'.base64url_encode($decodedUsername).''),
+            'content_view' => 'manage/userprofile_edit',
+            'formaction' => current_url(),
+            'userprofileurl' => base_url('manage/users/show/' . base64url_encode($decodedUsername) . ''),
 
         );
-        $systeRoles = array('Administrator','Member','Guest');
+        $systeRoles = array('Administrator', 'Member', 'Guest');
         $userSRolesNames = $user->getSystemRoleNames();
 
-        foreach($systeRoles as $role)
-        {
-            if(in_array($role,$userSRolesNames))
-            {
-                $data['roles'][''.$role.''] = true;
-            }
-            else
-            {
-                $data['roles'][''.$role.''] = false;
+        foreach ($systeRoles as $role) {
+            if (in_array($role, $userSRolesNames)) {
+                $data['roles']['' . $role . ''] = true;
+            } else {
+                $data['roles']['' . $role . ''] = false;
             }
         }
         $allowed2fglobal = $this->rrpreference->getStatusByName('user2fset');
-        if ($this->isAdmin  || ($grantAccess && $allowed2fglobal)) {
+        if ($this->isAdmin || ($grantAccess && $allowed2fglobal)) {
             $data['show2fa'] = true;
         }
         $allowed2fengines = $this->config->item('2fengines');
@@ -138,13 +158,45 @@ class Userprofile extends MY_Controller
         $data['allowed2fengines'] = $allowed2fengines;
 
 
-
-        if($this->validate($user) !== true) {
+        if ($this->validate($user) !== true) {
             $this->load->view('page', $data);
-        }
-        else
-        {
-            echo 'OKO';
+        } else {
+
+            $fname = $this->input->post('fname');
+            $user->setGivenname($fname);
+            $sname = $this->input->post('sname');
+            $user->setSurname($sname);
+            $islocal = $user->getLocal();
+            $newpassword = $this->input->post('newpassword');
+            if($islocal && $newpassword !== null && $newpassword !== '')
+            {
+                $user->setPassword($newpassword);
+            }
+            $email = $this->input->post('email');
+            $user->setEmail($email);
+            if($this->isAdmin)
+            {
+
+            }
+
+
+            $this->em->persist($user);
+
+
+            try {
+                $this->em->flush();
+                $data2 = array(
+                    'content_view' => 'manage/userprofileupdatesuccess',
+                    'target' => base_url('manage/users/show/' . base64url_encode($user->getUsername())),
+                    'msg' => 'Updated'
+                );
+                $this->load->view('page', $data2);
+            }
+            catch(Exception $e)
+            {
+                log_message('error',__METHOD__. ' '.$e);
+                show_error('Interlan',500);
+            }
         }
 
     }
