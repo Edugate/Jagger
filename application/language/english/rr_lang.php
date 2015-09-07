@@ -157,6 +157,7 @@ $lang['fedmemberschanged']         = 'Alert if a specified federation members ci
 $lang['fedmembersmodified']        = 'Notify if details of any member of specified Federation has been modified';
 $lang['providermodified']          = 'Notify if a specified Provider has been modified';
 $lang['myprofile']                 = 'My profile';
+$lang['srole']                     = 'System role'; 
 $lang['rr_profile']                = 'Profile';
 $lang['rr_formstep']                    = 'step';
 $lang['rr_uii']                     = 'User Interface Information';

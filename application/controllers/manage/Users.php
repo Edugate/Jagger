@@ -421,7 +421,7 @@ class Users extends MY_Controller
             if (!empty($last)) {
                 $lastlogin = $last->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
             }
-            $usersList[] = array('user' => anchor($showlink . '/' . $encodedUsername, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp(), $editLink.' '.$action);
+            $usersList[] = array('user' => anchor($showlink . '/' . $encodedUsername, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'ip' => implode(', ',$u->getSystemRoleNames()),'last' => $lastlogin,  $editLink.' '.$action);
         }
         $data = array(
             'breadcrumbs' => array(
