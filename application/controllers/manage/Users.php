@@ -22,13 +22,7 @@ class Users extends MY_Controller
         $this->load->library(array('form_validation', 'curl', 'metadata2import', 'form_element', 'table', 'rrpreference'));
     }
 
-    private function modifySubmitValidate()
-    {
-        $this->form_validation->set_rules('oldpassword', '' . lang('rr_oldpassword') . '', 'min_length[5]|max_length[50]');
-        $this->form_validation->set_rules('password', '' . lang('rr_password') . '', 'required|min_length[5]|max_length[50]|matches[passwordconf]');
-        $this->form_validation->set_rules('passwordconf', '' . lang('rr_passwordconf') . '', 'required|min_length[5]|max_length[50]');
-        return $this->form_validation->run();
-    }
+
 
     private function addSubmitValidate()
     {
@@ -188,42 +182,6 @@ class Users extends MY_Controller
 
     }
 
-    public function updateRole($encodeduser)
-    {
-        if (!$this->ajaxplusadmin()) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
-        $username = base64url_decode(trim($encodeduser));
-        $loggedUsername = $this->j_auth->current_user();
-
-        $user = $this->findUserOrExit($encodeduser);
-        $inputroles = $this->input->post('checkrole[]');
-        $currentRoles = $user->getRoles();
-        foreach ($currentRoles as $resultInJson) {
-            $currentRolename = $resultInJson->getName();
-            $roleType = $resultInJson->getType();
-            if (($roleType === 'system') && !in_array($currentRolename, $inputroles, true)) {
-                if (strcasecmp($loggedUsername, $username) == 0 && strcasecmp($currentRolename, 'administrator') == 0) {
-                    return $this->output->set_status_header(403)->set_output('You are not allowed to remove Administrator role from your own account');
-                }
-                $user->unsetRole($resultInJson);
-            }
-        }
-        /**
-         * @var $sysroles models\AclRole[]
-         */
-        $sysroles = $this->em->getRepository("models\AclRole")->findBy(array('type' => 'system'));
-        foreach ($sysroles as $newRole) {
-            $newRolename = $newRole->getName();
-            if (in_array($newRolename, $inputroles, true)) {
-                $user->setRole($newRole);
-            }
-        }
-        $this->em->persist($user);
-        $this->em->flush();
-        $resultInJson = json_encode($user->getRoleNames());
-        $this->output->set_content_type('application/json')->set_output($resultInJson);
-    }
 
     public function add()
     {
@@ -323,10 +281,7 @@ class Users extends MY_Controller
                 array('url' => base_url('#'), 'name' => html_escape($user->getUsername()), 'type' => 'current')
             );
         }
-        $passEditRow = array('key' => lang('rr_password'), 'val' => '<i class="fi-lock"></i>');
-        if ($hasWriteAccess) {
-            $passEditRow['val'] = '<a href="' . base_url('manage/users/passedit/' . $encodedUsername . '') . '" title="edit" ><i class="fi-pencil"></i></a>';
-        }
+       
 
 
 

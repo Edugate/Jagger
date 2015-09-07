@@ -40,23 +40,22 @@ class Userprofile extends MY_Controller
             return false;
         }
         $this->form_validation->set_rules('currentpass', 'Current Password', 'trim');
-        $this->form_validation->set_rules('fname', 'First name', 'trim|required');
-        $this->form_validation->set_rules('sname', 'S name', 'trim|required');
+        $this->form_validation->set_rules('fname', lang('rr_fname'), 'trim|required');
+        $this->form_validation->set_rules('sname', lang('rr_surname'), 'trim|required');
         $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
-        $this->form_validation->set_rules('newpassword', 'New pass', 'trim');
+        $this->form_validation->set_rules('newpassword', lang('rr_npassword'), 'trim');
 
 
         $this->form_validation->set_rules('secondf[]', 'second factor', 'trim');
         $this->form_validation->run();
 
-        //   $accessroles = $this->input->post('accessroles[]');
 
         $npassword = $this->input->post('newpassword');
         if ($npassword !== null && $npassword !== '' && $islocal) {
-            $this->form_validation->set_rules('confirmnpassword', 'conf New pass', 'trim|required|matches[newpassword]');
+            $this->form_validation->set_rules('confirmnpassword', lang('rr_npasswordconf'), 'trim|required|matches[newpassword]');
             if (!$this->isAdmin) {
-                $this->form_validation->set_message('currentpass_callable', 'Current password does not match');
-                $this->form_validation->set_rules('currentpass', 'Current Password',
+                $this->form_validation->set_message('currentpass_callable', lang('rr_oldpassword').' does not match');
+                $this->form_validation->set_rules('currentpass', lang('rr_oldpassword'),
                     array(
                         'trim',
                         'required',
@@ -72,19 +71,19 @@ class Userprofile extends MY_Controller
         }
         if ($this->isAdmin) {
 
-            $this->form_validation->set_rules('accessroles[]', 'Access role',
+            $this->form_validation->set_rules('accessroles[]', 'Roles',
                 array(
                     'trim',
                     'required',
                     'in_list[Administrator,Member,Guest]',
                 )
             );
-            $this->form_validation->set_rules('accesstype[]', 'Access type', 'trim|required|in_list[fed,local]');
+            $this->form_validation->set_rules('accesstype[]', lang('rr_typeaccess'), 'trim|required|in_list[fed,local]');
         }
         $emailForm = $this->input->post('email');
         $emailUser = $user->getEmail();
         if ($emailForm !== $emailUser) {
-            $this->form_validation->set_rules('confirmemail', 'Confirm Email', 'trim|required|valid_email|matches[email]');
+            $this->form_validation->set_rules('confirmemail', lang('rr_confirmuemail'), 'trim|required|valid_email|matches[email]');
         }
 
 
