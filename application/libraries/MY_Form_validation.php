@@ -857,7 +857,7 @@ class MY_form_validation extends CI_form_validation
             return $result;
         }
         libxml_use_internal_errors(true);
-        $this->CI->load->library('metadata_validator');
+        $this->CI->load->library('metadatavalidator');
 
         $xmls = simplexml_load_string($metadata);
         $namespases = h_metadataNamespaces();
@@ -871,10 +871,10 @@ class MY_form_validation extends CI_form_validation
             $y = $docxml->saveXML();
 
             log_message('debug', $y);
-            $first_attempt = $this->CI->metadata_validator->validateWithSchema($metadata);
+            $first_attempt = $this->CI->metadatavalidator->validateWithSchema($metadata);
             if (empty($first_attempt)) {
                 $tmp_metadata = $docxml->saveXML();
-                $second_attempt = $this->CI->metadata_validator->validateWithSchema($tmp_metadata);
+                $second_attempt = $this->CI->metadatavalidator->validateWithSchema($tmp_metadata);
                 if ($second_attempt === TRUE) {
                     $result = TRUE;
                 } else {
@@ -974,8 +974,8 @@ class MY_form_validation extends CI_form_validation
             $this->set_message('valid_static', "The %s : is empty.");
             return $result;
         }
-        $this->CI->load->library('metadata_validator');
-        $result = $this->CI->metadata_validator->validateWithSchema($metadata);
+        $this->CI->load->library('metadatavalidator');
+        $result = $this->CI->metadatavalidator->validateWithSchema($metadata);
 
         if ($result === FALSE) {
             if (!empty($is_used)) {
