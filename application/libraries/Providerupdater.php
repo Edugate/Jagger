@@ -1211,6 +1211,7 @@ class Providerupdater
                         if ($isAdmin) {
                             $ent->setCoc($c);
                         } else {
+
                             $this->ci->approval->applyForEntityCategory($c, $ent);
                         }
                     }

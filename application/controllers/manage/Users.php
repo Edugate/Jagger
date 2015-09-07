@@ -344,37 +344,28 @@ class Users extends MY_Controller
             $accessTypeStr[] = lang('federated_access');
         }
 
-        $manageBtn = '';
-        if ($isAdmin) {
-            $manageBtn = $this->manageRoleBtn($encodedUsername);
-        }
+
         $twoFactorLabel = '<span data-tooltip aria-haspopup="true" class="has-tip" title="' . lang('rr_twofactorauthn') . '">' . lang('rr_twofactorauthn') . '</span>';
-        $allowed2fglobal = $this->rrpreference->getStatusByName('user2fset');
-        $bb = '';
-        if ($isAdmin || ($isOwner && $allowed2fglobal)) {
-            $bb = $this->manage2fBtn($encodedUsername);
-        }
 
         $tab1 = array(
             array('key' => lang('rr_username'), 'val' => html_escape($user->getUsername())),
-            $passEditRow,
             array('key' => '' . lang('rr_userfullname') . '', 'val' => html_escape($user->getFullname())),
             array('key' => '' . lang('rr_uemail') . '', 'val' => html_escape($user->getEmail())),
             array('key' => '' . lang('rr_typeaccess') . '', 'val' => implode(', ', $accessTypeStr)),
-            array('key' => '' . lang('rr_assignedroles') . '', 'val' => '<span id="currentroles">' . implode(', ', $user->getRoleNames()) . '</span> ' . $manageBtn),
+            array('key' => '' . lang('rr_assignedroles') . '', 'val' => '<span id="currentroles">' . implode(', ', $user->getSystemRoleNames()) . '</span> ' ),
             array('key' => '' . lang('rrnotifications') . '', 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encodedUsername . '', lang('rrmynotifications')))
         );
 
         if ($secondFactor) {
             $secondFactortext = '<span id="val2f" data-tooltip aria-haspopup="true" class="has-tip" title="' . $secondFactor . ' ">' . $secondFactor . '</span>';
             if ($systemTwoFactorAuthn) {
-                $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . '' . $bb);
+                $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . '');
             } else {
-                $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . ' <span class="label alert">Disabled</span>' . $bb);
+                $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . ' <span class="label alert">Disabled</span>');
             }
         } elseif ($systemTwoFactorAuthn) {
             $secondFactortext = '<span id="val2f" data-tooltip aria-haspopup="true" class="has-tip" title="none">none</span>';
-            $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . $bb);
+            $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext);
         }
 
         $bookmarks = $this->getBookmarks($user);
@@ -420,50 +411,19 @@ class Users extends MY_Controller
         $data['breadcrumbs'] = $breadcrumbs;
         $data['titlepage'] = lang('rr_detforuser') . ': ' . html_escape($user->getUsername()) ;
         $data['content_view'] = 'manage/userdetail_view';
+        if($isOwner)
+        {
+            $data['sideicons'][] = '<a href="' . base_url('manage/userprofile/edit').'"><i class="fi-pencil"></i></a>';
+        }
+        elseif($isAdmin)
+        {
+            $data['sideicons'][] = '<a href="' . base_url('manage/userprofile/edit/'.$encodedUsername.'').'"><i class="fi-pencil"></i></a>';
+        }
         $this->load->view('page', $data);
     }
 
-    private function manage2fBtn($encodeduser)
-    {
-        $formTarget = base_url() . 'manage/users/updatesecondfactor/' . $encodeduser;
-        $allowed2f = $this->config->item('2fengines');
-        if (!is_array($allowed2f)) {
-            $allowed2f = array();
-        }
-        $result = '<button data-reveal-id="m2f" class="tiny" name="m2fbtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeduser . '"> ' . lang('btnupdate') . '</button>';
-        $result .= '<div id="m2f" class="reveal-modal tiny" data-reveal><h3>' . lang('2fupdatetitle') . '</h3>' . form_open($formTarget);
-        if (count($allowed2f) > 0) {
-            $allowed2f[] = 'none';
 
-            $dropdown = array();
-            foreach ($allowed2f as $v) {
-                $dropdown['' . $v . ''] = $v;
-            }
-            $result .= '<div data-alert class="alert-box alert hidden" ></div><div class="small-12 column"><div class="large-6 column end">' . form_dropdown('secondfactor', $dropdown) . '</div></div>';
-            $result .= '<div class="small-12 column right"><button type="button" name="update2f" class="button small right">' . lang('btnupdate') . '</button></div>';
-        }
-        $result .= form_close() . '<a class="close-reveal-modal">&#215;</a></div>';
-        return $result;
-    }
 
-    private function manageRoleBtn($encodeuser)
-    {
-        $formTarget = base_url() . 'manage/users/updaterole/' . $encodeuser;
-        /**
-         * @var $roles models\AclRole[]
-         */
-        $roles = $this->em->getRepository("models\AclRole")->findBy(array('type' => 'system'));
-        $result = '<button data-reveal-id="mroles" class="tiny" name="mrolebtn" value="' . base_url() . 'manage/users/currentSroles/' . $encodeuser . '">' . lang('btnmanageroles') . '</button>';
-        $result .= '<div id="mroles" class="reveal-modal tiny" data-reveal><h3>' . lang('rr_manageroles') . '</h3>';
-        $result .= form_open($formTarget);
-        $result .= '<div class="msg hidden alert-box" data-alert></div>';
-        foreach ($roles as $v) {
-            $result .= '<div class="small-12 column"><div class="small-6 column">' . $v->getName() . '</div><div class="small-6 column"><input type="checkbox" name="checkrole[]" value="' . $v->getName() . '"  /></div></div>';
-        }
-        $result .= '<button type="button" name="updaterole" class="button small">' . lang('btnupdate') . '</button>';
-        $result .= form_close() . '<a class="close-reveal-modal">&#215;</a></div>';
-        return $result;
-    }
 
     public function showlist()
     {
@@ -478,6 +438,7 @@ class Users extends MY_Controller
             $this->load->view('page', $data);
             return;
         }
+        $isAdmin = $this->j_auth->isAdministrator();
 
         /**
          * @var $users models\User[]
@@ -486,9 +447,15 @@ class Users extends MY_Controller
         $usersList = array();
         $showlink = base_url('manage/users/show');
 
+        $editLinkPrefix = base_url('manage/userprofile/edit');
         foreach ($users as $u) {
             $encodedUsername = base64url_encode($u->getUsername());
             $roles = $u->getRoleNames();
+            $editLink = '';
+            if($isAdmin)
+            {
+                $editLink = '<a href="'.$editLinkPrefix.'/'.$encodedUsername.'"><i class="fi-pencil"></i></a>';
+            }
             if (in_array('Administrator', $roles, true)) {
                 $action = '';
             } else {
@@ -499,7 +466,7 @@ class Users extends MY_Controller
             if (!empty($last)) {
                 $lastlogin = $last->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
             }
-            $usersList[] = array('user' => anchor($showlink . '/' . $encodedUsername, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp(), $action);
+            $usersList[] = array('user' => anchor($showlink . '/' . $encodedUsername, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'last' => $lastlogin, 'ip' => $u->getIp(), $editLink.' '.$action);
         }
         $data = array(
             'breadcrumbs' => array(
@@ -575,61 +542,5 @@ class Users extends MY_Controller
     }
 
 
-    public function passedit($encodedUsername)
-    {
-        $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin) {
-            redirect('auth/login', 'location');
-        }
-        $username = base64url_decode($encodedUsername);
-        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        if (empty($user)) {
-            show_error('User not found', 404);
-        }
-        $this->load->library('zacl');
-        $hasManageAccess = $this->zacl->check_acl('u_' . $user->getId(), 'manage', 'user', '');
-        $hasWriteAccess = $this->zacl->check_acl('u_' . $user->getId(), 'write', 'user', '');
-        if (!$hasWriteAccess && !$hasManageAccess) {
-            $data['error'] = 'You have no access';
-            $data['content_view'] = 'nopermission';
-            return $this->load->view('page', $data);
-        }
-        $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
-        if (!$accessListUsers) {
-            $breadcrumbs = array(
-                array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist'), 'type' => 'unavailable'),
-                array('url' => base_url('manage/users/show/' . $encodedUsername . ''), 'name' => html_escape($user->getUsername())),
-                array('url' => base_url('#'), 'name' => lang('rr_changepass'), 'type' => 'current')
-            );
-        } else {
-            $breadcrumbs = array(
-                array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
-                array('url' => base_url('manage/users/show/' . $encodedUsername . ''), 'name' => html_escape($user->getUsername()),),
-                array('url' => base_url('#'), 'name' => lang('rr_changepass'), 'type' => 'current')
-            );
-        }
-        $data = array(
-            'breadcrumbs' => $breadcrumbs,
-            'encoded_username' => $encodedUsername,
-            'manage_access' => $hasManageAccess,
-            'write_access' => $hasWriteAccess,
-        );
-        if (!$this->modifySubmitValidate()) {
-            $data['titlepage'] = lang('rr_changepass') . ': ' . html_escape($user->getUsername());
-            $data['content_view'] = 'manage/password_change_view';
-            $this->load->view('page', $data);
-        } else {
-            $password = $this->input->post('password');
-            if ($hasManageAccess) {
-                $user->setPassword($password);
-                $user->setLocalEnabled();
-                $this->em->persist($user);
-                $this->em->flush();
-                $data['message'] = '' . lang('rr_passchangedsucces') . ': ' . html_escape($user->getUsername());
-                $data['content_view'] = 'manage/password_change_view';
-                $this->load->view('page', $data);
-            }
-        }
-    }
 
 }

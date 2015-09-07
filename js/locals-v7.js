@@ -4540,38 +4540,7 @@ $('button[name="mrolebtn"]').click(function (e) {
     });
 });
 
-$('button[name="updaterole"]').click(function (e) {
-    e.preventDefault();
-    var form = $(this).parents('form:first');
-    var messagediv = form.find('.msg').first();
-    var link = form.attr('action');
-    $.ajax({
-        type: 'POST',
-        url: link,
-        cache: false,
-        data: form.serializeArray(),
-        dataType: "json",
-        beforeSend: function () {
-            messagediv.removeClass('alert').empty().hide();
-        },
-        success: function (json) {
-            messagediv.removeClass('alert').hide().empty();
-            $('#mroles').foundation('reveal', 'close');
-            if (json) {
-                var txtToReplace = '';
-                $.each(json, function (i, v) {
-                    txtToReplace = txtToReplace + v + ',';
-                });
-                $('span#currentroles').empty().append(txtToReplace.substring(0, txtToReplace.length - 1));
-            }
-        },
-        error: function (jqXHR, textStatus, errorThrow) {
-            messagediv.html(jqXHR.responseText).addClass('alert').show();
-        }
 
-    });
-
-});
 $('button[name="update2f"]').click(function (e) {
     e.preventDefault();
     var form = $(this).parents('form:first');

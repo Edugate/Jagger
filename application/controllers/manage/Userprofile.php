@@ -44,12 +44,12 @@ class Userprofile extends MY_Controller
         $this->form_validation->set_rules('sname', 'S name', 'trim|required');
         $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
         $this->form_validation->set_rules('newpassword', 'New pass', 'trim');
-        $this->form_validation->set_rules('accesstype[]', 'Access type', 'trim|in_list[fed,local]');
-        $this->form_validation->set_rules('accessroles[]', 'Access role', 'trim[Administrator,Member,Guest]');
+
+
         $this->form_validation->set_rules('secondf[]', 'second factor', 'trim');
         $this->form_validation->run();
 
-        $accessroles = $this->input->post('accessroles[]');
+        //   $accessroles = $this->input->post('accessroles[]');
 
         $npassword = $this->input->post('newpassword');
         if ($npassword !== null && $npassword !== '' && $islocal) {
@@ -69,6 +69,17 @@ class Userprofile extends MY_Controller
 
 
             }
+        }
+        if ($this->isAdmin) {
+
+            $this->form_validation->set_rules('accessroles[]', 'Access role',
+                array(
+                    'trim',
+                    'required',
+                    'in_list[Administrator,Member,Guest]',
+                )
+            );
+            $this->form_validation->set_rules('accesstype[]', 'Access type', 'trim|required|in_list[fed,local]');
         }
         $emailForm = $this->input->post('email');
         $emailUser = $user->getEmail();
@@ -110,11 +121,9 @@ class Userprofile extends MY_Controller
          */
         try {
             $user = $this->em->getRepository('models\User')->findOneBy(array('username' => $decodedUsername));
-        }
-        catch(Exception $e)
-        {
-            log_message('error',__METHOD__.' '.$e);
-            show_error('Internal server error',500);
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
+            show_error('Internal server error', 500);
         }
         if ($user === null) {
             show_error('User not found', 404);
@@ -169,15 +178,69 @@ class Userprofile extends MY_Controller
             $user->setSurname($sname);
             $islocal = $user->getLocal();
             $newpassword = $this->input->post('newpassword');
-            if($islocal && $newpassword !== null && $newpassword !== '')
-            {
+            if ($islocal && $newpassword !== null && $newpassword !== '') {
                 $user->setPassword($newpassword);
             }
             $email = $this->input->post('email');
             $user->setEmail($email);
-            if($this->isAdmin)
-            {
+            if ($this->isAdmin) {
+                $newAccessRoles = $this->input->post('accessroles[]');
+                /**
+                 * @var models\AclRole[]
+                 */
+                $currenRoles = $user->getRoles();
+                foreach ($currenRoles as $currentRole) {
+                    $currentRolename = $currentRole->getName();
+                    $roleType = $currentRole->getType();
+                    $keyNewAccessRoles = array_search($currentRolename, $newAccessRoles, true);
+                    if (($roleType === 'system') && !ctype_digit($keyNewAccessRoles)) {
+                        $user->unsetRole($currentRole);
+                        log_message('debug', 'JANUSZ unset:' . $currentRolename);
+                    } else {
+                        unset($newAccessRoles['' . $keyNewAccessRoles . '']);
+                    }
 
+                }
+                if (is_array($newAccessRoles) && count($newAccessRoles > 0)) {
+                    $newAclRoles = $this->em->getRepository('models\AclRole')->findBy(array('type' => 'system', 'name' => $newAccessRoles));
+                    foreach ($newAclRoles as $nAclR) {
+                        $user->setRole($nAclR);
+                    }
+                }
+
+
+                $newAccessTypes = $this->input->post('accesstype[]');
+
+                if (is_array($newAccessTypes)) {
+                    if (in_array('fed', $newAccessTypes, true)) {
+                        $user->setFederatedEnabled();
+                    } else {
+                        $user->setFederatedDisabled();
+                    }
+                    if (in_array('local', $newAccessTypes, true)) {
+                        $user->setLocalEnabled();
+                    } else {
+                        $user->setLocalDisabled();
+                    }
+                }
+
+            }
+            if($data['show2fa'] === true)
+            {
+                $inputSecondF = $this->input->post('secondf[]');
+                if(is_array($inputSecondF) && count($inputSecondF) == 1)
+                {
+                    foreach($inputSecondF as $sFactor)
+                    {
+                        if($sFactor === 'none')
+                        {
+                            $user->setSecondFactor(null);
+                        }
+                        elseif(in_array($sFactor,$allowed2fengines,true)){
+                            $user->setSecondFactor($sFactor);
+                        }
+                    }
+                }
             }
 
 
@@ -192,10 +255,8 @@ class Userprofile extends MY_Controller
                     'msg' => 'Updated'
                 );
                 $this->load->view('page', $data2);
-            }
-            catch(Exception $e)
-            {
-                log_message('error', __METHOD__. ' '.$e);
+            } catch (Exception $e) {
+                log_message('error', __METHOD__ . ' ' . $e);
                 show_error('Interlan', 500);
             }
         }
