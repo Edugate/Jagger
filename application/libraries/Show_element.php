@@ -148,7 +148,6 @@ class Show_element
     {
         log_message('debug','JANUSZ');
         $result = null;
-        $id = $provider->getId();
         $tmpProviders = new models\Providers();
         $trustedFeds = $tmpProviders->getTrustedActiveFeds($provider);
         $supportedAttrs = $this->tmp_policies->getSupportedAttributes($provider);
@@ -190,120 +189,14 @@ class Show_element
         return $result;
     }
 
-    /**
-     * $provider param can be id of idp or object of models\Provider class
-     */
-    public function displayDefaultArp($provider)
-    {
-        $result = null;
-        if ($provider instanceof models\Provider) {
-            $id = $provider->getId();
-        } elseif (is_integer($provider)) {
-            $id = $provider;
-        } else {
-            return null;
-        }
-        $arps = $this->tmp_policies->getGlobalPolicyAttributes($provider);
-        if (empty($arps)) {
-            return null;
-        }
 
-        $result = array();
-        foreach ($arps as $a) {
-            $result[] = array(
-                'id' => $a->getId(),
-                'attrid' => $a->getAttribute()->getId(),
-                'name' => $a->getAttribute()->getName(),
-                'release' => $a->getRelease(),
-            );
-        }
-
-
-
-        return $result;
-    }
-
-    public function generateTableSpecificArp(models\Provider $provider, $captiondisabled = NULL)
-    {
-        $exluded_arps = $provider->getExcarps();
-        if (empty($exluded_arps)) {
-            $exluded_arps = array();
-        }
-        $result = null;
-        $supported = $this->tmp_policies->getSupportedAttributes($provider);
-        $supported_attrs = array();
-        foreach ($supported as $sa) {
-            $supported_attrs[$sa->getAttribute()->getName()] = $sa->getAttribute()->getId();
-        }
-        $source = $this->displaySpecificArp($provider);
-        $attributes = array();
-        $prefix_url = base_url() . "manage/attributepolicy/detail/";
-        $prefix_multi_url = base_url() . "manage/attributepolicy/multi/";
-        $icon = '<i class="fi-pencil"></i>';
-        if (!empty($source)) {
-            foreach ($source as $key => $value) {
-                $tmp_sp_array = end($value);
-                if (!empty($tmp_sp_array)) {
-                    $tmp_spid = $tmp_sp_array['spid'];
-                }
-                $link_sp = '<a href="' . $prefix_multi_url . $provider->getId() . '/sp/' . $tmp_spid . '">' . $icon . '</a>';
-                if (in_array($key, $exluded_arps)) {
-                    $lbl = '<span class="lbl lbl-disabled">' . lang('lbl_excluded') . '</span> ';
-                } else {
-                    $lbl = '';
-                }
-
-                $attributes[] = array('data' => array('data' => $lbl . $this->entitiesmaps[$key] . $link_sp . ' <small>' . $key . '</small>', 'colspan' => 3, 'class' => 'highlight'));
-                foreach ($value as $attr_key => $attr_value) {
-                    if (!array_key_exists($attr_key, $supported_attrs)) {
-
-                        $attr_name = '<span class="alert" title="' . lang('attrnotsupported') . '">' . $attr_key . '</span>';
-                    } else {
-                        $attr_name = $attr_key;
-                    }
-                    $link = anchor($prefix_url . $provider->getId() . '/' . $attr_value['attr_id'] . '/sp/' . $attr_value['spid'], $icon);
-                    $permited_values = '';
-                    $denied_values = '';
-                    $lng_permitedval = lang('rr_permvalues');
-                    $lng_denyval = lang('rr_denvalues');
-
-                    if (array_key_exists('custom', $attr_value) && !empty($attr_value['custom'])) {
-                        if (array_key_exists('permit', $attr_value['custom']) && count($attr_value['custom']['permit']) > 0) {
-                            $permited_values .= '<dl><dt>' . $lng_permitedval . ':</dt>';
-                            foreach ($attr_value['custom']['permit'] as $per1) {
-                                $permited_values .= "<dd>" . $per1 . "</dd>";
-                            }
-                            $permited_values .= "</dl>";
-                        }
-                        if (array_key_exists('deny', $attr_value['custom']) && count($attr_value['custom']['deny']) > 0) {
-                            $denied_values .= '<dl><dt>' . $lng_denyval . ':</dt>';
-                            foreach ($attr_value['custom']['deny'] as $per2) {
-                                $denied_values .= "<dd>" . $per2 . "</dd>";
-                            }
-                            $denied_values .= "</dl>";
-                        }
-                    }
-                    $custom_link = anchor(base_url() . "manage/custompolicies/idp/" . $provider->getId() . "/" . $attr_value['spid'] . "/" . $attr_value['attr_id'], $icon);
-
-                    $attributes[] = array($attr_name . $link, $attr_value['status'], $attr_value['policy'] . '<br /><div ><b>' . lang('custompolicy') . '</b>' . $custom_link . $permited_values . $denied_values . '</div>');
-                }
-            }
-            $tmpl = array('table_open' => '<table  id="detailsnosort" >');
-
-            $this->ci->table->set_template($tmpl);
-            $this->ci->table->set_heading('' . lang('rr_attr_name') . '', '' . lang('rr_currentstatus') . '', '' . lang('policy') . '');
-            if (empty($captiondisabled)) {
-                $this->ci->table->set_caption('' . lang('rr_specpolicies') . '');
-            }
-            $result = $this->ci->table->generate($attributes);
-            $this->ci->table->clear();
-            return $result;
-        }
-    }
 
     public function generateTableFederationsArp(models\Provider $provider, $disabledcaption = NULL)
     {
         $result = null;
+        /**
+         * @var models\SupportedAttributes[] $tmpSupAttrs
+         */
         $tmpSupAttrs = $this->tmp_policies->getSupportedAttributes($provider);
         $supportedAttrs = array();
         foreach ($tmpSupAttrs as $sa) {
@@ -350,49 +243,6 @@ class Show_element
         return $result;
     }
 
-    public function generateTableDefaultArp(models\Provider $provider, $disable_caption = null)
-    {
-        $source = $this->displayDefaultArp($provider);
-        $attributes = array();
-        $icon = '<i class="fi-pencil"></i>';
-        $supported = $this->tmp_policies->getSupportedAttributes($provider);
-        $supported_attrs = array();
-        foreach ($supported as $sa) {
-            $supported_attrs[$sa->getAttribute()->getName()] = $sa->getAttribute()->getId();
-        }
-        if (!empty($source)) {
-
-            foreach ($source as $s) {
-                if (!array_key_exists($s['name'], $supported_attrs)) {
-
-                    $attr_name = '<span class="alert" title="' . lang('attrnotsupported') . '">' . $s['name'] . '</span>';
-                } else {
-                    $attr_name = $s['name'];
-                }
-                $link = anchor("#", $icon, array('data-jagger-attrid' => $s['attrid'], 'data-jagger-attrname' => $s['name']));
-                $attributes[] = array('' . $attr_name . '', $s['release'], $link);
-            }
-
-            $tmpl = array('table_open' => '<table  id="detailsnosort">');
-
-            $this->ci->table->set_template($tmpl);
-            $this->ci->table->set_heading('' . lang('attrname') . '', '' . lang('policy') . '', lang('rr_action'));
-            if (empty($disable_caption)) {
-                $provname = $provider->getName();
-                if (empty($provname)) {
-                    $provname = $provider->getEntityid();
-                }
-                $this->ci->table->set_caption('' . lang('rr_defaultarp') . ': <b>' . $provname . '</b>' . anchor(base_url() . "providers/detail/show/" . $provider->getId(), '<i class="fi-home"></i>'));
-            }
-            $result = $this->ci->table->generate($attributes);
-            $this->ci->table->clear();
-            return $result;
-        } else {
-            $result = '<span class="notice">' . lang('nodefaultpolicysetyet') . '</span>';
-            return $result;
-        }
-    }
-
 
     public function generateRequestsList(models\Provider $idp, $count = null)
     {
@@ -437,7 +287,7 @@ class Show_element
         if (empty($tracks)) {
             return null;
         }
-        $no_results = count($tracks);
+
 
         $result = '<dl class="accordion" data-accordion="modificationsList">';
         $mcounter = 0;

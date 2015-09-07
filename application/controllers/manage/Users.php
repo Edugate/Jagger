@@ -91,7 +91,6 @@ class Users extends MY_Controller
         if (empty($user)) {
             return $this->output->set_status_header(404)->set_output('User not found');
         }
-        //$result = $this->getRolenamesToJson($user);
         $result = json_encode($user->getRoleNames());
         $this->output
             ->set_status_header(200)
@@ -266,7 +265,6 @@ class Users extends MY_Controller
         $isOwner = (strcasecmp($loggedUsername, $user->getUsername()) == 0);
         $isAdmin = $this->j_auth->isAdministrator();
         $hasReadAccess = $this->zacl->check_acl('u_' . $user->getId(), 'read', 'user', '');
-        $hasWriteAccess = $this->zacl->check_acl('u_' . $user->getId(), 'write', 'user', '');
         if (!($hasReadAccess || $isOwner)) {
             return $this->load->view('page', array('error' => lang('error403'), 'content_view' => 'nopermission'));
         }
@@ -471,7 +469,7 @@ class Users extends MY_Controller
             }
 
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->input->post('username')));
-            if (!empty($user)) {
+            if ($user !== null) {
                 $userRoles = $user->getRoleNames();
                 if (in_array('Administrator', $userRoles, true)) {
                     return $this->output->set_status_header(403)->set_output('You cannot remover user who has Admninitrator role set');
