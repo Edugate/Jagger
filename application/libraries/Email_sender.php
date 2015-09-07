@@ -273,6 +273,24 @@ class Email_sender
         return $result;
     }
 
+    function applyForEntcatRegPol(models\Coc $coc, models\Provider $provider)
+    {
+        $type = $coc->getType();
+        if($type='entcat')
+        {
+            $sbj = 'Request : apply for EntityCategory';
+        }
+        else{
+            $sbj = 'Request: apply for RegistrationPolicy';
+        }
+
+        $body = 'Dear user'.PHP_EOL;
+        $body .= 'There is new request in the system:'.PHP_EOL.$sbj.PHP_EOL;
+        $body .= 'Provider: '.$provider->getEntityId().PHP_EOL;
+        $this->addToMailQueue('systemnotifications', null, $sbj, $body, false);
+
+    }
+
     /**
      * @param \models\Provider $ent
      * @param \models\Tracker $tracker
