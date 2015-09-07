@@ -78,8 +78,13 @@ if ($show2fa === true) {
             }
             echo form_radio(array('name' => 'secondf[]', 'value' => '' . $fengine . '', 'checked' => $fchecked)) . '<label>' . $fengine . '</label>';
         }
-    } else {
-    echo 'Not acti';
+    }elseif($user2factor !==null)
+    {
+        echo form_radio(array('name' => 'secondf[]', 'value' => 'none' )) . '<label>none</label>';
+        echo form_radio(array('name' => 'secondf[]', 'value' => ''.html_escape($user2factor).'','disabled'=>'disabled', 'checked'=>'checked' )) . '<label>'.html_escape($user2factor).'</label>';
+    }
+    else {
+    echo 'Not available';
     }
     echo '</div></div>';
 }
