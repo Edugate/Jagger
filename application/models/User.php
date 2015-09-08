@@ -184,6 +184,20 @@ class User
         return $encrypted_password;
     }
 
+    /**
+     * @param $password
+     * @return bool
+     */
+    public function isPasswordMatch($password)
+    {
+        $encPass = $this->encryptPassword($password);
+        if($encPass === $this->password)
+        {
+            return true;
+        }
+        return false;
+    }
+
     public function setSalt()
     {
         log_message('debug', 'Model User: setSalt()');
@@ -513,7 +527,7 @@ class User
             'username' => $this->getUsername(),
             'user_id' => $this->getId());
         $userpref = $this->getUserpref();
-        if (isset($userpref['showhelp']) && $userpref['showhelp'] === true) {
+        if (array_key_exists('showhelp', $userpref) && $userpref['showhelp'] === true) {
             $data['showhelp'] = true;
         } else {
             $data['showhelp'] = false;

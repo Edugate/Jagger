@@ -1,33 +1,24 @@
 <?php
-
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 
-/**
- * Auth Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
 class Auth extends MY_Controller
 {
     private $data;
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->load->library('form_validation');
     }
 
-    function index()
+    public function index()
     {
         if (!$this->j_auth->logged_in()) {
             return $this->login();
@@ -36,7 +27,7 @@ class Auth extends MY_Controller
         }
     }
 
-    function logout()
+    public function logout()
     {
         if ($this->j_auth->logged_in()) {
             $this->j_auth->logout();
@@ -44,7 +35,7 @@ class Auth extends MY_Controller
         $this->load->view('auth/logout');
     }
 
-    function fedregister()
+    public function fedregister()
     {
         $method = $this->input->method(TRUE);
         if (!$this->input->is_ajax_request()) {
@@ -54,7 +45,7 @@ class Auth extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Permission Denied');
         }
         if ($this->j_auth->logged_in()) {
-            return $this->output->set_status_header(403)->set_output('already euthenticated');
+            return $this->output->set_status_header(403)->set_output('Already authenticated');
         }
 
         $fedidentity = $this->session->userdata('fedidentity');
@@ -78,21 +69,21 @@ class Auth extends MY_Controller
                 $sname = $fedidentity['fedsname'];
             }
         }
-        $ip = $this->input->ip_address();
+        $ipAddress = $this->input->ip_address();
         /**
          * @var $checkuser models\User
          */
         $checkuser = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        if (!empty($checkuser)) {
+        if ($checkuser !== null) {
             $this->session->sess_destroy();
             $this->session->sess_regenerate(TRUE);
             return $this->output->set_status_header(403)->set_output('' . lang('err_userexist') . '');
         }
         /**
-         * @var $inqueue models\Queue
+         * @var models\Queue  $inqueue
          */
         $inqueue = $this->em->getRepository("models\Queue")->findOneBy(array('name' => $username, 'action' => 'Create'));
-        if (!empty($inqueue)) {
+        if ($inqueue !== null) {
             return $this->output->set_status_header(403)->set_output('' . lang('err_userinqueue') . '');
         }
 
@@ -103,7 +94,7 @@ class Auth extends MY_Controller
             'fname' => trim($fname),
             'sname' => trim($sname),
             'type' => 'federated',
-            'ip' => $ip,
+            'ip' => $ipAddress,
         );
         $queue = new models\Queue;
         $queue->setAction('Create');
@@ -124,7 +115,7 @@ class Auth extends MY_Controller
 
         $templateArgs = array(
             'token' => $queue->getToken(),
-            'srcip' => $ip,
+            'srcip' => $ipAddress,
             'reqemail' => trim($email),
             'requsername' => trim($username),
             'reqfullname' => $reqfullname,
@@ -138,7 +129,7 @@ class Auth extends MY_Controller
             $sbj = 'User registration request';
             $body = 'Dear user,' . PHP_EOL;
             $body .= 'You have received this mail because your email address is on the notification list' . PHP_EOL;
-            $body .= 'User from ' . $ip . ' using federated access has applied for an account.' . PHP_EOL;
+            $body .= 'User from ' . $ipAddress . ' using federated access has applied for an account.' . PHP_EOL;
             $body .= 'Please review the request and make appriopriate action (reject/approve)' . PHP_EOL;
             $body .= 'Details about the request: ' . base_url() . 'reports/awaiting/detail/' . $queue->getToken() . PHP_EOL;
             $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(), FALSE);
@@ -159,7 +150,7 @@ class Auth extends MY_Controller
         }
     }
 
-    function ssphpauth()
+    public function ssphpauth()
     {
         if ($this->j_auth->logged_in()) {
             redirect($this->config->item('base_url'), 'location');
@@ -222,9 +213,12 @@ class Auth extends MY_Controller
             show_error('Missing mail attribute', 403);
         }
 
+        /**
+         * @var models\User $user
+         */
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
 
-        if (!empty($user)) {
+        if ($user !== null) {
 
             $can_access = (bool)($user->isEnabled() && $user->getFederated());
             if (!$can_access) {
@@ -270,7 +264,7 @@ class Auth extends MY_Controller
         redirect(base_url(), 'location');
     }
 
-    function login()
+    public function login()
     {
 
         if ($this->j_auth->logged_in()) {
@@ -278,7 +272,7 @@ class Auth extends MY_Controller
         }
         $this->data['dontshowsigning'] = true;
         $this->data['title'] = lang('authn_form');
-        $this->data['showloginform'] = TRUE;
+        $this->data['showloginform'] = true;
         $this->data['content_view'] = 'auth/empty_view';
         $this->load->view('page', $this->data);
 
@@ -475,7 +469,6 @@ class Auth extends MY_Controller
         if (!$shibb_valid) {
             log_message('error', 'This location should be protected by shibboleth in apache');
             show_error('Internal server error', 500);
-            return;
         }
         if ($this->j_auth->logged_in()) {
             redirect('' . base_url() . '', 'location');
@@ -486,8 +479,11 @@ class Auth extends MY_Controller
             show_error('Internal server error: missing required attribute in SAML response from Identity Provider', 500);
         }
 
+        /**
+         * @var models\User $user
+         */
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $userValue));
-        if (!empty($user)) {
+        if ($user !== null) {
             $can_access = (bool)($user->isEnabled() && $user->getFederated());
             if (!$can_access) {
                 show_error(lang('rerror_youraccountdisorfeddis'), 403);
@@ -528,7 +524,7 @@ class Auth extends MY_Controller
                 $this->session->set_userdata('timeoffset', (int)$timeoffset);
             }
             $updatefullname = $this->config->item('shibb_updatefullname');
-            if (!empty($updatefullname) && $updatefullname === TRUE) {
+            if ($updatefullname === true) {
                 $fname = trim($this->getShibFname());
                 $sname = trim($this->getShibSname());
                 if (!empty($fname)) {
@@ -537,6 +533,12 @@ class Auth extends MY_Controller
                 if (!empty($sname)) {
                     $user->setSurname('' . $sname . '');
                 }
+            }
+            $updateemail = $this->config->item('shibb_updateemail');
+            $emailFromIdP = trim($this->getShibMail());
+            if($updateemail === true && !empty($emailFromIdP))
+            {
+                $user->setEmail($emailFromIdP);
             }
             $islogged = $this->session->userdata('logged');
             if (!empty($islogged)) {

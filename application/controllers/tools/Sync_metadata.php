@@ -163,9 +163,9 @@ class Sync_metadata extends CI_Controller {
             echo 'could not retrieve data from '.$url.PHP_EOL ;
             return;
         }
-        $this->load->library(array('metadata_validator', 'curl', 'metadata2import'));
+        $this->load->library(array('metadatavalidator', 'curl', 'metadata2import'));
         $time_start = microtime(true);
-        $is_valid_metadata = $this->metadata_validator->validateWithSchema($metadata_body);
+        $is_valid_metadata = $this->metadatavalidator->validateWithSchema($metadata_body);
         $time_end = microtime(true);
         $exectime = $time_end - $time_start;
         log_message('debug',__METHOD__.' time execustion of validating metadata  :: '.$exectime.' seconds');

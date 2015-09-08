@@ -655,6 +655,7 @@ class Providerupdater
                             $ent->setCoc($c);
                         } else {
                             $this->ci->approval->applyForRegistrationPolicy($c, $ent);
+                            $this->ci->email_sender->applyForEntcatRegPol($c,$ent);
                         }
                     }
                 }
@@ -1211,7 +1212,9 @@ class Providerupdater
                         if ($isAdmin) {
                             $ent->setCoc($c);
                         } else {
+
                             $this->ci->approval->applyForEntityCategory($c, $ent);
+                            $this->ci->email_sender->applyForEntcatRegPol($c,$ent);
                         }
                     }
                 }

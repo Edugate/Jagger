@@ -37,7 +37,7 @@ class Entitystate extends MY_Controller
         $this->tmpProviders = new models\Providers;
         $this->load->library('form_element');
         $this->load->library('form_validation');
-        $this->load->library('metadata_validator');
+        $this->load->library('metadatavalidator');
         $this->load->library('zacl');
         $this->tmpProviders = new models\Providers();
         $this->entity = null;

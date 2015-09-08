@@ -76,7 +76,7 @@ class Fedactions extends MY_Controller
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
-        $this->load->library(array('zacl', 'show_element'));
+        $this->load->library(array('zacl'));
         $form_elements = array();
         if (strcasecmp($type, 'idp') == 0 || strcasecmp($type, 'sp') == 0) {
             /**

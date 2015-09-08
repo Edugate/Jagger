@@ -11,7 +11,7 @@ $tmpl = array('table_open' => '<table  id="details" class="userlist filterlist">
 
 $this->table->set_template($tmpl);
 $this->table->set_empty("&nbsp;");
-$this->table->set_heading('' . lang('rr_username') . '', '' . lang('rr_userfullname') . '', '' . lang('rr_uemail') . '', '' . lang('lastlogin') . '', 'ip', lang('rr_action'));
+$this->table->set_heading('' . lang('rr_username') . '', '' . lang('rr_userfullname') . '', '' . lang('rr_uemail') . '',lang('srole'), '' . lang('lastlogin') . '',  lang('rr_action'));
 echo '<div class="small-12 columns">';
 echo $this->table->generate($userlist);
 echo '</div>';

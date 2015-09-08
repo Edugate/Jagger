@@ -271,7 +271,7 @@ class Manage extends MY_Controller
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
-        $this->load->library(array('show_element', 'zacl'));
+        $this->load->library(array( 'zacl'));
         /**
          * @var $federation models\Federation
          */
@@ -450,7 +450,7 @@ class Manage extends MY_Controller
             redirect('auth/login', 'location');
         }
         $myLang = MY_Controller::getLang();
-        $this->load->library(array('zacl', 'show_element', 'approval'));
+        $this->load->library(array('zacl', 'approval'));
         /**
          * @var $federation models\Federation
          */

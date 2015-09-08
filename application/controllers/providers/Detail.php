@@ -7,11 +7,11 @@ if (!defined('BASEPATH')) {
 /**
  * ResourceRegistry3
  *
- * @package     RR3
- * @copyright   Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- * @author      Middleware Team HEAnet
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   RR3
+ * @copyright Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 class Detail extends MY_Controller
 {
@@ -33,64 +33,47 @@ class Detail extends MY_Controller
 
     public function refreshentity($providerID)
     {
-        if ($this->input->is_ajax_request()) {
-            if (!$this->j_auth->logged_in()) {
-                set_status_header(403);
-                echo 'no user session';
-                return;
-            }
-            if (!is_numeric($providerID)) {
-                set_status_header(403);
-                echo 'received incorrect params';
-                return;
-            }
-            $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
-            $hasWriteAccess = $this->zacl->check_acl($providerID, 'write', 'entity', '');
-            log_message('debug', 'TEST access ' . $hasWriteAccess);
-            if ($hasWriteAccess === true) {
-                log_message('debug', 'TEST access ' . $hasWriteAccess);
-                $providerID = trim($providerID);
-                $keyPrefix = getCachePrefix();
-                $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
-                $cache1 = 'mcircle_' . $providerID;
-                $this->cache->delete($cache1);
-                $cache2 = 'arp_' . $providerID;
-                $this->cache->delete($cache2);
-                $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($providerID), -1);
-                echo 'OK';
-                return TRUE;
-            } else {
-                set_status_header(403);
-                echo 'access denied';
-                return;
-            }
-        } else {
-            show_error('Access denied', 403);
+        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+            return $this->output->set_status_header(403)->set_output('Denied - no session or invalid request');
         }
+        if (!ctype_digit($providerID)) {
+            return $this->output->set_status_header(403)->set_output('Denied - received incorrect params');
+        }
+        $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
+        $hasWriteAccess = $this->zacl->check_acl($providerID, 'write', 'entity', '');
+        if ($hasWriteAccess === true) {
+            log_message('debug', 'TEST access ' . $hasWriteAccess);
+            $providerID = trim($providerID);
+            $keyPrefix = getCachePrefix();
+            $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
+            $cache1 = 'mcircle_' . $providerID;
+            $this->cache->delete($cache1);
+            $cache2 = 'arp_' . $providerID;
+            $this->cache->delete($cache2);
+            $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($providerID), -1);
+            return $this->output->set_status_header(200)->set_output('OK');
+        }
+
+        return $this->output->set_status_header(403)->set_output('Access denied');
+
     }
 
     public function status($providerID = null, $refresh = null)
     {
         if (!$this->input->is_ajax_request() || !ctype_digit($providerID) || !$this->j_auth->logged_in()) {
-            set_status_header(403);
-            echo 'access  denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Accss Denied');
         }
         /**
          * @var $provider models\Provider
          */
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => '' . $providerID . ''));
         if ($provider === null) {
-            set_status_header(404);
-            echo 'not foud';
-            return;
+            return $this->output->set_status_header(404)->set_output('Not found');
         }
         $this->load->library('zacl', 'providertoxml');
         $hasReadAccess = $this->zacl->check_acl($providerID, 'read', 'entity', '');
         if (!$hasReadAccess) {
-            set_status_header(403);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Denied');
         }
 
 
@@ -100,7 +83,7 @@ class Detail extends MY_Controller
         $cacheId = 'mstatus_' . $providerID;
 
 
-        if (!empty($refresh) && $refresh === '1') {
+        if ($refresh === '1') {
             $result = $this->providerdetails->generateAlertsDetails($provider);
             $this->cache->save($cacheId, $result, 3600);
         } else {
@@ -121,9 +104,7 @@ class Detail extends MY_Controller
     public function showlogs($providerID)
     {
         if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
-            set_status_header(403);
-            echo 'access denie';
-            return;
+            return $this->output->set_status_header(403)->set_output('Denied');
         }
         $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
         /**
@@ -226,9 +207,7 @@ class Detail extends MY_Controller
     public function showmembers($providerid)
     {
         if (!$this->input->is_ajax_request() || !ctype_digit($providerid) || !$this->j_auth->logged_in()) {
-            set_status_header(403);
-            echo 'Access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $myLang = MY_Controller::getLang();
         /**
@@ -236,16 +215,12 @@ class Detail extends MY_Controller
          */
         $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
         if ($ent === null) {
-            set_status_header(404);
-            echo lang('error404');
-            return;
+            return $this->output->set_status_header(404)->set_output('' . lang('error404') . '');
         }
         $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
         $hasReadAccess = $this->zacl->check_acl($providerid, 'read', 'entity', '');
         if (!$hasReadAccess) {
-            set_status_header(403);
-            echo 'Access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
 
         $result = array();

@@ -1,25 +1,18 @@
 <?php
-
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ResourceRegistry3
  *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
+ * @package   RR3
+ * @author    Middleware Team HEAnet
+ * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 
-/**
- * Awaiting Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
 class Awaiting extends MY_Controller
 {
-    private $alert;
+
     private $error_message;
 
     function __construct()
@@ -62,8 +55,8 @@ class Awaiting extends MY_Controller
          * @var $creator models\User
          */
         $creator = $q->getCreator();
-        if (!empty($creator) &&  strcasecmp($creator->getUsername(), $currentUser) == 0) {
-                return true;
+        if (!empty($creator) && strcasecmp($creator->getUsername(), $currentUser) == 0) {
+            return true;
         }
         $action = $q->getAction();
         $recipient = $q->getRecipient();
@@ -108,10 +101,16 @@ class Awaiting extends MY_Controller
 
     private function getQueueList()
     {
+        $userid = $this->session->userdata('user_id');
+        $cached = $this->j_ncache->getUserQList($userid);
+        if($cached)
+        {
+            return $cached;
+        }
         $this->load->library('zacl');
         $this->load->library('j_queue');
         /**
-         * @var $queueArray models\Queue[]
+         * @var  models\Queue[] $queueArray
          */
         $queueArray = $this->em->getRepository("models\Queue")->findAll();
         $result = array('q' => array(), 's' => array());
@@ -169,6 +168,7 @@ class Awaiting extends MY_Controller
 
             }
         }
+        $this->j_ncache->saveUserQList($this->session->userdata('user_id'),$result);
         return $result;
     }
 
@@ -190,15 +190,11 @@ class Awaiting extends MY_Controller
     public function counterqueue()
     {
         if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
-            set_status_header(403);
-            echo "Permission denied";
-            return;
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        $this->load->library(array('zacl', 'j_queue'));
         $queuelist = $this->getQueueList();
         $c = count($queuelist['q']) + count($queuelist['s']);
-        echo $c;
-        return;
+        return $this->output->set_status_header(200)->set_output($c);
     }
 
 
@@ -825,9 +821,14 @@ class Awaiting extends MY_Controller
             $recipient = $queueObj->getRecipient();
             $recipienttype = $queueObj->getRecipientType();
             $allowedRecipientTypes = array('entitycategory', 'regpolicy');
+            $recipientTypesStrs = array('entitycategory'=>'Entity Category','regpolicy'=>'Registration Policy');
             $type = $queueObj->getType();
             $name = $queueObj->getName();
             if (in_array($recipienttype, $allowedRecipientTypes) && strcasecmp($type, 'Provider') == 0 && !empty($name)) {
+                /**
+                 * @var models\Provider $provider;
+                 * @var models\Coc $coc;
+                 */
                 $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $name));
                 if (empty($provider)) {
                     log_message('error', __METHOD__ . ' could not approve request as provider with entityid ' . $name . ' does not exists');
@@ -853,6 +854,23 @@ class Awaiting extends MY_Controller
                 $provider->setCoc($coc);
                 $this->em->persist($provider);
                 $this->em->persist($coc);
+
+                $m_creator = $queueObj->getCreator();
+                if (!empty($m_creator)) {
+                    $requestedBy = $m_creator->getEmail();
+                } else {
+                    $requestedBy = $queueObj->getEmail();
+                }
+
+                $additionalReciepients[] = $requestedBy;
+                $subject = 'Request has been approved';
+                $body = 'Hi,' . PHP_EOL;
+                $body .= 'The request applied by '.html_escape($requestedBy).' and  placed on ' . base_url() . PHP_EOL;
+                $body .= 'has been approved' . PHP_EOL;
+                $body .= 'Provider: '.$provider->getEntityId().PHP_EOL;
+                $body .= 'apply for '.$recipientTypesStrs[''.$recipienttype.''].' '.$coc->getUrl() .PHP_EOL;
+
+                $this->email_sender->addToMailQueue(array(), null, $subject, $body, $additionalReciepients, FALSE);
                 $this->em->remove($queueObj);
                 try {
                     $this->em->flush();
@@ -908,7 +926,7 @@ class Awaiting extends MY_Controller
                     } elseif (strcasecmp($queueAction, 'Join') == 0) {
                         $recipient = $queueObj->getRecipient();
                         if (!empty($recipienttype) && !empty($recipient)) {
-                            if ($recipienttype == 'provider') {
+                            if ($recipienttype === 'provider') {
                                 $reject_access = $this->zacl->check_acl($recipient, 'write', 'entity', '');
                             } elseif ($recipienttype == 'federation') {
                                 $reject_access = $this->zacl->check_acl('f_' . $recipient, 'write', 'federation', '');

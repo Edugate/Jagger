@@ -317,56 +317,43 @@ class Subscriber extends MY_Controller
     public function updatestatus($id = null)
     {
         if (!$this->input->is_ajax_request() || empty($id) || !is_numeric($id) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
-            set_status_header(403);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Denied');
         }
         $loggedin = $this->j_auth->logged_in();
         if (!$loggedin) {
-            set_status_header(403);
-            echo 'not loggedin';
-            return;
+            return $this->output->set_status_header(403)->set_output('not logged in');
         }
 
         $noteid = $this->input->post('noteid');
         $status = htmlentities($this->input->post('status'));
         if (empty($noteid) || !is_numeric($noteid) || strcmp($noteid, $id) != 0) {
-            set_status_header(403);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Denied');
         }
         $allowedStatus = array('remove', 'approve', 'enable', 'disable', 'disapprove');
         if (!in_array($status, $allowedStatus)) {
-            set_status_header(403);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Denied');
+
         }
         /**
          * @var $notification models\NotificationList
          */
         $notification = $this->em->getRepository("models\NotificationList")->findOneBy(array('id' => $noteid));
-        if (empty($notification)) {
-            set_status_header(404);
-            echo 'not found';
-            return;
+        if ($notification === null) {
+            return $this->output->set_status_header(404)->set_output('not found');
         }
 
         /**
          * @var $user models\User
          */
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->j_auth->current_user()));
-        if (empty($user)) {
-            set_status_header(404);
-            echo 'not found';
-            return;
+        if ($user === null) {
+            return $this->output->set_status_header(404)->set_output('not found');
         }
         $isAdministrator = $this->j_auth->isAdministrator();
         $notificationOwner = $notification->getSubscriber();
         $userMatchOwner = ($notificationOwner->getId() === $user->getId());
         if (!(($userMatchOwner) || ($isAdministrator))) {
-            set_status_header(403);
-            echo 'denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Denied');
         }
         $success = false;
         if ($userMatchOwner && (strcmp($status, 'remove') == 0 || strcmp($status, 'disable') == 0 || strcmp($status, 'enable') == 0)) {

@@ -84,7 +84,7 @@ class J_auth
     public function login($identity, $password)
     {
         /**
-         * @todo change to use static from model, add more condition like user is local,valid etc
+         * @var models\User $u
          */
         try {
             $u = $this->em->getRepository("models\User")->findOneBy(array('username' => $identity, 'local' => true));
@@ -93,11 +93,9 @@ class J_auth
             show_error("Server error", 500);
             exit;
         }
-        if ($u) {
-            $salt = $u->getSalt();
-            $encrypted_password = sha1($password . $salt);
-            $pass = $u->getPassword();
-            if (strcmp($pass, $encrypted_password) == 0) {
+        if ($u !== null) {
+            $isPassMatch = $u->isPasswordMatch($password);
+            if ($isPassMatch === true) {
                 $twofactorauthn = $this->ci->config->item('twofactorauthn');
                 $secondfactor = $u->getSecondFactor();
                 if (!empty($twofactorauthn) && $twofactorauthn === TRUE && !empty($secondfactor) && $secondfactor === 'duo') {
