@@ -821,9 +821,14 @@ class Awaiting extends MY_Controller
             $recipient = $queueObj->getRecipient();
             $recipienttype = $queueObj->getRecipientType();
             $allowedRecipientTypes = array('entitycategory', 'regpolicy');
+            $recipientTypesStrs = array('entitycategory'=>'Entity Category','regpolicy'=>'Registration Policy');
             $type = $queueObj->getType();
             $name = $queueObj->getName();
             if (in_array($recipienttype, $allowedRecipientTypes) && strcasecmp($type, 'Provider') == 0 && !empty($name)) {
+                /**
+                 * @var models\Provider $provider;
+                 * @var models\Coc $coc;
+                 */
                 $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $name));
                 if (empty($provider)) {
                     log_message('error', __METHOD__ . ' could not approve request as provider with entityid ' . $name . ' does not exists');
@@ -862,6 +867,8 @@ class Awaiting extends MY_Controller
                 $body = 'Hi,' . PHP_EOL;
                 $body .= 'The request applied by '.html_escape($requestedBy).' and  placed on ' . base_url() . PHP_EOL;
                 $body .= 'has been approved' . PHP_EOL;
+                $body .= 'Provider: '.$provider->getEntityId().PHP_EOL;
+                $body .= 'apply for '.$recipientTypesStrs[''.$recipienttype.''].' '.$coc->getUrl() .PHP_EOL;
 
                 $this->email_sender->addToMailQueue(array(), null, $subject, $body, $additionalReciepients, FALSE);
                 $this->em->remove($queueObj);
