@@ -849,6 +849,21 @@ class Awaiting extends MY_Controller
                 $provider->setCoc($coc);
                 $this->em->persist($provider);
                 $this->em->persist($coc);
+
+                $m_creator = $queueObj->getCreator();
+                if (!empty($m_creator)) {
+                    $requestedBy = $m_creator->getEmail();
+                } else {
+                    $requestedBy = $queueObj->getEmail();
+                }
+
+                $additionalReciepients[] = $requestedBy;
+                $subject = 'Request has been approved';
+                $body = 'Hi,' . PHP_EOL;
+                $body .= 'The request applied by '.html_escape($requestedBy).' and  placed on ' . base_url() . PHP_EOL;
+                $body .= 'has been approved' . PHP_EOL;
+
+                $this->email_sender->addToMailQueue(array(), null, $subject, $body, $additionalReciepients, FALSE);
                 $this->em->remove($queueObj);
                 try {
                     $this->em->flush();
