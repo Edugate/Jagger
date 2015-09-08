@@ -10,6 +10,7 @@ class Sysprefs extends MY_Controller
     function __construct()
     {
         parent:: __construct();
+        $this->load->library('form_validation');
     }
 
 
@@ -48,10 +49,10 @@ class Sysprefs extends MY_Controller
             return $this->output->set_status_header(401)->set_output('Invalid session');
         }
         $isAdmin = $this->j_auth->isAdministrator();
-        if (!$isAdmin) {
+        if ($isAdmin!==true) {
             return $this->output->set_status_header(401)->set_output('Access denied');
         }
-        $this->load->library('form_validation');
+
 
         $this->form_validation->set_rules('confname', 'Conf name', 'required|trim|alpha_numeric');
         if ($this->form_validation->run() !== true) {
@@ -96,17 +97,14 @@ class Sysprefs extends MY_Controller
         try {
             $tmpresult = $this->prefconftoarray($cpref);
             $this->em->flush();
-
             $this->j_cache->library('rrpreference', 'prefToArray', array('global'), -1);
             $result = $tmpresult;
             $result['result'] = 'OK';
-
-            return $this->output->set_content_type('application/json')->set_output(json_encode($result));
         } catch (Exception $e) {
             $result['error'] = 'Error occurred';
             log_message('error', __METHOD__ . ' ' . $e);
-            return $this->output->set_content_type('application/json')->set_output(json_encode($result));
         }
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
 
     }
