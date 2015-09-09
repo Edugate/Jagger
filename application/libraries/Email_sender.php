@@ -278,10 +278,10 @@ class Email_sender
         $type = $coc->getType();
         if($type='entcat')
         {
-            $sbj = 'Request : apply for EntityCategory';
+            $sbj = 'Request: Permission to assign Entity Category';
         }
         else{
-            $sbj = 'Request: apply for RegistrationPolicy';
+            $sbj = 'Request: Permission to assign Registration Policy';
         }
 
         $body = 'Dear user'.PHP_EOL;
