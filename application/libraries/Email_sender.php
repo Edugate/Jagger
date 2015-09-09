@@ -276,7 +276,7 @@ class Email_sender
     function applyForEntcatRegPol(models\Coc $coc, models\Provider $provider)
     {
         $type = $coc->getType();
-        if($type='entcat')
+        if($type === 'entcat')
         {
             $sbj = 'Request: Permission to assign Entity Category';
         }
