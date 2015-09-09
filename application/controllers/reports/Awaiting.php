@@ -821,7 +821,7 @@ class Awaiting extends MY_Controller
             $recipient = $queueObj->getRecipient();
             $recipienttype = $queueObj->getRecipientType();
             $allowedRecipientTypes = array('entitycategory', 'regpolicy');
-            $recipientTypesStrs = array('entitycategory'=>'Entity Category','regpolicy'=>'Registration Policy');
+            $recipientTypesStrs = array('entitycategory'=>lang('req_entcatapply'),'regpolicy'=>lang('req_reqpolapply'));
             $type = $queueObj->getType();
             $name = $queueObj->getName();
             if (in_array($recipienttype, $allowedRecipientTypes) && strcasecmp($type, 'Provider') == 0 && !empty($name)) {
@@ -868,7 +868,7 @@ class Awaiting extends MY_Controller
                 $body .= 'The request applied by '.html_escape($requestedBy).' and  placed on ' . base_url() . PHP_EOL;
                 $body .= 'has been approved' . PHP_EOL;
                 $body .= 'Provider: '.$provider->getEntityId().PHP_EOL;
-                $body .= 'apply for '.$recipientTypesStrs[''.$recipienttype.''].' '.$coc->getUrl() .PHP_EOL;
+                $body .= ''.$recipientTypesStrs[''.$recipienttype.''].' '.$coc->getUrl() .PHP_EOL;
 
                 $this->email_sender->addToMailQueue(array(), null, $subject, $body, $additionalReciepients, FALSE);
                 $this->em->remove($queueObj);
