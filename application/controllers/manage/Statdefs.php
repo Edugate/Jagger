@@ -95,15 +95,13 @@ class Statdefs extends MY_Controller
             $stat = $gmclient->jobStatus($jobsSession['stadef']['' . $defid . '']);
 
             if (($stat['0'] === TRUE) && ($stat['1'] === FALSE)) {
-                echo json_encode(array('status' => lang('rr_jobinqueue')));
-                return false;
+                return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => lang('rr_jobinqueue'))));
+
             } elseif ($stat[0] === $stat[1] && $stat[1] === true) {
                 $percent = $stat[2] / $stat[3] * 100;
-                echo json_encode(array('status' => lang('rr_jobdonein') . ' ' . $percent . ' %'));
-                return false;
+                return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => lang('rr_jobdonein') . ' ' . $percent . ' %')));
             }
         }
-
         if ($params['type'] === 'ext') {
             $jobHandle = $gmclient->doBackground("externalstatcollection", serialize($params));
             $_SESSION['jobs']['stadef']['' . $defid . ''] = $jobHandle;
@@ -113,7 +111,7 @@ class Statdefs extends MY_Controller
             $jobHandle = $gmclient->doBackground('' . $workername . '', serialize($params));
             $_SESSION['jobs']['stadef']['' . $defid . ''] = $jobHandle;
         }
-        echo json_encode(array('status' => lang('taskssent') . ' '));
+        return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => lang('taskssent') . ' ')));
     }
 
     public function show($providerId = null, $statDefId = null)
