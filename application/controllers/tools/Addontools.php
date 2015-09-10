@@ -1,6 +1,17 @@
 <?php
-
-class Addontools extends MY_Controller {
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
+/**
+ * @package   Jagger
+ * @author    Middleware Team HEAnet <support@edugate.ie>
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
+ *
+ */
+class Addontools extends MY_Controller
+{
 
     function __construct()
     {
@@ -10,15 +21,11 @@ class Addontools extends MY_Controller {
     public function show()
     {
         $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin)
-        {
-            if (!$this->input->is_ajax_request())
-            {
+        if (!$loggedin) {
+            if (!$this->input->is_ajax_request()) {
                 redirect('auth/login', 'location');
                 return;
-            }
-            else
-            {
+            } else {
                 set_status_header(403);
                 echo 'No session';
                 return;
@@ -26,10 +33,10 @@ class Addontools extends MY_Controller {
         }
         $data['titlepage'] = 'Tools';
         $data['content_view'] = 'tools/list_view';
-	    $data['breadcrumbs'] = array(
-		    array('url' => '#', 'name' => lang('rrtools'), 'type' => 'current'),
+        $data['breadcrumbs'] = array(
+            array('url' => '#', 'name' => lang('rrtools'), 'type' => 'current'),
 
-	    );
+        );
         $this->load->view('page', $data);
     }
 
@@ -37,66 +44,48 @@ class Addontools extends MY_Controller {
     {
         $publicAccess = FALSE;
         $access = $this->config->item('addontools');
-        if(!empty($access) && is_array($access) && isset($access['msgdecoder']) && $access['msgdecoder'] === true)
-        {
+        if (!empty($access) && is_array($access) && isset($access['msgdecoder']) && $access['msgdecoder'] === true) {
             $publicAccess = true;
         }
         $loggedin = $this->j_auth->logged_in();
-        if (!$loggedin && !$publicAccess)
-        {
-            if (!$this->input->is_ajax_request())
-            {
+        if (!$loggedin && !$publicAccess) {
+            if (!$this->input->is_ajax_request()) {
                 redirect('auth/login', 'location');
                 return;
-            }
-            else
-            {
+            } else {
                 set_status_header(403);
                 echo 'No session';
                 return;
             }
         }
 
-        if ($this->input->is_ajax_request() && $this->input->post())
-        {
+        if ($this->input->is_ajax_request() && $this->input->post()) {
             $encodedmsg = trim($this->input->post('inputmsg'));
 
-            if (empty($encodedmsg))
-            {
+            if (empty($encodedmsg)) {
                 echo lang('error_noinput');
                 return;
             }
 
             $isurl = parse_url($encodedmsg, PHP_URL_QUERY);
-            if (!empty($isurl))
-            {
+            if (!empty($isurl)) {
                 $encodedmsg = $isurl;
             }
 
             $arr = array();
             $query = parse_str($encodedmsg, $arr);
-            if (array_key_exists('SAMLResponse', $arr))
-            {
+            if (array_key_exists('SAMLResponse', $arr)) {
                 $encodedmsg = $arr['SAMLResponse'];
-            }
-            elseif (array_key_exists('SAMLRequest', $arr))
-            {
+            } elseif (array_key_exists('SAMLRequest', $arr)) {
                 $encodedmsg = $arr['SAMLRequest'];
-            }
-            elseif (array_key_exists('LogoutRequest', $arr))
-            {
+            } elseif (array_key_exists('LogoutRequest', $arr)) {
                 $encodedmsg = $arr['LogoutRequest'];
-            }
-            elseif (array_key_exists('LogoutResponse', $arr))
-            {
+            } elseif (array_key_exists('LogoutResponse', $arr)) {
                 $encodedmsg = $arr['LogoutResponse'];
-            }
-            else
-            {
+            } else {
 
                 $encodedmsg = rawurldecode(stripslashes($encodedmsg));
             }
-
 
 
             $decodedmsg = jSAMLDecoder($encodedmsg);
@@ -109,6 +98,5 @@ class Addontools extends MY_Controller {
         $this->load->view('page', $data);
     }
 
-  
 
 }
