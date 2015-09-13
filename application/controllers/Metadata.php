@@ -28,23 +28,24 @@ class Metadata extends MY_Controller
     public function federation($federationName = null, $limitType = null)
     {
         if ($federationName === null) {
-            show_error('Not found', 404);
+            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Not found');
         }
+
+        $permitPull = $this->checkAccess();
+        if ($permitPull !== true) {
+            log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
+            return $this->output->set_status_header(403)->set_content_type('text/html')->set_output('Access Denied');
+        }
+
         $this->load->library('providertoxml');
         $data = array();
         $excludeType = null;
         $name = $federationName;
 
-        if (strcasecmp($limitType, 'SP') == 0) {
+        if ($limitType === 'SP') {
             $excludeType = 'IDP';
-        } elseif (strcasecmp($limitType, 'IDP') == 0) {
+        } elseif ($limitType === 'IDP') {
             $excludeType = 'SP';
-        }
-
-        $permitPull = $this->checkAccess();
-        if ($permitPull !== TRUE) {
-            log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
-            show_error('Access denied', 403);
         }
 
         /**
@@ -53,7 +54,7 @@ class Metadata extends MY_Controller
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $name, 'is_active' => true));
 
         if ($federation === null) {
-            return $this->output->set_status_header(404)->set_output('Federation not found or is inactive');
+            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Federation not found or is inactive');
         }
         $publisher = $federation->getPublisher();
         $validfor = new \DateTime('now', new \DateTimezone('UTC'));
@@ -290,12 +291,19 @@ class Metadata extends MY_Controller
         }
     }
 
+    /**
+     * @return bool
+     */
     private function isCircleFeatureEnabled()
     {
         $cnf = $this->config->item('featdisable');
         return !(isset($cnf['circlemeta']) && $cnf['circlemeta'] === true);
     }
 
+    /**
+     * @param \models\Provider $provider
+     * @return bool
+     */
     private function isProviderAllowedForCircle(\models\Provider $provider)
     {
         $circleForExternalAllowed = $this->config->item('disable_extcirclemeta');
@@ -446,7 +454,7 @@ class Metadata extends MY_Controller
             $metadataDOM->strictErrorChecking = FALSE;
             $metadataDOM->WarningChecking = FALSE;
             $metadataDOM->loadXML(base64_decode($queueData['metadata']));
-            $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, FALSE, FALSE);
+            $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, false, false);
             if (!$isValid) {
                 show_error('invalida metadata', 404);
             }
@@ -455,28 +463,20 @@ class Metadata extends MY_Controller
         $this->load->view('metadata_view', $data);
     }
 
+    /**
+     * @return bool
+     */
     private function checkAccess()
     {
-        $permitPull = FALSE;
-
-
-        $loggedIn = $this->j_auth->logged_in();
-        if (!$loggedIn) {
-            $limits = $this->config->item('unsignedmeta_iplimits');
-            if (!empty($limits) && is_array($limits) && count($limits) > 0) {
-                $remoteip = $this->input->ip_address();
-                if (in_array($remoteip, $limits)) {
-                    $permitPull = TRUE;
-                }
-            } else {
-                $permitPull = TRUE;
-            }
-        } else {
-            $permitPull = TRUE;
+        if ($this->j_auth->logged_in()) {
+            return true;
         }
-
-
-        return $permitPull;
+        $remoteip = $this->input->ip_address();
+        $limits = $this->config->item('unsignedmeta_iplimits');
+        if (is_array($limits) && in_array($remoteip, $limits, true)) {
+            return true;
+        }
+        return false;
     }
 
 }

@@ -1,5 +1,8 @@
 <?php
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
+
 /**
  * @package   Jagger
  * @author    Middleware Team HEAnet
@@ -7,7 +10,6 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
-
 class Auth extends MY_Controller
 {
     private $data;
@@ -38,10 +40,7 @@ class Auth extends MY_Controller
     public function fedregister()
     {
         $method = $this->input->method(TRUE);
-        if (!$this->input->is_ajax_request()) {
-            return $this->output->set_status_header(403)->set_output('Permission Denied');
-        }
-        if ($method !== 'POST') {
+        if (!$this->input->is_ajax_request() || $method !== 'POST') {
             return $this->output->set_status_header(403)->set_output('Permission Denied');
         }
         if ($this->j_auth->logged_in()) {
@@ -49,65 +48,62 @@ class Auth extends MY_Controller
         }
 
         $fedidentity = $this->session->userdata('fedidentity');
+        $newUserData = array(
+            'username' => null,
+            'email' => null,
+            'fname' => null,
+            'sname' => null,
+            'type' => 'federated',
+            'ip' => $this->input->ip_address()
+        );
         log_message('debug', __METHOD__ . ' fedregistration in post received' . serialize($this->session->userdata()));
-        if (!empty($fedidentity) && is_array($fedidentity)) {
-            if (isset($fedidentity['fedusername'])) {
-                $username = $fedidentity['fedusername'];
+        if (is_array($fedidentity)) {
+            if (array_key_exists('fedusername', $fedidentity)) {
+                $newUserData['username'] = trim($fedidentity['fedusername']);
             }
-            if (isset($fedidentity['fedemail'])) {
-                $email = $fedidentity['fedemail'];
+            if (array_key_exists('fedemail', $fedidentity)) {
+                $newUserData['email'] = trim($fedidentity['fedemail']);
             }
-            if (empty($username) || empty($email)) {
+            if (empty($newUserData['username']) || empty($newUserData['email'])) {
                 $this->session->sess_destroy();
                 $this->session->sess_regenerate(TRUE);
                 return $this->output->set_status_header(403)->set_output('missing some attrs like username or/and email');
             }
-            if (isset($fedidentity['fedfname'])) {
-                $fname = $fedidentity['fedfname'];
+            if (array_key_exists('fedfname', $fedidentity)) {
+                $newUserData['fname'] = trim($fedidentity['fedfname']);
             }
-            if (isset($fedidentity['fedsname'])) {
-                $sname = $fedidentity['fedsname'];
+            if (array_key_exists('fedsname', $fedidentity)) {
+                $newUserData['sname'] = trim($fedidentity['fedsname']);
             }
         }
-        $ipAddress = $this->input->ip_address();
         /**
          * @var $checkuser models\User
          */
-        $checkuser = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        $checkuser = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $newUserData['username'] . ''));
         if ($checkuser !== null) {
             $this->session->sess_destroy();
             $this->session->sess_regenerate(TRUE);
             return $this->output->set_status_header(403)->set_output('' . lang('err_userexist') . '');
         }
         /**
-         * @var models\Queue  $inqueue
+         * @var models\Queue $inqueue
          */
-        $inqueue = $this->em->getRepository("models\Queue")->findOneBy(array('name' => $username, 'action' => 'Create'));
+        $inqueue = $this->em->getRepository('models\Queue')->findOneBy(array('name' => '' . $newUserData['username'] . '', 'action' => 'Create'));
         if ($inqueue !== null) {
             return $this->output->set_status_header(403)->set_output('' . lang('err_userinqueue') . '');
         }
-
-
-        $user = array(
-            'username' => trim($username),
-            'email' => trim($email),
-            'fname' => trim($fname),
-            'sname' => trim($sname),
-            'type' => 'federated',
-            'ip' => $ipAddress,
-        );
         $queue = new models\Queue;
         $queue->setAction('Create');
-        $queue->setName($username);
-        $queue->setEmail($email);
+        $queue->setName($newUserData['username']);
+        $queue->setEmail($newUserData['email']);
         $queue->setToken();
-        $queue->addUser($user);
+        $queue->addUser($newUserData);
         $this->em->persist($queue);
         /**
          * BEGIN send notification
          */
-        if (!empty($fname) || !empty($sname)) {
-            $reqfullname = trim($fname) . ' ' . trim($sname);
+        if (!empty($newUserData['fname']) || !empty($newUserData['sname'])) {
+            $reqfullname = $newUserData['fname'] . ' ' . $newUserData['sname'];
         } else {
             $reqfullname = 'unknown fullname';
         }
@@ -115,11 +111,11 @@ class Auth extends MY_Controller
 
         $templateArgs = array(
             'token' => $queue->getToken(),
-            'srcip' => $ipAddress,
-            'reqemail' => trim($email),
-            'requsername' => trim($username),
+            'srcip' => $this->input->ip_address(),
+            'reqemail' => $newUserData['email'],
+            'requsername' => $newUserData['username'],
             'reqfullname' => $reqfullname,
-            'qurl' => '' . base_url('reports/awaiting/detail/'.$queue->getToken().''),
+            'qurl' => '' . base_url('reports/awaiting/detail/' . $queue->getToken() . ''),
             'datetimeutc' => '' . $nowUtc->format('Y-m-d h:i:s') . ' UTC',
         );
 
@@ -127,11 +123,15 @@ class Auth extends MY_Controller
 
         if (empty($mailTemplate)) {
             $sbj = 'User registration request';
-            $body = 'Dear user,' . PHP_EOL;
-            $body .= 'You have received this mail because your email address is on the notification list' . PHP_EOL;
-            $body .= 'User from ' . $ipAddress . ' using federated access has applied for an account.' . PHP_EOL;
-            $body .= 'Please review the request and make appriopriate action (reject/approve)' . PHP_EOL;
-            $body .= 'Details about the request: ' . base_url() . 'reports/awaiting/detail/' . $queue->getToken() . PHP_EOL;
+            $body = 'Dear user,' . PHP_EOL .
+                'You have received this mail because ' .
+                'your email address is on the notification list' . PHP_EOL .
+                'User from ' . $this->input->ip_address() .
+                ' using federated access has applied for an account.' . PHP_EOL .
+                'Please review the request and make appriopriate ' .
+                'action (reject/approve)' . PHP_EOL .
+                'Details about the request: ' . base_url() .
+                'reports/awaiting/detail/' . $queue->getToken() . PHP_EOL;
             $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(), FALSE);
         } else {
             $this->email_sender->addToMailQueue(array(), null, $mailTemplate['subject'], $mailTemplate['body'], array(), FALSE);
@@ -282,9 +282,8 @@ class Auth extends MY_Controller
     {
         $usernameVarName = $this->config->item('Shib_username');
         $usernameValue = $this->input->server($usernameVarName);
-        if($usernameValue === null)
-        {
-            $usernameValue = $this->input->server('REDIRECT_'.$usernameVarName);
+        if ($usernameValue === null) {
+            $usernameValue = $this->input->server('REDIRECT_' . $usernameVarName);
         }
         return $usernameValue;
     }
@@ -332,17 +331,14 @@ class Auth extends MY_Controller
     private function getShibIdp()
     {
         $idpVal = $this->input->server('Shib-Identity-Provider');
-        if($idpVal === null)
-        {
+        if ($idpVal === null) {
             $idpVal = $this->input->server('REDIRECT_Shib-Identity-Provider');
         }
-        if($idpVal === null)
-        {
-             $idpVal = $this->input->server('Shib_Identity_Provider');
+        if ($idpVal === null) {
+            $idpVal = $this->input->server('Shib_Identity_Provider');
         }
-        if($idpVal === null)
-        {
-             $idpVal = $this->input->server('REDIRECT_Shib_Identity_Provider');
+        if ($idpVal === null) {
+            $idpVal = $this->input->server('REDIRECT_Shib_Identity_Provider');
         }
         return $idpVal;
     }
@@ -378,12 +374,18 @@ class Auth extends MY_Controller
         if (empty($defaultRole) || !in_array($defaultRole, $allowedroles)) {
             $defaultRole = 'Guest';
         }
-        $member = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $defaultRole));
-        if (!empty($member)) {
+        /**
+         * @var models\AclRole $member
+         */
+        $member = $this->em->getRepository('models\AclRole')->findOneBy(array('name' => $defaultRole));
+        if ($member !== null) {
             $user->setRole($member);
         }
-        $p_role = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $username));
-        if (empty($p_role)) {
+        /**
+         * @var models\AclRole $p_role
+         */
+        $p_role = $this->em->getRepository('models\AclRole')->findOneBy(array('name' => $username));
+        if ($p_role === null) {
             $p_role = new models\AclRole;
             $p_role->setName($username);
             $p_role->setType('user');
@@ -403,9 +405,8 @@ class Auth extends MY_Controller
     private function getShibGroups($groupsVarName)
     {
         $varToReturn = $this->input->server($groupsVarName);
-        if($varToReturn === null)
-        {
-            $varToReturn = $this->input->server('REDIRECT_'.$groupsVarName);
+        if ($varToReturn === null) {
+            $varToReturn = $this->input->server('REDIRECT_' . $groupsVarName);
         }
         return $varToReturn;
     }
@@ -536,8 +537,7 @@ class Auth extends MY_Controller
             }
             $updateemail = $this->config->item('shibb_updateemail');
             $emailFromIdP = trim($this->getShibMail());
-            if($updateemail === true && !empty($emailFromIdP))
-            {
+            if ($updateemail === true && !empty($emailFromIdP)) {
                 $user->setEmail($emailFromIdP);
             }
             $islogged = $this->session->userdata('logged');
