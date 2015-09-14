@@ -1762,7 +1762,7 @@ class Form_element
         return $result;
     }
 
-    private function NgenerateLogoForm(models\Provider $ent, $ses = null)
+    private function nGenerateLogoForm(models\Provider $ent, $ses = null)
     {
         $btnlangs = array('0' => lang('rr_unspecified')) + MY_Controller::$langselect;
         $type = $ent->getType();
@@ -1997,7 +1997,7 @@ class Form_element
 
     public function NgenerateUiiForm(models\Provider $ent, array $ses = null)
     {
-        $logopart = $this->NgenerateLogoForm($ent, $ses);
+        $logopart = $this->nGenerateLogoForm($ent, $ses);
         $langs = languagesCodes();
         $type = $ent->getType();
         $e = $ent->getExtendMetadata();

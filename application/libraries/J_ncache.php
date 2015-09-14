@@ -1,24 +1,17 @@
 <?php
-
-if (!defined('BASEPATH')) exit('No direct script access allowed');
-
-/**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2015, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 /**
- * J_ncache Class
- *
- * @package     RR3
- * @subpackage  Libraries
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   Jagger
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @author    Middleware Team HEAnet <support@edugate.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
+ * @link      https://github.com/Edugate/Jagger
  */
+
 class J_ncache
 {
 
@@ -32,6 +25,10 @@ class J_ncache
         $this->ci->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $this->keyprefix));
     }
 
+    /**
+     * @param $type
+     * @return bool
+     */
     public function cleanProvidersList($type)
     {
         $guilangs = MY_Controller::guiLangs();
@@ -43,6 +40,10 @@ class J_ncache
         return true;
     }
 
+    /**
+     * @param $fedId
+     * @return bool
+     */
     public function cleanFederationMembers($fedId)
     {
         $guilangs = MY_Controller::guiLangs();
@@ -54,12 +55,23 @@ class J_ncache
         return true;
     }
 
+    /**
+     * @param $fedId
+     * @param $lang
+     * @return mixed
+     */
     public function getFederationMembers($fedId, $lang)
     {
         $cachedid = 'fedmbrs_' . $fedId . '_' . $lang;
         return $this->ci->cache->get($cachedid);
     }
 
+    /**
+     * @param $fedId
+     * @param $lang
+     * @param $data
+     * @return bool
+     */
     public function saveFederationMembers($fedId, $lang, $data)
     {
         $cachedid = 'fedmbrs_' . $fedId . '_' . $lang;
@@ -67,12 +79,20 @@ class J_ncache
         return true;
     }
 
+    /**
+     * @param $tmpid
+     * @return mixed
+     */
     public function getPreregisterMetadata($tmpid)
     {
         $cacheid = 'preregmeta_' . $tmpid;
         return $this->ci->cache->get($cacheid);
     }
 
+    /**
+     * @param $tmpid
+     * @return bool
+     */
     public function cleanPreregisterMetadata($tmpid)
     {
         $cacheid = 'preregmeta_' . $tmpid;
@@ -80,6 +100,11 @@ class J_ncache
         return true;
     }
 
+    /**
+     * @param $tmpid
+     * @param $data
+     * @return bool
+     */
     public function savePreregisterMetadata($tmpid, $data)
     {
         $cacheid = 'preregmeta_' . $tmpid;
@@ -88,15 +113,24 @@ class J_ncache
 
     }
 
-    public function getUserQList($userid =null)
+    /**
+     * @param null $userid
+     * @return null
+     */
+    public function getUserQList($userid = null)
     {
-        if($userid === null)
-        {
+        if ($userid === null) {
             return null;
         }
         $cacheid = 'userq_' . $userid;
         return $this->ci->cache->get($cacheid);
     }
+
+    /**
+     * @param $userid
+     * @param $data
+     * @return bool
+     */
     public function saveUserQList($userid, $data)
     {
         $cacheid = 'userq_' . $userid;
@@ -104,18 +138,31 @@ class J_ncache
         return true;
     }
 
+    /**
+     * @param $providerId
+     * @return mixed
+     */
     public function getMcircleMeta($providerId)
     {
         $cacheid = 'mcircle_' . $providerId;
         return $this->ci->cache->get($cacheid);
     }
 
+    /**
+     * @param $providerId
+     * @return bool
+     */
     public function cleanMcirclceMeta($providerId)
     {
         $this->ci->cache->delete('mcricle_' . $providerId . '');
         return true;
     }
 
+    /**
+     * @param $providerId
+     * @param $data
+     * @return bool
+     */
     public function saveMcircleMeta($providerId, $data)
     {
         $cacheid = 'mcircle_' . $providerId;
@@ -123,46 +170,72 @@ class J_ncache
         return true;
     }
 
+    /**
+     * @param $providerId
+     * @return bool
+     */
     public function cleanEntityStatus($providerId)
     {
         $this->ci->cache->delete('mstatus_' . $providerId . '');
         return true;
     }
 
-
+    /**
+     * @return mixed
+     */
     public function getEntityCategoriesDefs()
     {
-        \log_message('debug','janusz: method: '.__METHOD__);
         $cacheid = 'entcatsdefs';
         return $this->ci->cache->get($cacheid);
     }
+
+    /**
+     * @param $data
+     * @return bool
+     */
     public function saveEntityCategoriesDefs($data)
     {
-        \log_message('debug','janusz: method: '.__METHOD__);
         $cacheid = 'entcatsdefs';
-        $this->ci->cache->save($cacheid,$data,600);
-        return true;
-    }
-
-    public function getCircleDisco($providerId)
-    {
-        $cacheid = 'disco_'.$providerId;
-        return $this->ci->cache->get($cacheid);
-    }
-
-
-    public  function saveCircleDisco($providerId,$data)
-    {
-        $cacheid = 'disco_'.$providerId;
         $this->ci->cache->save($cacheid, $data, 600);
         return true;
     }
 
+    /**
+     * @param $providerId
+     * @return mixed
+     */
+    public function getCircleDisco($providerId)
+    {
+        $cacheid = 'disco_' . $providerId;
+        return $this->ci->cache->get($cacheid);
+    }
+
+
+    /**
+     * @param $providerId
+     * @param $data
+     * @return bool
+     */
+    public function saveCircleDisco($providerId, $data)
+    {
+        $cacheid = 'disco_' . $providerId;
+        $this->ci->cache->save($cacheid, $data, 600);
+        return true;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getFullDisco()
     {
         $cacheid = 'discof';
         return $this->ci->cache->get($cacheid);
     }
+
+    /**
+     * @param $data
+     * @return bool
+     */
     public function saveFullDisco($data)
     {
         $cacheid = 'discof';
