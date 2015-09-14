@@ -330,15 +330,20 @@ class Auth extends MY_Controller
 
     private function getShibIdp()
     {
-        $idpVal = $this->input->server('Shib-Identity-Provider');
-        if ($idpVal === null) {
-            $idpVal = $this->input->server('REDIRECT_Shib-Identity-Provider');
-        }
-        if ($idpVal === null) {
-            $idpVal = $this->input->server('Shib_Identity_Provider');
-        }
-        if ($idpVal === null) {
-            $idpVal = $this->input->server('REDIRECT_Shib_Identity_Provider');
+        $IdpEnvVars  = array(
+            'Shib-Identity-Provider',
+            'REDIRECT_Shib-Identity-Provider',
+            'Shib_Identity_Provider',
+            'REDIRECT_Shib_Identity_Provider'
+        );
+        $idpVal = null;
+        foreach($IdpEnvVars as $val)
+        {
+            if(!empty($val))
+            {
+                $idpVal = $val;
+                break;
+            }
         }
         return $idpVal;
     }
@@ -466,8 +471,8 @@ class Auth extends MY_Controller
 
     public function fedauth($timeoffset = null)
     {
-        $shibb_valid = (bool)$this->getShibIdp();
-        if (!$shibb_valid) {
+        $shibb_valid = $this->getShibIdp();
+        if ($shibb_valid === null) {
             log_message('error', 'This location should be protected by shibboleth in apache');
             show_error('Internal server error', 500);
         }
