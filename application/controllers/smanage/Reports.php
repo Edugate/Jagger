@@ -70,7 +70,7 @@ class Reports extends MY_Controller
         }
 
         $currentVersion = Doctrine\ORM\Version::VERSION;
-        $minRequiredVersion = '2.4.9';
+        $minRequiredVersion = '2.4.8';
         $compared = Doctrine\ORM\Version::compare($minRequiredVersion);
         if ($compared > 0) {
             echo '<div class="warning alert-box" data-alert>' . lang('rr_doctrinever') . ': ' . $currentVersion . '</div>';
