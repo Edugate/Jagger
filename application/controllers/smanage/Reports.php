@@ -70,11 +70,11 @@ class Reports extends MY_Controller
         }
 
         $currentVersion = Doctrine\ORM\Version::VERSION;
-        $minRequiredVersion = '2.3.3';
+        $minRequiredVersion = '2.4.9';
         $compared = Doctrine\ORM\Version::compare($minRequiredVersion);
         if ($compared > 0) {
             echo '<div class="warning alert-box" data-alert>' . lang('rr_doctrinever') . ': ' . $currentVersion . '</div>';
-            echo '<div class="warning alert-box" data-alert>' . lang('rr_mimumreqversion') . ': ' . $minRequiredVersion . '</div>';
+            echo '<div class="info alert-box" data-alert>' . lang('rr_mimumreqversion') . ': ' . $minRequiredVersion . ' - Please use <b>composer</b> tool to upgrade it to required version</div>';
         } else {
             echo '<div class="success alert-box" data-alert>' . lang('rr_doctrinever') . ': ' . $currentVersion . ' : ' . lang('rr_meetsminimumreq') . '</div>';
         }

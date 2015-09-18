@@ -130,6 +130,8 @@ class MY_Controller extends CI_Controller
         } else {
             $this->lang->load('rr_lang', self::$currLang);
         }
+        spl_autoload_register('self::extPlugsAutoLoader');
+  
 
     }
 
@@ -148,6 +150,22 @@ class MY_Controller extends CI_Controller
     {
         return self::$langs;
     }
+
+
+   public static function extPlugsAutoLoader($className)
+   {
+      $path = APPPATH.'extplugins/';
+      $className = ltrim($className, '\\');
+      $fileName  = '';
+      $namespace = '';
+      if ($lastNsPos = strrpos($className, '\\')) {
+        $namespace = substr($className, 0, $lastNsPos);
+        $className = substr($className, $lastNsPos + 1);
+        $fileName  = APPPATH.'extplugins/'.str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+      }
+      $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
+      require $fileName;
+   }
 
 }
 

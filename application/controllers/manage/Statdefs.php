@@ -1,32 +1,26 @@
 <?php
-
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 /**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
+ * @package   Jagger
+ * @author    Middleware Team HEAnet <noc-middleware@heanet.ie>
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 
-/**
- * Statdefs Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
+
 class Statdefs extends MY_Controller
 {
 
     protected $ispreworkers;
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->ispreworkers = $this->config->item('predefinedstats');
-        if (empty($this->ispreworkers) || !is_array($this->ispreworkers)) {
+        if (!is_array($this->ispreworkers)) {
             $this->ispreworkers = array();
         }
         $this->load->library('form_validation');
@@ -37,44 +31,35 @@ class Statdefs extends MY_Controller
     {
         $isgearman = $this->config->item('gearman');
         $isstatistics = $this->config->item('statistics');
-        if (empty($isgearman) || ($isgearman !== TRUE) || empty($isstatistics) || ($isstatistics !== TRUE)) {
-
-            return false;
+        if ($isgearman === true && $isstatistics === true) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     public function download($defid = null)
     {
-        if (!$this->input->is_ajax_request() || empty($defid) || !ctype_digit($defid) || $this->isStats() !== TRUE || !$this->j_auth->logged_in()) {
-            set_status_header(403);
-            echo 'Access denied';
-            return null;
+        if (!$this->input->is_ajax_request() ||  !ctype_digit($defid) || $this->isStats() !== true || !$this->j_auth->logged_in()) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         /**
-         * @var $statDefinition models\ProviderStatsDef
+         * @var models\ProviderStatsDef $statDefinition
          */
         $statDefinition = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $defid));
-        if (empty($statDefinition)) {
-            set_status_header(404);
-            echo 'Not found';
-            return null;
+        if ($statDefinition === null) {
+            return $this->output->set_status_header(404)->set_output('Not found');
         }
         /**
          * @var $provider models\Provider
          */
         $provider = $statDefinition->getProvider();
-        if (empty($provider)) {
-            set_status_header(404);
-            echo 'Not found';
-            return null;
+        if ($provider === null) {
+            return $this->output->set_status_header(404)->set_output('Not found');
         }
         $this->load->library('zacl');
         $hasAccess = $this->zacl->check_acl('' . $provider->getId() . '', 'write', 'entity', '');
         if (!$hasAccess) {
-            set_status_header(403);
-            echo 'Access denied';
-            return null;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         $params = array(
             'defid' => $statDefinition->getId(),
@@ -103,23 +88,20 @@ class Statdefs extends MY_Controller
             $gmclient->addServers('' . implode(",", $jobservers) . '');
         } catch (Exception $e) {
             log_message('error', 'GeamanClient cant add job-server');
-            echo "Cant add  job-server(s)";
-            return false;
+            return $this->output->set_status_header(500)->set_output('Cannot add job-server(s)');
         }
         $jobsSession = $this->session->userdata('jobs');
         if (!empty($jobsSession) || is_array($jobsSession) || isset($jobsSession['statdef']['' . $defid . ''])) {
             $stat = $gmclient->jobStatus($jobsSession['stadef']['' . $defid . '']);
 
             if (($stat['0'] === TRUE) && ($stat['1'] === FALSE)) {
-                echo json_encode(array('status' => lang('rr_jobinqueue')));
-                return false;
+                return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => lang('rr_jobinqueue'))));
+
             } elseif ($stat[0] === $stat[1] && $stat[1] === true) {
                 $percent = $stat[2] / $stat[3] * 100;
-                echo json_encode(array('status' => lang('rr_jobdonein') . ' ' . $percent . ' %'));
-                return false;
+                return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => lang('rr_jobdonein') . ' ' . $percent . ' %')));
             }
         }
-
         if ($params['type'] === 'ext') {
             $jobHandle = $gmclient->doBackground("externalstatcollection", serialize($params));
             $_SESSION['jobs']['stadef']['' . $defid . ''] = $jobHandle;
@@ -129,14 +111,13 @@ class Statdefs extends MY_Controller
             $jobHandle = $gmclient->doBackground('' . $workername . '', serialize($params));
             $_SESSION['jobs']['stadef']['' . $defid . ''] = $jobHandle;
         }
-        echo json_encode(array('status' => lang('taskssent') . ' '));
+        return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => lang('taskssent') . ' ')));
     }
 
     public function show($providerId = null, $statDefId = null)
     {
         if (empty($providerId) || !ctype_digit($providerId) || !(empty($statDefId) || ctype_digit($statDefId)) || $this->isStats() !== TRUE) {
             show_error('Page not found', 404);
-            return null;
         }
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
@@ -640,8 +621,9 @@ class Statdefs extends MY_Controller
     public function remove($defid = null)
     {
         $msg = null;
+        $s = null;
         /**
-         * @var $def models\ProviderStatsDef
+         * @var models\ProviderStatsDef $def
          */
         if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
             $s = 403;
@@ -656,10 +638,8 @@ class Statdefs extends MY_Controller
                 $msg = 'not found';
             }
         }
-        if (!empty($s)) {
-            set_status_header($s);
-            echo $msg;
-            return;
+        if ($s !== null) {
+            return $this->output->set_header($s)->set_output($msg);
         }
         $inputProviderId = $this->input->post('prvid');
         $inputDefId = $this->input->post('defid');

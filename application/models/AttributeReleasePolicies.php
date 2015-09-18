@@ -47,7 +47,6 @@ class AttributeReleasePolicies
 
     public function getCustomSpPolicyAttributesRequester(Provider $requester)
     {
-        $collection = array();
         $collection = $this->em->getRepository("models\AttributeReleasePolicy")->findBy(array(
             'requester' => $requester->getId(),
             'type' => 'customsp'));

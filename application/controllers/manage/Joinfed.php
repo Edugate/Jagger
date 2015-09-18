@@ -2,32 +2,22 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 /**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
  */
 
-/**
- * Joinfed Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
 class Joinfed extends MY_Controller
 {
 
-
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $loggedin = $this->j_auth->logged_in();
-        $this->current_site = current_url();
         if (!$loggedin) {
-            $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         } else {
             $this->load->library('zacl');
@@ -36,7 +26,7 @@ class Joinfed extends MY_Controller
         $this->load->helper('form');
     }
 
-    private function submit_validate()
+    private function submitValidate()
     {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('fedid', 'Federation', 'trim|numeric');
@@ -51,10 +41,10 @@ class Joinfed extends MY_Controller
             show_error(lang('error_incorrectprovid'), 404);
         }
         /**
-         * @var $ent models\Provider
+         * @var models\Provider $ent
          */
         $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid));
-        if (empty($ent)) {
+        if ($ent === null) {
             show_error(lang('rerror_provnotfound'), 404);
         }
 
@@ -84,7 +74,7 @@ class Joinfed extends MY_Controller
             array('url' => '#', 'name' => lang('fedejoinform'), 'type' => 'current'),
         );
         /**
-         * @var $allFederations models\Federation[]
+         * @var models\Federation[] $allFederations
          */
         $allFederations = $this->em->getRepository("models\Federation")->findAll();
         $federations = $ent->getFederations();
@@ -98,7 +88,7 @@ class Joinfed extends MY_Controller
 
         $feds_dropdown = $availableFederations;
 
-        if ($this->submit_validate() === TRUE) {
+        if ($this->submitValidate() === true) {
             $message = $this->input->post('formmessage');
             $fedid = $this->input->post('fedid');
             /**
