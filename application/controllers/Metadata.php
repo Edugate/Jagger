@@ -473,10 +473,13 @@ class Metadata extends MY_Controller
         }
         $remoteip = $this->input->ip_address();
         $limits = $this->config->item('unsignedmeta_iplimits');
-        if (is_array($limits) && in_array($remoteip, $limits, true)) {
-            return true;
+        if(is_array($limits)){
+            if(in_array($remoteip, $limits, true)){
+                return true;
+            }
+            return false;
         }
-        return false;
+        return true;
     }
 
 }
