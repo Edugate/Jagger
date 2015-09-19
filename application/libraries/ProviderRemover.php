@@ -51,7 +51,7 @@ class ProviderRemover
         foreach ($attrsrequests as $r) {
             $this->em->remove($r);
         }
-       
+
         $attrpoltmp = new models\AttributeReleasePolicies;
         /**
          * @var models\AttributeReleasePolicy[] $policies

@@ -12,16 +12,14 @@ if (!defined('BASEPATH')) {
  */
 class Premoval extends MY_Controller
 {
-
-
-
+    
     public function __construct()
     {
         parent::__construct();
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
-        $this->load->library(array('zacl', 'form_validation'));
+        $this->load->library(array('zacl', 'form_validation','ProviderRemover','tracker'));
         $this->title = lang('rr_rmprovider');
     }
 
@@ -41,7 +39,7 @@ class Premoval extends MY_Controller
         /**
          * @var models\Provider $provider
          */
-        $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $pid));
+        $provider = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $pid));
         if ($provider === null) {
             show_error('Provider not found', 404);
         }
@@ -67,7 +65,7 @@ class Premoval extends MY_Controller
             'link' => anchor(base_url('providers/detail/show/' . $pid . ''), '<i class="fi-arrow-right"></i>'),
             'breadcrumbs' => array(
                 $plist,
-                array('url' => base_url('providers/detail/show/' . $provider->getId() . ''), 'name' => '' . html_escape($providernameinlang) . ''),
+                array('url' => base_url('providers/detail/show/' . $pid . ''), 'name' => '' . html_escape($providernameinlang) . ''),
                 array('url' => '#', 'name' => lang('rr_rmprovider'), 'type' => 'current'),
             ),
         );
@@ -92,13 +90,8 @@ class Premoval extends MY_Controller
             return $this->load->view('page', $data);
         }
 
-
-        $this->load->library(array('ProviderRemover','tracker'));
-
         $federations = $provider->getFederations();
         $this->providerremover->removeProvider($provider);
-
-        $this->load->library('j_ncache');
         $this->j_ncache->cleanProvidersList('idp');
         $this->j_ncache->cleanProvidersList('sp');
         $this->tracker->remove_ProviderTrack($data['entityid']);
