@@ -14,6 +14,7 @@ class Premoval extends MY_Controller
 {
 
 
+
     public function __construct()
     {
         parent::__construct();
@@ -21,6 +22,7 @@ class Premoval extends MY_Controller
             redirect('auth/login', 'location');
         }
         $this->load->library(array('zacl', 'form_validation'));
+        $this->title = lang('rr_rmprovider');
     }
 
     private function _submitValidate()
@@ -43,7 +45,7 @@ class Premoval extends MY_Controller
         if ($provider === null) {
             show_error('Provider not found', 404);
         }
-        $this->title = lang('rr_rmprovider');
+
         $entityType = $provider->getType();
         $entityID = $provider->getEntityId();
         $providernameinlang = html_escape($provider->getNameToWebInLang(MY_Controller::getLang()));
@@ -57,9 +59,9 @@ class Premoval extends MY_Controller
             'showform' => false,
             'error_message' => null,
             'content_view' => 'manage/removeprovider_view',
-            'entityid' => $provider->getEntityId(),
-            'type' => $provider->getType(),
-            'providerid' => $provider->getId(),
+            'entityid' => $entityID,
+            'type' => $entityType,
+            'providerid' => $pid,
             'providernameinlang' => $providernameinlang,
             'providerurl' => base_url('providers/detail/show/' . $pid . ''),
             'link' => anchor(base_url('providers/detail/show/' . $pid . ''), '<i class="fi-arrow-right"></i>'),
@@ -99,20 +101,16 @@ class Premoval extends MY_Controller
         $this->load->library('j_ncache');
         $this->j_ncache->cleanProvidersList('idp');
         $this->j_ncache->cleanProvidersList('sp');
-
         $this->tracker->remove_ProviderTrack($data['entityid']);
-
+        $msgTwoBody = 'Dear user' . PHP_EOL . 'Provider ' . $provider->getEntityId() . ' has been removed from federations:' . PHP_EOL;
         foreach ($federations as $f) {
-            $body = 'Dear user' . PHP_EOL . 'Provider ' . $provider->getEntityId() . ' has been removed from federation ' . $f->getName() . PHP_EOL;
-            $this->email_sender->addToMailQueue(array('fedmemberschanged'), $f, 'Federation members changed', $body, array(), false);
+            $msgFirstBody = 'Dear user' . PHP_EOL . 'Provider ' . $provider->getEntityId() . ' has been removed from federation ' . $f->getName() . PHP_EOL;
+            $this->email_sender->addToMailQueue(array('fedmemberschanged'), $f, 'Federation members changed', $msgFirstBody, array(), false);
+            $msgTwoBody .= $f->getName() . PHP_EOL;
         }
-        $body = 'Dear user' . PHP_EOL . 'Provider ' . $provider->getEntityId() . ' has been removed from federations:' . PHP_EOL;
-        foreach ($federations as $f) {
-            $body .= $f->getName() . PHP_EOL;
-        }
-        $this->email_sender->addToMailQueue(array('gfedmemberschanged'), null, 'Federations members changed', $body, array(), false);
-        $body = 'Dear Administrator' . PHP_EOL . $this->j_auth->current_user() . '(IP:' . $this->input->ip_address() . ') removed provider:' . $data['entityid'] . 'from the system' . PHP_EOL;
-        $this->email_sender->addToMailQueue(array(), null, 'Provider has been removed from system', $body, array(), false);
+        $this->email_sender->addToMailQueue(array('gfedmemberschanged'), null, 'Federations members changed', $msgTwoBody, array(), false);
+        $msgThreeBody = 'Dear Administrator' . PHP_EOL . $this->j_auth->current_user() . '(IP:' . $this->input->ip_address() . ') removed provider:' . $data['entityid'] . 'from the system' . PHP_EOL;
+        $this->email_sender->addToMailQueue(array(), null, 'Provider has been removed from system', $msgThreeBody, array(), false);
         $this->em->flush();
         $data['success_message'] = lang('rr_provider') . ' ' . $data['entityid'] . ' ' . lang('rr_hasbeenremoved');
         $data['showform'] = false;
