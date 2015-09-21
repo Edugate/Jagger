@@ -6,6 +6,7 @@
         "doctrine/orm": "2.4.8",
         "zendframework/zend-permissions-acl": "2.0.*",
         "mtdowling/cron-expression": "1.0.4",
-        "phpseclib/phpseclib": "^2.0"
+        "phpseclib/phpseclib": "~0.3",
+        "namshi/jose": "^6.0"
     }
 }
