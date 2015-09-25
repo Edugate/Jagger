@@ -1,7 +1,8 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
+
 /**
  * @package   Jagger
  * @author    Middleware Team HEAnet <support@edugate.ie>
@@ -10,8 +11,6 @@ if (!defined('BASEPATH'))
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  * @link      https://github.com/Edugate/Jagger
  */
-
-
 class ProviderRemover
 {
 
@@ -48,11 +47,11 @@ class ProviderRemover
          * @var models\AttributeRequirement[] $attrsrequests
          */
         $attrsrequests = $attreqtmp->getRequirementsBySP($provider);
-        if (!empty($attrsrequests)) {
-            foreach ($attrsrequests as $r) {
-                $this->em->remove($r);
-            }
+
+        foreach ($attrsrequests as $r) {
+            $this->em->remove($r);
         }
+
         $attrpoltmp = new models\AttributeReleasePolicies;
         /**
          * @var models\AttributeReleasePolicy[] $policies

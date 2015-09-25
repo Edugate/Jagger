@@ -1,32 +1,24 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
-/**
- * ResourceRegistry3
- * 
- * @package     RR3
- * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
- */
+}
 
 /**
- * Attributes Class
- * 
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
-class Attributes extends MY_Controller {
+class Attributes extends MY_Controller
+{
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
-        if (!$loggedin)
-        {
+        if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
@@ -39,7 +31,7 @@ class Attributes extends MY_Controller {
         MY_Controller::$menuactive = 'admins';
     }
 
-    private function _add_submit_validate()
+    private function addSubmitValidate()
     {
         $this->form_validation->set_rules('attrname', lang('attrname'), 'trim|required|min_length[1]|max_length[128]|xss_clean|no_white_spaces|attribute_unique[name]');
         $this->form_validation->set_rules('attroidname', lang('attrsaml2'), 'trim|required|min_length[1]|max_length[128]|xss_clean|no_white_spaces|attribute_unique[oid]');
@@ -55,18 +47,16 @@ class Attributes extends MY_Controller {
         $isAdmin = $this->j_auth->isAdministrator();
         $data['titlepage'] = lang('rr_newattr_title');
         $data['breadcrumbs'] = array(
-            array('url'=>base_url('attributes/attributes/show'),'name'=>lang('attrsdeflist')),
-            array('url'=>'#','name'=>lang('rr_newattr_title'),'type'=>'current'),
+            array('url' => base_url('attributes/attributes/show'), 'name' => lang('attrsdeflist')),
+            array('url' => '#', 'name' => lang('rr_newattr_title'), 'type' => 'current'),
 
         );
-        if (!$isAdmin)
-        {
+        if (!$isAdmin) {
             show_error('Access Denied', 401);
         }
 
         $this->load->helper('form');
-        if ($this->_add_submit_validate())
-        {
+        if ($this->addSubmitValidate()) {
             $attrname = $this->input->post('attrname');
             $attroid = $this->input->post('attroidname');
             $attrurn = $this->input->post('attrurnname');
@@ -78,23 +68,18 @@ class Attributes extends MY_Controller {
             $attr->setOid($attroid);
             $attr->setUrn($attrurn);
             $attr->setDescription($description);
-            $attr->setShowInmetadata(TRUE);
+            $attr->setShowInmetadata(true);
             $this->em->persist($attr);
             $data['content_view'] = 'attradd_success_view';
             $data['success'] = lang('attraddsuccess');
-            try
-            {
+            try {
                 $this->em->flush();
                 $this->load->view('page', $data);
-            }
-            catch (Exception $e)
-            {
+            } catch (Exception $e) {
                 log_message('error', __METHOD__ . ' ' . $e);
                 show_error('Couldnt store new attr in db', 500);
             }
-        }
-        else
-        {
+        } else {
             $data['content_view'] = 'attribute_add_view';
             $this->load->view('page', $data);
         }
@@ -106,34 +91,29 @@ class Attributes extends MY_Controller {
         /**
          * @var $attributes models\Attribute[]
          */
-        $attributes_tmp = new models\Attributes();
-        $attributes = $attributes_tmp->getAttributes();
+        $tmpAttributes = new models\Attributes();
+        $attributes = $tmpAttributes->getAttributes();
         $dataRows = array();
         $excluded = '<span class="lbl lbl-alert" title="' . lang('rr_attronlyinarpdet') . '">' . lang('rr_attronlyinarp') . '</span>';
 
         $data['titlepage'] = lang('attrsdeflist');
 
-        foreach ($attributes as $a)
-        {
+        foreach ($attributes as $a) {
             $notice = '';
             $i = $a->showInMetadata();
-            if ($i === FALSE)
-            {
+            if ($i === false) {
                 $notice = '<br />' . $excluded;
             }
             $dataRows[] = array(showBubbleHelp($a->getDescription()) . ' ' . $a->getName() . $notice, $a->getFullname(), $a->getOid(), $a->getUrn());
         }
         $isAdmin = $this->j_auth->isAdministrator();
-        if ($isAdmin)
-        {
+        if ($isAdmin) {
             $data['isadmin'] = true;
-        }
-        else
-        {
+        } else {
             $data['isadmin'] = false;
         }
-	    $data['breadcrumbs'] = array(
-            array('url'=>'#','name'=>lang('attrsdeflist'),'type'=>'current'),
+        $data['breadcrumbs'] = array(
+            array('url' => '#', 'name' => lang('attrsdeflist'), 'type' => 'current'),
 
         );
         $data['attributes'] = $dataRows;

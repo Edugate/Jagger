@@ -21,7 +21,7 @@ if (!defined('BASEPATH')) {
 class Importer extends MY_Controller
 {
     protected $otherErrors = array();
-    private $access;
+    protected $access = false;
     protected $xmlbody;
     protected $curlMaxsize, $curlTimeout;
     protected $xmlDOM;
@@ -40,7 +40,6 @@ class Importer extends MY_Controller
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
         if (!$loggedin) {
-            $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         } else {
             $this->load->helper(array('cert', 'form'));
@@ -54,8 +53,7 @@ class Importer extends MY_Controller
      */
     public function index()
     {
-        $access = $this->access;
-        if (!$access) {
+        if ($this->access !== true) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('error403');
         } else {
@@ -75,8 +73,7 @@ class Importer extends MY_Controller
     {
         $this->globalerrors = array();
         $this->otherErrors = array();
-        $access = $this->access;
-        if (!$access) {
+        if ($this->access !== true) {
             show_error('no access', 403);
         }
 
@@ -86,14 +83,24 @@ class Importer extends MY_Controller
             return $this->index();
         }
 
+        $arg = array(
+            'metadataurl' => $this->input->post('metadataurl'),
+            'certurl' => $this->input->post('certurl'),
+            'cert' => getPEM($this->input->post('cert')),
+            'validate' => $this->input->post('validate'),
+            'sslcheck' => $this->input->post('sslcheck'),
+            'type' => $this->input->post('type'),
+            'extorint' => $this->input->post('extorint'),
+            'active' => $this->input->post('active'),
+            'static' => $this->input->post('static'),
+            'overwrite' => $this->input->post('overwrite'),
+            'federation' => $this->input->post('federation'),
+            'fullinformation' => $this->input->post('fullinformation')
+        );
 
-        $arg['metadataurl'] = $this->input->post('metadataurl');
-        $arg['certurl'] = trim($this->input->post('certurl'));
-        $arg['cert'] = getPEM($this->input->post('cert'));
-        $arg['validate'] = $this->input->post('validate');
-        $arg['sslcheck'] = trim($this->input->post('sslcheck'));
+
         $sslvalidate = true;
-        if (!empty($arg['sslcheck']) && $arg['sslcheck'] === 'ignore') {
+        if ($arg['sslcheck'] === 'ignore') {
             $sslvalidate = false;
         }
 
@@ -118,13 +125,7 @@ class Importer extends MY_Controller
         if ($this->_metadatasigner_validate($arg['metadataurl'], $sslvalidate, $mvalidate, $mcerturl, $mcert) !== TRUE) {
             return $this->index();
         }
-        $arg['type'] = $this->input->post('type');
-        $arg['extorint'] = $this->input->post('extorint');
-        $arg['active'] = $this->input->post('active');
-        $arg['static'] = $this->input->post('static');
-        $arg['overwrite'] = $this->input->post('overwrite');
-        $arg['federation'] = $this->input->post('federation');
-        $arg['fullinformation'] = trim($this->input->post('fullinformation'));
+
 
         /**
          * @todo  check if you have permission to add entities to this federation
@@ -186,13 +187,12 @@ class Importer extends MY_Controller
         $type_of_entities = strtoupper($arg['type']);
         $result = $this->metadata2import->import($this->xmlDOM, $type_of_entities, $full, $defaults, $other);
         if ($result) {
-            $this->load->library('j_ncache');
             $this->j_ncache->cleanProvidersList('idp');
             $this->j_ncache->cleanProvidersList('sp');
             $this->j_ncache->cleanFederationMembers($fed->getId());
             $data['title'] = lang('titleimportmeta');
             $data['success_message'] = lang('okmetaimported');
-            if (array_key_exists('metadataimportmessage',$this->globalnotices) && is_array($this->globalnotices['metadataimportmessage'])) {
+            if (array_key_exists('metadataimportmessage', $this->globalnotices) && is_array($this->globalnotices['metadataimportmessage'])) {
                 $data['success_details'] = $this->globalnotices['metadataimportmessage'];
             }
             $data['content_view'] = 'manage/import_metadata_success_view';
