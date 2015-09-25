@@ -61,8 +61,7 @@ class MY_Controller extends CI_Controller
     protected $authenticated;
     protected $inqueue;
 
-    public function __construct()
-    {
+    public function __construct() {
 
         parent::__construct();
         $this->output->set_header('Pragma: no-cache');
@@ -132,41 +131,40 @@ class MY_Controller extends CI_Controller
             $this->lang->load('rr_lang', self::$currLang);
         }
         spl_autoload_register('self::extPlugsAutoLoader');
-  
+
 
     }
 
     /**
      * @return string
      */
-    public static function getLang()
-    {
+    public static function getLang() {
         return self::$currLang;
     }
 
     /***
      * @return array
      */
-    public static function guiLangs()
-    {
+    public static function guiLangs() {
         return self::$langs;
     }
 
 
-   public static function extPlugsAutoLoader($className)
-   {
-      $path = APPPATH.'extplugins/';
-      $className = ltrim($className, '\\');
-      $fileName  = '';
-      $namespace = '';
-      if ($lastNsPos = strrpos($className, '\\')) {
-        $namespace = substr($className, 0, $lastNsPos);
-        $className = substr($className, $lastNsPos + 1);
-        $fileName  = APPPATH.'extplugins/'.str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
-      }
-      $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
-      require $fileName;
-   }
+    public static function extPlugsAutoLoader($className) {
+        $path = APPPATH . 'extplugins/';
+        $className = ltrim($className, '\\');
+        $fileName = '';
+        $namespace = '';
+        if ($lastNsPos = strrpos($className, '\\')) {
+            $namespace = substr($className, 0, $lastNsPos);
+            $className = substr($className, $lastNsPos + 1);
+            $fileName = APPPATH . 'extplugins/' . str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+        }
+        $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
+        if (file_exists($fileName)) {
+            require $fileName;
+        }
+    }
 
 }
 
