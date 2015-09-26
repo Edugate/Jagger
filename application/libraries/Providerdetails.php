@@ -1,28 +1,23 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('Ni direct script access allowed');
+}
 
 /**
- * JAGGER
- *
- * @package     JAGGER
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2015, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
-
-/**
- * Providerdetails Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   JAGGER
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 class Providerdetails
 {
+    /**
+     * @var $em Doctrine\ORM\EntityManager
+     */
+    protected $em;
 
-    protected $CI, $em;
+    protected $CI;
 
     /**
      * @var models\Provider $ent
@@ -40,21 +35,18 @@ class Providerdetails
         }
         $this->ent = $args['ent'];
         $type = $this->ent->getType();
-        if($type === 'SP'){
+        if ($type === 'SP') {
             $this->idppart = false;
             MY_Controller::$menuactive = 'sps';
             $this->presubtitle = lang('serviceprovider');
-        }
-        elseif($type === 'IDP'){
+        } elseif ($type === 'IDP') {
             $this->sppart = false;
             MY_Controller::$menuactive = 'idps';
             $this->presubtitle = lang('identityprovider');
 
-        }
-        else{
+        } else {
             $this->presubtitle = lang('rr_asboth');
         }
-
 
 
     }
@@ -118,10 +110,9 @@ class Providerdetails
                         $result[] = $v2;
                     }
                 }
-            }
-            else{
+            } else {
 
-                $result[] = array('2cols'=>lang('nonecrtforrole'));
+                $result[] = array('2cols' => lang('nonecrtforrole'));
             }
             // AA
             $result[]['msection'] = 'AttributeAuthorityDescriptor';
@@ -132,10 +123,9 @@ class Providerdetails
                         $result[] = $v2;
                     }
                 }
-            }
-            else{
+            } else {
 
-                $result[] = array('2cols'=>lang('nonecrtforrole'));
+                $result[] = array('2cols' => lang('nonecrtforrole'));
             }
         }
         if ($this->sppart) {
@@ -147,9 +137,8 @@ class Providerdetails
                         $result[] = $v2;
                     }
                 }
-            }
-            else{
-                $result[] = array('2cols'=>lang('nonecrtforrole'));
+            } else {
+                $result[] = array('2cols' => lang('nonecrtforrole'));
             }
         }
         return $result;
@@ -448,6 +437,7 @@ class Providerdetails
         $edit_attributes = '';
 
         $data['presubtitle'] = $this->presubtitle;
+
         $id = $ent->getId();
         $hasWriteAccess = $this->CI->zacl->check_acl($id, 'write', 'entity', '');
         $hasManageAccess = $this->CI->zacl->check_acl($id, 'manage', 'entity', '');
@@ -524,8 +514,6 @@ class Providerdetails
         $entityIdRecord = array('name' => lang('rr_entityid'), 'value' => $ent->getEntityId());
         $d[++$i] = &$entityIdRecord;
         $d[++$i] = array('name' => lang('rr_entityid'), 'value' => $ent->getEntityId());
-
-
 
 
         $d[++$i]['name'] = lang('e_orgname');
@@ -611,6 +599,9 @@ class Providerdetails
             $d[$i]['value'] = html_escape($defaultprivacyurl);
         }
 
+        /**
+         * @var models\Coc[] $entityCategories
+         */
         $entityCategories = array();
         $a = array();
 
@@ -729,6 +720,7 @@ class Providerdetails
         $d[++$i]['name'] = lang('rr_memberof');
         $federationsString = "";
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
+        $no_feds = 0;
         $membership = $ent->getMembership();
         $membershipNotLeft = array();
         $showMetalinks = TRUE;
@@ -805,6 +797,9 @@ class Providerdetails
         $i = 0;
 
         if ($isStatic) {
+            /**
+             * @var models\StaticMetadata $tmp_st
+             */
             $tmp_st = $ent->getStaticMetadata();
             if (!empty($tmp_st)) {
                 $static_metadata = $tmp_st->getMetadata();
@@ -829,6 +824,9 @@ class Providerdetails
         $d = array();
         $i = 0;
 
+        /**
+         * @var models\ServiceLocation[][] $services
+         */
         $services = array();
         $srvs = $ent->getServiceLocations();
         if ($srvs->count() > 0) {
@@ -840,6 +838,11 @@ class Providerdetails
 
         /**
          * @todo decide if it is right place to display supported DigestMethods and SigningMethods algorithms
+         */
+
+        /**
+         * @var models\ExtendMetadata[] $algs
+         * @var models\ExtendMetadata[][] $algorithms
          */
         $algs = $ent->getExtendMetadata();
         $algorithms = array();
@@ -1031,9 +1034,6 @@ class Providerdetails
 
         // Begin Certificates
 
-
-        //    $subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
-
         $subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $this->genCertTab());
 
         /**
@@ -1151,6 +1151,9 @@ class Providerdetails
 
 
         if ($idppart) {
+            /**
+             * @var models\ExtendMetadata[][] $uiiarray
+             */
             $uiiarray = array();
             $d[++$i]['msection'] = lang('identityprovider');
             foreach ($extend as $e) {
@@ -1223,6 +1226,9 @@ class Providerdetails
             }
         }
         if ($sppart) {
+            /**
+             * @var models\ExtendMetadata[][] $uiiarray
+             */
             $uiiarray = array();
             $d[++$i]['msection'] = lang('serviceprovider');
             foreach ($extend as $e) {

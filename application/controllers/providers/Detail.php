@@ -208,10 +208,7 @@ class Detail extends MY_Controller
             array('url' => '#', 'name' => '' . $data['name'] . '', 'type' => 'current'),
 
         );
-        //echo '<pre>';
         $this->load->view('page', $data);
-        //print_r($data);
-        //echo '</pre>';
     }
 
     public function showmembers($providerid)
