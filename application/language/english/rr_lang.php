@@ -866,6 +866,7 @@ $lang['rr_keysize']                 = 'Keysize';
 $lang['rr_computedkeysize']         = 'Computed keysize';
 $lang['rr_certbody']                = 'Certificate body';
 $lang['rr_daystoexpire']            = 'days to expire';
+$lang['nonecrtforrole']             = 'No certificate found for the role';
 $lang['rr_usecommaasdelimeter']     = 'use comma as delimiter';
 $lang['rr_customattrscopednote']    = 'If attr type is Scoped and your IdP is shibboleth then use values without scope as Shib-idp adds scope after filtering';
 $lang['rr_userslist']               = 'List of users registered in the system';

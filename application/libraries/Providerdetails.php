@@ -24,14 +24,42 @@ class Providerdetails
 
     protected $CI, $em;
 
-    function __construct()
-    {
+    /**
+     * @var models\Provider $ent
+     */
+    protected $ent;
+    protected $idppart = true;
+    protected $sppart = true;
+    protected $presubtitle;
+
+    function __construct(array $args) {
         $this->CI = &get_instance();
         $this->em = $this->CI->doctrine->em;
+        if (!array_key_exists('ent', $args) || !($args['ent'] instanceof models\Provider)) {
+            throw new Exception('models\Provider instance must be passed to library');
+        }
+        $this->ent = $args['ent'];
+        $type = $this->ent->getType();
+        if($type === 'SP'){
+            $this->idppart = false;
+            MY_Controller::$menuactive = 'sps';
+            $this->presubtitle = lang('serviceprovider');
+        }
+        elseif($type === 'IDP'){
+            $this->sppart = false;
+            MY_Controller::$menuactive = 'idps';
+            $this->presubtitle = lang('identityprovider');
+
+        }
+        else{
+            $this->presubtitle = lang('rr_asboth');
+        }
+
+
+
     }
 
-    private function genCertView(models\Certificate $cert)
-    {
+    private function genCertView(models\Certificate $cert) {
         $certusage = $cert->getCertuse();
         if ($certusage === 'signing') {
             $langcertusage = lang('certsign');
@@ -73,8 +101,62 @@ class Providerdetails
         return $d;
     }
 
-    private function makeStatusLabels(\models\Provider $ent)
-    {
+    private function genCertTab() {
+        $result = array();
+        $tcerts = $this->ent->getCertificates();
+        $certs = array();
+        foreach ($tcerts as $c) {
+            $certs[$c->getType()][] = $c;
+        }
+
+        if ($this->idppart) {
+            $result[]['msection'] = 'IDPSSODescriptor';
+            if (array_key_exists('idpsso', $certs)) {
+                foreach ($certs['idpsso'] as $v1) {
+                    $c = $this->genCertView($v1);
+                    foreach ($c as $v2) {
+                        $result[] = $v2;
+                    }
+                }
+            }
+            else{
+
+                $result[] = array('2cols'=>lang('nonecrtforrole'));
+            }
+            // AA
+            $result[]['msection'] = 'AttributeAuthorityDescriptor';
+            if (array_key_exists('aa', $certs)) {
+                foreach ($certs['aa'] as $v1) {
+                    $c = $this->genCertView($v1);
+                    foreach ($c as $v2) {
+                        $result[] = $v2;
+                    }
+                }
+            }
+            else{
+
+                $result[] = array('2cols'=>lang('nonecrtforrole'));
+            }
+        }
+        if ($this->sppart) {
+            $result[]['msection'] = 'SPSSODescriptor';
+            if (array_key_exists('spsso', $certs)) {
+                foreach ($certs['spsso'] as $v1) {
+                    $c = $this->genCertView($v1);
+                    foreach ($c as $v2) {
+                        $result[] = $v2;
+                    }
+                }
+            }
+            else{
+                $result[] = array('2cols'=>lang('nonecrtforrole'));
+            }
+        }
+        return $result;
+    }
+
+    private function makeStatusLabels() {
+        $ent = $this->ent;
         $entStatus = '';
         $isValidTime = $ent->isValidFromTo();
         $isActive = $ent->getActive();
@@ -108,8 +190,8 @@ class Providerdetails
         return $entStatus;
     }
 
-    public function generateAlertsDetails(\models\Provider $provider, $msgprefix = null)
-    {
+    public function generateAlertsDetails($msgprefix = null) {
+        $provider = $this->ent;
         $result = array();
 
 
@@ -201,7 +283,7 @@ class Providerdetails
                     $resolved = dns_get_record($srvHost, DNS_A + DNS_AAAA);
                     if (!empty($resolved)) {
                         foreach ($resolved as $r) {
-                            if (array_key_exists('ip', $r)) {
+                            if (is_array($r) && array_key_exists('ip', $r)) {
 
                                 if (!(filter_var($r['ip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE) && filter_var($r['ip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE))) {
                                     $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' - Resolving host  result IP: ' . $r['ip'] . ' which is in private or reserved pool', 'level' => 'warning');
@@ -210,7 +292,7 @@ class Providerdetails
                                     $hostsByIP['ipv4'][] = $r['ip'];
                                 }
                             }
-                            if (array_key_exists('ipv6', $r)) {
+                            if (is_array($r) && array_key_exists('ipv6', $r)) {
                                 if (!filter_var($r['ipv6'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE)) {
                                     $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' - Resolving host  results : ' . $r['ipv6'] . ' which is in private or reserved pool', 'level' => 'warning');
                                     $isHostOK = false;
@@ -269,13 +351,12 @@ class Providerdetails
         return $result;
     }
 
-    private function genOrgTab(\models\Provider $ent)
-    {
+    private function genOrgTab() {
 
         $d = array();
         $iCounter = 0;
         $d[++$iCounter]['name'] = lang('e_orgname');
-        $lname = $ent->getMergedLocalName();
+        $lname = $this->ent->getMergedLocalName();
         $lvalues = '';
         if (count($lname) > 0) {
             foreach ($lname as $k => $v) {
@@ -286,7 +367,7 @@ class Providerdetails
             $d[$iCounter]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
         }
         $d[++$iCounter]['name'] = lang('e_orgdisplayname');
-        $ldisplayname = $ent->getMergedLocalDisplayName();
+        $ldisplayname = $this->ent->getMergedLocalDisplayName();
         $lvalues = '';
         if (count($ldisplayname) > 0) {
             foreach ($ldisplayname as $k => $v) {
@@ -297,7 +378,7 @@ class Providerdetails
             $d[$iCounter]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
         }
         $d[++$iCounter]['name'] = lang('e_orgurl');
-        $localizedHelpdesk = $ent->getHelpdeskUrlLocalized();
+        $localizedHelpdesk = $this->ent->getHelpdeskUrlLocalized();
         if (is_array($localizedHelpdesk) && count($localizedHelpdesk) > 0) {
             $lvalues = '';
             foreach ($localizedHelpdesk as $k => $v) {
@@ -313,10 +394,9 @@ class Providerdetails
 
     }
 
-    private function genContactsTab(\models\Provider $ent)
-    {
+    private function genContactsTab() {
         $result = array();
-        $contacts = $ent->getContacts();
+        $contacts = $this->ent->getContacts();
         $typesInLang = array(
             'technical' => lang('rr_cnt_type_tech'),
             'administrative' => lang('rr_cnt_type_admin'),
@@ -342,15 +422,15 @@ class Providerdetails
     }
 
 
-    public function generateForControllerProvidersDetail(\models\Provider $ent)
-    {
+    public function generateForControllerProvidersDetail() {
 
+        $ent = $this->ent;
         $feathide = $this->CI->config->item('feathide');
-        if (empty($feathide)) {
+        if (!is_array($feathide)) {
             $feathide = array();
         }
         $featdisable = $this->CI->config->item('featdisable');
-        if (empty($featdisable)) {
+        if (!is_array($featdisable)) {
             $featdisable = array();
         }
         $alerts = array();
@@ -361,26 +441,13 @@ class Providerdetails
         $params = array(
             'enable_classes' => true,
         );
-        $sppart = false;
-        $idppart = false;
+        $sppart = $this->sppart;
+        $idppart = $this->idppart;
         $type = strtolower($ent->getType());
         $data['type'] = $type;
         $edit_attributes = '';
 
-        if ($type === 'idp') {
-            MY_Controller::$menuactive = 'idps';
-            $idppart = true;
-            $presubtitle = lang('identityprovider');
-        } elseif ($type === 'sp') {
-            MY_Controller::$menuactive = 'sps';
-            $sppart = true;
-            $presubtitle = lang('serviceprovider');
-        } else {
-            $sppart = true;
-            $idppart = true;
-            $presubtitle = lang('rr_asboth');
-        }
-        $data['presubtitle'] = $presubtitle;
+        $data['presubtitle'] = $this->presubtitle;
         $id = $ent->getId();
         $hasWriteAccess = $this->CI->zacl->check_acl($id, 'write', 'entity', '');
         $hasManageAccess = $this->CI->zacl->check_acl($id, 'manage', 'entity', '');
@@ -450,12 +517,16 @@ class Providerdetails
         $d = array();
         $i = 0;
         $d[++$i]['name'] = lang('rr_status') . ' ' . showBubbleHelp('<ul class="no-bullet"><li><b>' . lang('lbl_enabled') . '</b>:' . lang('provinmeta') . '</li><li><b>' . lang('lbl_disabled') . '</b>:' . lang('provexclmeta') . ' </li><li><b>' . lang('rr_managedlocally') . '</b>: ' . lang('provmanlocal') . '</li><li><b>' . lang('rr_external') . '</b>: ' . lang('provexternal') . '</li></ul>') . '';
-        $entStatus = $this->makeStatusLabels($ent);
+        $entStatus = $this->makeStatusLabels();
         $d[$i]['value'] = '<b>' . $entStatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
         $d[$i]['value'] = '<b>' . date('Y-m-d H:i:s', $ent->getLastModified()->format('U') + j_auth::$timeOffset) . '</b>';
         $entityIdRecord = array('name' => lang('rr_entityid'), 'value' => $ent->getEntityId());
         $d[++$i] = &$entityIdRecord;
+        $d[++$i] = array('name' => lang('rr_entityid'), 'value' => $ent->getEntityId());
+
+
+
 
         $d[++$i]['name'] = lang('e_orgname');
         $lname = $ent->getMergedLocalName();
@@ -583,7 +654,7 @@ class Providerdetails
         $result[] = array('section' => 'general', 'title' => '' . lang('tabGeneral') . '', 'data' => $d);
 
 
-        $subresult[2] = array('section' => 'orgtab', 'title' => '' . lang('taborganization') . '', 'data' => $this->genOrgTab($ent));
+        $subresult[2] = array('section' => 'orgtab', 'title' => '' . lang('taborganization') . '', 'data' => $this->genOrgTab());
 
 
         /**
@@ -960,45 +1031,10 @@ class Providerdetails
 
         // Begin Certificates
 
-        $d = array();
-        $tcerts = $ent->getCertificates();
-        $certs = array();
-        foreach ($tcerts as $c) {
-            $certs[$c->getType()][] = $c;
-        }
-        if ($idppart) {
-            $d[]['msection'] = 'IDPSSODescriptor';
-            if (array_key_exists('idpsso', $certs)) {
-                foreach ($certs['idpsso'] as $v1) {
-                    $c = $this->genCertView($v1);
-                    foreach ($c as $v2) {
-                        $d[] = $v2;
-                    }
-                }
-            }
-            // AA
-            if (array_key_exists('aa', $certs)) {
-                $d[]['msection'] = 'AttributeAuthorityDescriptor';
-                foreach ($certs['aa'] as $v1) {
-                    $c = $this->genCertView($v1);
-                    foreach ($c as $v2) {
-                        $d[] = $v2;
-                    }
-                }
-            }
-        }
-        if ($sppart) {
-            $d[]['msection'] = 'SPSSODescriptor';
-            if (array_key_exists('spsso', $certs)) {
-                foreach ($certs['spsso'] as $v1) {
-                    $c = $this->genCertView($v1);
-                    foreach ($c as $v2) {
-                        $d[] = $v2;
-                    }
-                }
-            }
-        }
-        $subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
+
+        //    $subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
+
+        $subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $this->genCertTab());
 
         /**
          * End Certificates
@@ -1027,7 +1063,7 @@ class Providerdetails
         $subresult[12] = array('section' => 'entcats', 'title' => '' . lang('tabEntcats') . '', 'data' => $d);
 
 
-        $subresult[3] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $this->genContactsTab($ent));
+        $subresult[3] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $this->genContactsTab());
 
         $d = array();
         $i = 0;
@@ -1075,6 +1111,9 @@ class Providerdetails
 
             $d[++$i]['header'] = '<a name="attrs"></a>' . lang('rr_supportedattributes') . ' ' . $edit_attributes;
             $tmpAttrs = new models\AttributeReleasePolicies;
+            /**
+             * @var models\AttributeReleasePolicy[] $supportedAttributes
+             */
             $supportedAttributes = $tmpAttrs->getSupportedAttributes($ent);
             foreach ($supportedAttributes as $s) {
                 $d[++$i]['name'] = $s->getAttribute()->getName();
@@ -1236,7 +1275,7 @@ class Providerdetails
                 $d[$i]['value'] = lang('rr_notset');
             }
 
-                $d[++$i]['name'] = lang('rr_logoofservice');
+            $d[++$i]['name'] = lang('rr_logoofservice');
             if (isset($uiiarray['Logo'])) {
                 $str = '';
                 foreach ($uiiarray['Logo'] as $v) {
@@ -1256,7 +1295,6 @@ class Providerdetails
             }
 
 
-          
         }
 
         $subresult[4] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);

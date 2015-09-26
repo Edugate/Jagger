@@ -77,20 +77,20 @@ class Detail extends MY_Controller
         }
 
 
-        $this->load->library('providerdetails');
+        $this->load->library('providerdetails',array('ent'=>$provider));
         $keyPrefix = getCachePrefix();
         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
         $cacheId = 'mstatus_' . $providerID;
 
 
         if ($refresh === '1') {
-            $result = $this->providerdetails->generateAlertsDetails($provider);
+            $result = $this->providerdetails->generateAlertsDetails();
             $this->cache->save($cacheId, $result, 3600);
         } else {
             $resultCache = $this->cache->get($cacheId);
             if (!is_array($resultCache)) {
                 log_message('debug', __METHOD__ . ' cache empty refreshing');
-                $result = $this->providerdetails->generateAlertsDetails($provider);
+                $result = $this->providerdetails->generateAlertsDetails();
                 $this->cache->save($cacheId, $result, 3600);
             } else {
                 $result = $resultCache;
@@ -162,7 +162,7 @@ class Detail extends MY_Controller
         if (!$this->j_auth->logged_in()) {
             redirect('auth/login', 'location');
         }
-        $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml', 'providerdetails'));
+        $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
 
         $tmpProviders = new models\Providers();
         /**
@@ -172,6 +172,13 @@ class Detail extends MY_Controller
         if ($ent === null) {
             show_error(lang('error404'), 404);
         }
+        if($ent instanceof models\Provider) {
+            $this->load->library('providerdetails', array('ent'=>$ent));
+        }
+        else
+        {
+            show_error('ddddddddd',500);
+        }
         $hasReadAccess = $this->zacl->check_acl($providerID, 'read', 'entity', '');
         if (!$hasReadAccess) {
             $data['content_view'] = 'nopermission';
@@ -179,7 +186,7 @@ class Detail extends MY_Controller
             return $this->load->view('page', $data);
         }
 
-        $data = $this->providerdetails->generateForControllerProvidersDetail($ent);
+        $data = $this->providerdetails->generateForControllerProvidersDetail();
         if (empty($data['bookmarked'])) {
             $data['sideicons'][] = '<a href="' . base_url() . 'ajax/bookmarkentity/' . $data['entid'] . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-bookmark" style="color: white"></i></a>';
 
@@ -201,7 +208,10 @@ class Detail extends MY_Controller
             array('url' => '#', 'name' => '' . $data['name'] . '', 'type' => 'current'),
 
         );
+        //echo '<pre>';
         $this->load->view('page', $data);
+        //print_r($data);
+        //echo '</pre>';
     }
 
     public function showmembers($providerid)
