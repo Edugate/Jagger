@@ -97,6 +97,21 @@ class Oidcauth extends MY_Controller
             return $this->load->view('page',array('content_view'=>'error_message','error_message'=>html_escape($error_message)));
         }
         $username = (string)$claims['sub'] . '@' . $claims['iss'];
+        $fname = null;
+        $sname = null;
+        $email = null;
+        if(isset($provider['mapping_claims']['fname']) && isset($claims[$provider['mapping_claims']['fname']])){
+            $fname = $claims[$provider['mapping_claims']['fname']];
+        }
+        if(isset($provider['mapping_claims']['sname']) && isset($claims[$provider['mapping_claims']['sname']])){
+            $sname = $claims[$provider['mapping_claims']['sname']];
+        }
+
+        if(isset($provider['mapping_claims']['email']) && isset($claims[$provider['mapping_claims']['email']])){
+            $email = $claims[$provider['mapping_claims']['email']];
+        }
+
+
         /**
          * @var models\User $user
          */
@@ -146,6 +161,9 @@ class Oidcauth extends MY_Controller
             if (!empty($islogged)) {
 
                 $ip = $this->input->ip_address();
+                if($email!==null){
+                    $user->setEmail($email);
+                }
                 $user->setIP($ip);
                 $user->updated();
                 $this->em->persist($user);
@@ -157,19 +175,7 @@ class Oidcauth extends MY_Controller
             }
         } else {
 
-            $fname = null;
-            $sname = null;
-            $email = null;
-            if(isset($provider['mapping_claims']['fname']) && isset($claims[$provider['mapping_claims']['fname']])){
-                $fname = $claims[$provider['mapping_claims']['fname']];
-            }
-            if(isset($provider['mapping_claims']['sname']) && isset($claims[$provider['mapping_claims']['sname']])){
-                $sname = $claims[$provider['mapping_claims']['sname']];
-            }
 
-            if(isset($provider['mapping_claims']['email']) && isset($claims[$provider['mapping_claims']['email']])){
-                $email = $claims[$provider['mapping_claims']['email']];
-            }
 
             $canAutoRegister = $this->config->item('autoregister_federated');
             if ($email === null) {
