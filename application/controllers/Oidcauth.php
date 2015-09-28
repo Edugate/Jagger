@@ -45,6 +45,7 @@ class Oidcauth extends MY_Controller
             $client->setClientSecret($provider['client_secret']);
             $client->setRedirectURL(base_url('oidcauth/callback'));
             $client->setStateSession();
+            $client->addAuthzParams($provider['authzparams']);
             $authzRedirectUrl = $client->generateAuthzRequest();
             return $this->output->set_header('application/json')->set_status_header(200)->set_output(json_encode(array('redirect' => $authzRedirectUrl)));
         } else {
@@ -55,13 +56,17 @@ class Oidcauth extends MY_Controller
     }
 
     public function callback() {
+        $errdata['content_view'] = 'error_message';
+
         try {
             $this->checkGlobal();
         } catch (Exception $e) {
-            echo $e->getMessage();
+            $error_message = $e->getMessage();
+            return $this->load->view('page',array('content_view'=>'error_message','error_message'=>html_escape($error_message)));
         }
         if ($this->j_auth->logged_in()) {
-            return $this->output->set_status_header(403)->set_output('Already authenticated');
+            $error_message = 'Already authenticated';
+            return $this->load->view('page',array('content_view'=>'error_message','error_message'=>html_escape($error_message)));
         }
 
         $sessIssuer = $this->session->userdata('joidc_issuer');
@@ -83,11 +88,13 @@ class Oidcauth extends MY_Controller
         try {
             $claims = $client->authenticate();
         } catch (Exception $e) {
-            return $this->output->set_status_header(403)->set_output($e);
+            $error_message = $e->getMessage();
+            return $this->load->view('page',array('content_view'=>'error_message','error_message'=>html_escape($error_message)));
         }
 
         if (!isset($claims['sub'])) {
-            return $this->output->set_status_header(403)->set_output('Missing required claim (sub) from Openid Provider');
+            $error_message = 'Missing required claim "sub" from Authorization Server';
+            return $this->load->view('page',array('content_view'=>'error_message','error_message'=>html_escape($error_message)));
         }
         $username = (string)$claims['sub'] . '@' . $claims['iss'];
         /**
@@ -159,9 +166,7 @@ class Oidcauth extends MY_Controller
             if(isset($provider['mapping_claims']['sname']) && isset($claims[$provider['mapping_claims']['sname']])){
                 $sname = $claims[$provider['mapping_claims']['sname']];
             }
-           // echo '<pre>';
-          //  print_r($provider);
-          //  echo '</pre>';
+
             if(isset($provider['mapping_claims']['email']) && isset($claims[$provider['mapping_claims']['email']])){
                 $email = $claims[$provider['mapping_claims']['email']];
             }
