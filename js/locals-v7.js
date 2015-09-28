@@ -4317,6 +4317,7 @@ $(document).on('submit', 'div#loginform form', function (e) {
     var browsertime = new Date();
     var browsertimezone = -browsertime.getTimezoneOffset();
     str.push({name: 'browsertimeoffset', value: '' + browsertimezone + ''});
+    var baseurl = $("[name='baseurl']").val();
 
     $.ajax({
         type: "POST",
@@ -4333,7 +4334,8 @@ $(document).on('submit', 'div#loginform form', function (e) {
                 if (data.success === true && data.result === 'OK') {
                     $('#loginform').foundation('reveal', 'close');
                     setTimeout(function () {
-                        go_to_private_page();
+
+                        window.location.href = baseurl;
                     }, 1000);
 
                 }
@@ -4651,6 +4653,30 @@ $(document).ready(
         //  $("a.autoclick")[0].click();
     }
 );
+
+$('.oidclink').on('click', function(e){
+    e.preventDefault();
+
+    var url = $(this).attr('href');
+    var csrfname = $("[name='csrfname']").val();
+    var csrfhash = $("[name='csrfhash']").val();
+    var op = $(this).attr('data-jagger-oidc');
+    var data = [ {name: csrfname, value: csrfhash}, {
+            name: 'op',
+            value: op
+        }];
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: data,
+        cache: false,
+        dataType: 'json',
+        success: function(json){
+            window.location.href = json.redirect;
+        }
+
+    });
+});
 
 $("#updateprefsmodal").on('submit', function (e) {
     e.preventDefault();

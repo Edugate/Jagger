@@ -187,6 +187,9 @@ class Providers
             return array();
         }
 
+        /**
+         * @var FederationMembers[] $fedmembers
+         */
         $fedmembers = $this->em->getRepository("models\FederationMembers")->findBy(array('federation' => $feds, 'isDisabled' => FALSE, 'isBanned' => FALSE, 'joinstate' => array('0', '1', '3')));
         if ($entype === 'IDP' || $entype === 'SP') {
             foreach ($fedmembers as $m) {
@@ -398,10 +401,10 @@ class Providers
     }
 
     /**
-     *  getIdps_inNative and getSps_inNative to display just the list of entities without details.
+     *  getIdpsInNative and getSpsInNative to display just the list of entities without details.
      *   it's faster than getIdps and getSps but its sesnsitive to database changes like column names etc
      */
-    public function getIdps_inNative($local = null)
+    public function getIdpsInNative($local = null)
     {
 
         $rsm = new ResultSetMapping;
@@ -453,7 +456,7 @@ class Providers
         return $this->providers;
     }
 
-    public function getSps_inNative($local = null)
+    public function getSpsInNative($local = null)
     {
 
         $rsm = new ResultSetMapping;
@@ -483,7 +486,7 @@ class Providers
         return $this->providers;
     }
 
-    public function getPublicSps_inNative()
+    public function getPublicSpsInNative()
     {
 
         $rsm = new ResultSetMapping;

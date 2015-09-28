@@ -1,38 +1,58 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('Ni direct script access allowed');
+}
 
 /**
- * JAGGER
- *
- * @package     JAGGER
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2015, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
-
-/**
- * Providerdetails Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   JAGGER
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 class Providerdetails
 {
+    /**
+     * @var $em Doctrine\ORM\EntityManager
+     */
+    protected $em;
 
-    protected $CI, $em;
+    protected $CI;
 
-    function __construct()
-    {
+    /**
+     * @var models\Provider $ent
+     */
+    protected $ent;
+    protected $idppart = true;
+    protected $sppart = true;
+    protected $presubtitle;
+
+    public function __construct(array $args) {
         $this->CI = &get_instance();
         $this->em = $this->CI->doctrine->em;
+        if (!array_key_exists('ent', $args) || !($args['ent'] instanceof models\Provider)) {
+            throw new Exception('models\Provider instance must be passed to library');
+        }
+        $this->ent = $args['ent'];
+        $type = $this->ent->getType();
+        if ($type === 'SP') {
+            $this->idppart = false;
+            MY_Controller::$menuactive = 'sps';
+            $this->presubtitle = lang('serviceprovider');
+        } elseif ($type === 'IDP') {
+            $this->sppart = false;
+            MY_Controller::$menuactive = 'idps';
+            $this->presubtitle = lang('identityprovider');
+
+        } else {
+            $this->presubtitle = lang('rr_asboth');
+        }
+
+
     }
 
-    private function genCertView(models\Certificate $cert)
-    {
-        $certusage = $cert->getCertuse();
+    private function genCertView(models\Certificate $cert) {
+        $certusage = $cert->getCertUse();
         if ($certusage === 'signing') {
             $langcertusage = lang('certsign');
         } elseif ($certusage === 'encryption') {
@@ -73,8 +93,44 @@ class Providerdetails
         return $d;
     }
 
-    private function makeStatusLabels(\models\Provider $ent)
-    {
+    private function genCertTab() {
+        $result = array();
+        $tcerts = $this->ent->getCertificates();
+        $certs = array('idpsso' => array(), 'aa' => array(), 'spsso' => array());
+        foreach ($tcerts as $c) {
+            $certs[$c->getType()][] = $c;
+        }
+        if ($this->idppart) {
+            $result[]['msection'] = 'IDPSSODescriptor';
+            foreach ($certs['idpsso'] as $v1) {
+                $c = $this->genCertView($v1);
+                foreach ($c as $v2) {
+                    $result[] = $v2;
+                }
+            }
+            // AA
+            $result[]['msection'] = 'AttributeAuthorityDescriptor';
+            foreach ($certs['aa'] as $v1) {
+                $c = $this->genCertView($v1);
+                foreach ($c as $v2) {
+                    $result[] = $v2;
+                }
+            }
+        }
+        if ($this->sppart) {
+            $result[]['msection'] = 'SPSSODescriptor';
+            foreach ($certs['spsso'] as $v1) {
+                $c = $this->genCertView($v1);
+                foreach ($c as $v2) {
+                    $result[] = $v2;
+                }
+            }
+        }
+        return $result;
+    }
+
+    private function makeStatusLabels() {
+        $ent = $this->ent;
         $entStatus = '';
         $isValidTime = $ent->isValidFromTo();
         $isActive = $ent->getActive();
@@ -108,8 +164,8 @@ class Providerdetails
         return $entStatus;
     }
 
-    public function generateAlertsDetails(\models\Provider $provider, $msgprefix = null)
-    {
+    public function generateAlertsDetails($msgprefix = null) {
+        $provider = $this->ent;
         $result = array();
 
 
@@ -173,10 +229,18 @@ class Providerdetails
             }
         }
 
+        /**
+         * @var models\ServiceLocation[] $serviceLocation
+         */
         $serviceLocation = $provider->getServiceLocations();
+        $serviceUrls = array();
+        foreach($serviceLocation as $aaa){
+            $serviceUrls[] = $aaa->getUrl();
+        }
+        $serviceUrls = array_unique($serviceUrls);
+
         $srvsTcpChecked = array();
-        foreach ($serviceLocation as $s) {
-            $surl = $s->getUrl();
+        foreach ($serviceUrls as $surl) {
             $parsedUrl = parse_url($surl);
             $urlPort = null;
             $isHostOK = true;
@@ -189,30 +253,30 @@ class Providerdetails
                 } elseif ($parsedUrl['scheme'] === 'https') {
                     $urlPort = 443;
                 } else {
-                    $result[] = array('msg' => 'Incorrect protocol in service url :' . htmlspecialchars($surl), 'level' => 'error');
+                    $result[] = array('msg' => 'Incorrect protocol in service url :' . html_escape($surl), 'level' => 'error');
                 }
             }
             if (array_key_exists('host', $parsedUrl)) {
                 $srvHost = $parsedUrl['host'];
                 if (!empty($srvHost) && filter_var($srvHost, FILTER_VALIDATE_IP)) {
-                    $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' -  contains IP address', 'level' => 'warning');
+                    $result[] = array('msg' => 'Service URL: ' . html_escape($surl) . ' -  contains IP address', 'level' => 'warning');
                     $isHostOK = false;
                 } else {
                     $resolved = dns_get_record($srvHost, DNS_A + DNS_AAAA);
                     if (!empty($resolved)) {
                         foreach ($resolved as $r) {
-                            if (array_key_exists('ip', $r)) {
+                            if (is_array($r) && array_key_exists('ip', $r)) {
 
                                 if (!(filter_var($r['ip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE) && filter_var($r['ip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE))) {
-                                    $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' - Resolving host  result IP: ' . $r['ip'] . ' which is in private or reserved pool', 'level' => 'warning');
+                                    $result[] = array('msg' => 'Service URL: ' . html_escape($surl) . ' - Resolving host  result IP: ' . $r['ip'] . ' which is in private or reserved pool', 'level' => 'warning');
                                     $isHostOK = false;
                                 } else {
                                     $hostsByIP['ipv4'][] = $r['ip'];
                                 }
                             }
-                            if (array_key_exists('ipv6', $r)) {
+                            if (is_array($r) && array_key_exists('ipv6', $r)) {
                                 if (!filter_var($r['ipv6'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE)) {
-                                    $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' - Resolving host  results : ' . $r['ipv6'] . ' which is in private or reserved pool', 'level' => 'warning');
+                                    $result[] = array('msg' => 'Service URL: ' . html_escape($surl) . ' - Resolving host  results : ' . $r['ipv6'] . ' which is in private or reserved pool', 'level' => 'warning');
                                     $isHostOK = false;
                                 } else {
                                     $hostsByIP['ipv6'][] = $r['ipv6'];
@@ -220,7 +284,7 @@ class Providerdetails
                             }
                         }
                     } else {
-                        $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' - Could not resolve a domain from service URL: ', 'level' => 'warning');
+                        $result[] = array('msg' => 'Service URL: ' . html_escape($surl) . ' - Could not resolve a domain from service URL: ', 'level' => 'warning');
                         $isHostOK = false;
                     }
                 }
@@ -231,10 +295,10 @@ class Providerdetails
                 if (array_key_exists('ipv4', $hostsByIP)) {
                     foreach ($hostsByIP['ipv4'] as $ip) {
 
-                        if (!in_array('' . $ip . '_' . $urlPort, $srvsTcpChecked)) {
+                        if (!in_array('' . $ip . '_' . $urlPort.'', $srvsTcpChecked, true)) {
                             $fp = @fsockopen($ip, $urlPort, $errno, $errstr, 2);
                             if (!$fp) {
-                                $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' : ' . $ip . ' : ' . $errstr . ' (' . $errno . ')', 'level' => 'alert');
+                                $result[] = array('msg' => 'Service URL: ' . html_escape($surl) . ' : ' . $ip . ' : ' . $errstr . ' (' . $errno . ')', 'level' => 'alert');
                             }
                             $srvsTcpChecked[] = '' . $ip . '_' . $urlPort;
                         }
@@ -244,10 +308,10 @@ class Providerdetails
 
 
                     foreach ($hostsByIP['ipv6'] as $ip) {
-                        if (!in_array('' . $ip . '_' . $urlPort, $srvsTcpChecked)) {
+                        if (!in_array('' . $ip . '_' . $urlPort, $srvsTcpChecked,true)) {
                             $fp = @fsockopen('tcp://[' . $ip . ']', $urlPort, $errno, $errstr, 2);
                             if (!$fp) {
-                                $result[] = array('msg' => 'Service URL: ' . htmlspecialchars($surl) . ' : ' . $ip . ' : ' . $errstr . ' (' . $errno . ')', 'level' => 'alert');
+                                $result[] = array('msg' => 'Service URL: ' . html_escape($surl) . ' : ' . $ip . ' : ' . $errstr . ' (' . $errno . ')', 'level' => 'alert');
                             }
                             $srvsTcpChecked[] = '' . $ip . '_' . $urlPort;
                         }
@@ -269,13 +333,12 @@ class Providerdetails
         return $result;
     }
 
-    private function genOrgTab(\models\Provider $ent)
-    {
+    private function genOrgTab() {
 
         $d = array();
         $iCounter = 0;
         $d[++$iCounter]['name'] = lang('e_orgname');
-        $lname = $ent->getMergedLocalName();
+        $lname = $this->ent->getMergedLocalName();
         $lvalues = '';
         if (count($lname) > 0) {
             foreach ($lname as $k => $v) {
@@ -286,7 +349,7 @@ class Providerdetails
             $d[$iCounter]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
         }
         $d[++$iCounter]['name'] = lang('e_orgdisplayname');
-        $ldisplayname = $ent->getMergedLocalDisplayName();
+        $ldisplayname = $this->ent->getMergedLocalDisplayName();
         $lvalues = '';
         if (count($ldisplayname) > 0) {
             foreach ($ldisplayname as $k => $v) {
@@ -297,7 +360,7 @@ class Providerdetails
             $d[$iCounter]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
         }
         $d[++$iCounter]['name'] = lang('e_orgurl');
-        $localizedHelpdesk = $ent->getHelpdeskUrlLocalized();
+        $localizedHelpdesk = $this->ent->getHelpdeskUrlLocalized();
         if (is_array($localizedHelpdesk) && count($localizedHelpdesk) > 0) {
             $lvalues = '';
             foreach ($localizedHelpdesk as $k => $v) {
@@ -313,10 +376,9 @@ class Providerdetails
 
     }
 
-    private function genContactsTab(\models\Provider $ent)
-    {
+    private function genContactsTab() {
         $result = array();
-        $contacts = $ent->getContacts();
+        $contacts = $this->ent->getContacts();
         $typesInLang = array(
             'technical' => lang('rr_cnt_type_tech'),
             'administrative' => lang('rr_cnt_type_admin'),
@@ -342,15 +404,15 @@ class Providerdetails
     }
 
 
-    public function generateForControllerProvidersDetail(\models\Provider $ent)
-    {
+    public function generateForControllerProvidersDetail() {
 
+        $ent = $this->ent;
         $feathide = $this->CI->config->item('feathide');
-        if (empty($feathide)) {
+        if (!is_array($feathide)) {
             $feathide = array();
         }
         $featdisable = $this->CI->config->item('featdisable');
-        if (empty($featdisable)) {
+        if (!is_array($featdisable)) {
             $featdisable = array();
         }
         $alerts = array();
@@ -361,26 +423,14 @@ class Providerdetails
         $params = array(
             'enable_classes' => true,
         );
-        $sppart = false;
-        $idppart = false;
+        $sppart = $this->sppart;
+        $idppart = $this->idppart;
         $type = strtolower($ent->getType());
         $data['type'] = $type;
         $edit_attributes = '';
 
-        if ($type === 'idp') {
-            MY_Controller::$menuactive = 'idps';
-            $idppart = true;
-            $presubtitle = lang('identityprovider');
-        } elseif ($type === 'sp') {
-            MY_Controller::$menuactive = 'sps';
-            $sppart = true;
-            $presubtitle = lang('serviceprovider');
-        } else {
-            $sppart = true;
-            $idppart = true;
-            $presubtitle = lang('rr_asboth');
-        }
-        $data['presubtitle'] = $presubtitle;
+        $data['presubtitle'] = $this->presubtitle;
+
         $id = $ent->getId();
         $hasWriteAccess = $this->CI->zacl->check_acl($id, 'write', 'entity', '');
         $hasManageAccess = $this->CI->zacl->check_acl($id, 'manage', 'entity', '');
@@ -450,12 +500,14 @@ class Providerdetails
         $d = array();
         $i = 0;
         $d[++$i]['name'] = lang('rr_status') . ' ' . showBubbleHelp('<ul class="no-bullet"><li><b>' . lang('lbl_enabled') . '</b>:' . lang('provinmeta') . '</li><li><b>' . lang('lbl_disabled') . '</b>:' . lang('provexclmeta') . ' </li><li><b>' . lang('rr_managedlocally') . '</b>: ' . lang('provmanlocal') . '</li><li><b>' . lang('rr_external') . '</b>: ' . lang('provexternal') . '</li></ul>') . '';
-        $entStatus = $this->makeStatusLabels($ent);
+        $entStatus = $this->makeStatusLabels();
         $d[$i]['value'] = '<b>' . $entStatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
         $d[$i]['value'] = '<b>' . date('Y-m-d H:i:s', $ent->getLastModified()->format('U') + j_auth::$timeOffset) . '</b>';
         $entityIdRecord = array('name' => lang('rr_entityid'), 'value' => $ent->getEntityId());
         $d[++$i] = &$entityIdRecord;
+        $d[++$i] = array('name' => lang('rr_entityid'), 'value' => $ent->getEntityId());
+
 
         $d[++$i]['name'] = lang('e_orgname');
         $lname = $ent->getMergedLocalName();
@@ -509,7 +561,7 @@ class Providerdetails
 
         $d[++$i]['name'] = lang('rr_regdate');
         $regdate = $ent->getRegistrationDate();
-        if (isset($regdate)) {
+        if ($regdate !==null) {
             $d[$i]['value'] = '<span data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" class="has-tip" title="' . date('Y-m-d H:i', $regdate->format('U')) . ' UTC">' . date('Y-m-d H:i', $regdate->format('U') + j_auth::$timeOffset) . '</span>';
         } else {
             $d[$i]['value'] = null;
@@ -540,6 +592,9 @@ class Providerdetails
             $d[$i]['value'] = html_escape($defaultprivacyurl);
         }
 
+        /**
+         * @var models\Coc[] $entityCategories
+         */
         $entityCategories = array();
         $a = array();
 
@@ -583,7 +638,7 @@ class Providerdetails
         $result[] = array('section' => 'general', 'title' => '' . lang('tabGeneral') . '', 'data' => $d);
 
 
-        $subresult[2] = array('section' => 'orgtab', 'title' => '' . lang('taborganization') . '', 'data' => $this->genOrgTab($ent));
+        $subresult[2] = array('section' => 'orgtab', 'title' => '' . lang('taborganization') . '', 'data' => $this->genOrgTab());
 
 
         /**
@@ -593,7 +648,7 @@ class Providerdetails
         $i = 0;
 
 
-        $srv_metalink = base_url("metadata/service/" . base64url_encode($ent->getEntityId()) . "/metadata.xml");
+        $srv_metalink = base_url('metadata/service/' . base64url_encode($ent->getEntityId()) . '/metadata.xml');
 
         $disable_extcirclemeta = $this->CI->config->item('disable_extcirclemeta');
         $gearman_enabled = $this->CI->config->item('gearman');
@@ -613,13 +668,13 @@ class Providerdetails
                 $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
                 $d[$i]['value'] = lang('disableexternalcirclemeta');
             } else {
-                $srv_circle_metalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
-                $srv_circle_metalink_signed = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
+                $srvCircleMetalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
+                $srvCircleMetalinkSigned = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
 
                 $d[++$i]['name'] = lang('rr_circleoftrust');
-                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_circle_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_circle_metalink, '<i class="fi-arrow-right"></i>', 'class=""');
+                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srvCircleMetalink . '&nbsp;</span>&nbsp; ' . anchor($srvCircleMetalink, '<i class="fi-arrow-right"></i>', 'class=""');
                 $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
-                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_circle_metalink_signed . '&nbsp;</span>&nbsp; ' . anchor_popup($srv_circle_metalink_signed, '<i class="fi-arrow-right"></i>');
+                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srvCircleMetalinkSigned . '&nbsp;</span>&nbsp; ' . anchor_popup($srvCircleMetalinkSigned, '<i class="fi-arrow-right"></i>');
             }
         }
         if ($isLocal && $hasWriteAccess && !empty($gearman_enabled) && $circleEnabled) {
@@ -656,8 +711,9 @@ class Providerdetails
          * Federation
          */
         $d[++$i]['name'] = lang('rr_memberof');
-        $federationsString = "";
+        $federationsString = '';
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
+        $no_feds = 0;
         $membership = $ent->getMembership();
         $membershipNotLeft = array();
         $showMetalinks = TRUE;
@@ -734,6 +790,9 @@ class Providerdetails
         $i = 0;
 
         if ($isStatic) {
+            /**
+             * @var models\StaticMetadata $tmp_st
+             */
             $tmp_st = $ent->getStaticMetadata();
             if (!empty($tmp_st)) {
                 $static_metadata = $tmp_st->getMetadata();
@@ -758,6 +817,9 @@ class Providerdetails
         $d = array();
         $i = 0;
 
+        /**
+         * @var models\ServiceLocation[][] $services
+         */
         $services = array();
         $srvs = $ent->getServiceLocations();
         if ($srvs->count() > 0) {
@@ -769,6 +831,11 @@ class Providerdetails
 
         /**
          * @todo decide if it is right place to display supported DigestMethods and SigningMethods algorithms
+         */
+
+        /**
+         * @var models\ExtendMetadata[] $algs
+         * @var models\ExtendMetadata[][] $algorithms
          */
         $algs = $ent->getExtendMetadata();
         $algorithms = array();
@@ -896,13 +963,12 @@ class Providerdetails
             $d[++$i]['name'] = lang('rr_supportedprotocols');
             $v = implode('<br />', $ent->getProtocolSupport('spsso'));
             $d[$i]['value'] = $v;
-            $nameids = '<ul class="no-bullet">';
+
             $d[++$i]['name'] = lang('rr_supportednameids');
-            foreach ($ent->getNameIds('spsso') as $r) {
-                $nameids .= '<li>' . html_escape($r) . '</li>';
-            }
-            $nameids .= '</ul>';
-            $d[$i]['value'] = $nameids;
+
+
+
+            $d[$i]['value'] = '<ul class="no-bullet"><li>'.implode('</li><li>',$ent->getNameIds('spsso')).'</li></ul>';
             if (array_key_exists('AssertionConsumerService', $services)) {
                 $acsvalues = '';
                 $d[++$i]['name'] = 'AssertionConsumerService';
@@ -960,45 +1026,7 @@ class Providerdetails
 
         // Begin Certificates
 
-        $d = array();
-        $tcerts = $ent->getCertificates();
-        $certs = array();
-        foreach ($tcerts as $c) {
-            $certs[$c->getType()][] = $c;
-        }
-        if ($idppart) {
-            $d[]['msection'] = 'IDPSSODescriptor';
-            if (array_key_exists('idpsso', $certs)) {
-                foreach ($certs['idpsso'] as $v1) {
-                    $c = $this->genCertView($v1);
-                    foreach ($c as $v2) {
-                        $d[] = $v2;
-                    }
-                }
-            }
-            // AA
-            if (array_key_exists('aa', $certs)) {
-                $d[]['msection'] = 'AttributeAuthorityDescriptor';
-                foreach ($certs['aa'] as $v1) {
-                    $c = $this->genCertView($v1);
-                    foreach ($c as $v2) {
-                        $d[] = $v2;
-                    }
-                }
-            }
-        }
-        if ($sppart) {
-            $d[]['msection'] = 'SPSSODescriptor';
-            if (array_key_exists('spsso', $certs)) {
-                foreach ($certs['spsso'] as $v1) {
-                    $c = $this->genCertView($v1);
-                    foreach ($c as $v2) {
-                        $d[] = $v2;
-                    }
-                }
-            }
-        }
-        $subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $d);
+        $subresult[11] = array('section' => 'certificates', 'title' => '' . lang('tabCerts') . '', 'data' => $this->genCertTab());
 
         /**
          * End Certificates
@@ -1027,7 +1055,7 @@ class Providerdetails
         $subresult[12] = array('section' => 'entcats', 'title' => '' . lang('tabEntcats') . '', 'data' => $d);
 
 
-        $subresult[3] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $this->genContactsTab($ent));
+        $subresult[3] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $this->genContactsTab());
 
         $d = array();
         $i = 0;
@@ -1075,6 +1103,9 @@ class Providerdetails
 
             $d[++$i]['header'] = '<a name="attrs"></a>' . lang('rr_supportedattributes') . ' ' . $edit_attributes;
             $tmpAttrs = new models\AttributeReleasePolicies;
+            /**
+             * @var models\AttributeReleasePolicy[] $supportedAttributes
+             */
             $supportedAttributes = $tmpAttrs->getSupportedAttributes($ent);
             foreach ($supportedAttributes as $s) {
                 $d[++$i]['name'] = $s->getAttribute()->getName();
@@ -1112,6 +1143,9 @@ class Providerdetails
 
 
         if ($idppart) {
+            /**
+             * @var models\ExtendMetadata[][] $uiiarray
+             */
             $uiiarray = array();
             $d[++$i]['msection'] = lang('identityprovider');
             foreach ($extend as $e) {
@@ -1184,6 +1218,9 @@ class Providerdetails
             }
         }
         if ($sppart) {
+            /**
+             * @var models\ExtendMetadata[][] $uiiarray
+             */
             $uiiarray = array();
             $d[++$i]['msection'] = lang('serviceprovider');
             foreach ($extend as $e) {
@@ -1236,7 +1273,7 @@ class Providerdetails
                 $d[$i]['value'] = lang('rr_notset');
             }
 
-                $d[++$i]['name'] = lang('rr_logoofservice');
+            $d[++$i]['name'] = lang('rr_logoofservice');
             if (isset($uiiarray['Logo'])) {
                 $str = '';
                 foreach ($uiiarray['Logo'] as $v) {
@@ -1256,7 +1293,6 @@ class Providerdetails
             }
 
 
-          
         }
 
         $subresult[4] = array('section' => 'uii', 'title' => '' . lang('tabUII') . '', 'data' => $d);

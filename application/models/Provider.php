@@ -1651,18 +1651,24 @@ class Provider
         return $this->digest;
     }
 
+    /**
+     * @return null|\Datetime
+     */
     public function getValidTo()
     {
         return $this->validto;
     }
 
+    /**
+     * @return null|\Datetime
+     */
     public function getValidFrom()
     {
         return $this->validfrom;
     }
 
     /**
-     * return boolean if entity is between validfrom and validto dates
+     * @return bool
      */
     public function isValidFromTo()
     {
