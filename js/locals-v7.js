@@ -4652,6 +4652,30 @@ $(document).ready(
     }
 );
 
+$('.oidclink').on('click', function(e){
+    e.preventDefault();
+
+    var url = $(this).attr('href');
+    var csrfname = $("[name='csrfname']").val();
+    var csrfhash = $("[name='csrfhash']").val();
+    var op = $(this).attr('data-jagger-oidc');
+    var data = [ {name: csrfname, value: csrfhash}, {
+            name: 'op',
+            value: op
+        }];
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: data,
+        cache: false,
+        dataType: 'json',
+        success: function(json){
+            window.location.href = json.redirect;
+        }
+
+    });
+});
+
 $("#updateprefsmodal").on('submit', function (e) {
     e.preventDefault();
     var link = $(this).attr('data-jagger-link');

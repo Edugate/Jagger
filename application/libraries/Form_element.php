@@ -271,12 +271,12 @@ class Form_element
     {
         $result = array();
         $enttype = $ent->getType();
-        $c = $ent->getCertificates();
+        $certificates = $ent->getCertificates();
         $origcerts = array('idpsso' => array(), 'spsso' => array(), 'aa' => array());
         $tmpid = 100;
-        foreach ($c as $v) {
+        foreach ($certificates as $v) {
             $tid = $v->getId();
-            if (empty($tid)) {
+            if ($tid === null) {
                 $tid = 'x' . $tmpid++;
             }
             $origcerts['' . $v->getType() . '']['' . $tid . ''] = $v;
@@ -284,7 +284,7 @@ class Form_element
 
 
         $sessform = (is_null($ses)) ? false : true;
-        if (strcmp($enttype, 'SP') != 0) {
+        if ($enttype !== 'SP') {
             $Part = '<fieldset><legend>IDPSSODescriptor</legend><div>';
             $idpssocerts = array();
 // start CERTS IDPSSODescriptor
@@ -321,7 +321,7 @@ class Form_element
 
 // end CERTS AttributeAuthorityDescriptor
         }
-        if (strcmp($enttype, 'IDP') != 0) {
+        if ($enttype !== 'IDP') {
             $Part = '<fieldset><legend>SPSSODescriptor</legend><div>';
             $spssocerts = array();
             if ($sessform) {
