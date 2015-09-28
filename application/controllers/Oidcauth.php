@@ -266,8 +266,8 @@ class Oidcauth extends MY_Controller
     }
 
     private function checkGlobal() {
-        if ($this->oidcEnabled !== true || !is_array($this->oidcOps) || count($this->oidcOps) == 0) {
-            throw new Exception('OpenID Connect not enabled');
+        if ($this->oidcEnabled !== true || !is_array($this->oidcOps) || count($this->oidcOps) == 0 || !class_exists('Jagger\oidc\Client')) {
+            throw new Exception('OpenID Connect not enabled or extension not found');
         }
     }
 
