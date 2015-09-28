@@ -4317,6 +4317,7 @@ $(document).on('submit', 'div#loginform form', function (e) {
     var browsertime = new Date();
     var browsertimezone = -browsertime.getTimezoneOffset();
     str.push({name: 'browsertimeoffset', value: '' + browsertimezone + ''});
+    var baseurl = $("[name='baseurl']").val();
 
     $.ajax({
         type: "POST",
@@ -4333,7 +4334,8 @@ $(document).on('submit', 'div#loginform form', function (e) {
                 if (data.success === true && data.result === 'OK') {
                     $('#loginform').foundation('reveal', 'close');
                     setTimeout(function () {
-                        go_to_private_page();
+
+                        window.location.href = baseurl;
                     }, 1000);
 
                 }
