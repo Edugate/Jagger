@@ -256,4 +256,83 @@ class Jauth
 
     }
 
+
+    /**
+     * @param array $attrs
+     * @param $accountType
+     * @param null $systemRole
+     * @return \models\User
+     * @throws Exception
+     */
+    public function registerUser(array $attrs, $accountType, $systemRole = null) {
+        if (!array_key_exists('username', $attrs) || !array_key_exists('mail', $attrs)) {
+            throw new Exception('Cannot register user. Missing username or/and email address');
+        }
+        $username = $attrs['username'];
+        $mail = $attrs['mail'];
+        $fname = trim($attrs['fname']);
+        $sname = trim($attrs['sname']);
+
+        $user = new models\User;
+        $this->ci->load->helper('random_generator');
+        $randompass = str_generator();
+        $user->setUsername($username);
+        $user->setEmail($mail);
+        $user->setSalt();
+        $user->setPassword($randompass);
+        $user->setLocalDisabled();
+        if ($accountType === 'federated' || $accountType === 'oidc') {
+            $user->setFederatedEnabled();
+        }
+        $user->setAccepted();
+        $user->setEnabled();
+        $user->setValid();
+        if (!empty($fname)) {
+            $user->setGivenname($fname);
+        }
+        if (!empty($sname)) {
+            $user->setSurname($sname);
+        }
+        $user->setUserpref(array());
+
+        if($systemRole !== null){
+            $srole = $this->em->getRepository('models\AclRole')->findOneBy(array('name' => $systemRole,'type'=>'system'));
+            if($srole !== null){
+                $user->setRole($srole);
+            }
+        }
+        else {
+            $defaultRole = $this->ci->config->item('register_defaultrole');
+            $allowedroles = array('Guest', 'Member');
+            if ($defaultRole === null || !in_array($defaultRole, $allowedroles, true)) {
+                $defaultRole = 'Guest';
+            }
+            /**
+             * @var models\AclRole $member
+             */
+            $member = $this->em->getRepository('models\AclRole')->findOneBy(array('name' => $defaultRole,'type'=>'system'));
+            if ($member === null) {
+                throw new Exception('Cannot register user - cannot set the default role');
+            }
+            $user->setRole($member);
+
+        }
+        /**
+         * @var models\AclRole $personRole
+         */
+        $personRole = $this->em->getRepository('models\AclRole')->findOneBy(array('name' => $username));
+        if ($personRole === null) {
+            $personRole = new models\AclRole;
+            $personRole->setName($username);
+            $personRole->setType('user');
+            $personRole->setDescription('personal role for user ' . $username);
+            $user->setRole($personRole);
+            $this->em->persist($personRole);
+        }
+        $this->ci->tracker->save_track('user', 'create', $username, 'user autocreated in the system', false);
+        return $user;
+    }
+
 }
+
+

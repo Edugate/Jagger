@@ -14,14 +14,12 @@ class Auth extends MY_Controller
 {
     private $data;
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $this->load->library('form_validation');
     }
 
-    public function index()
-    {
+    public function index() {
         if (!$this->jauth->isLoggedIn()) {
             return $this->login();
         } else {
@@ -29,16 +27,14 @@ class Auth extends MY_Controller
         }
     }
 
-    public function logout()
-    {
+    public function logout() {
         if ($this->jauth->isLoggedIn()) {
             $this->jauth->logout();
         }
         $this->load->view('auth/logout');
     }
 
-    public function fedregister()
-    {
+    public function fedregister() {
         $method = $this->input->method(TRUE);
         if (!$this->input->is_ajax_request() || $method !== 'POST') {
             return $this->output->set_status_header(403)->set_output('Permission Denied');
@@ -150,8 +146,7 @@ class Auth extends MY_Controller
         }
     }
 
-    public function ssphpauth()
-    {
+    public function ssphpauth() {
         if ($this->jauth->isLoggedIn()) {
             redirect($this->config->item('base_url'), 'location');
         }
@@ -254,18 +249,25 @@ class Auth extends MY_Controller
                 show_error(' ' . htmlentities($username) . ' - ' . lang('error_usernotexist') . ' ' . lang('applyforaccount') . ' <a href="mailto:' . $this->config->item('support_mailto') . '?subject=Access%20request%20from%20' . $mail . '">' . lang('rrhere') . '</a>', 403);
             } else {
                 $attrs = array('username' => $username, 'mail' => $mail);
-                $reg = $this->registerUser($attrs);
-                if ($reg !== TRUE) {
-                    show_error('User couldnt be registered.', 403);
+                try {
+                    $nuser = $this->jauth->registerUser($attrs,'federated',null);
+                    $this->em->persist($nuser);
+                }
+                catch(Exception $e){
+                    show_error(html_escape($e->getMessage()),403);
+                }
+                try{
+                    $this->em->flush();
+                }
+                catch(Exception $e){
+                    show_error('Internal Server Error',500);
                 }
             }
-            redirect(current_url(), 'location');
         }
         redirect(base_url(), 'location');
     }
 
-    public function login()
-    {
+    public function login() {
 
         if ($this->jauth->isLoggedIn()) {
             redirect($this->config->item('base_url'), 'location');
@@ -278,8 +280,7 @@ class Auth extends MY_Controller
 
     }
 
-    private function getShibUsername()
-    {
+    private function getShibUsername() {
         $usernameVarName = $this->config->item('Shib_username');
         $usernameValue = $this->input->server($usernameVarName);
         if ($usernameValue === null) {
@@ -288,8 +289,7 @@ class Auth extends MY_Controller
         return $usernameValue;
     }
 
-    private function getShibFname()
-    {
+    private function getShibFname() {
         $fnameVarName = $this->config->item('Shib_fname');
         if (empty($fnameVarName)) {
             return false;
@@ -302,8 +302,7 @@ class Auth extends MY_Controller
         return false;
     }
 
-    private function getShibSname()
-    {
+    private function getShibSname() {
         $snameVarName = $this->config->item('Shib_sname');
         if (empty($snameVarName)) {
             return false;
@@ -316,8 +315,7 @@ class Auth extends MY_Controller
         return false;
     }
 
-    private function getShibMail()
-    {
+    private function getShibMail() {
         $emailVarName = $this->config->item('Shib_mail');
         if (isset($_SERVER[$emailVarName])) {
             return $_SERVER[$emailVarName];
@@ -328,19 +326,16 @@ class Auth extends MY_Controller
         }
     }
 
-    private function getShibIdp()
-    {
-        $IdpEnvVars  = array(
+    private function getShibIdp() {
+        $IdpEnvVars = array(
             'Shib-Identity-Provider',
             'REDIRECT_Shib-Identity-Provider',
             'Shib_Identity_Provider',
             'REDIRECT_Shib_Identity_Provider'
         );
         $idpVal = null;
-        foreach($IdpEnvVars as $val)
-        {
-            if(!empty($val))
-            {
+        foreach ($IdpEnvVars as $val) {
+            if (!empty($val)) {
                 $idpVal = $val;
                 break;
             }
@@ -348,67 +343,7 @@ class Auth extends MY_Controller
         return $idpVal;
     }
 
-    private function registerUser($attrs)
-    {
-        $username = $attrs['username'];
-        $mail = $attrs['mail'];
-        $fname = trim($attrs['fname']);
-        $sname = trim($attrs['sname']);
-
-        $user = new models\User;
-        $this->load->helper('random_generator');
-        $randompass = str_generator();
-        $user->setUsername($username);
-        $user->setEmail($mail);
-        $user->setSalt();
-        $user->setPassword($randompass);
-        $user->setLocalDisabled();
-        $user->setFederatedEnabled();
-        $user->setAccepted();
-        $user->setEnabled();
-        $user->setValid();
-        if (!empty($fname)) {
-            $user->setGivenname($fname);
-        }
-        if (!empty($sname)) {
-            $user->setSurname($sname);
-        }
-        $user->setUserpref(array());
-        $defaultRole = $this->config->item('register_defaultrole');
-        $allowedroles = array('Guest', 'Member');
-        if (empty($defaultRole) || !in_array($defaultRole, $allowedroles)) {
-            $defaultRole = 'Guest';
-        }
-        /**
-         * @var models\AclRole $member
-         */
-        $member = $this->em->getRepository('models\AclRole')->findOneBy(array('name' => $defaultRole));
-        if ($member !== null) {
-            $user->setRole($member);
-        }
-        /**
-         * @var models\AclRole $p_role
-         */
-        $p_role = $this->em->getRepository('models\AclRole')->findOneBy(array('name' => $username));
-        if ($p_role === null) {
-            $p_role = new models\AclRole;
-            $p_role->setName($username);
-            $p_role->setType('user');
-            $p_role->setDescription('personal role for user ' . $username);
-            $user->setRole($p_role);
-            $this->em->persist($p_role);
-        }
-        $this->em->persist($user);
-        $this->tracker->save_track('user', 'create', $username, 'user autocreated in the system', false);
-        $this->em->flush();
-
-        $this->assignRolesFromAA($user);
-        return true;
-    }
-
-
-    private function getShibGroups($groupsVarName)
-    {
+    private function getShibGroups($groupsVarName) {
         $varToReturn = $this->input->server($groupsVarName);
         if ($varToReturn === null) {
             $varToReturn = $this->input->server('REDIRECT_' . $groupsVarName);
@@ -416,14 +351,11 @@ class Auth extends MY_Controller
         return $varToReturn;
     }
 
-    private function assignRolesFromAA($user)
-    {
+    private function getRolesFromAA() {
         $shibGroupsCnf = $this->config->item('Shib_groups');
         if (empty($shibGroupsCnf)) {
-            // Groups not retrieved from AA, do nothing and exit
-            return;
+            return null;
         }
-
         $groups = $this->getShibGroups($shibGroupsCnf);
         $group_administrator = $this->config->item('register_group_administrator');
         $group_member = $this->config->item('register_group_member');
@@ -449,28 +381,41 @@ class Auth extends MY_Controller
             $userGroup = 'Guest';
         } else {
             log_message('warning', 'The group attribute is not present in federated authentication');
-            return;
+            return null;
         }
+        return $userGroup;
 
-        // Remove user from old groups
-        foreach ($user->getRoles() as $role) {
-            $user->unsetRole($role);
-        }
-
-        // Assign user to the right group
-        $member = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $userGroup));
-        if (!empty($member)) {
-            $user->setRole($member);
-            log_message('debug', 'The user has the ' . $member->getName() . ' role.');
-        }
-
-        $this->em->persist($user);
-        $user->updated();
-        $this->em->flush();
     }
 
-    public function fedauth($timeoffset = null)
-    {
+    /**
+     * @param \models\User $user
+     */
+    private function assignRolesFromAA(models\User $user) {
+
+        $roleFromAA = $this->getRolesFromAA();
+        if ($roleFromAA !== null) {
+            /**
+             * @var models\AclRole $member
+             */
+            $member = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $roleFromAA, 'type' => 'system'));
+            if ($member !== null) {
+                /**
+                 * @var models\AclRole[] $userRoles
+                 */
+                $userRoles = $user->getRoles();
+                foreach ($userRoles as $role) {
+                    $roleType = $role->getType();
+                    if ($roleType === 'system') {
+                        $user->unsetRole($role);
+                    }
+                }
+                $user->setRole($member);
+
+            }
+        }
+    }
+
+    public function fedauth($timeoffset = null) {
         $shibb_valid = $this->getShibIdp();
         if ($shibb_valid === null) {
             log_message('error', 'This location should be protected by shibboleth in apache');
@@ -550,6 +495,7 @@ class Auth extends MY_Controller
 
                 $ip = $this->input->ip_address();
                 $user->setIP($ip);
+                $this->assignRolesFromAA($user);
                 $user->updated();
                 $this->em->persist($user);
                 $this->load->library('tracker');
@@ -557,7 +503,7 @@ class Auth extends MY_Controller
                 $this->tracker->save_track('user', 'authn', $user->getUsername(), $track_details, false);
                 $this->em->flush();
 
-                $this->assignRolesFromAA($user);
+
             }
         } else {
             $fnameVarName = $this->getShibFname();
@@ -581,11 +527,21 @@ class Auth extends MY_Controller
             } else {
 
                 $attrs = array('username' => $userValue, 'mail' => $emailVarName, 'fname' => $fnameVarName, 'sname' => $snameVarName);
-                $reg = $this->registerUser($attrs);
+                try {
+                    $nuser = $this->jauth->registerUser($attrs,'federated',$this->getRolesFromAA());
+                    $this->em->persist($nuser);
 
-                if ($reg !== TRUE) {
-                    show_error('User couldnt be registered.', 403);
+                } catch (Exception $e) {
+                    show_error(html_escape($e->getMessage()), 403);
                 }
+
+                try {
+                    $this->em->flush();
+                } catch (Exception $e) {
+                    show_error(html_escape($e->getMessage()), 403);
+                }
+
+
                 redirect(current_url(), 'location');
             }
         }
