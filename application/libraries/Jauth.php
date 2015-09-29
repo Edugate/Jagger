@@ -167,7 +167,7 @@ class Jauth
     /**
      * @return null|string
      */
-    public function current_user() {
+    public function getLoggedinUsername() {
         $username = null;
         if ($this->isLoggedIn()) {
             $username = trim($this->ci->session->userdata('username'));
@@ -216,7 +216,7 @@ class Jauth
             return false;
         }
 
-        $username = $this->current_user();
+        $username = $this->getLoggedinUsername();
         if (empty($username)) {
             self::$isAdmin = false;
             return false;

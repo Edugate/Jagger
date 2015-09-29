@@ -97,7 +97,7 @@ class Userprofile extends MY_Controller
     public function edit($encodedUsername = null)
     {
         $grantAccess = false;
-        $loggedinUser = $this->jauth->current_user();
+        $loggedinUser = $this->jauth->getLoggedinUsername();
         if ($loggedinUser === null) {
             show_error('ff', 500);
         }

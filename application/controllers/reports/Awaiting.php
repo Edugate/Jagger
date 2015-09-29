@@ -50,7 +50,7 @@ class Awaiting extends MY_Controller
         if ($this->jauth->isAdministrator()) {
             return true;
         }
-        $currentUser = $this->jauth->current_user();
+        $currentUser = $this->jauth->getLoggedinUsername();
         /**
          * @var $creator models\User
          */
@@ -212,7 +212,7 @@ class Awaiting extends MY_Controller
         }
         if (strcasecmp($objAction, 'Join') == 0 && strcasecmp($recipientType, 'provider') == 0) {
             $recipient_write_access = $this->zacl->check_acl($qObject->getRecipient(), 'write', 'entity', '');
-            $requestor_view_access = (strcasecmp($qObject->getCreator()->getUsername(), $this->jauth->current_user()) == 0);
+            $requestor_view_access = (strcasecmp($qObject->getCreator()->getUsername(), $this->jauth->getLoggedinUsername()) == 0);
             if ($requestor_view_access || $recipient_write_access) {
                 $result = $this->j_queue->displayInviteProvider($qObject);
                 if (!empty($result)) {
@@ -261,7 +261,7 @@ class Awaiting extends MY_Controller
         }
         if (strcasecmp($objAction, 'Join') == 0 && strcasecmp($objRecipientType, 'federation') == 0) {
             $recipientWriteAccess = $this->zacl->check_acl('f_' . $qObject->getRecipient(), 'write', 'federation', '');
-            $requestorViewAccess = (strcasecmp($qObject->getCreator()->getUsername(), $this->jauth->current_user()) == 0);
+            $requestorViewAccess = (strcasecmp($qObject->getCreator()->getUsername(), $this->jauth->getLoggedinUsername()) == 0);
             if ($requestorViewAccess || $recipientWriteAccess) {
 
                 $result = $this->j_queue->displayInviteFederation($qObject, $recipientWriteAccess);
@@ -502,7 +502,7 @@ class Awaiting extends MY_Controller
         }
         $sbj = 'Identity/Service Provider has been approved';
         $body = 'Dear user,' . PHP_EOL . 'Registration request: ' . $entity->getName() . ' (' . $entity->getEntityId() . ')' . PHP_EOL;
-        $body .= 'Requested by: ' . $requester_recipient . '' . PHP_EOL . 'Request has been just approved by ' . $this->jauth->current_user() . ' and added to the system' . PHP_EOL;
+        $body .= 'Requested by: ' . $requester_recipient . '' . PHP_EOL . 'Request has been just approved by ' . $this->jauth->getLoggedinUsername() . ' and added to the system' . PHP_EOL;
         $body .= 'It can be reviewed on ' . base_url() . ' ' . PHP_EOL;
         $additionalReceipents = array();
         $toNotifyRequester = $this->config->item('notify_requester_if_queue_accepted');
@@ -745,7 +745,7 @@ class Awaiting extends MY_Controller
                     $mail_recipients = array();
                     $mail_recipients[] = $queueObj->getCreator()->getEmail();
                     $sbj = $provider->getName() . ' joins federation: "' . $federation->getName() . '"';
-                    $body = $this->jauth->current_user() . " just approved request.\r\n";
+                    $body = $this->jauth->getLoggedinUsername() . " just approved request.\r\n";
                     $body .= 'Since now Provider: ' . $provider->getName() . ' becomes a member of ' . $federation->getName() . PHP_EOL;
                     $this->em->remove($queueObj);
                     $this->email_sender->addToMailQueue(array('grequeststoproviders'), null, $sbj, $body, array(), $sync = false);
@@ -804,7 +804,7 @@ class Awaiting extends MY_Controller
                         $additionalReceipients[] = $queueObj->getCreator()->getEmail();
                     }
                     $sbj = "Approved:" . $provider->getName() . ' joins federation: "' . $federation->getName() . '"';
-                    $body = $this->jauth->current_user() . " just approved request.\r\n";
+                    $body = $this->jauth->getLoggedinUsername() . " just approved request.\r\n";
                     $body .= 'Since now Provider: ' . $provider->getName() . ' becomes a member of ' . $federation->getName() . PHP_EOL;
                     $this->em->persist($provider);
                     $this->em->remove($queueObj);
@@ -912,7 +912,7 @@ class Awaiting extends MY_Controller
                 $reject_access = $this->hasQAccess($queueObj);
                 $recipienttype = $queueObj->getRecipientType();
                 if (!empty($creator)) {
-                    $reject_access = (strcasecmp($creator->getUsername(), $this->jauth->current_user()) == 0);
+                    $reject_access = (strcasecmp($creator->getUsername(), $this->jauth->getLoggedinUsername()) == 0);
                 }
                 if ($reject_access === FALSE) {
                     if (strcasecmp($queueAction, 'Create') == 0) {
@@ -968,7 +968,7 @@ class Awaiting extends MY_Controller
                     $body .= 'The request placed on ' . base_url() . PHP_EOL;
                     $body .= 'Request with tokenID: ' . $queueObj->getToken() . ' has been canceled/rejected' . PHP_EOL;
                     $body .= "";
-                    log_message('info', 'JAGGER: Queue with token:' . $queueObj->getToken() . ' has been canceled/rejected by ' . $this->jauth->current_user());
+                    log_message('info', 'JAGGER: Queue with token:' . $queueObj->getToken() . ' has been canceled/rejected by ' . $this->jauth->getLoggedinUsername());
                     $this->em->remove($queueObj);
                     if ($notification === true) {
                         $this->email_sender->addToMailQueue(array(), null, $subject, $body, $additionalReciepients, FALSE);

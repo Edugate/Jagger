@@ -874,7 +874,7 @@ class Entityedit extends MY_Controller
         $data['anonymous'] = true;
         if ($this->jauth->isLoggedIn()) {
             $data['anonymous'] = FALSE;
-            $currentusername = $this->jauth->current_user();
+            $currentusername = $this->jauth->getLoggedinUsername();
             $u = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $currentusername . ''));
             $data['loggeduser'] = array(
                 'username' => '' . $currentusername . '',

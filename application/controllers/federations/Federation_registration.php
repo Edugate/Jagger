@@ -103,7 +103,7 @@ class Federation_registration extends MY_Controller
         $templateArgs = array(
             'fedname' => $fedname,
             'srcip' => $this->input->ip_address(),
-            'requsername' => $this->jauth->current_user(),
+            'requsername' => $this->jauth->getLoggedinUsername(),
             'reqemail' => $q->getEmail(),
             'token' => $q->getToken(),
             'qurl' => '' . base_url() . 'reports/awaiting/detail/' . $q->getToken() . '',

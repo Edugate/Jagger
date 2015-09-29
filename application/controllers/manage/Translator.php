@@ -44,7 +44,7 @@ class Translator extends MY_Controller
 
     private function checkPermission($langto)
     {
-        $username = $this->jauth->current_user();
+        $username = $this->jauth->getLoggedinUsername();
         $translator = $this->config->item('translator_access');
         if (!empty($translator) && is_array($translator) && isset($translator[$langto]) && strcasecmp($translator[$langto], $username) == 0) {
             return true;

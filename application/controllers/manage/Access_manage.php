@@ -193,7 +193,7 @@ class Access_manage extends MY_Controller {
 
         $row = array();
         $i = 0;
-        $currentUser = $this->jauth->current_user();
+        $currentUser = $this->jauth->getLoggedinUsername();
         foreach ($users_array as $key => $value)
         {
             $is_me = '';
@@ -370,7 +370,7 @@ class Access_manage extends MY_Controller {
         }
         $row = array();
         $i = 0;
-        $sessionUser = $this->jauth->current_user();
+        $sessionUser = $this->jauth->getLoggedinUsername();
 
         foreach ($users_array as $key => $value)
         {

@@ -261,7 +261,7 @@ class Users extends MY_Controller
         $encodedUsername = trim($encodedUsername);
         $limitAuthnRows = 15;
         $user = $this->findUserOrExit($encodedUsername);
-        $loggedUsername = $this->jauth->current_user();
+        $loggedUsername = $this->jauth->getLoggedinUsername();
         $isOwner = (strcasecmp($loggedUsername, $user->getUsername()) == 0);
         $isAdmin = $this->jauth->isAdministrator();
         $hasReadAccess = $this->zacl->check_acl('u_' . $user->getId(), 'read', 'user', '');

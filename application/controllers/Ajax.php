@@ -226,7 +226,7 @@ class Ajax extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Incorrect param');
         }
 
-        $username = $this->jauth->current_user();
+        $username = $this->jauth->getLoggedinUsername();
         /**
          * @var $user models\User
          */
@@ -257,7 +257,7 @@ class Ajax extends MY_Controller
             return $this->output->set_status_header(401)->set_output('Access Denied');
         }
         $myLang = MY_Controller::getLang();
-        $username = $this->jauth->current_user();
+        $username = $this->jauth->getLoggedinUsername();
         /**
          * @var $user models\User
          */
@@ -302,7 +302,7 @@ class Ajax extends MY_Controller
         if ($action === null || !ctype_digit($entID) || !$this->jauth->loggedInAndAjax()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        $username = $this->jauth->current_user();
+        $username = $this->jauth->getLoggedinUsername();
         /**
          * @var $user models\User
          */

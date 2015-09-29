@@ -98,7 +98,7 @@ class Dashboard extends MY_Controller
         $this->title = lang('dashboard');
         $board = $this->session->userdata('board');
         if (!is_array($board)) {
-            $curUser = $this->jauth->current_user();
+            $curUser = $this->jauth->getLoggedinUsername();
             /**
              * @var models\User $userObj
              */

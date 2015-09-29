@@ -93,7 +93,7 @@ class Subscriber extends MY_Controller
         }
         $this->load->library('zacl');
         $decodeduser = base64url_decode($encodeduser);
-        $loggeduser = $this->jauth->current_user();
+        $loggeduser = $this->jauth->getLoggedinUsername();
         $isAdmin = $this->jauth->isAdministrator();
         if ($isAdmin !== true && strcasecmp($decodeduser, $loggeduser) != 0) {
             log_message('warning', __METHOD__ . ': User ' . $loggeduser . ' tried to get access to other users subsricriptions:' . $decodeduser);
@@ -176,7 +176,7 @@ class Subscriber extends MY_Controller
         if ($encodeduser === null || !$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('denied');
         }
-        $username = $this->jauth->current_user();
+        $username = $this->jauth->getLoggedinUsername();
         if (!empty($username)) {
             /**
              * @var $user models\User
@@ -329,7 +329,7 @@ class Subscriber extends MY_Controller
         /**
          * @var $user models\User
          */
-        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->jauth->current_user()));
+        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->jauth->getLoggedinUsername()));
         if ($user === null) {
             return $this->output->set_status_header(404)->set_output('not found');
         }
