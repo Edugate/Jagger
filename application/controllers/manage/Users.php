@@ -46,7 +46,7 @@ class Users extends MY_Controller
      */
     private function ajaxplusadmin()
     {
-        return $this->input->is_ajax_request() && $this->jauth->logged_in() && $this->jauth->isAdministrator();
+        return $this->input->is_ajax_request() && $this->jauth->isLoggedIn() && $this->jauth->isAdministrator();
     }
 
     /**
@@ -66,7 +66,7 @@ class Users extends MY_Controller
 
     private function ajaxplusowner($encodedUsername)
     {
-        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return false;
         }
         return $this->isOwner($encodedUsername);
@@ -139,7 +139,7 @@ class Users extends MY_Controller
 
     public function updateSecondFactor($encodeduser)
     {
-        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Access denied');
         }
 
@@ -184,7 +184,7 @@ class Users extends MY_Controller
 
     public function add()
     {
-        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in() || !$this->jauth->isAdministrator()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn() || !$this->jauth->isAdministrator()) {
             return $this->output->set_status_header(403)->set_output('Permission denied');
         }
         $this->load->library('zacl');
@@ -254,7 +254,7 @@ class Users extends MY_Controller
 
     public function show($encodedUsername)
     {
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
@@ -380,7 +380,7 @@ class Users extends MY_Controller
 
     public function showlist()
     {
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
@@ -443,7 +443,7 @@ class Users extends MY_Controller
 
     public function remove()
     {
-        if (!$this->jauth->logged_in() || !$this->input->is_ajax_request()) {
+        if (!$this->jauth->isLoggedIn() || !$this->input->is_ajax_request()) {
             return $this->output->set_status_header(403)->set_output('Permission denied');
         }
         $this->load->library('zacl');

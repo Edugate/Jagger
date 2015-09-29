@@ -23,7 +23,7 @@ class Ec extends MY_Controller {
     function __construct()
     {
         parent::__construct();
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         $this->current_site = current_url();
         if (!$loggedin)
         {
@@ -102,7 +102,7 @@ class Ec extends MY_Controller {
     }
     function getMembers($ecid)
     {
-        if(!$this->input->is_ajax_request() || !$this->jauth->logged_in())
+        if(!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn())
         {
             set_status_header(403);
             echo 'Access denied';
@@ -303,7 +303,7 @@ class Ec extends MY_Controller {
             echo 'access denied';
             return;
         }
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if(!$loggedin)
         {
             set_status_header(403);

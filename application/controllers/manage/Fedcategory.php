@@ -23,7 +23,7 @@ class Fedcategory extends MY_Controller {
     public function __construct()
     {
         parent::__construct();
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin)
         {
             redirect('auth/login', 'location');

@@ -45,7 +45,7 @@ class Sysprefs extends MY_Controller
         if (!$this->input->is_ajax_request() || !($this->input->method(TRUE) === 'POST')) {
             return $this->output->set_status_header(401)->set_output('Invalid request');
         }
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(401)->set_output('Invalid session');
         }
         $isAdmin = $this->jauth->isAdministrator();
@@ -114,7 +114,7 @@ class Sysprefs extends MY_Controller
         if (!$this->input->is_ajax_request() || !($this->input->method(TRUE) === 'GET') || empty($confparam)) {
             return $this->output->set_status_header(401)->set_output('Invalid request');
         }
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(401)->set_output('Invalid session');
         }
         $isAdmin = $this->jauth->isAdministrator();
@@ -138,7 +138,7 @@ class Sysprefs extends MY_Controller
 
     public function show()
     {
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }

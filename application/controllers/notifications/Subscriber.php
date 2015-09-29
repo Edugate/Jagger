@@ -88,7 +88,7 @@ class Subscriber extends MY_Controller
         if ($encodeduser === null) {
             show_error('not found', 404);
         }
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
@@ -173,7 +173,7 @@ class Subscriber extends MY_Controller
 
     public function add($encodeduser = null) {
 
-        if ($encodeduser === null || !$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
+        if ($encodeduser === null || !$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('denied');
         }
         $username = $this->jauth->current_user();
@@ -304,7 +304,7 @@ class Subscriber extends MY_Controller
         if ($method !== 'POST' || !ctype_digit($id) ||  !$this->input->is_ajax_request() ) {
             return $this->output->set_status_header(403)->set_output('Denied');
         }
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('not logged in');
         }
 

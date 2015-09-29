@@ -31,7 +31,7 @@ class Reports extends MY_Controller
 
     public function  index()
     {
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
@@ -61,7 +61,7 @@ class Reports extends MY_Controller
             show_error('Bad request', 401);
             return;
         }
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             show_error('Session lost', 403);
         }
         if (!$this->jauth->isAdministrator()) {
@@ -85,7 +85,7 @@ class Reports extends MY_Controller
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Lost session');
         }
         if (!$this->jauth->isAdministrator()) {
@@ -115,7 +115,7 @@ class Reports extends MY_Controller
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Unauthorized request');
         }
         if (!$this->jauth->isAdministrator()) {
@@ -135,7 +135,7 @@ class Reports extends MY_Controller
 
     public function vmigrate()
     {
-        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in() || !$this->jauth->isAdministrator()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn() || !$this->jauth->isAdministrator()) {
             return $this->output->set_status_header(403)->set_output('Unauthorized request');
         }
 

@@ -31,7 +31,7 @@ class Attribute_policyajax extends MY_Controller
 
     public function getglobalattrpolicy($idpid, $attrid)
     {
-        $isValidRequest = (ctype_digit($idpid) && ctype_digit($attrid) && $this->input->is_ajax_request() && $this->jauth->logged_in());
+        $isValidRequest = (ctype_digit($idpid) && ctype_digit($attrid) && $this->input->is_ajax_request() && $this->jauth->isLoggedIn());
         if (!$isValidRequest) {
             set_status_header(403);
             echo 'Access denied';
@@ -51,7 +51,7 @@ class Attribute_policyajax extends MY_Controller
 
     public function getfedattrpolicy($idpid, $fedid, $attrid)
     {
-        $isValidRequest = (ctype_digit($idpid) && ctype_digit($attrid) && ctype_digit($fedid) && $this->input->is_ajax_request() && $this->jauth->logged_in());
+        $isValidRequest = (ctype_digit($idpid) && ctype_digit($attrid) && ctype_digit($fedid) && $this->input->is_ajax_request() && $this->jauth->isLoggedIn());
         if (!$isValidRequest) {
             set_status_header(403);
             echo 'Access denied';
@@ -82,7 +82,7 @@ class Attribute_policyajax extends MY_Controller
 
     public function getattrpath($idpid, $spid, $attrid)
     {
-        $isValidRequest = (ctype_digit($idpid) && ctype_digit($spid) && ctype_digit($attrid) && $this->input->is_ajax_request() && $this->jauth->logged_in());
+        $isValidRequest = (ctype_digit($idpid) && ctype_digit($spid) && ctype_digit($attrid) && $this->input->is_ajax_request() && $this->jauth->isLoggedIn());
         if (!$isValidRequest) {
             set_status_header(403);
             echo 'Access denied';
@@ -203,7 +203,7 @@ class Attribute_policyajax extends MY_Controller
     public function submit_sp($idpID)
     {
 
-        if (!ctype_digit($idpID) || !$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
+        if (!ctype_digit($idpID) || !$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             set_status_header(403);
             echo 'Access denied';
             return;
@@ -324,7 +324,7 @@ class Attribute_policyajax extends MY_Controller
 
     public function updatefed($idpID)
     {
-        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             set_status_header(401);
             echo 'access denied';
             return;
@@ -399,7 +399,7 @@ class Attribute_policyajax extends MY_Controller
 
     public function updatedefault($idpID)
     {
-        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             set_status_header(401);
             echo 'access denied';
             return;

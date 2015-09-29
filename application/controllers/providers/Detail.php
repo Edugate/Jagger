@@ -33,7 +33,7 @@ class Detail extends MY_Controller
 
     public function refreshentity($providerID)
     {
-        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Denied - no session or invalid request');
         }
         if (!ctype_digit($providerID)) {
@@ -60,7 +60,7 @@ class Detail extends MY_Controller
 
     public function status($providerID = null, $refresh = null)
     {
-        if (!$this->input->is_ajax_request() || !ctype_digit($providerID) || !$this->jauth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !ctype_digit($providerID) || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Accss Denied');
         }
         /**
@@ -103,7 +103,7 @@ class Detail extends MY_Controller
 
     public function showlogs($providerID)
     {
-        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Denied');
         }
         $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
@@ -159,7 +159,7 @@ class Detail extends MY_Controller
         if (!ctype_digit($providerID)) {
             show_error(lang('error404'), 404);
         }
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
@@ -213,7 +213,7 @@ class Detail extends MY_Controller
 
     public function showmembers($providerid)
     {
-        if (!$this->input->is_ajax_request() || !ctype_digit($providerid) || !$this->jauth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !ctype_digit($providerid) || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $myLang = MY_Controller::getLang();

@@ -11,7 +11,7 @@ class Awaitinglist extends MY_Controller
 
     function index()
     {
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         try {

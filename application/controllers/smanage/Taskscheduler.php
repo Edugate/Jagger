@@ -48,7 +48,7 @@ class Taskscheduler extends MY_Controller
             show_error('Incorrect param provided', 403);
             return;
         }
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
             redirect('auth/login', 'location');
             return;
@@ -195,7 +195,7 @@ class Taskscheduler extends MY_Controller
             show_error('Feature is not enabled', 403);
             return;
         } else {
-            if (!$this->jauth->logged_in()) {
+            if (!$this->jauth->isLoggedIn()) {
                 redirect('auth/login', 'location');
                 return;
             }

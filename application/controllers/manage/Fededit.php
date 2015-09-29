@@ -25,7 +25,7 @@ class Fededit extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('formelement');

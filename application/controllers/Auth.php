@@ -22,7 +22,7 @@ class Auth extends MY_Controller
 
     public function index()
     {
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             return $this->login();
         } else {
             redirect($this->config->item('base_url'), 'location');
@@ -31,7 +31,7 @@ class Auth extends MY_Controller
 
     public function logout()
     {
-        if ($this->jauth->logged_in()) {
+        if ($this->jauth->isLoggedIn()) {
             $this->jauth->logout();
         }
         $this->load->view('auth/logout');
@@ -43,7 +43,7 @@ class Auth extends MY_Controller
         if (!$this->input->is_ajax_request() || $method !== 'POST') {
             return $this->output->set_status_header(403)->set_output('Permission Denied');
         }
-        if ($this->jauth->logged_in()) {
+        if ($this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Already authenticated');
         }
 
@@ -152,7 +152,7 @@ class Auth extends MY_Controller
 
     public function ssphpauth()
     {
-        if ($this->jauth->logged_in()) {
+        if ($this->jauth->isLoggedIn()) {
             redirect($this->config->item('base_url'), 'location');
         }
         $spsp = $this->config->item('simplesamlphp');
@@ -267,7 +267,7 @@ class Auth extends MY_Controller
     public function login()
     {
 
-        if ($this->jauth->logged_in()) {
+        if ($this->jauth->isLoggedIn()) {
             redirect($this->config->item('base_url'), 'location');
         }
         $this->data['dontshowsigning'] = true;
@@ -476,7 +476,7 @@ class Auth extends MY_Controller
             log_message('error', 'This location should be protected by shibboleth in apache');
             show_error('Internal server error', 500);
         }
-        if ($this->jauth->logged_in()) {
+        if ($this->jauth->isLoggedIn()) {
             redirect('' . base_url() . '', 'location');
         }
         $userValue = $this->getShibUsername();

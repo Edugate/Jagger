@@ -22,7 +22,7 @@ class Attributepolicy extends MY_Controller
      */
     private function initiateAjaxAccess($idpid = null)
     {
-        return (ctype_digit($idpid) && $this->input->is_ajax_request() && $this->jauth->logged_in());
+        return (ctype_digit($idpid) && $this->input->is_ajax_request() && $this->jauth->isLoggedIn());
     }
 
     private function getEntity($idpid)
@@ -36,7 +36,7 @@ class Attributepolicy extends MY_Controller
         if (!ctype_digit($idpid)) {
             show_404();
         }
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
 

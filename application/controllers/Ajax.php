@@ -38,7 +38,7 @@ class Ajax extends MY_Controller
 
     public function getproviders()
     {
-        if (!($this->input->is_ajax_request() && $this->jauth->logged_in())) {
+        if (!($this->input->is_ajax_request() && $this->jauth->isLoggedIn())) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
 

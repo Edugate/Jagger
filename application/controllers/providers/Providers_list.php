@@ -55,7 +55,7 @@ class Providers_list extends MY_Controller {
             echo 'incorrect or missing type';
             return;
         }
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin)
         {
             set_status_header(403);
@@ -88,7 +88,7 @@ class Providers_list extends MY_Controller {
             return;
         }
 
-        if (!$this->jauth->logged_in())
+        if (!$this->jauth->isLoggedIn())
         {
             set_status_header(403);
             echo 'Not authenticated - access denied';

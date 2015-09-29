@@ -1,5 +1,5 @@
 <?php
-$loggedin = $this->jauth->logged_in();
+$loggedin = $this->jauth->isLoggedIn();
 if (empty($sideicons)) {
     $sideicons = array();
 }

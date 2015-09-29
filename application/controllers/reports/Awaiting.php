@@ -26,7 +26,7 @@ class Awaiting extends MY_Controller
 
     function ajaxrefresh()
     {
-        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             set_status_header(403);
             echo 'Permission denied';
             return;
@@ -174,7 +174,7 @@ class Awaiting extends MY_Controller
 
     public function dashajaxrefresh()
     {
-        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             set_status_header(403);
             echo "Permission denied";
             return;
@@ -189,7 +189,7 @@ class Awaiting extends MY_Controller
 
     public function counterqueue()
     {
-        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $queuelist = $this->getQueueList();
@@ -285,7 +285,7 @@ class Awaiting extends MY_Controller
         if (!ctype_alnum($token)) {
             show_error('Wrong token provided', 404);
         }
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         try {
@@ -526,7 +526,7 @@ class Awaiting extends MY_Controller
 
     function approve()
     {
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $isAdministrator = $this->jauth->isAdministrator();
@@ -894,7 +894,7 @@ class Awaiting extends MY_Controller
 
     function reject()
     {
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if ($loggedin) {
             $this->load->library('zacl');
             $this->load->library('j_queue');

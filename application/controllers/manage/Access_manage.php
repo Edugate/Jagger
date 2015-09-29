@@ -23,7 +23,7 @@ class Access_manage extends MY_Controller {
     public function __construct()
     {
         parent::__construct();
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         $this->current_site = current_url();
         if (!$loggedin)
         {

@@ -43,7 +43,7 @@ class Dashboard extends MY_Controller
 
     public function index()
     {
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             $data['content_view'] = 'staticpages_view';
             /**
              * @var $frontpage models\Staticpage

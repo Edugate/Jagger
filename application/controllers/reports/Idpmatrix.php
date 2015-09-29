@@ -39,7 +39,7 @@ class Idpmatrix extends MY_Controller
 
 	public function getArpData($idpid)
 	{
-		if (!$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
+		if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
 		}
 		$this->load->library('zacl');
@@ -96,7 +96,7 @@ class Idpmatrix extends MY_Controller
 		if (empty($idpid) || !ctype_digit($idpid)) {
 			show_error('Wrong or empty id', 404);
 		}
-		if ($this->jauth->logged_in()) {
+		if ($this->jauth->isLoggedIn()) {
 			$this->session->set_userdata(array('currentMenu' => 'awaiting'));
 			$this->load->library('zacl');
 		} else {

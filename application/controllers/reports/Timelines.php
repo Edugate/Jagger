@@ -11,7 +11,7 @@ class Timelines extends MY_Controller {
         $this->load->helper('url');
         $this->load->helper('cert');
         $this->load->library('table');
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         $this->current_site = current_url();
         $this->title = lang('rr_timeline');
 

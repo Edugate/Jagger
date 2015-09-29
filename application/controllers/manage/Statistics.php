@@ -41,7 +41,7 @@ class Statistics extends MY_Controller {
             log_message('error', 'Missing datastorage_path in config');
             show_error('not found', 404);
         }
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin)
         {
             show_error('Access denied', 403);
@@ -96,7 +96,7 @@ class Statistics extends MY_Controller {
             log_message('error', 'Missing datastorage_path in config');
             show_error('not found', 404);
         }
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin)
         {
             show_error('Access denied', 403);

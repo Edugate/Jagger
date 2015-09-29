@@ -51,7 +51,7 @@ class Authenticate extends MY_Controller
         $currentuser = $this->session->userdata('username');
         $secondfactor = $this->session->userdata('secondfactor');
         $twofactoauthn = $this->config->item('twofactorauthn');
-        if ($this->jauth->logged_in()) {
+        if ($this->jauth->isLoggedIn()) {
             $result = array('logged' => 1);
             return $this->output->set_content_type('application/json')->set_output(json_encode($result));
         }
@@ -110,7 +110,7 @@ class Authenticate extends MY_Controller
                 log_message('debug', 'client browser timeoffset: ' . jauth::$timeOffset);
                 $this->session->set_userdata('timeoffset', '' . jauth::$timeOffset . '');
             }
-            if ($this->jauth->logged_in()) {
+            if ($this->jauth->isLoggedIn()) {
                 $result = array('success' => true, 'result' => 'OK');
                 return $this->output->set_content_type('application/json')->set_output(json_encode($result));
             } else {

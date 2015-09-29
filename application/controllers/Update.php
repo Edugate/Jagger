@@ -6,7 +6,7 @@ class Update extends MY_Controller {
     function __construct()
     {
        parent::__construct();
-       $loggedin = $this->jauth->logged_in();
+       $loggedin = $this->jauth->isLoggedIn();
        $this->current_site = current_url();
        if (!$loggedin)
        {

@@ -23,7 +23,7 @@ class Spage extends MY_Controller
 
     public function showall()
     {
-        if (!$this->jauth->logged_in())
+        if (!$this->jauth->isLoggedIn())
         {
             redirect('auth/login', 'location');
         }
@@ -94,7 +94,7 @@ class Spage extends MY_Controller
     public function editArticle($pcode)
     {
         $pcode = trim($pcode);
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin)
         {
             redirect('auth/login', 'location');

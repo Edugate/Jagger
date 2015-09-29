@@ -17,7 +17,7 @@ class Spmatrix extends MY_Controller
 
     public function show($id = null)
     {
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
@@ -60,7 +60,7 @@ class Spmatrix extends MY_Controller
 
     public function getdiag($id = null)
     {
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         $isAjax = $this->input->is_ajax_request();
         if (!$loggedin || !$isAjax) {
             set_status_header(403);

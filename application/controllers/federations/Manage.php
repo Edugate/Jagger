@@ -41,7 +41,7 @@ class Manage extends MY_Controller
 
     function index()
     {
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
@@ -125,7 +125,7 @@ class Manage extends MY_Controller
             echo 'Request not allowed';
             return;
         }
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             set_status_header(403);
             echo 'access denied. invalid session';
             return;
@@ -165,7 +165,7 @@ class Manage extends MY_Controller
 
     function showcontactlist($fed_name, $type = NULL)
     {
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             set_status_header(403);
             echo 'Access denied';
             return;
@@ -268,7 +268,7 @@ class Manage extends MY_Controller
 
     function show($encodedFedName)
     {
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library(array( 'zacl'));
@@ -446,7 +446,7 @@ class Manage extends MY_Controller
 
     public function inviteprovider($encodedFedName)
     {
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $myLang = MY_Controller::getLang();
@@ -526,7 +526,7 @@ class Manage extends MY_Controller
 
     public function removeprovider($encodedFedName)
     {
-        if (!$this->jauth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');

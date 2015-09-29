@@ -40,7 +40,7 @@ class P extends MY_Controller {
        $is_public = $page->getPublic();
        if(!$is_public)
        {
-          $loggedin = $this->jauth->logged_in();
+          $loggedin = $this->jauth->isLoggedIn();
           if(!$loggedin)
           {        
               $data['content_view'] = 'auth/notloggedin';

@@ -31,7 +31,7 @@ class Federation_registration extends MY_Controller
         $this->load->helper('form');
         $this->load->library('form_validation');
         $this->load->helper('url');
-        $loggedin = $this->jauth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         $this->current_site = current_url();
         if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
