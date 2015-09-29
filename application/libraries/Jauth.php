@@ -128,11 +128,11 @@ class Jauth
                     return true;
                 }
             } else {
-                $this->set_error('login_unsuccessful');
+                $this->setError('login_unsuccessful');
                 return false;
             }
         } else {
-            $this->set_error('login_unsuccessful');
+            $this->setError('login_unsuccessful');
             return false;
         }
     }
@@ -179,7 +179,7 @@ class Jauth
         return $username;
     }
 
-    public function set_error($error) {
+    public function setError($error) {
         $this->errors[] = $error;
 
         return $error;

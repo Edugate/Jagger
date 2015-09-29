@@ -6,7 +6,7 @@ if (empty($sideicons)) {
 $isAdministrator = FALSE;
 if ($loggedin) {
     $isAdministrator = (boolean)$this->jauth->isAdministrator();
-    $args['user'] = $this->jauth->current_user();
+    $args['user'] = $this->jauth->getLoggedinUsername();
 }
 $langs = MY_Controller::guiLangs();
 
