@@ -19,6 +19,9 @@ class Jauth
     protected $ci;
     protected $status;
     protected $messages;
+    /**
+     * @var array $errors
+     */
     protected $errors = array();
     public static $timeOffset = 0;
     protected static $isAdmin;
@@ -42,10 +45,9 @@ class Jauth
                 $user = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $usersession['username'] . ''));
             } catch (PDOException $e) {
                 log_message('error', $e);
-                show_error("Server error", 500);
-                exit;
+                return false;
             }
-            if (empty($user)) {
+            if ($user === null) {
 
                 return false;
             }
@@ -59,7 +61,7 @@ class Jauth
             $user->updated();
             $this->em->persist($user);
             $authntype = '';
-            if (isset($usersession['authntype'])) {
+            if (array_key_exists('authntype', $usersession)) {
                 $authntype = $usersession['authntype'];
             }
             $trackDetails = 'Authn from ' . $ipAddr . ' ::  ' . $authntype . ' Authn and 2F';
@@ -80,61 +82,61 @@ class Jauth
          */
         try {
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $identity, 'local' => true));
+
         } catch (PDOException $e) {
             log_message('error', $e);
-            show_error("Server error", 500);
-            exit;
+            return false;
         }
-        if ($user !== null) {
-            $isPassMatch = $user->isPasswordMatch($password);
-            if ($isPassMatch === true) {
-                $twofactorauthn = $this->ci->config->item('twofactorauthn');
-                $secondfactor = $user->getSecondFactor();
-                if (!empty($twofactorauthn) && $twofactorauthn === true && !empty($secondfactor) && $secondfactor === 'duo') {
-                    $sig_request = Duo::signRequest($this->ci->config->item('duo-ikey'), $this->ci->config->item('duo-skey'), $this->ci->config->item('duo-akey'), $user->getUsername());
-                    $this->ci->session->set_userdata(
-                        array('partiallogged' => 1,
-                            'logged' => 0,
-                            'username' => '' . $user->getUsername() . '',
-                            'user_id' => '' . $user->getId() . '',
-                            'secondfactor' => $secondfactor,
-                            'authntype' => 'local')
-                    );
-                    return true;
-                } else {
-                    $ip = $this->ci->input->ip_address();
-                    $userprefs = $user->getUserpref();
-                    if (!empty($userprefs) && array_key_exists('board', $userprefs)) {
-                        $this->ci->session->set_userdata(array('board' => $userprefs['board']));
-                    }
-
-                    $user->setIP($ip);
-                    $user->updated();
-                    $this->em->persist($user);
-                    $trackDetails = 'Authn from ' . $ip . ' ::  Local Authn';
-                    $this->ci->tracker->save_track('user', 'authn', $user->getUsername(), $trackDetails, false);
-
-                    $userSessionData = $user->getBasic();
-                    $this->em->flush();
-                    $this->ci->session->set_userdata(array(
-                        'logged' => 1,
-                        'username' => '' . $userSessionData['username'] . '',
-                        'user_id' => '' . $userSessionData['user_id'] . '',
-                        'showhelp' => '' . $userSessionData['showhelp'] . '',
-                        'authntype' => 'local'
-                    ));
-                    $this->ci->session->sess_regenerate();
-                    $this->set_message('login_successful');
-                    return true;
-                }
-            } else {
-                $this->setError('login_unsuccessful');
-                return false;
-            }
-        } else {
+        if ($user === null) {
             $this->setError('login_unsuccessful');
             return false;
         }
+
+        $isPassMatch = $user->isPasswordMatch($password);
+        if ($isPassMatch !== true) {
+            $this->setError('login_unsuccessful');
+            return false;
+        }
+
+        $twofactorauthn = $this->ci->config->item('twofactorauthn');
+        $secondfactor = $user->getSecondFactor();
+        if (!empty($twofactorauthn) && $twofactorauthn === true && !empty($secondfactor) && $secondfactor === 'duo') {
+            Duo::signRequest($this->ci->config->item('duo-ikey'), $this->ci->config->item('duo-skey'), $this->ci->config->item('duo-akey'), $user->getUsername());
+            $this->ci->session->set_userdata(
+                array('partiallogged' => 1,
+                    'logged' => 0,
+                    'username' => '' . $user->getUsername() . '',
+                    'user_id' => '' . $user->getId() . '',
+                    'secondfactor' => $secondfactor,
+                    'authntype' => 'local')
+            );
+        } else {
+            $ip = $this->ci->input->ip_address();
+            $userprefs = $user->getUserpref();
+            if (!empty($userprefs) && array_key_exists('board', $userprefs)) {
+                $this->ci->session->set_userdata(array('board' => $userprefs['board']));
+            }
+
+            $user->setIP($ip);
+            $user->updated();
+            $this->em->persist($user);
+            $trackDetails = 'Authn from ' . $ip . ' ::  Local Authn';
+            $this->ci->tracker->save_track('user', 'authn', $user->getUsername(), $trackDetails, false);
+
+            $userSessionData = $user->getBasic();
+            $this->em->flush();
+            $this->ci->session->set_userdata(array(
+                'logged' => 1,
+                'username' => '' . $userSessionData['username'] . '',
+                'user_id' => '' . $userSessionData['user_id'] . '',
+                'showhelp' => '' . $userSessionData['showhelp'] . '',
+                'authntype' => 'local'
+            ));
+            $this->ci->session->sess_regenerate();
+            $this->set_message('login_successful');
+        }
+        return true;
+
     }
 
     public function logout() {
@@ -173,7 +175,7 @@ class Jauth
             $username = trim($this->ci->session->userdata('username'));
         }
 
-        if (strlen($username) == 0) {
+        if ($username === '') {
             $username = null;
         }
         return $username;
@@ -185,10 +187,10 @@ class Jauth
         return $error;
     }
 
-    public function errors() {
+    public function getErrors() {
         $_output = '';
         foreach ($this->errors as $error) {
-            $_output .= "<p>" . $this->ci->lang->line($error) . "</p>";
+            $_output .= '<p>' . $this->ci->lang->line($error) . '</p>';
         }
 
         return $_output;
@@ -200,50 +202,58 @@ class Jauth
         return $message;
     }
 
-    public function messages() {
+    public function getMessages() {
         $_output = '';
         foreach ($this->messages as $message) {
-            $_output .= "<p>" . $this->ci->lang->line($message) . "</p>";
+            $_output .= '<p>' . $this->ci->lang->line($message) . '</p>';
         }
 
         return $_output;
     }
 
+
+    /**
+     * @return bool
+     */
     public function isAdministrator() {
-        if (self::$isAdmin === true) {
-            return true;
-        } elseif (self::$isAdmin === false) {
-            return false;
+        if (is_bool(self::$isAdmin)) {
+            return self::$isAdmin;
         }
 
         $username = $this->getLoggedinUsername();
-        if (empty($username)) {
+        if ($username === null) {
             self::$isAdmin = false;
+            $this->ci->session->sess_destroy();
             return false;
         }
-        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $username . ''));
+        /**
+         * @var models\User $user
+         */
+        $user = $this->em->getRepository('models\User')->findOneBy(array('username' => '' . $username . ''));
         if ($user === null) {
             log_message('error', 'isAdministrator: Browser client session from IP:' . $this->ci->input->ip_address() . ' references to nonexist user: ' . $username);
             $this->ci->session->sess_destroy();
             return false;
         }
-        $adminRole = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator', 'type' => 'system'));
-        if (empty($adminRole)) {
+        /**
+         * @var models\AclRole $adminRole
+         */
+        $adminRole = $this->em->getRepository('models\AclRole')->findOneBy(array('name' => 'Administrator', 'type' => 'system'));
+        if ($adminRole === null) {
             log_message('error', 'isAdministrator: Administrator Role is missing in DB AclRoles tbl');
-
             return false;
-        } else {
-            $userRoles = $user->getRoles();
-            if ($userRoles->contains($adminRole)) {
-                log_message('debug', 'isAdministrator: user ' . $user->getUsername() . ' found in Administrator group');
-                self::$isAdmin = true;
-                return false;
-            } else {
-                log_message('debug', 'isAdministrator: user ' . $user->getUsername() . ' not found in Administrator group');
-                self::$isAdmin = false;
-                return false;
-            }
         }
+        $userRoles = $user->getRoles();
+        if ($userRoles->contains($adminRole)) {
+            log_message('debug', 'isAdministrator: user ' . $user->getUsername() . ' found in Administrator group');
+            self::$isAdmin = true;
+            return true;
+        } else {
+            log_message('debug', 'isAdministrator: user ' . $user->getUsername() . ' not found in Administrator group');
+            self::$isAdmin = false;
+            return false;
+        }
+
     }
 
 }
