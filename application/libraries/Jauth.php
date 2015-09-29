@@ -13,13 +13,13 @@ if (!defined('BASEPATH'))
  */
 
 /**
- * J_auth Class
+ * Jauth Class
  *
  * @package     RR3
  * @subpackage  Libraries
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class J_auth
+class Jauth
 {
 
     protected $em;

@@ -28,7 +28,7 @@ class Oidcauth extends MY_Controller
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
-        if ($this->j_auth->logged_in()) {
+        if ($this->jauth->logged_in()) {
             return $this->output->set_status_header(403)->set_output('Already authenticated');
         }
         if (!$this->input->is_ajax_request()) {
@@ -62,7 +62,7 @@ class Oidcauth extends MY_Controller
             $error_message = $e->getMessage();
             return $this->load->view('page', array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
-        if ($this->j_auth->logged_in()) {
+        if ($this->jauth->logged_in()) {
             $error_message = 'Already authenticated';
             return $this->load->view('page', array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }

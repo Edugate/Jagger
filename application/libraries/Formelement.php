@@ -33,7 +33,7 @@ class Formelement
             $this->defaultlangselect = $a;
         }
         log_message('debug', 'lib/Formelement initialized');
-        $isAdmin = $this->ci->j_auth->isAdministrator();
+        $isAdmin = $this->ci->jauth->isAdministrator();
         if ($isAdmin) {
             $disallowedparts = array();
         } else {
@@ -83,7 +83,7 @@ class Formelement
         $result[] = '';
         if (count($currentRegPolicies) == 0) {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box warning">' . lang('noregpolsavalabletoapply') . '</div></div>';
-        } elseif (!$this->ci->j_auth->isAdministrator()) {
+        } elseif (!$this->ci->jauth->isAdministrator()) {
             $result[] = '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }
         $r = '';
@@ -161,7 +161,7 @@ class Formelement
             }
         }
         $r = '';
-        if (!$this->ci->j_auth->isAdministrator()) {
+        if (!$this->ci->jauth->isAdministrator()) {
             $r .= '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }
         $r .= '<div class="small-12 columns"><dl class="accordion checkboxlist" data-accordion>';

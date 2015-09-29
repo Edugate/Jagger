@@ -45,10 +45,10 @@ class Sysprefs extends MY_Controller
         if (!$this->input->is_ajax_request() || !($this->input->method(TRUE) === 'POST')) {
             return $this->output->set_status_header(401)->set_output('Invalid request');
         }
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             return $this->output->set_status_header(401)->set_output('Invalid session');
         }
-        $isAdmin = $this->j_auth->isAdministrator();
+        $isAdmin = $this->jauth->isAdministrator();
         if ($isAdmin!==true) {
             return $this->output->set_status_header(401)->set_output('Access denied');
         }
@@ -114,10 +114,10 @@ class Sysprefs extends MY_Controller
         if (!$this->input->is_ajax_request() || !($this->input->method(TRUE) === 'GET') || empty($confparam)) {
             return $this->output->set_status_header(401)->set_output('Invalid request');
         }
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             return $this->output->set_status_header(401)->set_output('Invalid session');
         }
-        $isAdmin = $this->j_auth->isAdministrator();
+        $isAdmin = $this->jauth->isAdministrator();
         if (!$isAdmin) {
             return $this->output->set_status_header(401)->set_output('Access denied');
         }
@@ -138,11 +138,11 @@ class Sysprefs extends MY_Controller
 
     public function show()
     {
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
-        $isAdmin = $this->j_auth->isAdministrator();
+        $isAdmin = $this->jauth->isAdministrator();
         if (!$isAdmin) {
             show_error('Permission denied', 403);
             return;

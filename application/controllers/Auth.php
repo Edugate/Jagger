@@ -22,7 +22,7 @@ class Auth extends MY_Controller
 
     public function index()
     {
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             return $this->login();
         } else {
             redirect($this->config->item('base_url'), 'location');
@@ -31,8 +31,8 @@ class Auth extends MY_Controller
 
     public function logout()
     {
-        if ($this->j_auth->logged_in()) {
-            $this->j_auth->logout();
+        if ($this->jauth->logged_in()) {
+            $this->jauth->logout();
         }
         $this->load->view('auth/logout');
     }
@@ -43,7 +43,7 @@ class Auth extends MY_Controller
         if (!$this->input->is_ajax_request() || $method !== 'POST') {
             return $this->output->set_status_header(403)->set_output('Permission Denied');
         }
-        if ($this->j_auth->logged_in()) {
+        if ($this->jauth->logged_in()) {
             return $this->output->set_status_header(403)->set_output('Already authenticated');
         }
 
@@ -152,7 +152,7 @@ class Auth extends MY_Controller
 
     public function ssphpauth()
     {
-        if ($this->j_auth->logged_in()) {
+        if ($this->jauth->logged_in()) {
             redirect($this->config->item('base_url'), 'location');
         }
         $spsp = $this->config->item('simplesamlphp');
@@ -267,7 +267,7 @@ class Auth extends MY_Controller
     public function login()
     {
 
-        if ($this->j_auth->logged_in()) {
+        if ($this->jauth->logged_in()) {
             redirect($this->config->item('base_url'), 'location');
         }
         $this->data['dontshowsigning'] = true;
@@ -476,7 +476,7 @@ class Auth extends MY_Controller
             log_message('error', 'This location should be protected by shibboleth in apache');
             show_error('Internal server error', 500);
         }
-        if ($this->j_auth->logged_in()) {
+        if ($this->jauth->logged_in()) {
             redirect('' . base_url() . '', 'location');
         }
         $userValue = $this->getShibUsername();

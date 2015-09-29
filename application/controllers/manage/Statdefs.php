@@ -39,7 +39,7 @@ class Statdefs extends MY_Controller
 
     public function download($defid = null)
     {
-        if (!$this->input->is_ajax_request() ||  !ctype_digit($defid) || $this->isStats() !== true || !$this->j_auth->logged_in()) {
+        if (!$this->input->is_ajax_request() ||  !ctype_digit($defid) || $this->isStats() !== true || !$this->jauth->logged_in()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         /**
@@ -119,7 +119,7 @@ class Statdefs extends MY_Controller
         if (empty($providerId) || !ctype_digit($providerId) || !(empty($statDefId) || ctype_digit($statDefId)) || $this->isStats() !== TRUE) {
             show_error('Page not found', 404);
         }
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             redirect('auth/login', 'location');
         }
         $myLang = MY_Controller::getLang();
@@ -282,7 +282,7 @@ class Statdefs extends MY_Controller
             $downurl = base_url() . 'manage/statistics/show/';
             $dowinfo = lang('statfilegenerated');
             foreach ($statfiles as $st) {
-                $createdAt = date('Y-m-d H:i:s', $st->getCreatedAt()->format("U") + j_auth::$timeOffset);
+                $createdAt = date('Y-m-d H:i:s', $st->getCreatedAt()->format("U") + jauth::$timeOffset);
                 $statv .= '<li><a href="' . $downurl . $st->getId() . '">' . $dowinfo . ': ' . $createdAt . '</a></li>';
             }
             $statv .= '</ul>';
@@ -302,7 +302,7 @@ class Statdefs extends MY_Controller
         if (empty($statdefid) || empty($providerid) || !ctype_digit($statdefid) || !ctype_digit($providerid)) {
             show_error('Page not found', 404);
         }
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             redirect('auth/login', 'location');
         }
         $isStats = $this->isStats();
@@ -461,7 +461,7 @@ class Statdefs extends MY_Controller
         if (empty($providerid) || !ctype_digit($providerid) || $this->isStats() !== TRUE) {
             show_error('Page not found', 404);
         }
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             redirect('auth/login', 'location');
         }
         $myLang = MY_Controller::getLang();
@@ -625,7 +625,7 @@ class Statdefs extends MY_Controller
         /**
          * @var models\ProviderStatsDef $def
          */
-        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
             $s = 403;
             $msg = 'Access denied';
         } elseif (empty($defid) || !ctype_digit($defid)) {

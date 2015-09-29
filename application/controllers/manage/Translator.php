@@ -23,7 +23,7 @@ class Translator extends MY_Controller
     function __construct()
     {
         parent::__construct();
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
@@ -44,7 +44,7 @@ class Translator extends MY_Controller
 
     private function checkPermission($langto)
     {
-        $username = $this->j_auth->current_user();
+        $username = $this->jauth->current_user();
         $translator = $this->config->item('translator_access');
         if (!empty($translator) && is_array($translator) && isset($translator[$langto]) && strcasecmp($translator[$langto], $username) == 0) {
             return true;

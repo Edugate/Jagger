@@ -74,7 +74,7 @@ class Subscriber extends MY_Controller
                 'email' => '' . $subscription->getAltEmail() . '',
                 'enabled' => '' . $subscription->getEnabled() . '',
                 'approved' => '' . $subscription->getApproved() . '',
-                'updated' => '' . date('Y-m-d H:i:s', $subscription->getUpdatedAt()->format('U') + j_auth::$timeOffset) . '',
+                'updated' => '' . date('Y-m-d H:i:s', $subscription->getUpdatedAt()->format('U') + jauth::$timeOffset) . '',
                 'langstatus' => $status,
                 'langprovider' => lang('rr_provider'),
                 'langfederation' => lang('rr_federation'),
@@ -88,13 +88,13 @@ class Subscriber extends MY_Controller
         if ($encodeduser === null) {
             show_error('not found', 404);
         }
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
         $decodeduser = base64url_decode($encodeduser);
-        $loggeduser = $this->j_auth->current_user();
-        $isAdmin = $this->j_auth->isAdministrator();
+        $loggeduser = $this->jauth->current_user();
+        $isAdmin = $this->jauth->isAdministrator();
         if ($isAdmin !== true && strcasecmp($decodeduser, $loggeduser) != 0) {
             log_message('warning', __METHOD__ . ': User ' . $loggeduser . ' tried to get access to other users subsricriptions:' . $decodeduser);
             show_error('permission denied', 403);
@@ -173,10 +173,10 @@ class Subscriber extends MY_Controller
 
     public function add($encodeduser = null) {
 
-        if ($encodeduser === null || !$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+        if ($encodeduser === null || !$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
             return $this->output->set_status_header(403)->set_output('denied');
         }
-        $username = $this->j_auth->current_user();
+        $username = $this->jauth->current_user();
         if (!empty($username)) {
             /**
              * @var $user models\User
@@ -186,7 +186,7 @@ class Subscriber extends MY_Controller
         if ($user === null) {
             return $this->output->set_status_header(403)->set_output('error occured');
         }
-        $isAdministator = $this->j_auth->isAdministrator();
+        $isAdministator = $this->jauth->isAdministrator();
         $decodeduser = base64url_decode($encodeduser);
         $requetmatchuser = (boolean)(strcmp($username, $decodeduser) == 0);
         if (!($isAdministator || $requetmatchuser)) {
@@ -304,7 +304,7 @@ class Subscriber extends MY_Controller
         if ($method !== 'POST' || !ctype_digit($id) ||  !$this->input->is_ajax_request() ) {
             return $this->output->set_status_header(403)->set_output('Denied');
         }
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             return $this->output->set_status_header(403)->set_output('not logged in');
         }
 
@@ -329,11 +329,11 @@ class Subscriber extends MY_Controller
         /**
          * @var $user models\User
          */
-        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->j_auth->current_user()));
+        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->jauth->current_user()));
         if ($user === null) {
             return $this->output->set_status_header(404)->set_output('not found');
         }
-        $isAdministrator = $this->j_auth->isAdministrator();
+        $isAdministrator = $this->jauth->isAdministrator();
         $notificationOwner = $notification->getSubscriber();
         $userMatchOwner = ($notificationOwner->getId() === $user->getId());
         if (!(($userMatchOwner) || ($isAdministrator))) {

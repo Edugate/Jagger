@@ -26,17 +26,16 @@ class Reports extends MY_Controller
     function __construct()
     {
         parent::__construct();
-        $this->load->library('j_auth');
         MY_Controller::$menuactive = 'admins';
     }
 
     public function  index()
     {
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
-        if (!$this->j_auth->isAdministrator()) {
+        if (!$this->jauth->isAdministrator()) {
             show_error('no perm', 403);
         }
 
@@ -62,10 +61,10 @@ class Reports extends MY_Controller
             show_error('Bad request', 401);
             return;
         }
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             show_error('Session lost', 403);
         }
-        if (!$this->j_auth->isAdministrator()) {
+        if (!$this->jauth->isAdministrator()) {
             show_error('No perm', 403);
         }
 
@@ -86,10 +85,10 @@ class Reports extends MY_Controller
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             return $this->output->set_status_header(403)->set_output('Lost session');
         }
-        if (!$this->j_auth->isAdministrator()) {
+        if (!$this->jauth->isAdministrator()) {
             return $this->output->set_status_header(403)->set_output('Access denied');
         }
         $proxyDir = null; //to genearate to default proxy dir
@@ -116,10 +115,10 @@ class Reports extends MY_Controller
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             return $this->output->set_status_header(403)->set_output('Unauthorized request');
         }
-        if (!$this->j_auth->isAdministrator()) {
+        if (!$this->jauth->isAdministrator()) {
             return $this->output->set_status_header(403)->set_output('Unauthorized request');
         }
 
@@ -136,7 +135,7 @@ class Reports extends MY_Controller
 
     public function vmigrate()
     {
-        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in() || !$this->j_auth->isAdministrator()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in() || !$this->jauth->isAdministrator()) {
             return $this->output->set_status_header(403)->set_output('Unauthorized request');
         }
 

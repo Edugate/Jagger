@@ -55,7 +55,7 @@ class Providers_list extends MY_Controller {
             echo 'incorrect or missing type';
             return;
         }
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         if (!$loggedin)
         {
             set_status_header(403);
@@ -88,7 +88,7 @@ class Providers_list extends MY_Controller {
             return;
         }
 
-        if (!$this->j_auth->logged_in())
+        if (!$this->jauth->logged_in())
         {
             set_status_header(403);
             echo 'Not authenticated - access denied';
@@ -177,7 +177,7 @@ class Providers_list extends MY_Controller {
                     'pavailable' => (int) $v->getAvailable(),
                     'pentityid' => $v->getEntityId(),
                     'pname' => $v->getNameToWebInLang($lang, $type),
-                    'pregdate' => $v->getRegistrationDateInFormat('Y-m-d', j_auth::$timeOffset),
+                    'pregdate' => $v->getRegistrationDateInFormat('Y-m-d', jauth::$timeOffset),
                     'phelpurl' => $v->getHelpdeskUrl(),
                 );
             }

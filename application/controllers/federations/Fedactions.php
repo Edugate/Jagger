@@ -17,7 +17,7 @@ class Fedactions extends MY_Controller
 
     function changestatus()
     {
-        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
             set_status_header(403);
             echo 'access denied';
             return;
@@ -73,7 +73,7 @@ class Fedactions extends MY_Controller
 
     function addbulk($fed_name, $type, $message = null)
     {
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             redirect('auth/login', 'location');
         }
         $this->load->library(array('zacl'));
@@ -138,7 +138,7 @@ class Fedactions extends MY_Controller
 
     public function bulkaddsubmit()
     {
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');

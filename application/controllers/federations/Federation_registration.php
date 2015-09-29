@@ -31,7 +31,7 @@ class Federation_registration extends MY_Controller
         $this->load->helper('form');
         $this->load->library('form_validation');
         $this->load->helper('url');
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         $this->current_site = current_url();
         if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
@@ -103,7 +103,7 @@ class Federation_registration extends MY_Controller
         $templateArgs = array(
             'fedname' => $fedname,
             'srcip' => $this->input->ip_address(),
-            'requsername' => $this->j_auth->current_user(),
+            'requsername' => $this->jauth->current_user(),
             'reqemail' => $q->getEmail(),
             'token' => $q->getToken(),
             'qurl' => '' . base_url() . 'reports/awaiting/detail/' . $q->getToken() . '',

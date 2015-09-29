@@ -23,7 +23,7 @@ class Fedcategory extends MY_Controller {
     public function __construct()
     {
         parent::__construct();
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         if (!$loggedin)
         {
             redirect('auth/login', 'location');
@@ -50,7 +50,7 @@ class Fedcategory extends MY_Controller {
 
     public function addnew()
     {
-        $isAdmin = $this->j_auth->isAdministrator();
+        $isAdmin = $this->jauth->isAdministrator();
         if (!$isAdmin)
         {
             show_error('perm denied', 403);
@@ -91,7 +91,7 @@ class Fedcategory extends MY_Controller {
             show_error('not found', 404);
         }
 
-        $isAdmin = $this->j_auth->isAdministrator();
+        $isAdmin = $this->jauth->isAdministrator();
         if (!$isAdmin)
         {
             show_error('perm denied', 403);
@@ -204,7 +204,7 @@ class Fedcategory extends MY_Controller {
             $cats = $this->em->getRepository("models\FederationCategory")->findBy(array('id' => $cat));
         }
         $result = array();
-        $isAdmin = $this->j_auth->isAdministrator();
+        $isAdmin = $this->jauth->isAdministrator();
         if($isAdmin)
         {
            $data['showaddbtn'] = TRUE;

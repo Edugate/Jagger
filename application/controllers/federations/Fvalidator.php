@@ -34,7 +34,7 @@ class Fvalidator extends MY_Controller
 
     public function detail($fedid, $validatorid)
     {
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         if (!$loggedin)
         {
             redirect('auth/login', 'location');
@@ -43,7 +43,7 @@ class Fvalidator extends MY_Controller
 
     public function detailjson($fid = null, $fvid = null)
     {
-        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in())
+        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in())
         {
             set_status_header(401);
             echo 'Access denied';
@@ -116,7 +116,7 @@ class Fvalidator extends MY_Controller
 
     public function validate()
     {
-        if (!($this->input->is_ajax_request() && $this->j_auth->logged_in()))
+        if (!($this->input->is_ajax_request() && $this->jauth->logged_in()))
         {
             set_status_header(404);
             echo 'Federation not found';

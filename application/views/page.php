@@ -1,12 +1,12 @@
 <?php
-$loggedin = $this->j_auth->logged_in();
+$loggedin = $this->jauth->logged_in();
 if (empty($sideicons)) {
     $sideicons = array();
 }
 $isAdministrator = FALSE;
 if ($loggedin) {
-    $isAdministrator = (boolean)$this->j_auth->isAdministrator();
-    $args['user'] = $this->j_auth->current_user();
+    $isAdministrator = (boolean)$this->jauth->isAdministrator();
+    $args['user'] = $this->jauth->current_user();
 }
 $langs = MY_Controller::guiLangs();
 

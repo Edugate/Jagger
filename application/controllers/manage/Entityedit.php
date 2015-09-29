@@ -194,7 +194,7 @@ class Entityedit extends MY_Controller
             $register = true;
             $this->type = strtoupper($id);
         }
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         $optValidationsPassed = true;
         $result = false;
         $y = $this->input->post();
@@ -709,7 +709,7 @@ class Entityedit extends MY_Controller
         {
             show_404();
         }
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             redirect('auth/login', 'location');
         }
         try {
@@ -872,9 +872,9 @@ class Entityedit extends MY_Controller
          * @var $u models\User
          */
         $data['anonymous'] = true;
-        if ($this->j_auth->logged_in()) {
+        if ($this->jauth->logged_in()) {
             $data['anonymous'] = FALSE;
-            $currentusername = $this->j_auth->current_user();
+            $currentusername = $this->jauth->current_user();
             $u = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $currentusername . ''));
             $data['loggeduser'] = array(
                 'username' => '' . $currentusername . '',

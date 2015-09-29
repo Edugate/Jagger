@@ -36,7 +36,7 @@ if (!defined('BASEPATH')) {
  * @property Email_sender $email_sender
  * @property Curl $curl
  * @property Show_element $show_element
- * @property J_auth $j_auth
+ * @property Jauth $jauth
  * @property Arp_generator $arp_generator
  * @property Arpgen $arpgen
  * @property Providerdetails $providerdetails

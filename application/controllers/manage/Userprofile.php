@@ -18,10 +18,10 @@ class Userprofile extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             redirect('auth/login', 'location');
         }
-        $this->isAdmin = $this->j_auth->isAdministrator();
+        $this->isAdmin = $this->jauth->isAdministrator();
         $this->load->library('form_validation');
 
     }
@@ -97,7 +97,7 @@ class Userprofile extends MY_Controller
     public function edit($encodedUsername = null)
     {
         $grantAccess = false;
-        $loggedinUser = $this->j_auth->current_user();
+        $loggedinUser = $this->jauth->current_user();
         if ($loggedinUser === null) {
             show_error('ff', 500);
         }

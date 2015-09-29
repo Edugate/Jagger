@@ -11,7 +11,7 @@ class Timelines extends MY_Controller {
         $this->load->helper('url');
         $this->load->helper('cert');
         $this->load->library('table');
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         $this->current_site = current_url();
         $this->title = lang('rr_timeline');
 
@@ -53,7 +53,7 @@ class Timelines extends MY_Controller {
             foreach ($providers as $p)
             {
 
-                $registrationDate = $p->getRegistrationDateInFormat('Ymd',j_auth::$timeOffset);
+                $registrationDate = $p->getRegistrationDateInFormat('Ymd',jauth::$timeOffset);
                 if ($registrationDate !== null)
                 {
                     $diag['known'][$registrationDate][$p->getId()] = array('n' => $p->getName(), 't' => $p->getType());

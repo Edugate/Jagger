@@ -26,7 +26,7 @@ class Awaiting extends MY_Controller
 
     function ajaxrefresh()
     {
-        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
             set_status_header(403);
             echo 'Permission denied';
             return;
@@ -47,10 +47,10 @@ class Awaiting extends MY_Controller
     private function hasQAccess(\models\Queue $q)
     {
         $result = false;
-        if ($this->j_auth->isAdministrator()) {
+        if ($this->jauth->isAdministrator()) {
             return true;
         }
-        $currentUser = $this->j_auth->current_user();
+        $currentUser = $this->jauth->current_user();
         /**
          * @var $creator models\User
          */
@@ -82,7 +82,7 @@ class Awaiting extends MY_Controller
     private function hasApproveAccess(\models\Queue $q)
     {
         $result = false;
-        if ($this->j_auth->isAdministrator()) {
+        if ($this->jauth->isAdministrator()) {
             return true;
         }
         $action = $q->getAction();
@@ -157,7 +157,7 @@ class Awaiting extends MY_Controller
             }
         }
         $subscriptions = $this->em->getRepository('models\NotificationList')->findBy(array('is_approved' => '0', 'is_enabled' => '1'));
-        $isAdmin = $this->j_auth->isAdministrator();
+        $isAdmin = $this->jauth->isAdministrator();
         if ($isAdmin) {
 
             foreach ($subscriptions as $s) {
@@ -174,7 +174,7 @@ class Awaiting extends MY_Controller
 
     public function dashajaxrefresh()
     {
-        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
             set_status_header(403);
             echo "Permission denied";
             return;
@@ -189,7 +189,7 @@ class Awaiting extends MY_Controller
 
     public function counterqueue()
     {
-        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->logged_in()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $queuelist = $this->getQueueList();
@@ -212,7 +212,7 @@ class Awaiting extends MY_Controller
         }
         if (strcasecmp($objAction, 'Join') == 0 && strcasecmp($recipientType, 'provider') == 0) {
             $recipient_write_access = $this->zacl->check_acl($qObject->getRecipient(), 'write', 'entity', '');
-            $requestor_view_access = (strcasecmp($qObject->getCreator()->getUsername(), $this->j_auth->current_user()) == 0);
+            $requestor_view_access = (strcasecmp($qObject->getCreator()->getUsername(), $this->jauth->current_user()) == 0);
             if ($requestor_view_access || $recipient_write_access) {
                 $result = $this->j_queue->displayInviteProvider($qObject);
                 if (!empty($result)) {
@@ -230,7 +230,7 @@ class Awaiting extends MY_Controller
         }
         if (strcasecmp($objAction, 'Delete') == 0) {
             $fedrows = $this->j_queue->displayDeleteFederation($qObject);
-            $fedrows[]['2cols'] = $this->j_queue->displayFormsButtons($qObject->getId(), !$this->j_auth->isAdministrator());
+            $fedrows[]['2cols'] = $this->j_queue->displayFormsButtons($qObject->getId(), !$this->jauth->isAdministrator());
             $data['fedrows'] = $fedrows;
             $data['content_view'] = 'reports/awaiting_federation_register_view';
             $r['data'] = $data;
@@ -261,7 +261,7 @@ class Awaiting extends MY_Controller
         }
         if (strcasecmp($objAction, 'Join') == 0 && strcasecmp($objRecipientType, 'federation') == 0) {
             $recipientWriteAccess = $this->zacl->check_acl('f_' . $qObject->getRecipient(), 'write', 'federation', '');
-            $requestorViewAccess = (strcasecmp($qObject->getCreator()->getUsername(), $this->j_auth->current_user()) == 0);
+            $requestorViewAccess = (strcasecmp($qObject->getCreator()->getUsername(), $this->jauth->current_user()) == 0);
             if ($requestorViewAccess || $recipientWriteAccess) {
 
                 $result = $this->j_queue->displayInviteFederation($qObject, $recipientWriteAccess);
@@ -285,7 +285,7 @@ class Awaiting extends MY_Controller
         if (!ctype_alnum($token)) {
             show_error('Wrong token provided', 404);
         }
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             redirect('auth/login', 'location');
         }
         try {
@@ -502,7 +502,7 @@ class Awaiting extends MY_Controller
         }
         $sbj = 'Identity/Service Provider has been approved';
         $body = 'Dear user,' . PHP_EOL . 'Registration request: ' . $entity->getName() . ' (' . $entity->getEntityId() . ')' . PHP_EOL;
-        $body .= 'Requested by: ' . $requester_recipient . '' . PHP_EOL . 'Request has been just approved by ' . $this->j_auth->current_user() . ' and added to the system' . PHP_EOL;
+        $body .= 'Requested by: ' . $requester_recipient . '' . PHP_EOL . 'Request has been just approved by ' . $this->jauth->current_user() . ' and added to the system' . PHP_EOL;
         $body .= 'It can be reviewed on ' . base_url() . ' ' . PHP_EOL;
         $additionalReceipents = array();
         $toNotifyRequester = $this->config->item('notify_requester_if_queue_accepted');
@@ -526,10 +526,10 @@ class Awaiting extends MY_Controller
 
     function approve()
     {
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             redirect('auth/login', 'location');
         }
-        $isAdministrator = $this->j_auth->isAdministrator();
+        $isAdministrator = $this->jauth->isAdministrator();
         $this->load->library(array('zacl', 'j_queue'));
         $message = "";
         $error_message = null;
@@ -745,7 +745,7 @@ class Awaiting extends MY_Controller
                     $mail_recipients = array();
                     $mail_recipients[] = $queueObj->getCreator()->getEmail();
                     $sbj = $provider->getName() . ' joins federation: "' . $federation->getName() . '"';
-                    $body = $this->j_auth->current_user() . " just approved request.\r\n";
+                    $body = $this->jauth->current_user() . " just approved request.\r\n";
                     $body .= 'Since now Provider: ' . $provider->getName() . ' becomes a member of ' . $federation->getName() . PHP_EOL;
                     $this->em->remove($queueObj);
                     $this->email_sender->addToMailQueue(array('grequeststoproviders'), null, $sbj, $body, array(), $sync = false);
@@ -804,7 +804,7 @@ class Awaiting extends MY_Controller
                         $additionalReceipients[] = $queueObj->getCreator()->getEmail();
                     }
                     $sbj = "Approved:" . $provider->getName() . ' joins federation: "' . $federation->getName() . '"';
-                    $body = $this->j_auth->current_user() . " just approved request.\r\n";
+                    $body = $this->jauth->current_user() . " just approved request.\r\n";
                     $body .= 'Since now Provider: ' . $provider->getName() . ' becomes a member of ' . $federation->getName() . PHP_EOL;
                     $this->em->persist($provider);
                     $this->em->remove($queueObj);
@@ -894,7 +894,7 @@ class Awaiting extends MY_Controller
 
     function reject()
     {
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         if ($loggedin) {
             $this->load->library('zacl');
             $this->load->library('j_queue');
@@ -912,7 +912,7 @@ class Awaiting extends MY_Controller
                 $reject_access = $this->hasQAccess($queueObj);
                 $recipienttype = $queueObj->getRecipientType();
                 if (!empty($creator)) {
-                    $reject_access = (strcasecmp($creator->getUsername(), $this->j_auth->current_user()) == 0);
+                    $reject_access = (strcasecmp($creator->getUsername(), $this->jauth->current_user()) == 0);
                 }
                 if ($reject_access === FALSE) {
                     if (strcasecmp($queueAction, 'Create') == 0) {
@@ -935,18 +935,18 @@ class Awaiting extends MY_Controller
                     } elseif (strcasecmp($queueAction, 'Delete') == 0) {
                         $type = $queueObj->getType();
                         if (strcasecmp($type, 'Federation') == 0) {
-                            $isAdmin = $this->j_auth->isAdministrator();
+                            $isAdmin = $this->jauth->isAdministrator();
                             if ($isAdmin) {
                                 $reject_access = true;
                             }
                         }
                     } elseif (strcasecmp($queueAction, 'apply') == 0 && strcasecmp($recipienttype, 'entitycategory') == 0) {
-                        $isAdmin = $this->j_auth->isAdministrator();
+                        $isAdmin = $this->jauth->isAdministrator();
                         if ($isAdmin) {
                             $reject_access = true;
                         }
                     } elseif (strcasecmp($queueAction, 'apply') == 0 && strcasecmp($recipienttype, 'regpolicy') == 0) {
-                        $isAdmin = $this->j_auth->isAdministrator();
+                        $isAdmin = $this->jauth->isAdministrator();
                         if ($isAdmin) {
                             $reject_access = true;
                         }
@@ -968,7 +968,7 @@ class Awaiting extends MY_Controller
                     $body .= 'The request placed on ' . base_url() . PHP_EOL;
                     $body .= 'Request with tokenID: ' . $queueObj->getToken() . ' has been canceled/rejected' . PHP_EOL;
                     $body .= "";
-                    log_message('info', 'JAGGER: Queue with token:' . $queueObj->getToken() . ' has been canceled/rejected by ' . $this->j_auth->current_user());
+                    log_message('info', 'JAGGER: Queue with token:' . $queueObj->getToken() . ' has been canceled/rejected by ' . $this->jauth->current_user());
                     $this->em->remove($queueObj);
                     if ($notification === true) {
                         $this->email_sender->addToMailQueue(array(), null, $subject, $body, $additionalReciepients, FALSE);

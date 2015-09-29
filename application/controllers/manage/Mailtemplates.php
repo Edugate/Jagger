@@ -8,7 +8,7 @@ class Mailtemplates extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
@@ -35,7 +35,7 @@ class Mailtemplates extends MY_Controller
 
     public function edit($id = NULL)
     {
-        if (!$this->j_auth->isAdministrator()) {
+        if (!$this->jauth->isAdministrator()) {
             show_error('Permission denied', 403);
             return;
         }
@@ -149,7 +149,7 @@ class Mailtemplates extends MY_Controller
 
     public function showlist()
     {
-        if (!$this->j_auth->isAdministrator()) {
+        if (!$this->jauth->isAdministrator()) {
             show_error('Permission denied', 403);
             return;
         }

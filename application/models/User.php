@@ -519,7 +519,7 @@ class User
     }
 
     /**
-     * getBasic is used by j_auth lib to creta sessiondata
+     * getBasic is used by jauth lib to creta sessiondata
      */
     public function getBasic()
     {

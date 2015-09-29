@@ -16,7 +16,7 @@ class Attributes extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         $this->current_site = current_url();
         if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
@@ -44,7 +44,7 @@ class Attributes extends MY_Controller
     public function add()
     {
         $this->title = lang('rr_newattr_title');
-        $isAdmin = $this->j_auth->isAdministrator();
+        $isAdmin = $this->jauth->isAdministrator();
         $data['titlepage'] = lang('rr_newattr_title');
         $data['breadcrumbs'] = array(
             array('url' => base_url('attributes/attributes/show'), 'name' => lang('attrsdeflist')),
@@ -106,7 +106,7 @@ class Attributes extends MY_Controller
             }
             $dataRows[] = array(showBubbleHelp($a->getDescription()) . ' ' . $a->getName() . $notice, $a->getFullname(), $a->getOid(), $a->getUrn());
         }
-        $isAdmin = $this->j_auth->isAdministrator();
+        $isAdmin = $this->jauth->isAdministrator();
         if ($isAdmin) {
             $data['isadmin'] = true;
         } else {

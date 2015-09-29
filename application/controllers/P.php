@@ -23,7 +23,6 @@ class P extends MY_Controller {
     function __construct()
     {
         parent::__construct();
-        $this->load->library('j_auth');
         $this->load->helper('url');
     }
     public function page($code)
@@ -41,7 +40,7 @@ class P extends MY_Controller {
        $is_public = $page->getPublic();
        if(!$is_public)
        {
-          $loggedin = $this->j_auth->logged_in();
+          $loggedin = $this->jauth->logged_in();
           if(!$loggedin)
           {        
               $data['content_view'] = 'auth/notloggedin';

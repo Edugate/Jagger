@@ -37,7 +37,7 @@ class Importer extends MY_Controller
         if ($this->curlTimeout === null) {
             $this->curlTimeout = 60;
         }
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         $this->current_site = current_url();
         if (!$loggedin) {
             redirect('auth/login', 'location');

@@ -32,7 +32,7 @@ class Regpolicy extends MY_Controller
 
     public function show($id = null)
     {
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
@@ -118,7 +118,7 @@ class Regpolicy extends MY_Controller
 
     public function add()
     {
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
@@ -179,7 +179,7 @@ class Regpolicy extends MY_Controller
 
     public function edit($id)
     {
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
@@ -242,7 +242,7 @@ class Regpolicy extends MY_Controller
 
     function getMembers($regpolid)
     {
-        if(!$this->input->is_ajax_request() || !$this->j_auth->logged_in())
+        if(!$this->input->is_ajax_request() || !$this->jauth->logged_in())
         {
             set_status_header(403);
             echo 'Access denied';
@@ -279,7 +279,7 @@ class Regpolicy extends MY_Controller
 
     function remove($id = null)
     {
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         if (!$loggedin) {
             set_status_header(403);
             echo 'access denied';

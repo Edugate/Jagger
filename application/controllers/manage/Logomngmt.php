@@ -35,7 +35,7 @@ class Logomngmt extends MY_Controller
             echo lang('error403');
             return;
         }
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->logged_in()) {
             set_status_header(403);
             echo lang('errsess');
             return;
@@ -75,7 +75,7 @@ class Logomngmt extends MY_Controller
 
     public function getAvailableLogosInGrid($type = null, $id = null)
     {
-        if ($this->input->is_ajax_request() && $this->j_auth->logged_in() && !empty($type) && !empty($id)) {
+        if ($this->input->is_ajax_request() && $this->jauth->logged_in() && !empty($type) && !empty($id)) {
             $this->load->library('logo');
             $attributes = array('class' => 'span-20', 'id' => 'availablelogos');
             $availableImages = $this->logo->displayAvailableInGridForm('filename', 3);
@@ -103,7 +103,7 @@ class Logomngmt extends MY_Controller
 
     public function assign($type = null, $id = null)
     {
-        if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST') || empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0) ||!$this->j_auth->logged_in() ) {
+        if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST') || empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0) ||!$this->jauth->logged_in() ) {
             set_status_header(403);
             echo lang('error403');
             return;
@@ -178,7 +178,7 @@ class Logomngmt extends MY_Controller
 
     public function unsign($type = null, $id = null)
     {
-        if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST') || !$this->j_auth->logged_in()) {
+        if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST') || !$this->jauth->logged_in()) {
             $s=403;
             $msg =  lang('error403');
         }
@@ -249,7 +249,7 @@ class Logomngmt extends MY_Controller
             echo 'Method not allowed';
             return;
         }
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         if (!$loggedin) {
             set_status_header(403);
             echo lang('errsess');
@@ -394,7 +394,7 @@ class Logomngmt extends MY_Controller
         if (empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0)) {
             show_error('Not found', 404);
         }
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->logged_in();
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
