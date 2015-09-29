@@ -207,8 +207,8 @@ class Ec extends MY_Controller {
         else
         {
             $f = form_open();
-            $this->load->library('form_element');
-            $f .= $this->form_element->generateAddCoc();
+            $this->load->library('formelement');
+            $f .= $this->formelement->generateAddCoc();
             $f .= '<div class="buttons small-12 medium-10 large-10 columns end text-right">';
             $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ';
             $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
@@ -273,9 +273,9 @@ class Ec extends MY_Controller {
             $data['success_message'] = lang('updated');
         }
         $data['coc_name'] = $coc->getName();
-        $this->load->library('form_element');
+        $this->load->library('formelement');
         $f = form_open();
-        $f .= $this->form_element->generateEditCoc($coc);
+        $f .= $this->formelement->generateEditCoc($coc);
         $f .= '<div class="buttons large-10 medium-10 small-12 text-right columns end">';
         $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ';
         $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';

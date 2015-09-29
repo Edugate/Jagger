@@ -28,7 +28,7 @@ class Fedcategory extends MY_Controller {
         {
             redirect('auth/login', 'location');
         }
-        $this->load->library('form_element');
+        $this->load->library('formelement');
         $this->load->library('zacl');
         $this->title = lang('title_fedcategory');
         MY_Controller::$menuactive = 'fed';

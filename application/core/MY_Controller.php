@@ -42,7 +42,7 @@ if (!defined('BASEPATH')) {
  * @property Providerdetails $providerdetails
  * @property Rrpreference $rrpreference
  * @property Jusermanage $jusermanage
- * @property Form_element $form_element
+ * @property Formelement $formelement
  * @property Xmlvalidator $xmlvalidator
  * @property Doctrine $doctrine
  * @property CI_Cache $cache

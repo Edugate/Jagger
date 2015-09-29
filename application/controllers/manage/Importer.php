@@ -43,7 +43,7 @@ class Importer extends MY_Controller
             redirect('auth/login', 'location');
         } else {
             $this->load->helper(array('cert', 'form'));
-            $this->load->library(array('form_validation', 'curl', 'metadata2import', 'form_element', 'xmlvalidator', 'zacl'));
+            $this->load->library(array('form_validation', 'curl', 'metadata2import', 'formelement', 'xmlvalidator', 'zacl'));
             $this->access = $this->zacl->check_acl('importer', 'create', '', '');
         }
     }
@@ -62,7 +62,7 @@ class Importer extends MY_Controller
                 'content_view' => 'manage/import_metadata_form',
                 'other_error' => $this->otherErrors,
                 'global_erros' => $this->globalerrors,
-                'federations' => $this->form_element->getFederation(),
+                'federations' => $this->formelement->getFederation(),
                 'types' => array('' => lang('rr_pleaseselect'), 'idp' => lang('identityproviders'), 'sp' => lang('serviceproviders'), 'all' => lang('allentities')),
             );
         }

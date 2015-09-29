@@ -56,17 +56,15 @@ class Oidcauth extends MY_Controller
     }
 
     public function callback() {
-        $errdata['content_view'] = 'error_message';
-
         try {
             $this->checkGlobal();
         } catch (Exception $e) {
             $error_message = $e->getMessage();
-            return $this->load->view('page',array('content_view'=>'error_message','error_message'=>html_escape($error_message)));
+            return $this->load->view('page', array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
         if ($this->j_auth->logged_in()) {
             $error_message = 'Already authenticated';
-            return $this->load->view('page',array('content_view'=>'error_message','error_message'=>html_escape($error_message)));
+            return $this->load->view('page', array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
 
         $sessIssuer = $this->session->userdata('joidc_issuer');
@@ -89,25 +87,25 @@ class Oidcauth extends MY_Controller
             $claims = $client->authenticate();
         } catch (Exception $e) {
             $error_message = $e->getMessage();
-            return $this->load->view('page',array('content_view'=>'error_message','error_message'=>html_escape($error_message)));
+            return $this->load->view('page', array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
 
         if (!isset($claims['sub'])) {
             $error_message = 'Missing required claim "sub" from Authorization Server';
-            return $this->load->view('page',array('content_view'=>'error_message','error_message'=>html_escape($error_message)));
+            return $this->load->view('page', array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
         $username = (string)$claims['sub'] . '@' . $claims['iss'];
         $fname = null;
         $sname = null;
         $email = null;
-        if(isset($provider['mapping_claims']['fname']) && isset($claims[$provider['mapping_claims']['fname']])){
+        if (isset($provider['mapping_claims']['fname']) && isset($claims[$provider['mapping_claims']['fname']])) {
             $fname = $claims[$provider['mapping_claims']['fname']];
         }
-        if(isset($provider['mapping_claims']['sname']) && isset($claims[$provider['mapping_claims']['sname']])){
+        if (isset($provider['mapping_claims']['sname']) && isset($claims[$provider['mapping_claims']['sname']])) {
             $sname = $claims[$provider['mapping_claims']['sname']];
         }
 
-        if(isset($provider['mapping_claims']['email']) && isset($claims[$provider['mapping_claims']['email']])){
+        if (isset($provider['mapping_claims']['email']) && isset($claims[$provider['mapping_claims']['email']])) {
             $email = $claims[$provider['mapping_claims']['email']];
         }
 
@@ -161,7 +159,7 @@ class Oidcauth extends MY_Controller
             if (!empty($islogged)) {
 
                 $ip = $this->input->ip_address();
-                if($email!==null){
+                if ($email !== null) {
                     $user->setEmail($email);
                 }
                 $user->setIP($ip);
@@ -174,7 +172,6 @@ class Oidcauth extends MY_Controller
 
             }
         } else {
-
 
 
             $canAutoRegister = $this->config->item('autoregister_federated');
@@ -270,5 +267,4 @@ class Oidcauth extends MY_Controller
             throw new Exception('OpenID Connect not enabled or extension not found');
         }
     }
-
 }

@@ -10,7 +10,7 @@ if (!defined('BASEPATH'))
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  * @subpackage  Libraries
  */
-class Form_element
+class Formelement
 {
 
     protected $ci;
@@ -32,7 +32,7 @@ class Form_element
         if (!empty($a)) {
             $this->defaultlangselect = $a;
         }
-        log_message('debug', 'lib/Form_element initialized');
+        log_message('debug', 'lib/Formelement initialized');
         $isAdmin = $this->ci->j_auth->isAdministrator();
         if ($isAdmin) {
             $disallowedparts = array();

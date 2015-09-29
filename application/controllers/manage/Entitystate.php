@@ -31,14 +31,10 @@ class Entitystate extends MY_Controller
         $loggedin = $this->j_auth->logged_in();
         $this->current_site = current_url();
         if (!$loggedin) {
-            $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
         $this->tmpProviders = new models\Providers;
-        $this->load->library('form_element');
-        $this->load->library('form_validation');
-        $this->load->library('metadatavalidator');
-        $this->load->library('zacl');
+        $this->load->library(array('formelement','form_validation','metadatavalidator','zacl'));
         $this->tmpProviders = new models\Providers();
         $this->entity = null;
     }
@@ -106,7 +102,7 @@ class Entitystate extends MY_Controller
         $isAdmin = $this->j_auth->isAdministrator();
 
         if (!$_POST) {
-            $data['r'] = $this->form_element->NgenerateRegistrationPolicies($this->entity);
+            $data['r'] = $this->formelement->NgenerateRegistrationPolicies($this->entity);
             $data['content_view'] = 'manage/entityedit_regpolicies';
             return $this->load->view('page', $data);
         }

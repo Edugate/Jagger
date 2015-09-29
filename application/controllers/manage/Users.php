@@ -19,7 +19,7 @@ class Users extends MY_Controller
     {
         parent::__construct();
         $this->load->helper(array('cert', 'form'));
-        $this->load->library(array('form_validation', 'curl', 'metadata2import', 'form_element', 'table', 'rrpreference'));
+        $this->load->library(array('form_validation', 'curl', 'metadata2import', 'formelement', 'table', 'rrpreference'));
     }
 
 
