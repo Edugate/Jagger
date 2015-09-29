@@ -265,19 +265,15 @@ class Jauth
      * @throws Exception
      */
     public function registerUser(array $attrs, $accountType, $systemRole = null) {
-        if (!array_key_exists('username', $attrs) || !array_key_exists('mail', $attrs)) {
+        if (!array_key_exists('username', $attrs) || $attrs['username'] === null || trim($attrs['username']) === '' || !array_key_exists('mail', $attrs)) {
             throw new Exception('Cannot register user. Missing username or/and email address');
         }
-        $username = $attrs['username'];
-        $mail = $attrs['mail'];
-        $fname = trim($attrs['fname']);
-        $sname = trim($attrs['sname']);
-
+        $username = trim($attrs['username']);
         $user = new models\User;
         $this->ci->load->helper('random_generator');
         $randompass = str_generator();
         $user->setUsername($username);
-        $user->setEmail($mail);
+        $user->setEmail($attrs['fname']);
         $user->setSalt();
         $user->setPassword($randompass);
         $user->setLocalDisabled();
@@ -287,21 +283,16 @@ class Jauth
         $user->setAccepted();
         $user->setEnabled();
         $user->setValid();
-        if (!empty($fname)) {
-            $user->setGivenname($fname);
-        }
-        if (!empty($sname)) {
-            $user->setSurname($sname);
-        }
+        $user->setGivenname($attrs['fname']);
+        $user->setSurname($attrs['sname']);
         $user->setUserpref(array());
 
-        if($systemRole !== null){
-            $srole = $this->em->getRepository('models\AclRole')->findOneBy(array('name' => $systemRole,'type'=>'system'));
-            if($srole !== null){
+        if ($systemRole !== null) {
+            $srole = $this->em->getRepository('models\AclRole')->findOneBy(array('name' => $systemRole, 'type' => 'system'));
+            if ($srole !== null) {
                 $user->setRole($srole);
             }
-        }
-        else {
+        } else {
             $defaultRole = $this->ci->config->item('register_defaultrole');
             $allowedroles = array('Guest', 'Member');
             if ($defaultRole === null || !in_array($defaultRole, $allowedroles, true)) {
@@ -310,7 +301,7 @@ class Jauth
             /**
              * @var models\AclRole $member
              */
-            $member = $this->em->getRepository('models\AclRole')->findOneBy(array('name' => $defaultRole,'type'=>'system'));
+            $member = $this->em->getRepository('models\AclRole')->findOneBy(array('name' => $defaultRole, 'type' => 'system'));
             if ($member === null) {
                 throw new Exception('Cannot register user - cannot set the default role');
             }
