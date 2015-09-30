@@ -9,7 +9,7 @@
  */
 ?>
 <table class="details"><tbody>
-<tr><td><?php echo lang('rr_ormvalidate');?></td><td><button id="vormversion" class="savebutton"><?php echo lang('rr_runprocess'); ?></button></td></tr>
+<tr><td><?php echo lang('rr_ormvalidate').', PHP version';?></td><td><button id="vormversion" class="savebutton"><?php echo lang('rr_runprocess'); ?></button></td></tr>
 <tr id="rvormversion" style="display:none"><td colspan="2"></td></tr>
 <tr><td><?php echo lang('rr_validatedbschema');?></td><td><button id="vschema" class="savebutton"><?php echo lang('rr_runprocess');?></button></td></tr>
 <tr id="rvschema" style="display:none"><td colspan="2"></td></tr>

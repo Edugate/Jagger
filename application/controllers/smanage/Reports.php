@@ -58,24 +58,30 @@ class Reports extends MY_Controller
     public function vormversion()
     {
         if (!$this->input->is_ajax_request()) {
-            show_error('Bad request', 401);
-            return;
+            return $this->output->set_status_header(401)->set_output('Bad request');
         }
         if (!$this->jauth->isLoggedIn()) {
-            show_error('Session lost', 403);
+
+            return $this->output->set_status_header(401)->set_output('Session Lost');
         }
         if (!$this->jauth->isAdministrator()) {
-            show_error('No perm', 403);
+           return $this->output->set_status_header(401)->set_output('No perm');
         }
 
         $currentVersion = Doctrine\ORM\Version::VERSION;
         $minRequiredVersion = '2.4.8';
         $compared = Doctrine\ORM\Version::compare($minRequiredVersion);
-        if ($compared > 0) {
+        $minphpversion = version_compare(PHP_VERSION, '5.5.0', '>=');
+        if ($compared > 0 && $minphpversion) {
             echo '<div class="warning alert-box" data-alert>' . lang('rr_doctrinever') . ': ' . $currentVersion . '</div>';
             echo '<div class="info alert-box" data-alert>' . lang('rr_mimumreqversion') . ': ' . $minRequiredVersion . ' - Please use <b>composer</b> tool to upgrade it to required version</div>';
         } else {
             echo '<div class="success alert-box" data-alert>' . lang('rr_doctrinever') . ': ' . $currentVersion . ' : ' . lang('rr_meetsminimumreq') . '</div>';
+        }
+        if(!$minphpversion){
+            echo '<div class="alert alert-box" data-alert>Installed PHP VERSION: ' .PHP_VERSION. ' : ' . lang('rr_mimumreqversion') . ' 5.5.x.</div>';
+        }else{
+             echo '<div class="success alert-box" data-alert>Installed PHP VERSION: ' .PHP_VERSION. ' : ' . lang('rr_meetsminimumreq') . '</div>';
         }
 
     }
