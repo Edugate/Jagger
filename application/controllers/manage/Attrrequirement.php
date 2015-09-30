@@ -17,7 +17,7 @@ class Attrrequirement extends MY_Controller
     {
         parent::__construct();
         $this->load->helper('form');
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         $this->current_site = current_url();
         if (!$loggedin) {
             redirect('auth/login', 'location');

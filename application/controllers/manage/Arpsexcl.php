@@ -25,11 +25,11 @@ class Arpsexcl extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->tmpProviders = new models\Providers;
-        $this->load->library(array('form_element', 'form_validation', 'zacl'));
+        $this->load->library(array('formelement', 'form_validation', 'zacl'));
     }
 
     public function idp($providerID)
@@ -108,7 +108,7 @@ class Arpsexcl extends MY_Controller
         $this->title = $providerNameInLang . ': ARP excludes';
         $data = array(
             'success'=>$success,
-            'rows' => $this->form_element->excludedArpsForm($idp),
+            'rows' => $this->formelement->excludedArpsForm($idp),
             'idp_name' => $idp->getName(),
             'idp_id' => $idp->getId(),
             'idp_entityid' => $idp->getEntityId(),

@@ -19,7 +19,7 @@ if (!defined('BASEPATH'))
  */
 
 /**
- * @property Form_element $form_element
+ * @property Formelement $formelement
  */
 class Regpolicy extends MY_Controller
 {
@@ -32,7 +32,7 @@ class Regpolicy extends MY_Controller
 
     public function show($id = null)
     {
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
@@ -118,7 +118,7 @@ class Regpolicy extends MY_Controller
 
     public function add()
     {
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
@@ -160,8 +160,8 @@ class Regpolicy extends MY_Controller
             $data['success_message'] = lang('rr_regpoladded');
         } else {
             $f = form_open();
-            $this->load->library('form_element');
-            $f .= $this->form_element->generateAddRegpol();
+            $this->load->library('formelement');
+            $f .= $this->formelement->generateAddRegpol();
             $f .= '<div class="buttons small-12 medium-10 large-10 columns end text-right">';
             $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ';
             $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
@@ -179,7 +179,7 @@ class Regpolicy extends MY_Controller
 
     public function edit($id)
     {
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
@@ -224,8 +224,8 @@ class Regpolicy extends MY_Controller
             $data['success_message'] = lang('updated');
         }
         $data['coc_name'] = $coc->getName();
-        $this->load->library('form_element');
-        $f = form_open() . $this->form_element->generateEditRegpol($coc);
+        $this->load->library('formelement');
+        $f = form_open() . $this->formelement->generateEditRegpol($coc);
         $f .= '<div class="buttons large-10 medium-10 small-12 text-right columns end">';
         $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ';
         $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
@@ -242,7 +242,7 @@ class Regpolicy extends MY_Controller
 
     function getMembers($regpolid)
     {
-        if(!$this->input->is_ajax_request() || !$this->j_auth->logged_in())
+        if(!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn())
         {
             set_status_header(403);
             echo 'Access denied';
@@ -279,7 +279,7 @@ class Regpolicy extends MY_Controller
 
     function remove($id = null)
     {
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
             set_status_header(403);
             echo 'access denied';

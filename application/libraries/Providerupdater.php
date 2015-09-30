@@ -136,8 +136,8 @@ class Providerupdater
             $prevregtime = '';
             $prevregistrationdate = $ent->getRegistrationDate();
             if (isset($prevregistrationdate)) {
-                $prevregdate = date('Y-m-d', $prevregistrationdate->format('U') + j_auth::$timeOffset);
-                $prevregtime = date('H:i', $prevregistrationdate->format('U') + j_auth::$timeOffset);
+                $prevregdate = date('Y-m-d', $prevregistrationdate->format('U') + jauth::$timeOffset);
+                $prevregtime = date('H:i', $prevregistrationdate->format('U') + jauth::$timeOffset);
             }
             if (!array_key_exists('registrationtime', $ch) || empty($ch['registrationtime'])) {
                 $tmpnow = new \DateTime('now');
@@ -1029,7 +1029,7 @@ class Providerupdater
     private function getDisallowedParts()
     {
         $result = array();
-        if (!$this->ci->j_auth->isAdministrator()) {
+        if (!$this->ci->jauth->isAdministrator()) {
             $result = $this->ci->config->item('entpartschangesdisallowed');
         }
         if (empty($result) || !is_array($result)) {
@@ -1047,7 +1047,7 @@ class Providerupdater
         $changeList = array();
         $type = $ent->getType();
 
-        $isAdmin = $this->ci->j_auth->isAdministrator();
+        $isAdmin = $this->ci->jauth->isAdministrator();
 
         $dissalowedparts = $this->getDisallowedParts();
         log_message('debug', 'disallowedpart: ' . serialize($dissalowedparts));

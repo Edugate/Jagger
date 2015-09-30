@@ -55,7 +55,7 @@ class Fvalidatoredit extends MY_Controller {
 
     public function vedit($fedid = NULL, $fvalidatorid = NULL)
     {
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin)
         {
             redirect('auth/login', 'location');

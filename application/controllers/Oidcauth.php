@@ -28,7 +28,7 @@ class Oidcauth extends MY_Controller
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
-        if ($this->j_auth->logged_in()) {
+        if ($this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Already authenticated');
         }
         if (!$this->input->is_ajax_request()) {
@@ -56,17 +56,15 @@ class Oidcauth extends MY_Controller
     }
 
     public function callback() {
-        $errdata['content_view'] = 'error_message';
-
         try {
             $this->checkGlobal();
         } catch (Exception $e) {
             $error_message = $e->getMessage();
-            return $this->load->view('page',array('content_view'=>'error_message','error_message'=>html_escape($error_message)));
+            return $this->load->view('page', array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
-        if ($this->j_auth->logged_in()) {
+        if ($this->jauth->isLoggedIn()) {
             $error_message = 'Already authenticated';
-            return $this->load->view('page',array('content_view'=>'error_message','error_message'=>html_escape($error_message)));
+            return $this->load->view('page', array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
 
         $sessIssuer = $this->session->userdata('joidc_issuer');
@@ -89,25 +87,25 @@ class Oidcauth extends MY_Controller
             $claims = $client->authenticate();
         } catch (Exception $e) {
             $error_message = $e->getMessage();
-            return $this->load->view('page',array('content_view'=>'error_message','error_message'=>html_escape($error_message)));
+            return $this->load->view('page', array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
 
         if (!isset($claims['sub'])) {
             $error_message = 'Missing required claim "sub" from Authorization Server';
-            return $this->load->view('page',array('content_view'=>'error_message','error_message'=>html_escape($error_message)));
+            return $this->load->view('page', array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
         $username = (string)$claims['sub'] . '@' . $claims['iss'];
         $fname = null;
         $sname = null;
         $email = null;
-        if(isset($provider['mapping_claims']['fname']) && isset($claims[$provider['mapping_claims']['fname']])){
+        if (isset($provider['mapping_claims']['fname']) && isset($claims[$provider['mapping_claims']['fname']])) {
             $fname = $claims[$provider['mapping_claims']['fname']];
         }
-        if(isset($provider['mapping_claims']['sname']) && isset($claims[$provider['mapping_claims']['sname']])){
+        if (isset($provider['mapping_claims']['sname']) && isset($claims[$provider['mapping_claims']['sname']])) {
             $sname = $claims[$provider['mapping_claims']['sname']];
         }
 
-        if(isset($provider['mapping_claims']['email']) && isset($claims[$provider['mapping_claims']['email']])){
+        if (isset($provider['mapping_claims']['email']) && isset($claims[$provider['mapping_claims']['email']])) {
             $email = $claims[$provider['mapping_claims']['email']];
         }
 
@@ -161,7 +159,7 @@ class Oidcauth extends MY_Controller
             if (!empty($islogged)) {
 
                 $ip = $this->input->ip_address();
-                if($email!==null){
+                if ($email !== null) {
                     $user->setEmail($email);
                 }
                 $user->setIP($ip);
@@ -174,7 +172,6 @@ class Oidcauth extends MY_Controller
 
             }
         } else {
-
 
 
             $canAutoRegister = $this->config->item('autoregister_federated');
@@ -193,11 +190,23 @@ class Oidcauth extends MY_Controller
             } else {
 
                 $attrs = array('username' => $username, 'mail' => $email, 'fname' => $fname, 'sname' => $sname);
-                $reg = $this->registerUser($attrs);
 
-                if ($reg !== TRUE) {
-                    show_error('User couldnt be registered.', 403);
+                try{
+                    $nuser = $this->jauth->registerUser($attrs,'oidc',null);
+                    $this->em->persist($nuser);
                 }
+                catch(Exception $e){
+                    log_message('error',__METHOD__.' '.$e);
+                    show_error(html_escape($e->getMessage()), 403);
+                }
+                try{
+                    $this->em->flush();
+                }
+                catch(Exception $e){
+                    log_message('error',__METHOD__.' '.$e);
+                    show_error('Internal server error',500);
+                }
+
                 redirect(current_url(), 'location');
             }
 
@@ -208,67 +217,11 @@ class Oidcauth extends MY_Controller
 
     }
 
-    private function registerUser($attrs) {
-        $username = $attrs['username'];
-        $mail = $attrs['mail'];
-        $fname = trim($attrs['fname']);
-        $sname = trim($attrs['sname']);
 
-        $user = new models\User;
-        $this->load->helper('random_generator');
-        $randompass = str_generator();
-        $user->setUsername($username);
-        $user->setEmail($mail);
-        $user->setSalt();
-        $user->setPassword($randompass);
-        $user->setLocalDisabled();
-        $user->setFederatedEnabled();
-        $user->setAccepted();
-        $user->setEnabled();
-        $user->setValid();
-        if (!empty($fname)) {
-            $user->setGivenname($fname);
-        }
-        if (!empty($sname)) {
-            $user->setSurname($sname);
-        }
-        $user->setUserpref(array());
-        $defaultRole = $this->config->item('register_defaultrole');
-        $allowedroles = array('Guest', 'Member');
-        if (empty($defaultRole) || !in_array($defaultRole, $allowedroles)) {
-            $defaultRole = 'Guest';
-        }
-        /**
-         * @var models\AclRole $member
-         */
-        $member = $this->em->getRepository('models\AclRole')->findOneBy(array('name' => $defaultRole));
-        if ($member !== null) {
-            $user->setRole($member);
-        }
-        /**
-         * @var models\AclRole $p_role
-         */
-        $p_role = $this->em->getRepository('models\AclRole')->findOneBy(array('name' => $username));
-        if ($p_role === null) {
-            $p_role = new models\AclRole;
-            $p_role->setName($username);
-            $p_role->setType('user');
-            $p_role->setDescription('personal role for user ' . $username);
-            $user->setRole($p_role);
-            $this->em->persist($p_role);
-        }
-        $this->em->persist($user);
-        $this->tracker->save_track('user', 'create', $username, 'user autocreated in the system', false);
-        $this->em->flush();
-
-
-        return true;
-    }
 
     private function checkGlobal() {
         if ($this->oidcEnabled !== true || !is_array($this->oidcOps) || count($this->oidcOps) == 0 || !class_exists('Jagger\oidc\Client')) {
             throw new Exception('OpenID Connect not enabled or extension not found');
         }
     }
-
 }

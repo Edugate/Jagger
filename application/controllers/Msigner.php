@@ -21,7 +21,7 @@ class Msigner extends MY_Controller
 
     public function signer()
     {
-        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Access denied');
         }
 

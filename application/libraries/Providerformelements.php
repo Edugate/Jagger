@@ -28,7 +28,7 @@ class Providerformelements
         if ($a !== null) {
             $this->defaultlangselect = $a;
         }
-        $this->isAdmin = $this->ci->j_auth->isAdministrator();
+        $this->isAdmin = $this->ci->jauth->isAdministrator();
         $disallowedparts = $this->ci->config->item('entpartschangesdisallowed');
         if ($this->isAdmin || empty($disallowedparts) || !is_array($disallowedparts)) {
             $disallowedparts = array();
@@ -69,8 +69,8 @@ class Providerformelements
         $t_regtime = '';
         $tmpregdate = $ent->getRegistrationDate();
         if (!empty($tmpregdate)) {
-            $t_regdate = date('Y-m-d', $tmpregdate->format('U') + j_auth::$timeOffset);
-            $t_regtime = date('H:i', $tmpregdate->format('U') + j_auth::$timeOffset);
+            $t_regdate = date('Y-m-d', $tmpregdate->format('U') + jauth::$timeOffset);
+            $t_regtime = date('H:i', $tmpregdate->format('U') + jauth::$timeOffset);
         }
         if ($sessform) {
             if (array_key_exists('regauthority', $this->ses)) {

@@ -11,7 +11,7 @@ class Spage extends MY_Controller
     {
         parent::__construct();
         $this->load->helper('form');
-        $this->load->library(array('form_validation','table','j_auth'));
+        $this->load->library(array('form_validation','table'));
         $t = $this->config->item('pageeditor');
         $this->isEnabled = TRUE;
         if ($t === FALSE)
@@ -23,11 +23,11 @@ class Spage extends MY_Controller
 
     public function showall()
     {
-        if (!$this->j_auth->logged_in())
+        if (!$this->jauth->isLoggedIn())
         {
             redirect('auth/login', 'location');
         }
-        $isAdmin = $this->j_auth->isAdministrator();
+        $isAdmin = $this->jauth->isAdministrator();
         if (!$isAdmin)
         {
             show_error('Permission denied', 403);
@@ -94,12 +94,12 @@ class Spage extends MY_Controller
     public function editArticle($pcode)
     {
         $pcode = trim($pcode);
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin)
         {
             redirect('auth/login', 'location');
         }
-        $isAdmin = $this->j_auth->isAdministrator();
+        $isAdmin = $this->jauth->isAdministrator();
         if (!$isAdmin)
         {
             show_error('Permission denied', 403);

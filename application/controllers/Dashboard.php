@@ -43,7 +43,7 @@ class Dashboard extends MY_Controller
 
     public function index()
     {
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             $data['content_view'] = 'staticpages_view';
             /**
              * @var $frontpage models\Staticpage
@@ -80,7 +80,7 @@ class Dashboard extends MY_Controller
             $data['content_view'] = 'nopermission';
             return $this->load->view('page', $data);
         }
-        if ($this->j_auth->isAdministrator()) {
+        if ($this->jauth->isAdministrator()) {
             $isnotified = $this->session->userdata('alertnotified');
             if ($isnotified !== true) {
                 $data['alertdashboard'] = array();
@@ -98,7 +98,7 @@ class Dashboard extends MY_Controller
         $this->title = lang('dashboard');
         $board = $this->session->userdata('board');
         if (!is_array($board)) {
-            $curUser = $this->j_auth->current_user();
+            $curUser = $this->jauth->getLoggedinUsername();
             /**
              * @var models\User $userObj
              */

@@ -468,7 +468,7 @@ class Metadata extends MY_Controller
      */
     private function checkAccess()
     {
-        if ($this->j_auth->logged_in()) {
+        if ($this->jauth->isLoggedIn()) {
             return true;
         }
         $remoteip = $this->input->ip_address();

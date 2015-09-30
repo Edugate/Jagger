@@ -20,7 +20,7 @@ class Addontools extends MY_Controller
 
     public function show()
     {
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
             if (!$this->input->is_ajax_request()) {
                 redirect('auth/login', 'location');
@@ -47,7 +47,7 @@ class Addontools extends MY_Controller
         if (!empty($access) && is_array($access) && isset($access['msgdecoder']) && $access['msgdecoder'] === true) {
             $publicAccess = true;
         }
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin && !$publicAccess) {
             if (!$this->input->is_ajax_request()) {
                 redirect('auth/login', 'location');

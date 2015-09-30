@@ -36,13 +36,13 @@ if (!defined('BASEPATH')) {
  * @property Email_sender $email_sender
  * @property Curl $curl
  * @property Show_element $show_element
- * @property J_auth $j_auth
+ * @property Jauth $jauth
  * @property Arp_generator $arp_generator
  * @property Arpgen $arpgen
  * @property Providerdetails $providerdetails
  * @property Rrpreference $rrpreference
  * @property Jusermanage $jusermanage
- * @property Form_element $form_element
+ * @property Formelement $formelement
  * @property Xmlvalidator $xmlvalidator
  * @property Doctrine $doctrine
  * @property CI_Cache $cache

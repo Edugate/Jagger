@@ -25,10 +25,10 @@ class Fededit extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
-        $this->load->library('form_element');
+        $this->load->library('formelement');
         $this->load->library('form_validation');
         $this->load->library('zacl');
         $this->title = lang('title_fededit');
@@ -77,7 +77,7 @@ class Fededit extends MY_Controller
         if ($fed === null) {
             show_error(lang('error_fednotfound'), 404);
         }
-        $this->load->library('form_element');
+        $this->load->library('formelement');
         $resource = $fed->getId();
         $this->fedid = $resource;
         $fedname = $fed->getName();
@@ -158,7 +158,7 @@ class Fededit extends MY_Controller
             $hidden = array('fed' => '' . $fedid);
             $formStr = validation_errors('<div  data-alert class="alert-box alert">', '</div>');
             $formStr .= form_open($action, $attributes, $hidden);
-            $formStr .= $this->form_element->generateFederationEditForm($fed);
+            $formStr .= $this->formelement->generateFederationEditForm($fed);
             $formStrFoot = '<div class="buttons small-11 large-10 columns text-right">';
             $formStrFoot .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon button alert">
                   ' . lang('rr_reset') . '</button> ';

@@ -11,7 +11,7 @@ if (!defined('BASEPATH')) {
  *
  * @property Curl $curl
  * @property ProviderUpdater $providerupdater
- * @property Form_element $form_element
+ * @property Formelement $formelement
  * @property Providerformelements $providerformelements
  * @property Providertoxml $providertoxml
  * @property Email_sender $email_sender
@@ -35,7 +35,7 @@ class Entityedit extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->library(array('curl', 'form_element', 'form_validation', 'approval', 'providertoxml','j_ncache'));
+        $this->load->library(array('curl', 'formelement', 'form_validation', 'approval', 'providertoxml','j_ncache'));
         $this->tmpProviders = new models\Providers;
         $this->load->helper(array('shortcodes', 'form'));
         $this->tmpError = '';
@@ -194,7 +194,7 @@ class Entityedit extends MY_Controller
             $register = true;
             $this->type = strtoupper($id);
         }
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         $optValidationsPassed = true;
         $result = false;
         $y = $this->input->post();
@@ -709,7 +709,7 @@ class Entityedit extends MY_Controller
         {
             show_404();
         }
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         try {
@@ -872,9 +872,9 @@ class Entityedit extends MY_Controller
          * @var $u models\User
          */
         $data['anonymous'] = true;
-        if ($this->j_auth->logged_in()) {
+        if ($this->jauth->isLoggedIn()) {
             $data['anonymous'] = FALSE;
-            $currentusername = $this->j_auth->current_user();
+            $currentusername = $this->jauth->getLoggedinUsername();
             $u = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $currentusername . ''));
             $data['loggeduser'] = array(
                 'username' => '' . $currentusername . '',
@@ -1172,27 +1172,27 @@ class Entityedit extends MY_Controller
     {
         $tabs = array(
             array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->providerformelements->generateGeneral()),
-            array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->form_element->NgenerateContactsForm($ent, $entsession)),
-            array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->form_element->NgenerateUiiForm($ent, $entsession)),
+            array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->formelement->NgenerateContactsForm($ent, $entsession)),
+            array('id' => 'uii', 'value' => '' . lang('tabuii') . '', 'form' => $this->formelement->NgenerateUiiForm($ent, $entsession)),
 
         );
         if (strcasecmp($ent->getType(), 'SP') != 0) {
-            $tabs[] = array('id' => 'uihints', 'value' => '' . lang('tabuihint') . '', 'form' => $this->form_element->generateUIHintForm($ent, $entsession));
+            $tabs[] = array('id' => 'uihints', 'value' => '' . lang('tabuihint') . '', 'form' => $this->formelement->generateUIHintForm($ent, $entsession));
         }
-        $tabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->form_element->NgenerateSAMLTab($ent, $entsession));
-        $tabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->form_element->NgenerateCertificatesForm($ent, $entsession));
+        $tabs[] = array('id' => 'tabsaml', 'value' => '' . lang('tabsaml') . '', 'form' => $this->formelement->NgenerateSAMLTab($ent, $entsession));
+        $tabs[] = array('id' => 'certificates', 'value' => '' . lang('tabcerts') . '', 'form' => $this->formelement->NgenerateCertificatesForm($ent, $entsession));
         if ($register) {
 
             if (strcasecmp($ent->getType(), 'IDP') != 0) {
-                $tabs[] = array('id' => 'reqattrs', 'value' => '' . lang('tabreqattrs') . '', 'form' => $this->form_element->nGenerateAttrsReqs($ent, $entsession));
+                $tabs[] = array('id' => 'reqattrs', 'value' => '' . lang('tabreqattrs') . '', 'form' => $this->formelement->nGenerateAttrsReqs($ent, $entsession));
             }
         } else {
 
-            $tabs[] = array('id' => 'entcategories', 'value' => '' . lang('tabentcategories') . '', 'form' => $this->form_element->NgenerateEntityCategoriesForm($ent, $entsession));
+            $tabs[] = array('id' => 'entcategories', 'value' => '' . lang('tabentcategories') . '', 'form' => $this->formelement->NgenerateEntityCategoriesForm($ent, $entsession));
             if (strcasecmp($this->type, 'IDP') != 0) {
-                $tabs[] = array('id' => 'reqattrs', 'value' => '' . lang('tabreqattrs') . '', 'form' => $this->form_element->nGenerateAttrsReqs($ent, $entsession));
+                $tabs[] = array('id' => 'reqattrs', 'value' => '' . lang('tabreqattrs') . '', 'form' => $this->formelement->nGenerateAttrsReqs($ent, $entsession));
             }
-            $tabs[] = array('id' => 'staticmetadata', 'value' => '' . lang('tabstaticmeta') . '', 'form' => $this->form_element->NgenerateStaticMetadataForm($ent, $entsession));
+            $tabs[] = array('id' => 'staticmetadata', 'value' => '' . lang('tabstaticmeta') . '', 'form' => $this->formelement->NgenerateStaticMetadataForm($ent, $entsession));
 
         }
 

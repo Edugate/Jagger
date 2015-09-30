@@ -23,7 +23,7 @@ class Access_manage extends MY_Controller {
     public function __construct()
     {
         parent::__construct();
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         $this->current_site = current_url();
         if (!$loggedin)
         {
@@ -193,7 +193,7 @@ class Access_manage extends MY_Controller {
 
         $row = array();
         $i = 0;
-        $currentUser = $this->j_auth->current_user();
+        $currentUser = $this->jauth->getLoggedinUsername();
         foreach ($users_array as $key => $value)
         {
             $is_me = '';
@@ -370,7 +370,7 @@ class Access_manage extends MY_Controller {
         }
         $row = array();
         $i = 0;
-        $sessionUser = $this->j_auth->current_user();
+        $sessionUser = $this->jauth->getLoggedinUsername();
 
         foreach ($users_array as $key => $value)
         {

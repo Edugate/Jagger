@@ -39,7 +39,7 @@ class Authenticate extends MY_Controller
             echo 'no ajax request';
             return;
         }
-        return $this->j_auth->logout();
+        return $this->jauth->logout();
 
     }
 
@@ -51,7 +51,7 @@ class Authenticate extends MY_Controller
         $currentuser = $this->session->userdata('username');
         $secondfactor = $this->session->userdata('secondfactor');
         $twofactoauthn = $this->config->item('twofactorauthn');
-        if ($this->j_auth->logged_in()) {
+        if ($this->jauth->isLoggedIn()) {
             $result = array('logged' => 1);
             return $this->output->set_content_type('application/json')->set_output(json_encode($result));
         }
@@ -105,12 +105,12 @@ class Authenticate extends MY_Controller
         }
         $auth_error = '';
         if ($this->input->is_ajax_request() && $isReferrerOK && ($_SERVER['REQUEST_METHOD'] === 'POST')) {
-            if (empty(J_auth::$timeOffset)) {
-                J_auth::$timeOffset = (int)$this->input->post('browsertimeoffset');
-                log_message('debug', 'client browser timeoffset: ' . J_auth::$timeOffset);
-                $this->session->set_userdata('timeoffset', '' . J_auth::$timeOffset . '');
+            if (empty(jauth::$timeOffset)) {
+                jauth::$timeOffset = (int)$this->input->post('browsertimeoffset');
+                log_message('debug', 'client browser timeoffset: ' . jauth::$timeOffset);
+                $this->session->set_userdata('timeoffset', '' . jauth::$timeOffset . '');
             }
-            if ($this->j_auth->logged_in()) {
+            if ($this->jauth->isLoggedIn()) {
                 $result = array('success' => true, 'result' => 'OK');
                 return $this->output->set_content_type('application/json')->set_output(json_encode($result));
             } else {
@@ -123,7 +123,7 @@ class Authenticate extends MY_Controller
                             $resp = Duo::verifyResponse($this->config->item('duo-ikey'), $this->config->item('duo-skey'), $this->config->item('duo-akey'), $sig_response);
                             if ($resp !== NULL) {
                                 $this->session->set_userdata('logged', 1);
-                                $finalize = $this->j_auth->finalizepartiallogin();
+                                $finalize = $this->jauth->finalizepartiallogin();
                                 if ($finalize) {
                                     $result = array('success' => true, 'result' => 'OK');
                                 } else {
@@ -143,7 +143,7 @@ class Authenticate extends MY_Controller
                 $this->form_validation->set_rules('password', lang('rr_password'), 'trim|required');
                 $validated = $this->form_validation->run();
                 if ($validated === TRUE) {
-                    if ($this->j_auth->login($this->input->post('username'), $this->input->post('password'))) {
+                    if ($this->jauth->login($this->input->post('username'), $this->input->post('password'))) {
                         if (isset($_SESSION['partiallogged']) && $_SESSION['partiallogged'] === 1 && isset($_SESSION['logged']) && $_SESSION['logged'] === 0) {
 
 

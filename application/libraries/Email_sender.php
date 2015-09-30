@@ -305,7 +305,7 @@ class Email_sender
 
         $trackChange = @unserialize($tracker->getDetail());
         $body = 'Dear user,' . PHP_EOL;
-        $body .= 'Provider (' . $ent->getEntityId() . ' has been modified by ' . $this->ci->j_auth->current_user() . ' from ' . $this->ci->input->ip_address() . PHP_EOL . PHP_EOL;
+        $body .= 'Provider (' . $ent->getEntityId() . ' has been modified by ' . $this->ci->jauth->getLoggedinUsername() . ' from ' . $this->ci->input->ip_address() . PHP_EOL . PHP_EOL;
         if (is_array($trackChange)) {
             foreach ($trackChange as $k => $v) {
                 $rows = '';

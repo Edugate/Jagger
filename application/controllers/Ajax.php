@@ -14,7 +14,7 @@ class Ajax extends MY_Controller
     {
 
         parent::__construct();
-        $this->load->library(array('form_validation', 'j_auth', 'curl'));
+        $this->load->library(array('form_validation', 'curl'));
     }
 
     /**
@@ -38,7 +38,7 @@ class Ajax extends MY_Controller
 
     public function getproviders()
     {
-        if (!($this->input->is_ajax_request() && $this->j_auth->logged_in())) {
+        if (!($this->input->is_ajax_request() && $this->jauth->isLoggedIn())) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
 
@@ -122,7 +122,7 @@ class Ajax extends MY_Controller
 
     public function getfeds()
     {
-        if (!$this->j_auth->loggedInAndAjax()) {
+        if (!$this->jauth->loggedInAndAjax()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $tmpFeds = new models\Federations();
@@ -160,7 +160,7 @@ class Ajax extends MY_Controller
 
     public function fedcat($fedcatId = null)
     {
-        if (!$this->j_auth->loggedInAndAjax()) {
+        if (!$this->jauth->loggedInAndAjax()) {
             return $this->output->set_status_header(403)->set_output('Invalid method');
 
         }
@@ -214,7 +214,7 @@ class Ajax extends MY_Controller
 
     public function showhelpstatus($str = null)
     {
-        if (!$this->j_auth->loggedInAndAjax()) {
+        if (!$this->jauth->loggedInAndAjax()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         if ($str === null) {
@@ -226,7 +226,7 @@ class Ajax extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Incorrect param');
         }
 
-        $username = $this->j_auth->current_user();
+        $username = $this->jauth->getLoggedinUsername();
         /**
          * @var $user models\User
          */
@@ -253,11 +253,11 @@ class Ajax extends MY_Controller
         if ($action === null || !ctype_digit($entID)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        if (!$this->j_auth->loggedInAndAjax()) {
+        if (!$this->jauth->loggedInAndAjax()) {
             return $this->output->set_status_header(401)->set_output('Access Denied');
         }
         $myLang = MY_Controller::getLang();
-        $username = $this->j_auth->current_user();
+        $username = $this->jauth->getLoggedinUsername();
         /**
          * @var $user models\User
          */
@@ -299,10 +299,10 @@ class Ajax extends MY_Controller
 
     public function bookfed($entID = null, $action = null)
     {
-        if ($action === null || !ctype_digit($entID) || !$this->j_auth->loggedInAndAjax()) {
+        if ($action === null || !ctype_digit($entID) || !$this->jauth->loggedInAndAjax()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        $username = $this->j_auth->current_user();
+        $username = $this->jauth->getLoggedinUsername();
         /**
          * @var $user models\User
          */

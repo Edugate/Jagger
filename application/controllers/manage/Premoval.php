@@ -16,7 +16,7 @@ class Premoval extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library(array('zacl', 'form_validation','ProviderRemover','tracker'));
@@ -102,7 +102,7 @@ class Premoval extends MY_Controller
             $msgTwoBody .= $f->getName() . PHP_EOL;
         }
         $this->email_sender->addToMailQueue(array('gfedmemberschanged'), null, 'Federations members changed', $msgTwoBody, array(), false);
-        $msgThreeBody = 'Dear Administrator' . PHP_EOL . $this->j_auth->current_user() . '(IP:' . $this->input->ip_address() . ') removed provider:' . $data['entityid'] . 'from the system' . PHP_EOL;
+        $msgThreeBody = 'Dear Administrator' . PHP_EOL . $this->jauth->getLoggedinUsername() . '(IP:' . $this->input->ip_address() . ') removed provider:' . $data['entityid'] . 'from the system' . PHP_EOL;
         $this->email_sender->addToMailQueue(array(), null, 'Provider has been removed from system', $msgThreeBody, array(), false);
         $this->em->flush();
         $data['success_message'] = lang('rr_provider') . ' ' . $data['entityid'] . ' ' . lang('rr_hasbeenremoved');

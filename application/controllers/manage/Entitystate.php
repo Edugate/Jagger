@@ -28,17 +28,13 @@ class Entitystate extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
         $this->current_site = current_url();
         if (!$loggedin) {
-            $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
         $this->tmpProviders = new models\Providers;
-        $this->load->library('form_element');
-        $this->load->library('form_validation');
-        $this->load->library('metadatavalidator');
-        $this->load->library('zacl');
+        $this->load->library(array('formelement','form_validation','metadatavalidator','zacl'));
         $this->tmpProviders = new models\Providers();
         $this->entity = null;
     }
@@ -103,10 +99,10 @@ class Entitystate extends MY_Controller
             show_error('external entity, cannot be modified', 403);
         }
 
-        $isAdmin = $this->j_auth->isAdministrator();
+        $isAdmin = $this->jauth->isAdministrator();
 
         if (!$_POST) {
-            $data['r'] = $this->form_element->NgenerateRegistrationPolicies($this->entity);
+            $data['r'] = $this->formelement->NgenerateRegistrationPolicies($this->entity);
             $data['content_view'] = 'manage/entityedit_regpolicies';
             return $this->load->view('page', $data);
         }
@@ -300,8 +296,8 @@ class Entitystate extends MY_Controller
         $data['type'] = strtolower($this->entity->getType());
         $validfrom = $this->entity->getValidFrom();
         if (!empty($validfrom)) {
-            $validfromdate = date('Y-m-d', $validfrom->format('U') + j_auth::$timeOffset);
-            $validfromtime = date('H:i', $validfrom->format('U') + j_auth::$timeOffset);
+            $validfromdate = date('Y-m-d', $validfrom->format('U') + jauth::$timeOffset);
+            $validfromtime = date('H:i', $validfrom->format('U') + jauth::$timeOffset);
         } else {
             $validfromdate = '';
             $validfromtime = '';

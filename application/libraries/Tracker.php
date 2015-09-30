@@ -35,7 +35,7 @@ class Tracker {
      */
     function save_track($resourcetype, $subtype, $resourcename, $details, $sync_with_db = false) {
         $track = new models\Tracker;
-        $current_user = $this->ci->j_auth->current_user();
+        $current_user = $this->ci->jauth->getLoggedinUsername();
         $track->setUser($current_user);
         $track->setResourceType($resourcetype);
         $track->setSubType($subtype);

@@ -26,7 +26,7 @@ class Settings extends MY_Controller
     {
         parent::__construct();
 
-        $loggedin = $this->j_auth->logged_in();
+        $loggedin = $this->jauth->isLoggedIn();
 
         $this->current_site = current_url();
 

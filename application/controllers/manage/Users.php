@@ -19,7 +19,7 @@ class Users extends MY_Controller
     {
         parent::__construct();
         $this->load->helper(array('cert', 'form'));
-        $this->load->library(array('form_validation', 'curl', 'metadata2import', 'form_element', 'table', 'rrpreference'));
+        $this->load->library(array('form_validation', 'curl', 'metadata2import', 'formelement', 'table', 'rrpreference'));
     }
 
 
@@ -46,7 +46,7 @@ class Users extends MY_Controller
      */
     private function ajaxplusadmin()
     {
-        return $this->input->is_ajax_request() && $this->j_auth->logged_in() && $this->j_auth->isAdministrator();
+        return $this->input->is_ajax_request() && $this->jauth->isLoggedIn() && $this->jauth->isAdministrator();
     }
 
     /**
@@ -66,7 +66,7 @@ class Users extends MY_Controller
 
     private function ajaxplusowner($encodedUsername)
     {
-        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return false;
         }
         return $this->isOwner($encodedUsername);
@@ -139,7 +139,7 @@ class Users extends MY_Controller
 
     public function updateSecondFactor($encodeduser)
     {
-        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Access denied');
         }
 
@@ -151,7 +151,7 @@ class Users extends MY_Controller
 
         $userAllowed = $user2fset && $isOwner;
 
-        $isAdmin = $this->j_auth->isAdministrator();
+        $isAdmin = $this->jauth->isAdministrator();
 
         if (!$isAdmin && !$userAllowed) {
             return $this->output->set_status_header(403)->set_output('Access denied');
@@ -184,7 +184,7 @@ class Users extends MY_Controller
 
     public function add()
     {
-        if (!$this->input->is_ajax_request() || !$this->j_auth->logged_in() || !$this->j_auth->isAdministrator()) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn() || !$this->jauth->isAdministrator()) {
             return $this->output->set_status_header(403)->set_output('Permission denied');
         }
         $this->load->library('zacl');
@@ -254,16 +254,16 @@ class Users extends MY_Controller
 
     public function show($encodedUsername)
     {
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
         $encodedUsername = trim($encodedUsername);
         $limitAuthnRows = 15;
         $user = $this->findUserOrExit($encodedUsername);
-        $loggedUsername = $this->j_auth->current_user();
+        $loggedUsername = $this->jauth->getLoggedinUsername();
         $isOwner = (strcasecmp($loggedUsername, $user->getUsername()) == 0);
-        $isAdmin = $this->j_auth->isAdministrator();
+        $isAdmin = $this->jauth->isAdministrator();
         $hasReadAccess = $this->zacl->check_acl('u_' . $user->getId(), 'read', 'user', '');
         if (!($hasReadAccess || $isOwner)) {
             return $this->load->view('page', array('error' => lang('error403'), 'content_view' => 'nopermission'));
@@ -333,7 +333,7 @@ class Users extends MY_Controller
         $authnLogs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'), $limitAuthnRows);
         foreach ($authnLogs as $ath) {
             $tab3[] = array(
-                'key' => $ath->getCreated()->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s'),
+                'key' => $ath->getCreated()->modify('+ ' . jauth::$timeOffset . ' seconds')->format('Y-m-d H:i:s'),
                 'val' => $ath->getDetail() . '<br /><small><i>' . $ath->getAgent() . '</i></small>'
             );
         }
@@ -380,7 +380,7 @@ class Users extends MY_Controller
 
     public function showlist()
     {
-        if (!$this->j_auth->logged_in()) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
@@ -391,7 +391,7 @@ class Users extends MY_Controller
             $this->load->view('page', $data);
             return;
         }
-        $isAdmin = $this->j_auth->isAdministrator();
+        $isAdmin = $this->jauth->isAdministrator();
 
         /**
          * @var $users models\User[]
@@ -417,7 +417,7 @@ class Users extends MY_Controller
             $last = $u->getLastlogin();
             $lastlogin = '';
             if (!empty($last)) {
-                $lastlogin = $last->modify('+ ' . j_auth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
+                $lastlogin = $last->modify('+ ' . jauth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
             }
             $usersList[] = array('user' => anchor($showlink . '/' . $encodedUsername, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'ip' => implode(', ',$u->getSystemRoleNames()),'last' => $lastlogin,  $editLink.' '.$action);
         }
@@ -443,7 +443,7 @@ class Users extends MY_Controller
 
     public function remove()
     {
-        if (!$this->j_auth->logged_in() || !$this->input->is_ajax_request()) {
+        if (!$this->jauth->isLoggedIn() || !$this->input->is_ajax_request()) {
             return $this->output->set_status_header(403)->set_output('Permission denied');
         }
         $this->load->library('zacl');
