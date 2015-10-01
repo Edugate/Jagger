@@ -14,6 +14,7 @@ class Statdefs extends MY_Controller
 {
     protected $ispreworkers;
     protected $myLang;
+    protected $breadHelpList;
 
     public function __construct() {
         parent::__construct();
@@ -23,6 +24,14 @@ class Statdefs extends MY_Controller
         }
         $this->load->library('form_validation');
         $this->myLang = MY_Controller::getLang();
+        $this->breadHelpList = array(
+            'idp' => array('name' => lang('identityproviders'), 'url' => base_url('providers/idp_list/showlist')),
+            'sp' => array('name' => lang('serviceproviders'), 'url' => base_url('providers/sp_list/showlist')),
+            'IDP' => array('name' => lang('identityproviders'), 'url' => base_url('providers/idp_list/showlist')),
+            'SP' => array('name' => lang('serviceproviders'), 'url' => base_url('providers/sp_list/showlist')),
+            'both' => array('name' => lang('identityproviders'), 'url' => base_url('providers/idp_list/showlist')),
+            'BOTH' => array('name' => lang('identityproviders'), 'url' => base_url('providers/idp_list/showlist'))
+        );
     }
 
     /**
@@ -154,10 +163,6 @@ class Statdefs extends MY_Controller
             show_error(lang('rr_noperm'), 403);
         }
 
-        $breadHelpList = array(
-            'idp' => array('name' => lang('identityproviders'), 'url' => base_url('providers/idp_list/showlist')),
-            'sp' => array('name' => lang('serviceproviders'), 'url' => base_url('providers/sp_list/showlist')),
-        );
 
         /**
          * @var $statDefinitions models\ProviderStatsDef[]
@@ -171,7 +176,7 @@ class Statdefs extends MY_Controller
             'titlepage' => '<a href="' . base_url('providers/detail/show/' . $providerId . '') . '">' . $providerNameInLang . '</a>',
             'subtitlepage' => lang('statsmngmt'),
             'breadcrumbs' => array(
-                $breadHelpList['' . $providerType . ''],
+                $this->breadHelpList['' . $provider->getType() . ''],
                 array('url' => base_url('providers/detail/show/' . $providerId . ''), 'name' => '' . $providerNameInLang . ''),
                 array('url' => '#', 'name' => lang('statsmngmt'), 'type' => 'current')
             )
@@ -212,37 +217,13 @@ class Statdefs extends MY_Controller
 
     }
 
-    private function genStatDetail(models\ProviderStatsDef $statDefinition) {
-        $overwrite = $statDefinition->getOverwrite();
-        $overwriteTxt = lang('rr_notoverwritestatfile');
-        if ($overwrite) {
-            $overwriteTxt = lang('rr_overwritestatfile');
-        }
-
-        $data2 = array(
-            array(
-                'name' => '' . lang('rr_statdefshortname') . '',
-                'value' => '' . $statDefinition->getName() . '',
-            ),
-            array(
-                'name' => '' . lang('rr_statdefshortname') . '',
-                'value' => '' . $statDefinition->getName() . '',
-            ),
-            array(
-                'name' => '' . lang('rr_title') . '',
-                'value' => '' . $statDefinition->getTitle() . '',
-            ),
-            array(
-                'name' => lang('rr_description'),
-                'value' => '' . $statDefinition->getDescription() . ''
-            ),
-            array(
-                'name' => '' . lang('rr_statfiles') . '',
-                'value' => '' . $overwriteTxt . ''
-            )
-        );
-
+    /**
+     * @param \models\ProviderStatsDef $statDefinition
+     * @return array
+     */
+    private function stadefGeneralInfo(models\ProviderStatsDef $statDefinition){
         $statdefType = $statDefinition->getType();
+        $data2 = array();
         if ($statdefType === 'sys') {
             $data2[] = array(
                 'name' => '' . lang('typeofstaddef') . '',
@@ -317,6 +298,42 @@ class Statdefs extends MY_Controller
 
             }
         }
+        return $data2;
+    }
+
+    private function genStatDetail(models\ProviderStatsDef $statDefinition) {
+        $overwrite = $statDefinition->getOverwrite();
+        $overwriteTxt = lang('rr_notoverwritestatfile');
+        if ($overwrite) {
+            $overwriteTxt = lang('rr_overwritestatfile');
+        }
+
+        $data2 = array(
+            array(
+                'name' => '' . lang('rr_statdefshortname') . '',
+                'value' => '' . $statDefinition->getName() . '',
+            ),
+            array(
+                'name' => '' . lang('rr_statdefshortname') . '',
+                'value' => '' . $statDefinition->getName() . '',
+            ),
+            array(
+                'name' => '' . lang('rr_title') . '',
+                'value' => '' . $statDefinition->getTitle() . '',
+            ),
+            array(
+                'name' => lang('rr_description'),
+                'value' => '' . $statDefinition->getDescription() . ''
+            ),
+            array(
+                'name' => '' . lang('rr_statfiles') . '',
+                'value' => '' . $overwriteTxt . ''
+            )
+        );
+
+        $generalInfo = $this->stadefGeneralInfo($statDefinition);
+        array_push($data2, array_values($generalInfo));
+
         /**
          * @var $statfiles models\ProviderStatsCollection[]
          */
@@ -423,13 +440,10 @@ class Statdefs extends MY_Controller
             }
         }
 
-        $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
-        if (strcasecmp($providerType, 'SP') == 0) {
-            $plist = array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders'));
-        }
+
 
         $data['breadcrumbs'] = array(
-            $plist,
+            $this->breadHelpList['' . $provider->getType() . ''],
             array('url' => base_url('providers/detail/show/' . $providerid . ''), 'name' => '' . $providerLangName . ''),
             array('url' => base_url('manage/statdefs/show/' . $providerid . ''), 'name' => '' . lang('statsmngmt') . ''),
             array('url' => '#', 'name' => lang('title_editform'), 'type' => 'current'),
@@ -517,11 +531,7 @@ class Statdefs extends MY_Controller
         if (!$hasAccess) {
             show_error(lang('rr_noperm'), 403);
         }
-        if (strcasecmp($providerType, 'SP') == 0) {
-            $plist = array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders'));
-        } else {
-            $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
-        }
+
         $data = array(
             'providerid' => $provider->getId(),
             'providerentity' => $provider->getEntityId(),
@@ -530,7 +540,7 @@ class Statdefs extends MY_Controller
             'subtitlepage' => lang('title_newstatdefs'),
             'submenupage' => array('name' => lang('statdeflist'), 'link' => '' . base_url() . 'manage/statdefs/show/' . $provider->getId() . ''),
             'breadcrumbs' => array(
-                $plist,
+                $this->breadHelpList[''.$provider->getType().''],
                 array('url' => base_url('providers/detail/show/' . $provider->getId() . ''), 'name' => '' . $providerLangName . ''),
                 array('url' => base_url('manage/statdefs/show/' . $provider->getId() . ''), 'name' => '' . lang('statsmngmt') . ''),
                 array('url' => '#', 'name' => lang('title_editform'), 'type' => 'current'),
