@@ -216,7 +216,6 @@ class Formelement
             if (empty($tid)) {
                 $tid = 'x' . $tmpid++;
             }
-            $row = '';
             if ($sessform) {
                 if (isset($ses['contact']['' . $tid . ''])) {
                     $t1 = set_value($ses['contact'][$tid]['type'], $cnt->getType());
@@ -232,14 +231,13 @@ class Formelement
                 $t3 = $cnt->getSurname();
                 $t4 = $cnt->getEmail();
             }
-            $row .= '<div class="small-12 columns">' . jGenerateDropdown(lang('rr_contacttype'), 'f[contact][' . $tid . '][type]', $formtypes, set_value('f[contact][' . $tid . '][type]', $t1, FALSE), '') . '</div>';
+            $row = '<div class="small-12 columns">' . jGenerateDropdown(lang('rr_contacttype'), 'f[contact][' . $tid . '][type]', $formtypes, set_value('f[contact][' . $tid . '][type]', $t1, FALSE), '') . '</div>';
             $row .= '<div class="small-12 columns">' . jGenerateInput(lang('rr_contactfirstname'), 'f[contact][' . $tid . '][fname]', set_value('f[contact][' . $tid . '][fname]', $t2, FALSE), '') . '</div>';
             $row .= '<div class="small-12 columns">' . jGenerateInput(lang('rr_contactlastname'), 'f[contact][' . $tid . '][sname]', set_value('f[contact][' . $tid . '][sname]', $t3, FALSE), '') . '</div>';
             $row .= '<div class="small-12 columns">' . jGenerateInput(lang('rr_contactemail'), 'f[contact][' . $tid . '][email]', set_value('f[contact][' . $tid . '][email]', $t4, FALSE), '') . '</div>';
             $row .= '<div class="small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="contactrm button tiny alert inline right" name="contact" value="' . $cnt->getId() . '">' . lang('btn_removecontact') . ' </button></div><div class="small-3 large-2 columns"></div></div>';
-            $result[] = '';
-            $result[] = form_fieldset(lang('rr_contact')) . '<div>' . $row . '</div>' . form_fieldset_close();
-            $result[] = '';
+            array_push($result,'',''.form_fieldset(lang('rr_contact')) . '<div>' . $row . '</div>' . form_fieldset_close().'','');
+
             if ($sessform) {
                 unset($ses['contact']['' . $tid . '']);
             }
@@ -247,23 +245,18 @@ class Formelement
         if ($sessform) {
             foreach ($ses['contact'] as $k => $v) {
                 $n = '<fieldset class="newcontact"><legend>' . lang('rr_contact') . '</legend><div>';
-
                 $n .= '<div class="small-12 columns">' . jGenerateDropdown(lang('rr_contacttype'), 'f[contact][' . $k . '][type]', $formtypes, set_value('f[contact][' . $k . '][type]', $v['type']), '') . '</div>';
                 $n .= '<div class="small-12 columns">' . jGenerateInput(lang('rr_contactfirstname'), 'f[contact][' . $k . '][fname]', set_value('f[contact][' . $k . '][fname]', $v['fname']), '') . '</div>';
                 $n .= '<div class="small-12 columns">' . jGenerateInput(lang('rr_contactlastname'), 'f[contact][' . $k . '][sname]', set_value('f[contact][' . $k . '][sname]', $v['sname']), '') . '</div>';
                 $n .= '<div class="small-12 columns">' . jGenerateInput(lang('rr_contactemail'), 'f[contact][' . $k . '][email]', set_value('f[contact][' . $k . '][email]', $v['email']), '') . '</div>';
                 $n .= '<div class="rmelbtn fromprevtoright small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="btn contactrm button alert tiny inline right" name="contact" value="' . $k . '">' . lang('btn_removecontact') . '</button></div><div class="small-3 large-2 columns"></div></div>';
                 $n .= '</div>' . form_fieldset_close();
-                $result[] = '';
-                $result[] = $n;
-                $result[] = '';
+                array_push($result,'',$n,'');
+
             }
         }
         $n = '<button class="editbutton addicon smallerbtn button tiny" type="button" id="ncontactbtn" value="' . lang('btn_removecontact') . '|' . lang('rr_contacttype') . '|' . lang('rr_contactfirstname') . '|' . lang('rr_contactlastname') . '|' . lang('rr_contactemail') . '|' . lang('rr_contact') . '">' . lang('rr_addnewcoontact') . '</button>';
-        $result[] = '';
-        $result[] = $n;
-        $result[] = '';
-
+        array_push($result,'',$n,'');
         return $result;
     }
 
