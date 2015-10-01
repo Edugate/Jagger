@@ -12,7 +12,6 @@ if (!defined('BASEPATH')) {
  */
 class Statdefs extends MY_Controller
 {
-
     protected $ispreworkers;
     protected $myLang;
 
@@ -26,7 +25,9 @@ class Statdefs extends MY_Controller
         $this->myLang = MY_Controller::getLang();
     }
 
-
+    /**
+     * @return bool
+     */
     private function isStats() {
         $isgearman = $this->config->item('gearman');
         $isstatistics = $this->config->item('statistics');
@@ -35,6 +36,7 @@ class Statdefs extends MY_Controller
         }
         return false;
     }
+
 
     public function download($defid = null) {
         if (!$this->input->is_ajax_request() || !ctype_digit($defid) || $this->isStats() !== true || !$this->jauth->isLoggedIn()) {
@@ -89,7 +91,7 @@ class Statdefs extends MY_Controller
             return $this->output->set_status_header(500)->set_output('Cannot add job-server(s)');
         }
         $jobsSession = $this->session->userdata('jobs');
-        if (!empty($jobsSession) || is_array($jobsSession) || isset($jobsSession['statdef']['' . $defid . ''])) {
+        if (is_array($jobsSession) || isset($jobsSession['statdef']['' . $defid . ''])) {
             $stat = $gmclient->jobStatus($jobsSession['stadef']['' . $defid . '']);
 
             if (($stat['0'] === true) && ($stat['1'] === false)) {
@@ -117,15 +119,16 @@ class Statdefs extends MY_Controller
      * @param null $statDefId
      * @return bool
      */
-    private  function validateShowGets($providerId = null, $statDefId = null){
+    private function validateShowGets($providerId = null, $statDefId = null) {
         if (!ctype_digit($providerId) || $this->isStats() !== true || !($statDefId === null || ctype_digit($statDefId))) {
             return false;
         }
         return true;
     }
 
+
     public function show($providerId = null, $statDefId = null) {
-        if($this->validateShowGets($providerId,$statDefId) !== true){
+        if ($this->validateShowGets($providerId, $statDefId) !== true) {
             show_404();
         }
         if (!$this->jauth->isLoggedIn()) {
@@ -151,6 +154,11 @@ class Statdefs extends MY_Controller
             show_error(lang('rr_noperm'), 403);
         }
 
+        $breadHelpList = array(
+            'idp' => array('name' => lang('identityproviders'), 'url' => base_url('providers/idp_list/showlist')),
+            'sp' => array('name' => lang('serviceproviders'), 'url' => base_url('providers/sp_list/showlist')),
+        );
+
         /**
          * @var $statDefinitions models\ProviderStatsDef[]
          */
@@ -160,18 +168,13 @@ class Statdefs extends MY_Controller
             'providerid' => $providerId,
             'providerentity' => $provider->getEntityId(),
             'providername' => $providerNameInLang,
-            'titlepage' => '<a href="' . base_url() . 'providers/detail/show/' . $providerId . '">' . $providerNameInLang . '</a>',
+            'titlepage' => '<a href="' . base_url('providers/detail/show/' . $providerId . '') . '">' . $providerNameInLang . '</a>',
             'subtitlepage' => lang('statsmngmt'),
-        );
-        $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
-        if (strcasecmp($providerType, 'sp') == 0) {
-            $plist = array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders'));
-        }
-        $data['breadcrumbs'] = array(
-            $plist,
-            array('url' => base_url('providers/detail/show/' . $providerId . ''), 'name' => '' . $providerNameInLang . ''),
-            array('url' => '#', 'name' => lang('statsmngmt'), 'type' => 'current'),
-
+            'breadcrumbs' => array(
+                $breadHelpList['' . $providerType . ''],
+                array('url' => base_url('providers/detail/show/' . $providerId . ''), 'name' => '' . $providerNameInLang . ''),
+                array('url' => '#', 'name' => lang('statsmngmt'), 'type' => 'current')
+            )
         );
 
         if ($statDefId === null) {
