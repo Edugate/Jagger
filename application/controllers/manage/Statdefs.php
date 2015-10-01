@@ -14,6 +14,7 @@ class Statdefs extends MY_Controller
 {
 
     protected $ispreworkers;
+    protected $myLang;
 
     public function __construct() {
         parent::__construct();
@@ -22,6 +23,7 @@ class Statdefs extends MY_Controller
             $this->ispreworkers = array();
         }
         $this->load->library('form_validation');
+        $this->myLang = MY_Controller::getLang();
     }
 
 
@@ -110,15 +112,26 @@ class Statdefs extends MY_Controller
         return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => lang('taskssent') . ' ')));
     }
 
+    /**
+     * @param null $providerId
+     * @param null $statDefId
+     * @return bool
+     */
+    private  function validateShowGets($providerId = null, $statDefId = null){
+        if (!ctype_digit($providerId) || $this->isStats() !== true || !($statDefId === null || ctype_digit($statDefId))) {
+            return false;
+        }
+        return true;
+    }
+
     public function show($providerId = null, $statDefId = null) {
-        if (!ctype_digit($providerId) || !(empty($statDefId) || ctype_digit($statDefId)) || $this->isStats() !== TRUE) {
-            show_error('Page not found', 404);
+        if($this->validateShowGets($providerId,$statDefId) !== true){
+            show_404();
         }
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
-        $myLang = MY_Controller::getLang();
-
+        $this->title = lang('title_statdefs');
         /**
          * @var models\Provider $provider
          */
@@ -142,7 +155,7 @@ class Statdefs extends MY_Controller
          * @var $statDefinitions models\ProviderStatsDef[]
          */
         $statDefinitions = $this->getExistingStatsDefs($providerId);
-        $providerNameInLang = $provider->getNameToWebInLang($myLang, strtolower($providerType));
+        $providerNameInLang = $provider->getNameToWebInLang($this->myLang, strtolower($providerType));
         $data = array(
             'providerid' => $providerId,
             'providerentity' => $provider->getEntityId(),
@@ -161,45 +174,38 @@ class Statdefs extends MY_Controller
 
         );
 
-        if (empty($statDefId)) {
-            $this->title = lang('title_statdefs');
-            $data['content_view'] = 'manage/statdefs_show_view';
-
-
-            if (count($statDefinitions) > 0) {
-                $res = array();
-                foreach ($statDefinitions as $v) {
-                    $statdefType = $v->getType();
-                    $alert = false;
-                    if ($statdefType === 'sys') {
-                        $sysmethod = $v->getSysDef();
-                        if (empty($sysmethod) || !array_key_exists($sysmethod, $this->ispreworkers)) {
-                            $alert = true;
-                        }
-                    }
-                    $res[] = array('title' => '' . $v->getTitle() . '',
-                        'id' => '' . $v->getId() . '',
-                        'desc' => '' . $v->getDescription() . '',
-                        'alert' => $alert,
-                    );
+        if ($statDefId === null) {
+            $res = array();
+            foreach ($statDefinitions as $v) {
+                $statdefType = $v->getType();
+                $alert = false;
+                if ($statdefType === 'sys') {
+                    $sysmethod = $v->getSysDef();
+                    $alert = (bool)(empty($sysmethod) || !array_key_exists($sysmethod, $this->ispreworkers));
                 }
-
-                $data['existingStatDefs'] = $res;
+                $res[] = array('title' => '' . $v->getTitle() . '',
+                    'id' => '' . $v->getId() . '',
+                    'desc' => '' . $v->getDescription() . '',
+                    'alert' => $alert,
+                );
             }
-            return $this->load->view('page', $data);
-        }
-        /**
-         * @var $statDefinition models\ProviderStatsDef
-         */
-        $statDefinition = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => '' . $statDefId . '', 'provider' => '' . $providerId . ''));
-        if ($statDefinition === null) {
-            show_error('detail for stat def not found');
-        }
-        $data['defid'] = $statDefId;
-        $data['details'] = $this->genStatDetail($statDefinition);
-        $data['content_view'] = 'manage/statdef_detail.php';
-        $this->load->view('page', $data);
+            $data['content_view'] = 'manage/statdefs_show_view';
+            $data['existingStatDefs'] = $res;
 
+        } else {
+            /**
+             * @var $statDefinition models\ProviderStatsDef
+             */
+            $statDefinition = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => '' . $statDefId . '', 'provider' => '' . $providerId . ''));
+            if ($statDefinition === null) {
+                show_error('detail for stat def not found');
+            }
+            $data['defid'] = $statDefId;
+            $data['details'] = $this->genStatDetail($statDefinition);
+            $data['content_view'] = 'manage/statdef_detail.php';
+
+        }
+        $this->load->view('page', $data);
 
     }
 
@@ -277,7 +283,7 @@ class Statdefs extends MY_Controller
             if ($method === 'post') {
                 $params = $statDefinition->getPostOptions();
                 $vparams = '';
-                if (!empty($params) && is_array($params)) {
+                if (is_array($params)) {
                     foreach ($params as $k => $v) {
                         $vparams .= '' . html_escape($k) . ': ' . html_escape($v) . '<br />';
                     }
@@ -320,7 +326,7 @@ class Statdefs extends MY_Controller
             $dowinfo = lang('statfilegenerated');
             foreach ($statfiles as $st) {
                 $createdAt = date('Y-m-d H:i:s', $st->getCreatedAt()->format("U") + jauth::$timeOffset);
-                $statv .= '<li><a href="' . $downurl .'/'. $st->getId() . '">' . $dowinfo . ': ' . $createdAt . '</a></li>';
+                $statv .= '<li><a href="' . $downurl . '/' . $st->getId() . '">' . $dowinfo . ': ' . $createdAt . '</a></li>';
             }
             $statv .= '</ul>';
         }
@@ -329,14 +335,13 @@ class Statdefs extends MY_Controller
     }
 
     public function statdefedit($providerid = null, $statdefid = null) {
-        if (empty($statdefid) || empty($providerid) || !ctype_digit($statdefid) || !ctype_digit($providerid)) {
+        if (empty($statdefid) || !ctype_digit($providerid) || !ctype_digit($statdefid)) {
             show_error('Page not found', 404);
         }
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
-        $isStats = $this->isStats();
-        if ($isStats !== true) {
+        if ($this->isStats() !== true) {
             show_error('not found', 404);
         }
         /**
@@ -350,9 +355,8 @@ class Statdefs extends MY_Controller
          * @var $provider models\Provider
          */
         $provider = $statDefinition->getProvider();
-        $myLang = MY_Controller::getLang();
         $providerType = $provider->getType();
-        $providerLangName = $provider->getNameToWebInLang($myLang, $providerType);
+        $providerLangName = $provider->getNameToWebInLang($this->myLang, $providerType);
         $this->load->library('zacl');
         $hasAccess = $this->zacl->check_acl('' . $providerid . '', 'write', 'entity', '');
         if (!$hasAccess) {
@@ -400,7 +404,7 @@ class Statdefs extends MY_Controller
 
         $presysdef = $statDefinition->getType();
         $data['statdefpredef'] = false;
-        if (!empty($presysdef) && $presysdef === 'sys') {
+        if ($presysdef === 'sys') {
             $data['statdefpredef'] = true;
         }
 
@@ -493,7 +497,6 @@ class Statdefs extends MY_Controller
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
-        $myLang = MY_Controller::getLang();
         $this->title = lang('title_newstatdefs');
         /**
          * @var $provider models\Provider
@@ -503,7 +506,7 @@ class Statdefs extends MY_Controller
             show_error('Provider not found', 404);
         }
         $providerType = $provider->getType();
-        $providerLangName = $provider->getNameToWebInLang($myLang, $providerType);
+        $providerLangName = $provider->getNameToWebInLang($this->myLang, $providerType);
         $this->load->library('zacl');
 
         $hasAccess = $this->zacl->check_acl('' . $provider->getId() . '', 'write', 'entity', '');
