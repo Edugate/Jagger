@@ -3489,8 +3489,8 @@ $(function () {
             url: url,
             timeout: 2500,
             cache: false,
-            success: function (json) {
-                data = $.parseJSON(json);
+            dataType: "json",
+            success: function (data) {
                 if (!data) {
                     window.alert('no data');
                 }
@@ -3510,10 +3510,10 @@ $(function () {
             url: url,
             timeout: 2500,
             cache: true,
-            success: function (json) {
+            dataType: "json",
+            success: function (data) {
                 i = null;
                 $('#spinner').hide();
-                var data = $.parseJSON(json);
                 if (!data) {
                     window.alert('no data');
                 }
