@@ -169,9 +169,9 @@ class Statdefs extends MY_Controller
             if (count($statDefinitions) > 0) {
                 $res = array();
                 foreach ($statDefinitions as $v) {
-                    $is_sys = $v->getType();
+                    $statdefType = $v->getType();
                     $alert = false;
-                    if ($is_sys === 'sys') {
+                    if ($statdefType === 'sys') {
                         $sysmethod = $v->getSysDef();
                         if (empty($sysmethod) || !array_key_exists($sysmethod, $this->ispreworkers)) {
                             $alert = true;
@@ -192,7 +192,7 @@ class Statdefs extends MY_Controller
          * @var $statDefinition models\ProviderStatsDef
          */
         $statDefinition = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => '' . $statDefId . '', 'provider' => '' . $providerId . ''));
-        if (empty($statDefinition)) {
+        if ($statDefinition === null) {
             show_error('detail for stat def not found');
         }
         $data['defid'] = $statDefId;
@@ -203,9 +203,7 @@ class Statdefs extends MY_Controller
 
     }
 
-    private function genStatDetail(models\ProviderStatsDef $statDefinition){
-
-
+    private function genStatDetail(models\ProviderStatsDef $statDefinition) {
         $overwrite = $statDefinition->getOverwrite();
         $overwriteTxt = lang('rr_notoverwritestatfile');
         if ($overwrite) {
@@ -235,49 +233,79 @@ class Statdefs extends MY_Controller
             )
         );
 
-        $type = $statDefinition->getType();
-        if ($type === 'sys') {
-            $data2[] = array('name' => '' . lang('typeofstaddef') . '', 'value' => '' . lang('builtinstatdef') . '');
+        $statdefType = $statDefinition->getType();
+        if ($statdefType === 'sys') {
+            $data2[] = array(
+                'name' => '' . lang('typeofstaddef') . '',
+                'value' => '' . lang('builtinstatdef') . '');
             $sysdef = $statDefinition->getSysDef();
             if (empty($sysdef)) {
-                $data2[] = array('name' => '' . lang('nameofbuiltinstatdef') . '', 'value' => '<span class="alert">' . lang('rr_empty') . '</span>');
+                $data2[] = array(
+                    'name' => '' . lang('nameofbuiltinstatdef') . '',
+                    'value' => '<span class="alert">' . lang('rr_empty') . '</span>');
                 log_message('error', 'StatDefinition with id:' . $statDefinition->getId() . ' is set to use predefined statcollection but name of worker not defined');
             } else {
 
                 if (!array_key_exists($sysdef, $this->ispreworkers)) {
-                    $data2[] = array('name' => '' . lang('nameofbuiltinstatdef') . '', 'value' => '<span class="alert">' . lang('builtincolnovalid') . '</span>');
+                    $data2[] = array(
+                        'name' => '' . lang('nameofbuiltinstatdef') . '',
+                        'value' => '<span class="alert">' . lang('builtincolnovalid') . '</span>');
                 } else {
                     $sysdefdesc = '';
                     if (isset($this->ispreworkers['' . $sysdef . '']['desc'])) {
                         $sysdefdesc = $this->ispreworkers['' . $sysdef . '']['desc'];
                     }
-                    $data2[] = array('name' => '' . lang('nameofbuiltinstatdef') . '', 'value' => '' . $sysdef . ':<br />' . $sysdefdesc . '');
+                    $data2[] = array(
+                        'name' => '' . lang('nameofbuiltinstatdef') . '',
+                        'value' => '' . $sysdef . ':<br />' . $sysdefdesc . '');
                 }
             }
         } else {
-            $data2[] = array('name' => '' . lang('rr_statdefsourceurl') . '', 'value' => $statDefinition->getSourceUrl());
-            $data2[] = array('name' => '' . lang('rr_statdefformat') . '', 'value' => $statDefinition->getFormatType());
             $method = $statDefinition->getHttpMethod();
-            $data2[] = array('name' => '' . lang('rr_httpmethod') . '', 'value' => strtoupper($method));
+
+            array_push($data2,
+                array(
+                    'name' => '' . lang('rr_statdefsourceurl') . '',
+                    'value' => $statDefinition->getSourceUrl()),
+                array(
+                    'name' => '' . lang('rr_statdefformat') . '',
+                    'value' => $statDefinition->getFormatType()),
+                array(
+                    'name' => '' . lang('rr_httpmethod') . '',
+                    'value' => strtoupper($method))
+            );
             if ($method === 'post') {
                 $params = $statDefinition->getPostOptions();
                 $vparams = '';
                 if (!empty($params) && is_array($params)) {
                     foreach ($params as $k => $v) {
-                        $vparams .= '' . htmlentities($k) . ': ' . htmlentities($v) . '<br />';
+                        $vparams .= '' . html_escape($k) . ': ' . html_escape($v) . '<br />';
                     }
                 }
-                $data2[] = array('name' => '' . lang('rr_postoptions') . '', 'value' => '' . $vparams . '');
+                $data2[] = array(
+                    'name' => '' . lang('rr_postoptions') . '',
+                    'value' => '' . $vparams . '');
             }
             $accesstype = $statDefinition->getAccessType();
             if ($accesstype === 'anon') {
                 $vaccesstype = lang('rr_anon');
-                $data2[] = array('name' => '' . lang('rr_typeaccess') . '', 'value' => '' . $vaccesstype . '');
+                $data2[] = array(
+                    'name' => '' . lang('rr_typeaccess') . '',
+                    'value' => '' . $vaccesstype . '');
             } else {
                 $vaccesstype = 'Basic Authentication';
-                $data2[] = array('name' => '' . lang('rr_typeaccess') . '', 'value' => '' . $vaccesstype . '');
-                $data2[] = array('name' => '' . lang('rr_username') . '', 'value' => '' . html_escape($statDefinition->getAuthUser()) . '');
-                $data2[] = array('name' => '' . lang('rr_password') . '', 'value' => '***********');
+                array_push($data2,
+                    array(
+                        'name' => '' . lang('rr_typeaccess') . '',
+                        'value' => '' . $vaccesstype . ''),
+                    array(
+                        'name' => '' . lang('rr_username') . '',
+                        'value' => '' . html_escape($statDefinition->getAuthUser()) . ''),
+                    array(
+                        'name' => '' . lang('rr_password') . '',
+                        'value' => '***********')
+                );
+
             }
         }
         /**
@@ -285,19 +313,18 @@ class Statdefs extends MY_Controller
          */
         $statfiles = $statDefinition->getStatistics();
 
+        $statv = lang('notfound');
         if (!empty($statfiles) && count($statfiles) > 0) {
             $statv = '<ul>';
-            $downurl = base_url() . 'manage/statistics/show/';
+            $downurl = base_url('manage/statistics/show/');
             $dowinfo = lang('statfilegenerated');
             foreach ($statfiles as $st) {
                 $createdAt = date('Y-m-d H:i:s', $st->getCreatedAt()->format("U") + jauth::$timeOffset);
-                $statv .= '<li><a href="' . $downurl . $st->getId() . '">' . $dowinfo . ': ' . $createdAt . '</a></li>';
+                $statv .= '<li><a href="' . $downurl .'/'. $st->getId() . '">' . $dowinfo . ': ' . $createdAt . '</a></li>';
             }
             $statv .= '</ul>';
-            $data2[] = array('name' => '' . lang('generatedstatslist') . '', 'value' => '' . $statv . '');
-        } else {
-            $data2[] = array('name' => '' . lang('generatedstatslist') . '', 'value' => '' . lang('notfound') . '');
         }
+        $data2[] = array('name' => '' . lang('generatedstatslist') . '', 'value' => '' . $statv . '');
         return $data2;
     }
 
@@ -309,14 +336,14 @@ class Statdefs extends MY_Controller
             redirect('auth/login', 'location');
         }
         $isStats = $this->isStats();
-        if ($isStats !== TRUE) {
+        if ($isStats !== true) {
             show_error('not found', 404);
         }
         /**
          * @var $statDefinition models\ProviderStatsDef
          */
         $statDefinition = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $statdefid, 'provider' => $providerid));
-        if (empty($statDefinition)) {
+        if ($statDefinition === null) {
             show_error('Statdef Page not found', 404);
         }
         /**
@@ -362,7 +389,7 @@ class Statdefs extends MY_Controller
                 }
             }
             if (count($workerdropdown) > 0) {
-                $data['showpredefined'] = TRUE;
+                $data['showpredefined'] = true;
                 $data['workerdropdown'] = $workerdropdown;
             }
         }
@@ -372,9 +399,9 @@ class Statdefs extends MY_Controller
 
 
         $presysdef = $statDefinition->getType();
-        $data['statdefpredef'] = FALSE;
+        $data['statdefpredef'] = false;
         if (!empty($presysdef) && $presysdef === 'sys') {
-            $data['statdefpredef'] = TRUE;
+            $data['statdefpredef'] = true;
         }
 
         $statdefpostparam = $statDefinition->getPostOptions();
@@ -403,19 +430,19 @@ class Statdefs extends MY_Controller
         );
 
 
-        if ($this->newStatDefSubmitValidate() === FALSE) {
+        if ($this->newStatDefSubmitValidate() === false) {
             return $this->load->view('page', $data);
         }
         $accesstype = $this->input->post('accesstype');
         $overwrite = $this->input->post('overwrite');
         $usepredefined = $this->input->post('usepredefined');
         $prepostoptions = $this->input->post('postoptions');
-        $p2 = explode('$$', $prepostoptions);
+        $proptionsArray = explode('$$', $prepostoptions);
         $postoptions = array();
-        if (!empty($p2) && is_array($p2) && count($p2) > 0) {
-            foreach ($p2 as $k => $v) {
+        if (!empty($proptionsArray) && is_array($proptionsArray) && count($proptionsArray) > 0) {
+            foreach ($proptionsArray as $k => $v) {
                 if (empty($v)) {
-                    unset($p2[$k]);
+                    unset($proptionsArray[$k]);
                     continue;
                 }
                 $y = preg_split('/(\$:\$)/', $v, 2);
@@ -438,7 +465,7 @@ class Statdefs extends MY_Controller
             $statDefinition->setType('sys');
             $statDefinition->setSysDef($this->input->post('gworker'));
         } else {
-            $statDefinition->setSysDef(NULL);
+            $statDefinition->setSysDef(null);
             $statDefinition->setType('ext');
             $statDefinition->setHttpMethod($this->input->post('httpmethod'));
             $statDefinition->setPostOptions($postoptions);
@@ -532,10 +559,10 @@ class Statdefs extends MY_Controller
         $overwrite = $this->input->post('overwrite');
         $usepredefined = $this->input->post('usepredefined');
         $prepostoptions = $this->input->post('postoptions');
-        $p2 = explode('$$', $prepostoptions);
+        $proptionsArray = explode('$$', $prepostoptions);
         $postoptions = array();
-        if (!empty($p2) && is_array($p2) && count($p2) > 0) {
-            foreach ($p2 as $v) {
+        if (!empty($proptionsArray) && is_array($proptionsArray) && count($proptionsArray) > 0) {
+            foreach ($proptionsArray as $v) {
                 $y = preg_split('/(\$:\$)/', $v, 2);
                 if (count($y) === 2) {
                     $postoptions['' . trim($y['0']) . ''] = trim($y['1']);
@@ -620,25 +647,25 @@ class Statdefs extends MY_Controller
 
     public function remove($defid = null) {
         $msg = null;
-        $s = null;
+        $statusCode = null;
         /**
          * @var models\ProviderStatsDef $def
          */
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
-            $s = 403;
+            $statusCode = 403;
             $msg = 'Access denied';
         } elseif (empty($defid) || !ctype_digit($defid)) {
-            $s = 404;
+            $statusCode = 404;
             $msg = 'not found';
         } else {
             $def = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $defid));
             if (empty($def)) {
-                $s = 404;
+                $statusCode = 404;
                 $msg = 'not found';
             }
         }
-        if ($s !== null) {
-            return $this->output->set_header($s)->set_output($msg);
+        if ($statusCode !== null) {
+            return $this->output->set_header($statusCode)->set_output($msg);
         }
         $inputProviderId = $this->input->post('prvid');
         $inputDefId = $this->input->post('defid');
