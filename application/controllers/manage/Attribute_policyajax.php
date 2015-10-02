@@ -22,15 +22,13 @@ class Attribute_policyajax extends MY_Controller
 
     protected $tmpArps;
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $this->tmpArps = new models\AttributeReleasePolicies;
 
     }
 
-    public function getglobalattrpolicy($idpid, $attrid)
-    {
+    public function getglobalattrpolicy($idpid, $attrid) {
         $isValidRequest = (ctype_digit($idpid) && ctype_digit($attrid) && $this->input->is_ajax_request() && $this->jauth->isLoggedIn());
         if (!$isValidRequest) {
             set_status_header(403);
@@ -49,8 +47,7 @@ class Attribute_policyajax extends MY_Controller
         echo $policy->getPolicy();
     }
 
-    public function getfedattrpolicy($idpid, $fedid, $attrid)
-    {
+    public function getfedattrpolicy($idpid, $fedid, $attrid) {
         $isValidRequest = (ctype_digit($idpid) && ctype_digit($attrid) && ctype_digit($fedid) && $this->input->is_ajax_request() && $this->jauth->isLoggedIn());
         if (!$isValidRequest) {
             set_status_header(403);
@@ -80,42 +77,42 @@ class Attribute_policyajax extends MY_Controller
 
     }
 
-    public function getattrpath($idpid, $spid, $attrid)
-    {
+    public function getattrpath($idpid, $spid, $attrid) {
         $isValidRequest = (ctype_digit($idpid) && ctype_digit($spid) && ctype_digit($attrid) && $this->input->is_ajax_request() && $this->jauth->isLoggedIn());
         if (!$isValidRequest) {
-            set_status_header(403);
-            echo 'Access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
+        /**
+         * @var models\Provider $idp
+         */
         $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idpid, 'type' => array('IDP', 'BOTH')));
-        if (empty($idp)) {
-            set_status_header(404);
-            echo 'idp not found';
-            return;
+        if ($idp === null) {
+            return $this->output->set_status_header(404)->set_output('Identity Provider not found');
         }
         if (!$this->checkAccess($idp)) {
-            set_status_header(403);
-            echo 'Access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
 
         $dropdownInLang = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'));
 
-
+        /**
+         * @var models\Attribute $attribute
+         */
         $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $attrid));
-        if (empty($attribute)) {
-            set_status_header(403);
-            echo 'missing attr';
-            return;
+        if ($attribute === null) {
+            return $this->output->set_status_header(404)->set_output('Requested attribute definition not found');
         }
+        /**
+         * @var models\Provider $sp
+         */
         $sp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $spid, 'type' => array('SP', 'BOTH')));
-        if (empty($sp)) {
-            set_status_header(403);
-            echo 'missing sp';
-            return;
+        if ($sp === null) {
+            return $this->output->set_status_header(404)->set_output('Requested Service Provider not found');
         }
         $result = array('status' => 'ok', 'requester' => $sp->getEntityId(), 'attributename' => $attribute->getName(), 'details' => array());
+        /**
+         * @var models\AttributeReleasePolicy[] $supportedAttr
+         */
         $supportedAttr = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute' => $attribute, 'idp' => $idp, 'type' => 'supported'));
         if (!empty($supportedAttr)) {
             $result['supported'] = true;
@@ -124,6 +121,9 @@ class Attribute_policyajax extends MY_Controller
             $result['supported'] = false;
             $result['details'][] = array('name' => '', 'value' => lang('attrnotsupported'));
         }
+        /**
+         * @var models\AttributeReleasePolicy[] $globalPolicy
+         */
         $globalPolicy = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute' => $attribute, 'idp' => $idp, 'type' => 'global'));
         if (empty($globalPolicy)) {
             $result['global'] = null;
@@ -192,24 +192,25 @@ class Attribute_policyajax extends MY_Controller
      * @param \models\Provider $provider
      * @return bool
      */
-    private function checkAccess(models\Provider $provider)
-    {
+    private function checkAccess(models\Provider $provider) {
         $this->load->library('zacl');
         $isLocked = $provider->getLocked();
         $hasWriteAccess = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
         return ($hasWriteAccess && !$isLocked);
     }
 
-    public function submit_sp($idpID)
-    {
+    public function submit_sp($idpID) {
 
         if (!ctype_digit($idpID) || !$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             set_status_header(403);
             echo 'Access denied';
             return;
         }
+        /**
+         * @var models\Provider $idp
+         */
         $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idpID, 'type' => array('IDP', 'BOTH')));
-        if (empty($idp)) {
+        if ($idp === null) {
             set_status_header(404);
             echo lang('rerror_providernotexist');
             return;
@@ -220,7 +221,7 @@ class Attribute_policyajax extends MY_Controller
             return;
         }
         $this->load->library('zacl');
-        $tmp_a = $this->config->item('policy_dropdown');
+        $tmpAt = $this->config->item('policy_dropdown');
         $idpid = $this->input->post('idpid');
         if (empty($idpid) || !ctype_digit($idpid)) {
             set_status_header(403);
@@ -277,7 +278,7 @@ class Attribute_policyajax extends MY_Controller
             if ($policy === '100') {
                 $this->em->remove($arp);
                 $changes['attr: ' . $attribute->getName() . ''] = array(
-                    'before' => 'policy for ' . $sp->getEntityId() . ' : ' . $tmp_a[$old_policy] . '',
+                    'before' => 'policy for ' . $sp->getEntityId() . ' : ' . $tmpAt[$old_policy] . '',
                     'after' => 'removed',
                 );
                 $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
@@ -286,8 +287,8 @@ class Attribute_policyajax extends MY_Controller
                 $this->em->persist($arp);
 
                 $changes['attr: ' . $attribute->getName() . ''] = array(
-                    'before' => 'policy for ' . $sp->getEntityId() . ' : ' . $tmp_a[$old_policy] . '',
-                    'after' => $tmp_a[$policy],
+                    'before' => 'policy for ' . $sp->getEntityId() . ' : ' . $tmpAt[$old_policy] . '',
+                    'after' => $tmpAt[$policy],
                 );
                 $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
 
@@ -295,13 +296,13 @@ class Attribute_policyajax extends MY_Controller
 
             log_message('debug', 'action: modify - modifying arp from policy ' . $old_policy . ' to ' . $policy);
         } else {
-            if($policy !== '100') {
+            if ($policy !== '100') {
                 $narp = new models\AttributeReleasePolicy;
                 $narp->setSpecificPolicy($idp, $attribute, $sp->getId(), $policy);
                 $this->em->persist($narp);
                 $changes['attr: ' . $attribute->getName() . ''] = array(
                     'before' => 'policy for ' . $sp->getEntityId() . ' : not set/inherited',
-                    'after' => $tmp_a[$policy]
+                    'after' => $tmpAt[$policy]
                 );
                 $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
             }
@@ -322,8 +323,7 @@ class Attribute_policyajax extends MY_Controller
 
     }
 
-    public function updatefed($idpID)
-    {
+    public function updatefed($idpID) {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             set_status_header(401);
             echo 'access denied';
@@ -339,10 +339,16 @@ class Attribute_policyajax extends MY_Controller
             echo 'access denied';
             return;
         }
+        /**
+         * @var models\Provider $idp
+         */
         $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idpID));
+        /**
+         * @var models\Attribute[] $attribute
+         */
         $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $postAttrID));
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $postFedID));
-        if (empty($idp) || empty($attribute) || empty($federation)) {
+        if ($idp === null || $attribute === null || $federation === null) {
             set_status_header(404);
             echo 'Not found 2';
             return;
@@ -354,6 +360,9 @@ class Attribute_policyajax extends MY_Controller
         }
         $dropdown = $this->config->item('policy_dropdown');
         $dropdown[100] = lang('dropnotset');
+        /**
+         * @var models\AttributeReleasePolicy[] $policy
+         */
         $policy = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute' => $postAttrID, 'idp' => $idpID, 'type' => 'fed', 'requester' => $postFedID));
         if (strcmp($postPolicy, '100') == 0) {
             if (empty($policy)) {
@@ -397,8 +406,7 @@ class Attribute_policyajax extends MY_Controller
 
     }
 
-    public function updatedefault($idpID)
-    {
+    public function updatedefault($idpID) {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             set_status_header(401);
             echo 'access denied';
@@ -414,6 +422,9 @@ class Attribute_policyajax extends MY_Controller
             return;
         }
 
+        /**
+         * @var models\Provider $idp
+         */
         $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idpID));
         $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $postAttrID));
         if (empty($idp) || empty($attribute)) {

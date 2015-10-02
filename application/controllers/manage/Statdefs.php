@@ -2,6 +2,7 @@
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
+
 /**
  * @package   Jagger
  * @author    Middleware Team HEAnet <noc-middleware@heanet.ie>
@@ -9,26 +10,34 @@ if (!defined('BASEPATH')) {
  * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
-
-
 class Statdefs extends MY_Controller
 {
-
     protected $ispreworkers;
+    protected $myLang;
+    protected $breadHelpList;
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $this->ispreworkers = $this->config->item('predefinedstats');
         if (!is_array($this->ispreworkers)) {
             $this->ispreworkers = array();
         }
         $this->load->library('form_validation');
+        $this->myLang = MY_Controller::getLang();
+        $this->breadHelpList = array(
+            'idp' => array('name' => lang('identityproviders'), 'url' => base_url('providers/idp_list/showlist')),
+            'sp' => array('name' => lang('serviceproviders'), 'url' => base_url('providers/sp_list/showlist')),
+            'IDP' => array('name' => lang('identityproviders'), 'url' => base_url('providers/idp_list/showlist')),
+            'SP' => array('name' => lang('serviceproviders'), 'url' => base_url('providers/sp_list/showlist')),
+            'both' => array('name' => lang('identityproviders'), 'url' => base_url('providers/idp_list/showlist')),
+            'BOTH' => array('name' => lang('identityproviders'), 'url' => base_url('providers/idp_list/showlist'))
+        );
     }
 
-
-    private function isStats()
-    {
+    /**
+     * @return bool
+     */
+    private function isStats() {
         $isgearman = $this->config->item('gearman');
         $isstatistics = $this->config->item('statistics');
         if ($isgearman === true && $isstatistics === true) {
@@ -37,9 +46,9 @@ class Statdefs extends MY_Controller
         return false;
     }
 
-    public function download($defid = null)
-    {
-        if (!$this->input->is_ajax_request() ||  !ctype_digit($defid) || $this->isStats() !== true || !$this->jauth->isLoggedIn()) {
+
+    public function download($defid = null) {
+        if (!$this->input->is_ajax_request() || !ctype_digit($defid) || $this->isStats() !== true || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         /**
@@ -85,16 +94,16 @@ class Statdefs extends MY_Controller
             $jobservers[] = '' . $v['ip'] . ':' . $v['port'] . '';
         }
         try {
-            $gmclient->addServers('' . implode(",", $jobservers) . '');
+            $gmclient->addServers('' . implode(',', $jobservers) . '');
         } catch (Exception $e) {
             log_message('error', 'GeamanClient cant add job-server');
             return $this->output->set_status_header(500)->set_output('Cannot add job-server(s)');
         }
         $jobsSession = $this->session->userdata('jobs');
-        if (!empty($jobsSession) || is_array($jobsSession) || isset($jobsSession['statdef']['' . $defid . ''])) {
+        if (is_array($jobsSession) || isset($jobsSession['statdef']['' . $defid . ''])) {
             $stat = $gmclient->jobStatus($jobsSession['stadef']['' . $defid . '']);
 
-            if (($stat['0'] === TRUE) && ($stat['1'] === FALSE)) {
+            if (($stat['0'] === true) && ($stat['1'] === false)) {
                 return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => lang('rr_jobinqueue'))));
 
             } elseif ($stat[0] === $stat[1] && $stat[1] === true) {
@@ -114,18 +123,32 @@ class Statdefs extends MY_Controller
         return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => lang('taskssent') . ' ')));
     }
 
-    public function show($providerId = null, $statDefId = null)
-    {
-        if (empty($providerId) || !ctype_digit($providerId) || !(empty($statDefId) || ctype_digit($statDefId)) || $this->isStats() !== TRUE) {
-            show_error('Page not found', 404);
+    /**
+     * @param null $providerId
+     * @param null $statDefId
+     * @return bool
+     */
+    private function validateShowGets($providerId = null, $statDefId = null) {
+        if (!ctype_digit($providerId) || $this->isStats() !== true || !($statDefId === null || ctype_digit($statDefId))) {
+            return false;
+        }
+        return true;
+    }
+
+
+    public function show($providerId = null, $statDefId = null) {
+        if ($this->validateShowGets($providerId, $statDefId) !== true) {
+            show_404();
         }
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
-        $myLang = MY_Controller::getLang();
-
+        $this->title = lang('title_statdefs');
+        /**
+         * @var models\Provider $provider
+         */
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => '' . $providerId . ''));
-        if (empty($provider)) {
+        if ($provider === null) {
             show_error('Provider not found', 404);
         }
         $providerType = $provider->getType();
@@ -140,70 +163,151 @@ class Statdefs extends MY_Controller
             show_error(lang('rr_noperm'), 403);
         }
 
+
         /**
          * @var $statDefinitions models\ProviderStatsDef[]
          */
-
         $statDefinitions = $this->getExistingStatsDefs($providerId);
-        $providerNameInLang = $provider->getNameToWebInLang($myLang, strtolower($providerType));
+        $providerNameInLang = $provider->getNameToWebInLang($this->myLang, strtolower($providerType));
         $data = array(
             'providerid' => $providerId,
             'providerentity' => $provider->getEntityId(),
             'providername' => $providerNameInLang,
-            'titlepage' => '<a href="' . base_url() . 'providers/detail/show/' . $providerId . '">' . $providerNameInLang . '</a>',
+            'titlepage' => '<a href="' . base_url('providers/detail/show/' . $providerId . '') . '">' . $providerNameInLang . '</a>',
             'subtitlepage' => lang('statsmngmt'),
-        );
-        $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
-        if (strcasecmp($providerType, 'sp') == 0) {
-            $plist = array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders'));
-        }
-        $data['breadcrumbs'] = array(
-            $plist,
-            array('url' => base_url('providers/detail/show/' . $providerId . ''), 'name' => '' . $providerNameInLang . ''),
-            array('url' => '#', 'name' => lang('statsmngmt'), 'type' => 'current'),
-
+            'breadcrumbs' => array(
+                $this->breadHelpList['' . $provider->getType() . ''],
+                array('url' => base_url('providers/detail/show/' . $providerId . ''), 'name' => '' . $providerNameInLang . ''),
+                array('url' => '#', 'name' => lang('statsmngmt'), 'type' => 'current')
+            )
         );
 
-        if (empty($statDefId)) {
-            $this->title = lang('title_statdefs');
-            $data['content_view'] = 'manage/statdefs_show_view';
-
-
-            if (count($statDefinitions) > 0) {
-                $res = array();
-                foreach ($statDefinitions as $v) {
-                    $is_sys = $v->getType();
-                    $alert = FALSE;
-                    if ($is_sys === 'sys') {
-                        $sysmethod = $v->getSysDef();
-                        if (empty($sysmethod) || !array_key_exists($sysmethod, $this->ispreworkers)) {
-                            $alert = TRUE;
-                        }
-                    }
-                    $res[] = array('title' => '' . $v->getTitle() . '',
-                        'id' => '' . $v->getId() . '',
-                        'desc' => '' . $v->getDescription() . '',
-                        'alert' => $alert,
-                    );
+        if ($statDefId === null) {
+            $res = array();
+            foreach ($statDefinitions as $v) {
+                $statdefType = $v->getType();
+                $alert = false;
+                if ($statdefType === 'sys') {
+                    $sysmethod = $v->getSysDef();
+                    $alert = (bool)(empty($sysmethod) || !array_key_exists($sysmethod, $this->ispreworkers));
                 }
-
-                $data['existingStatDefs'] = $res;
+                $res[] = array('title' => '' . $v->getTitle() . '',
+                    'id' => '' . $v->getId() . '',
+                    'desc' => '' . $v->getDescription() . '',
+                    'alert' => $alert,
+                );
             }
-            return $this->load->view('page', $data);
+            $data['content_view'] = 'manage/statdefs_show_view';
+            $data['existingStatDefs'] = $res;
+
+        } else {
+            /**
+             * @var $statDefinition models\ProviderStatsDef
+             */
+            $statDefinition = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => '' . $statDefId . '', 'provider' => '' . $providerId . ''));
+            if ($statDefinition === null) {
+                show_error('detail for stat def not found');
+            }
+            $data['defid'] = $statDefId;
+            $data['details'] = $this->genStatDetail($statDefinition);
+            $data['content_view'] = 'manage/statdef_detail.php';
+
         }
-        /**
-         * @var $statDefinition models\ProviderStatsDef
-         */
-        $statDefinition = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => '' . $statDefId . '', 'provider' => '' . $providerId . ''));
-        if (empty($statDefinition)) {
-            show_error('detail for stat def not found');
+        $this->load->view('page', $data);
+
+    }
+
+    /**
+     * @param \models\ProviderStatsDef $statDefinition
+     * @return array
+     */
+    private function stadefGeneralInfo(models\ProviderStatsDef $statDefinition) {
+        $statdefType = $statDefinition->getType();
+        $data2 = array();
+        if ($statdefType === 'sys') {
+            $data2[] = array(
+                'name' => '' . lang('typeofstaddef') . '',
+                'value' => '' . lang('builtinstatdef') . '');
+            $sysdef = $statDefinition->getSysDef();
+            if (empty($sysdef)) {
+                $data2[] = array(
+                    'name' => '' . lang('nameofbuiltinstatdef') . '',
+                    'value' => '<span class="alert">' . lang('rr_empty') . '</span>');
+                log_message('error', 'StatDefinition with id:' . $statDefinition->getId() . ' is set to use predefined statcollection but name of worker not defined');
+            } else {
+
+                if (!array_key_exists($sysdef, $this->ispreworkers)) {
+                    $data2[] = array(
+                        'name' => '' . lang('nameofbuiltinstatdef') . '',
+                        'value' => '<span class="alert">' . lang('builtincolnovalid') . '</span>');
+                } else {
+                    $sysdefdesc = '';
+                    if (isset($this->ispreworkers['' . $sysdef . '']['desc'])) {
+                        $sysdefdesc = $this->ispreworkers['' . $sysdef . '']['desc'];
+                    }
+                    $data2[] = array(
+                        'name' => '' . lang('nameofbuiltinstatdef') . '',
+                        'value' => '' . $sysdef . ':<br />' . $sysdefdesc . '');
+                }
+            }
+        } else {
+            $method = $statDefinition->getHttpMethod();
+
+            array_push($data2,
+                array(
+                    'name' => '' . lang('rr_statdefsourceurl') . '',
+                    'value' => $statDefinition->getSourceUrl()),
+                array(
+                    'name' => '' . lang('rr_statdefformat') . '',
+                    'value' => $statDefinition->getFormatType()),
+                array(
+                    'name' => '' . lang('rr_httpmethod') . '',
+                    'value' => strtoupper($method))
+            );
+            if ($method === 'post') {
+                $params = $statDefinition->getPostOptions();
+                $vparams = '';
+                if (is_array($params)) {
+                    foreach ($params as $k => $v) {
+                        $vparams .= '' . html_escape($k) . ': ' . html_escape($v) . '<br />';
+                    }
+                }
+                $data2[] = array(
+                    'name' => '' . lang('rr_postoptions') . '',
+                    'value' => '' . $vparams . '');
+            }
+            $accesstype = $statDefinition->getAccessType();
+            if ($accesstype === 'anon') {
+                $vaccesstype = lang('rr_anon');
+                $data2[] = array(
+                    'name' => '' . lang('rr_typeaccess') . '',
+                    'value' => '' . $vaccesstype . '');
+            } else {
+                $vaccesstype = 'Basic Authentication';
+                array_push($data2,
+                    array(
+                        'name' => '' . lang('rr_typeaccess') . '',
+                        'value' => '' . $vaccesstype . ''),
+                    array(
+                        'name' => '' . lang('rr_username') . '',
+                        'value' => '' . html_escape($statDefinition->getAuthUser()) . ''),
+                    array(
+                        'name' => '' . lang('rr_password') . '',
+                        'value' => '***********')
+                );
+
+            }
         }
+        return $data2;
+    }
+
+    private function genStatDetail(models\ProviderStatsDef $statDefinition) {
         $overwrite = $statDefinition->getOverwrite();
         $overwriteTxt = lang('rr_notoverwritestatfile');
         if ($overwrite) {
             $overwriteTxt = lang('rr_overwritestatfile');
         }
-        $data['defid'] = $statDefId;
+
         $data2 = array(
             array(
                 'name' => '' . lang('rr_statdefshortname') . '',
@@ -227,102 +331,52 @@ class Statdefs extends MY_Controller
             )
         );
 
-        $type = $statDefinition->getType();
-        if ($type === 'sys') {
-            $data2[] = array('name' => '' . lang('typeofstaddef') . '', 'value' => '' . lang('builtinstatdef') . '');
-            $sysdef = $statDefinition->getSysDef();
-            if (empty($sysdef)) {
-                $data2[] = array('name' => '' . lang('nameofbuiltinstatdef') . '', 'value' => '<span class="alert">' . lang('rr_empty') . '</span>');
-                log_message('error', 'StatDefinition with id:' . $statDefinition->getId() . ' is set to use predefined statcollection but name of worker not defined');
-            } else {
+        $generalInfo = $this->stadefGeneralInfo($statDefinition);
+        array_push($data2, array_values($generalInfo));
 
-                if (!array_key_exists($sysdef, $this->ispreworkers)) {
-                    $data2[] = array('name' => '' . lang('nameofbuiltinstatdef') . '', 'value' => '<span class="alert">' . lang('builtincolnovalid') . '</span>');
-                } else {
-                    $sysdefdesc = '';
-                    if (isset($this->ispreworkers['' . $sysdef . '']['desc'])) {
-                        $sysdefdesc = $this->ispreworkers['' . $sysdef . '']['desc'];
-                    }
-                    $data2[] = array('name' => '' . lang('nameofbuiltinstatdef') . '', 'value' => '' . $sysdef . ':<br />' . $sysdefdesc . '');
-                }
-            }
-        } else {
-            $data2[] = array('name' => '' . lang('rr_statdefsourceurl') . '', 'value' => $statDefinition->getSourceUrl());
-            $data2[] = array('name' => '' . lang('rr_statdefformat') . '', 'value' => $statDefinition->getFormatType());
-            $method = $statDefinition->getHttpMethod();
-            $data2[] = array('name' => '' . lang('rr_httpmethod') . '', 'value' => strtoupper($method));
-            if ($method === 'post') {
-                $params = $statDefinition->getPostOptions();
-                $vparams = '';
-                if (!empty($params) && is_array($params)) {
-                    foreach ($params as $k => $v) {
-                        $vparams .= '' . htmlentities($k) . ': ' . htmlentities($v) . '<br />';
-                    }
-                }
-                $data2[] = array('name' => '' . lang('rr_postoptions') . '', 'value' => '' . $vparams . '');
-            }
-            $accesstype = $statDefinition->getAccessType();
-            if ($accesstype === 'anon') {
-                $vaccesstype = lang('rr_anon');
-                $data2[] = array('name' => '' . lang('rr_typeaccess') . '', 'value' => '' . $vaccesstype . '');
-            } else {
-                $vaccesstype = 'Basic Authentication';
-                $data2[] = array('name' => '' . lang('rr_typeaccess') . '', 'value' => '' . $vaccesstype . '');
-                $data2[] = array('name' => '' . lang('rr_username') . '', 'value' => '' . htmlentities($statDefinition->getAuthUser()) . '');
-                $data2[] = array('name' => '' . lang('rr_password') . '', 'value' => '***********');
-            }
-        }
         /**
          * @var $statfiles models\ProviderStatsCollection[]
          */
         $statfiles = $statDefinition->getStatistics();
 
+        $statv = lang('notfound');
         if (!empty($statfiles) && count($statfiles) > 0) {
             $statv = '<ul>';
-            $downurl = base_url() . 'manage/statistics/show/';
+            $downurl = base_url('manage/statistics/show/');
             $dowinfo = lang('statfilegenerated');
             foreach ($statfiles as $st) {
                 $createdAt = date('Y-m-d H:i:s', $st->getCreatedAt()->format("U") + jauth::$timeOffset);
-                $statv .= '<li><a href="' . $downurl . $st->getId() . '">' . $dowinfo . ': ' . $createdAt . '</a></li>';
+                $statv .= '<li><a href="' . $downurl . '/' . $st->getId() . '">' . $dowinfo . ': ' . $createdAt . '</a></li>';
             }
             $statv .= '</ul>';
-            $data2[] = array('name' => '' . lang('generatedstatslist') . '', 'value' => '' . $statv . '');
-        } else {
-            $data2[] = array('name' => '' . lang('generatedstatslist') . '', 'value' => '' . lang('notfound') . '');
         }
-        $data['details'] = $data2;
-        $data['content_view'] = 'manage/statdef_detail.php';
-        $this->load->view('page', $data);
-
-
+        $data2[] = array('name' => '' . lang('generatedstatslist') . '', 'value' => '' . $statv . '');
+        return $data2;
     }
 
-    public function statdefedit($providerid = null, $statdefid = null)
-    {
-        if (empty($statdefid) || empty($providerid) || !ctype_digit($statdefid) || !ctype_digit($providerid)) {
+    public function statdefedit($providerid = null, $statdefid = null) {
+        if (empty($statdefid) || !ctype_digit($providerid) || !ctype_digit($statdefid)) {
             show_error('Page not found', 404);
         }
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
-        $isStats = $this->isStats();
-        if ($isStats !== TRUE) {
+        if ($this->isStats() !== true) {
             show_error('not found', 404);
         }
         /**
          * @var $statDefinition models\ProviderStatsDef
          */
         $statDefinition = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $statdefid, 'provider' => $providerid));
-        if (empty($statDefinition)) {
+        if ($statDefinition === null) {
             show_error('Statdef Page not found', 404);
         }
         /**
          * @var $provider models\Provider
          */
         $provider = $statDefinition->getProvider();
-        $myLang = MY_Controller::getLang();
         $providerType = $provider->getType();
-        $providerLangName = $provider->getNameToWebInLang($myLang, $providerType);
+        $providerLangName = $provider->getNameToWebInLang($this->myLang, $providerType);
         $this->load->library('zacl');
         $hasAccess = $this->zacl->check_acl('' . $providerid . '', 'write', 'entity', '');
         if (!$hasAccess) {
@@ -359,7 +413,7 @@ class Statdefs extends MY_Controller
                 }
             }
             if (count($workerdropdown) > 0) {
-                $data['showpredefined'] = TRUE;
+                $data['showpredefined'] = true;
                 $data['workerdropdown'] = $workerdropdown;
             }
         }
@@ -369,9 +423,9 @@ class Statdefs extends MY_Controller
 
 
         $presysdef = $statDefinition->getType();
-        $data['statdefpredef'] = FALSE;
-        if (!empty($presysdef) && $presysdef === 'sys') {
-            $data['statdefpredef'] = TRUE;
+        $data['statdefpredef'] = false;
+        if ($presysdef === 'sys') {
+            $data['statdefpredef'] = true;
         }
 
         $statdefpostparam = $statDefinition->getPostOptions();
@@ -386,13 +440,9 @@ class Statdefs extends MY_Controller
             }
         }
 
-        $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
-        if (strcasecmp($providerType, 'SP') == 0) {
-            $plist = array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders'));
-        }
 
         $data['breadcrumbs'] = array(
-            $plist,
+            $this->breadHelpList['' . $provider->getType() . ''],
             array('url' => base_url('providers/detail/show/' . $providerid . ''), 'name' => '' . $providerLangName . ''),
             array('url' => base_url('manage/statdefs/show/' . $providerid . ''), 'name' => '' . lang('statsmngmt') . ''),
             array('url' => '#', 'name' => lang('title_editform'), 'type' => 'current'),
@@ -400,53 +450,10 @@ class Statdefs extends MY_Controller
         );
 
 
-        if ($this->newStatDefSubmitValidate() === FALSE) {
+        if ($this->newStatDefSubmitValidate() !== true) {
             return $this->load->view('page', $data);
         }
-        $accesstype = $this->input->post('accesstype');
-        $overwrite = $this->input->post('overwrite');
-        $usepredefined = $this->input->post('usepredefined');
-        $prepostoptions = $this->input->post('postoptions');
-        $p2 = explode('$$', $prepostoptions);
-        $postoptions = array();
-        if (!empty($p2) && is_array($p2) && count($p2) > 0) {
-            foreach ($p2 as $k => $v) {
-                if (empty($v)) {
-                    unset($p2[$k]);
-                    continue;
-                }
-                $y = preg_split('/(\$:\$)/', $v, 2);
-                if (count($y) === 2) {
-                    $postoptions['' . trim($y['0']) . ''] = trim($y['1']);
-                }
-            }
-        }
-
-        $statDefinition->setName($this->input->post('defname'));
-        $statDefinition->setTitle($this->input->post('titlename'));
-        $statDefinition->setDescription($this->input->post('description'));
-        if (!empty($overwrite) && $overwrite === 'yes') {
-            $statDefinition->setOverwriteOn();
-        } else {
-            $statDefinition->setOverwriteOff();
-        }
-
-        if (!empty($usepredefined) && $usepredefined === 'yes') {
-            $statDefinition->setType('sys');
-            $statDefinition->setSysDef($this->input->post('gworker'));
-        } else {
-            $statDefinition->setSysDef(NULL);
-            $statDefinition->setType('ext');
-            $statDefinition->setHttpMethod($this->input->post('httpmethod'));
-            $statDefinition->setPostOptions($postoptions);
-            $statDefinition->setUrl($this->input->post('sourceurl'));
-            $statDefinition->setAccess($accesstype);
-            $statDefinition->setFormatType($this->input->post('formattype'));
-            if ($accesstype !== 'anon') {
-                $statDefinition->setAuthuser($this->input->post('userauthn'));
-                $statDefinition->setAuthpass($this->input->post('passauthn'));
-            }
-        }
+        $this->updateStatDefinition($provider, $statDefinition);
         $this->em->persist($statDefinition);
         $this->em->flush();
         $data['message'] = lang('updated');
@@ -456,25 +463,72 @@ class Statdefs extends MY_Controller
 
     }
 
-    public function newStatDef($providerid = null)
-    {
-        if (empty($providerid) || !ctype_digit($providerid) || $this->isStats() !== TRUE) {
+
+    /**
+     * @param \models\Provider $provider
+     * @param \models\ProviderStatsDef $statsDef
+     */
+    private function updateStatDefinition(\models\Provider $provider, \models\ProviderStatsDef $statsDef) {
+        $statsDef->setName($this->input->post('defname'));
+        $statsDef->setTitle($this->input->post('titlename'));
+        $statsDef->setDescription($this->input->post('description'));
+        $overwrite = $this->input->post('overwrite');
+        if (!empty($overwrite) && $overwrite === 'yes') {
+            $statsDef->setOverwriteOn();
+        }
+        else{
+            $statsDef->setOverwriteOff();
+        }
+        $formattype = $this->input->post('formattype');
+        $usepredefined = $this->input->post('usepredefined');
+        $prepostoptions = $this->input->post('postoptions');
+        $proptionsArray = explode('$$', $prepostoptions);
+        $postoptions = array();
+        if (!empty($proptionsArray) && is_array($proptionsArray) && count($proptionsArray) > 0) {
+            foreach ($proptionsArray as $v) {
+                $y = preg_split('/(\$:\$)/', $v, 2);
+                if (count($y) === 2) {
+                    $postoptions['' . trim($y['0']) . ''] = trim($y['1']);
+                }
+            }
+        }
+        if (!empty($usepredefined) && $usepredefined === 'yes') {
+            $statsDef->setType('sys');
+            $statsDef->setSysDef($this->input->post('gworker'));
+        } else {
+            $statsDef->setSysDef(null);
+            $statsDef->setType('ext');
+            $statsDef->setHttpMethod($this->input->post('httpmethod'));
+            $statsDef->setPostOptions($postoptions);
+            $statsDef->setUrl($this->input->post('sourceurl'));
+            $statsDef->setAccess($this->input->post('accesstype'));
+            $statsDef->setFormatType($formattype);
+            $statsDef->setAuthuser($this->input->post('userauthn'));
+            $statsDef->setAuthpass($this->input->post('passauthn'));
+
+        }
+        $provider->setStatDefinition($statsDef);
+        $statsDef->setProvider($provider);
+
+    }
+
+    public function newStatDef($providerid = null) {
+        if (!ctype_digit($providerid) || $this->isStats() !== true) {
             show_error('Page not found', 404);
         }
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
-        $myLang = MY_Controller::getLang();
         $this->title = lang('title_newstatdefs');
         /**
          * @var $provider models\Provider
          */
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => '' . $providerid . ''));
-        if (empty($provider)) {
+        if ($provider === null) {
             show_error('Provider not found', 404);
         }
         $providerType = $provider->getType();
-        $providerLangName = $provider->getNameToWebInLang($myLang, $providerType);
+        $providerLangName = $provider->getNameToWebInLang($this->myLang, $providerType);
         $this->load->library('zacl');
 
         $hasAccess = $this->zacl->check_acl('' . $provider->getId() . '', 'write', 'entity', '');
@@ -482,11 +536,7 @@ class Statdefs extends MY_Controller
         if (!$hasAccess) {
             show_error(lang('rr_noperm'), 403);
         }
-        if (strcasecmp($providerType, 'SP') == 0) {
-            $plist = array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders'));
-        } else {
-            $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
-        }
+
         $data = array(
             'providerid' => $provider->getId(),
             'providerentity' => $provider->getEntityId(),
@@ -495,7 +545,7 @@ class Statdefs extends MY_Controller
             'subtitlepage' => lang('title_newstatdefs'),
             'submenupage' => array('name' => lang('statdeflist'), 'link' => '' . base_url() . 'manage/statdefs/show/' . $provider->getId() . ''),
             'breadcrumbs' => array(
-                $plist,
+                $this->breadHelpList['' . $provider->getType() . ''],
                 array('url' => base_url('providers/detail/show/' . $provider->getId() . ''), 'name' => '' . $providerLangName . ''),
                 array('url' => base_url('manage/statdefs/show/' . $provider->getId() . ''), 'name' => '' . lang('statsmngmt') . ''),
                 array('url' => '#', 'name' => lang('title_editform'), 'type' => 'current'),
@@ -516,56 +566,18 @@ class Statdefs extends MY_Controller
                 }
             }
             if (count($workerdropdown) > 0) {
-                $data['showpredefined'] = TRUE;
+                $data['showpredefined'] = true;
                 $data['workerdropdown'] = $workerdropdown;
             }
         }
         $workersdescriptions .= '</ul>';
         $data['workersdescriptions'] = $workersdescriptions;
 
-        if ($this->newStatDefSubmitValidate() === FALSE) {
+        if ($this->newStatDefSubmitValidate() !== true) {
             return $this->load->view('page', $data);
         }
-        $formattype = $this->input->post('formattype');
-        $overwrite = $this->input->post('overwrite');
-        $usepredefined = $this->input->post('usepredefined');
-        $prepostoptions = $this->input->post('postoptions');
-        $p2 = explode('$$', $prepostoptions);
-        $postoptions = array();
-        if (!empty($p2) && is_array($p2) && count($p2) > 0) {
-            foreach ($p2 as $v) {
-                $y = preg_split('/(\$:\$)/', $v, 2);
-                if (count($y) === 2) {
-                    $postoptions['' . trim($y['0']) . ''] = trim($y['1']);
-                }
-            }
-        }
-
         $nStatDef = new models\ProviderStatsDef;
-        $nStatDef->setName($this->input->post('defname'));
-        $nStatDef->setTitle($this->input->post('titlename'));
-        $nStatDef->setDescription($this->input->post('description'));
-        if (!empty($overwrite) && $overwrite === 'yes') {
-            $nStatDef->setOverwriteOn();
-        }
-
-        if (!empty($usepredefined) && $usepredefined === 'yes') {
-            $nStatDef->setType('sys');
-            $nStatDef->setSysDef($this->input->post('gworker'));
-        } else {
-            $nStatDef->setType('ext');
-            $nStatDef->setHttpMethod($this->input->post('httpmethod'));
-            $nStatDef->setPostOptions($postoptions);
-            $nStatDef->setUrl($this->input->post('sourceurl'));
-            $nStatDef->setAccess($this->input->post('accesstype'));
-            $nStatDef->setFormatType($formattype);
-            $nStatDef->setAuthuser($this->input->post('userauthn'));
-            $nStatDef->setAuthpass($this->input->post('passauthn'));
-
-        }
-        $provider->getStatDefinitions($nStatDef);
-        $nStatDef->setProvider($provider);
-
+        $this->updateStatDefinition($provider,$nStatDef);
         $this->em->persist($nStatDef);
         $this->em->persist($provider);
         $this->em->flush();
@@ -576,8 +588,7 @@ class Statdefs extends MY_Controller
 
     }
 
-    private function newStatDefSubmitValidate()
-    {
+    private function newStatDefSubmitValidate() {
         $this->form_validation->set_rules('defname', 'Short name', 'required|trim|min_length[3]|max_length[128]|xss_clean');
         $this->form_validation->set_rules('titlename', 'Title name', 'required|trim|min_length[3]|max_length[128]|xss_clean');
         $this->form_validation->set_rules('description', 'Description', 'required|trim|min_length[5]|max_length[1024]|xss_clean');
@@ -613,33 +624,31 @@ class Statdefs extends MY_Controller
      * @param $providerid
      * @return array
      */
-    private function getExistingStatsDefs($providerid)
-    {
+    private function getExistingStatsDefs($providerid) {
         return $this->em->getRepository("models\ProviderStatsDef")->findBy(array('provider' => '' . $providerid . ''));
     }
 
-    public function remove($defid = null)
-    {
+    public function remove($defid = null) {
         $msg = null;
-        $s = null;
+        $statusCode = null;
         /**
          * @var models\ProviderStatsDef $def
          */
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
-            $s = 403;
+            $statusCode = 403;
             $msg = 'Access denied';
         } elseif (empty($defid) || !ctype_digit($defid)) {
-            $s = 404;
+            $statusCode = 404;
             $msg = 'not found';
         } else {
             $def = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $defid));
             if (empty($def)) {
-                $s = 404;
+                $statusCode = 404;
                 $msg = 'not found';
             }
         }
-        if ($s !== null) {
-            return $this->output->set_header($s)->set_output($msg);
+        if ($statusCode !== null) {
+            return $this->output->set_header($statusCode)->set_output($msg);
         }
         $inputProviderId = $this->input->post('prvid');
         $inputDefId = $this->input->post('defid');

@@ -8,9 +8,9 @@ $formAttrs = array('id'=>'rmstatdef','class'=>'ajform');
 $hidden = array('prvid'=>''.$providerid.'','defid'=>''.$defid.'');
 echo form_open(''.base_url().'manage/statdefs/remove/'.$defid.'',$formAttrs,$hidden);
 ?>
-<button type="submit" value="remove" name="remove" class="resetbutton reseticon" ><?php echo lang('rr_remove');?></button>
+<button type="submit" value="remove" name="remove" class="resetbutton reseticon small alert" ><?php echo lang('rr_remove');?></button>
 <?php
-echo '<a href="'.base_url().'manage/statdefs/statdefedit/'.$providerid.'/'.$defid.'" class="editbutton editicon">'.lang('rr_edit').'</a>';
+echo '<a href="'.base_url().'manage/statdefs/statdefedit/'.$providerid.'/'.$defid.'" class="button editbutton editicon small">'.lang('rr_edit').'</a>';
 echo form_close();
 echo '</div>';
 }

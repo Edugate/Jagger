@@ -73,12 +73,12 @@ class Auth extends MY_Controller
             }
         }
         /**
-         * @var $checkuser models\User
+         * @var models\User $checkuser
          */
         $checkuser = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $newUserData['username'] . ''));
         if ($checkuser !== null) {
             $this->session->sess_destroy();
-            $this->session->sess_regenerate(TRUE);
+            $this->session->sess_regenerate(true);
             return $this->output->set_status_header(403)->set_output('' . lang('err_userexist') . '');
         }
         /**
@@ -114,32 +114,16 @@ class Auth extends MY_Controller
             'qurl' => '' . base_url('reports/awaiting/detail/' . $queue->getToken() . ''),
             'datetimeutc' => '' . $nowUtc->format('Y-m-d h:i:s') . ' UTC',
         );
+        $mailTemplate = $this->email_sender->feduserRegistrationRequest($templateArgs);
+        $this->email_sender->addToMailQueue(array(), null, $mailTemplate['subject'], $mailTemplate['body'], array(), FALSE);
 
-        $mailTemplate = $this->email_sender->generateLocalizedMail('userregresquest', $templateArgs);
-
-        if (empty($mailTemplate)) {
-            $sbj = 'User registration request';
-            $body = 'Dear user,' . PHP_EOL .
-                'You have received this mail because ' .
-                'your email address is on the notification list' . PHP_EOL .
-                'User from ' . $this->input->ip_address() .
-                ' using federated access has applied for an account.' . PHP_EOL .
-                'Please review the request and make appriopriate ' .
-                'action (reject/approve)' . PHP_EOL .
-                'Details about the request: ' . base_url() .
-                'reports/awaiting/detail/' . $queue->getToken() . PHP_EOL;
-            $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(), FALSE);
-        } else {
-            $this->email_sender->addToMailQueue(array(), null, $mailTemplate['subject'], $mailTemplate['body'], array(), FALSE);
-
-        }
         /**
          * END send notification
          */
         try {
             $this->em->flush();
             $this->session->sess_destroy();
-            $this->session->sess_regenerate(TRUE);
+            $this->session->sess_regenerate(true);
             return $this->output->set_status_header(200)->set_output('' . lang('userregreceived') . '');
         } catch (Exception $e) {
             return $this->output->set_status_header(500)->set_output('Unknown error occured');
@@ -250,17 +234,15 @@ class Auth extends MY_Controller
             } else {
                 $attrs = array('username' => $username, 'mail' => $mail);
                 try {
-                    $nuser = $this->jauth->registerUser($attrs,'federated',null);
+                    $nuser = $this->jauth->registerUser($attrs, 'federated', null);
                     $this->em->persist($nuser);
+                } catch (Exception $e) {
+                    show_error(html_escape($e->getMessage()), 403);
                 }
-                catch(Exception $e){
-                    show_error(html_escape($e->getMessage()),403);
-                }
-                try{
+                try {
                     $this->em->flush();
-                }
-                catch(Exception $e){
-                    show_error('Internal Server Error',500);
+                } catch (Exception $e) {
+                    show_error('Internal Server Error', 500);
                 }
             }
         }
@@ -528,7 +510,7 @@ class Auth extends MY_Controller
 
                 $attrs = array('username' => $userValue, 'mail' => $emailVarName, 'fname' => $fnameVarName, 'sname' => $snameVarName);
                 try {
-                    $nuser = $this->jauth->registerUser($attrs,'federated',$this->getRolesFromAA());
+                    $nuser = $this->jauth->registerUser($attrs, 'federated', $this->getRolesFromAA());
                     $this->em->persist($nuser);
 
                 } catch (Exception $e) {
