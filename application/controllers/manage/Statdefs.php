@@ -221,7 +221,7 @@ class Statdefs extends MY_Controller
      * @param \models\ProviderStatsDef $statDefinition
      * @return array
      */
-    private function stadefGeneralInfo(models\ProviderStatsDef $statDefinition){
+    private function stadefGeneralInfo(models\ProviderStatsDef $statDefinition) {
         $statdefType = $statDefinition->getType();
         $data2 = array();
         if ($statdefType === 'sys') {
@@ -441,7 +441,6 @@ class Statdefs extends MY_Controller
         }
 
 
-
         $data['breadcrumbs'] = array(
             $this->breadHelpList['' . $provider->getType() . ''],
             array('url' => base_url('providers/detail/show/' . $providerid . ''), 'name' => '' . $providerLangName . ''),
@@ -451,59 +450,65 @@ class Statdefs extends MY_Controller
         );
 
 
-        if ($this->newStatDefSubmitValidate() === false) {
+        if ($this->newStatDefSubmitValidate() !== true) {
             return $this->load->view('page', $data);
         }
-        $accesstype = $this->input->post('accesstype');
-        $overwrite = $this->input->post('overwrite');
-        $usepredefined = $this->input->post('usepredefined');
-        $prepostoptions = $this->input->post('postoptions');
-        $proptionsArray = explode('$$', $prepostoptions);
-        $postoptions = array();
-        if (!empty($proptionsArray) && is_array($proptionsArray) && count($proptionsArray) > 0) {
-            foreach ($proptionsArray as $k => $v) {
-                if (empty($v)) {
-                    unset($proptionsArray[$k]);
-                    continue;
-                }
-                $y = preg_split('/(\$:\$)/', $v, 2);
-                if (count($y) === 2) {
-                    $postoptions['' . trim($y['0']) . ''] = trim($y['1']);
-                }
-            }
-        }
-
-        $statDefinition->setName($this->input->post('defname'));
-        $statDefinition->setTitle($this->input->post('titlename'));
-        $statDefinition->setDescription($this->input->post('description'));
-        if (!empty($overwrite) && $overwrite === 'yes') {
-            $statDefinition->setOverwriteOn();
-        } else {
-            $statDefinition->setOverwriteOff();
-        }
-
-        if (!empty($usepredefined) && $usepredefined === 'yes') {
-            $statDefinition->setType('sys');
-            $statDefinition->setSysDef($this->input->post('gworker'));
-        } else {
-            $statDefinition->setSysDef(null);
-            $statDefinition->setType('ext');
-            $statDefinition->setHttpMethod($this->input->post('httpmethod'));
-            $statDefinition->setPostOptions($postoptions);
-            $statDefinition->setUrl($this->input->post('sourceurl'));
-            $statDefinition->setAccess($accesstype);
-            $statDefinition->setFormatType($this->input->post('formattype'));
-            if ($accesstype !== 'anon') {
-                $statDefinition->setAuthuser($this->input->post('userauthn'));
-                $statDefinition->setAuthpass($this->input->post('passauthn'));
-            }
-        }
+        $this->updateStatDefinition($provider, $statDefinition);
         $this->em->persist($statDefinition);
         $this->em->flush();
         $data['message'] = lang('updated');
         $data['providerid'] = $provider->getId();
         $data['content_view'] = 'manage/updatestatdefsuccess';
         $this->load->view('page', $data);
+
+    }
+
+
+    /**
+     * @param \models\Provider $provider
+     * @param \models\ProviderStatsDef $statsDef
+     */
+    private function updateStatDefinition(\models\Provider $provider, \models\ProviderStatsDef $statsDef) {
+        $statsDef->setName($this->input->post('defname'));
+        $statsDef->setTitle($this->input->post('titlename'));
+        $statsDef->setDescription($this->input->post('description'));
+        $overwrite = $this->input->post('overwrite');
+        if (!empty($overwrite) && $overwrite === 'yes') {
+            $statsDef->setOverwriteOn();
+        }
+        else{
+            $statsDef->setOverwriteOff();
+        }
+        $formattype = $this->input->post('formattype');
+        $usepredefined = $this->input->post('usepredefined');
+        $prepostoptions = $this->input->post('postoptions');
+        $proptionsArray = explode('$$', $prepostoptions);
+        $postoptions = array();
+        if (!empty($proptionsArray) && is_array($proptionsArray) && count($proptionsArray) > 0) {
+            foreach ($proptionsArray as $v) {
+                $y = preg_split('/(\$:\$)/', $v, 2);
+                if (count($y) === 2) {
+                    $postoptions['' . trim($y['0']) . ''] = trim($y['1']);
+                }
+            }
+        }
+        if (!empty($usepredefined) && $usepredefined === 'yes') {
+            $statsDef->setType('sys');
+            $statsDef->setSysDef($this->input->post('gworker'));
+        } else {
+            $statsDef->setSysDef(null);
+            $statsDef->setType('ext');
+            $statsDef->setHttpMethod($this->input->post('httpmethod'));
+            $statsDef->setPostOptions($postoptions);
+            $statsDef->setUrl($this->input->post('sourceurl'));
+            $statsDef->setAccess($this->input->post('accesstype'));
+            $statsDef->setFormatType($formattype);
+            $statsDef->setAuthuser($this->input->post('userauthn'));
+            $statsDef->setAuthpass($this->input->post('passauthn'));
+
+        }
+        $provider->setStatDefinition($statsDef);
+        $statsDef->setProvider($provider);
 
     }
 
@@ -540,7 +545,7 @@ class Statdefs extends MY_Controller
             'subtitlepage' => lang('title_newstatdefs'),
             'submenupage' => array('name' => lang('statdeflist'), 'link' => '' . base_url() . 'manage/statdefs/show/' . $provider->getId() . ''),
             'breadcrumbs' => array(
-                $this->breadHelpList[''.$provider->getType().''],
+                $this->breadHelpList['' . $provider->getType() . ''],
                 array('url' => base_url('providers/detail/show/' . $provider->getId() . ''), 'name' => '' . $providerLangName . ''),
                 array('url' => base_url('manage/statdefs/show/' . $provider->getId() . ''), 'name' => '' . lang('statsmngmt') . ''),
                 array('url' => '#', 'name' => lang('title_editform'), 'type' => 'current'),
@@ -568,49 +573,11 @@ class Statdefs extends MY_Controller
         $workersdescriptions .= '</ul>';
         $data['workersdescriptions'] = $workersdescriptions;
 
-        if ($this->newStatDefSubmitValidate() === false) {
+        if ($this->newStatDefSubmitValidate() !== true) {
             return $this->load->view('page', $data);
         }
-        $formattype = $this->input->post('formattype');
-        $overwrite = $this->input->post('overwrite');
-        $usepredefined = $this->input->post('usepredefined');
-        $prepostoptions = $this->input->post('postoptions');
-        $proptionsArray = explode('$$', $prepostoptions);
-        $postoptions = array();
-        if (!empty($proptionsArray) && is_array($proptionsArray) && count($proptionsArray) > 0) {
-            foreach ($proptionsArray as $v) {
-                $y = preg_split('/(\$:\$)/', $v, 2);
-                if (count($y) === 2) {
-                    $postoptions['' . trim($y['0']) . ''] = trim($y['1']);
-                }
-            }
-        }
-
         $nStatDef = new models\ProviderStatsDef;
-        $nStatDef->setName($this->input->post('defname'));
-        $nStatDef->setTitle($this->input->post('titlename'));
-        $nStatDef->setDescription($this->input->post('description'));
-        if (!empty($overwrite) && $overwrite === 'yes') {
-            $nStatDef->setOverwriteOn();
-        }
-
-        if (!empty($usepredefined) && $usepredefined === 'yes') {
-            $nStatDef->setType('sys');
-            $nStatDef->setSysDef($this->input->post('gworker'));
-        } else {
-            $nStatDef->setType('ext');
-            $nStatDef->setHttpMethod($this->input->post('httpmethod'));
-            $nStatDef->setPostOptions($postoptions);
-            $nStatDef->setUrl($this->input->post('sourceurl'));
-            $nStatDef->setAccess($this->input->post('accesstype'));
-            $nStatDef->setFormatType($formattype);
-            $nStatDef->setAuthuser($this->input->post('userauthn'));
-            $nStatDef->setAuthpass($this->input->post('passauthn'));
-
-        }
-        $provider->setStatDefinition($nStatDef);
-        $nStatDef->setProvider($provider);
-
+        $this->updateStatDefinition($provider,$nStatDef);
         $this->em->persist($nStatDef);
         $this->em->persist($provider);
         $this->em->flush();
