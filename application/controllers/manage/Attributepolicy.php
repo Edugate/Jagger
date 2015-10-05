@@ -15,22 +15,22 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Attributepolicy extends MY_Controller
 {
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
     }
 
     /**
      * @param null $idpid
-     * @return bool
+     * @throws Exception
      */
-    private function initiateAjaxAccess($idpid = null)
-    {
-        return (ctype_digit($idpid) && $this->input->is_ajax_request() && $this->jauth->isLoggedIn());
+    private function initiateAjaxAccess($idpid = null) {
+        $isValid = (ctype_digit($idpid) && $this->input->is_ajax_request() && $this->jauth->isLoggedIn());
+        if (!$isValid) {
+            throw new Exception('Access denied');
+        }
     }
 
-    private function getEntity($idpid)
-    {
+    private function getEntity($idpid) {
         $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid, 'type' => array('IDP', 'BOTH')));
         return $ent;
     }
@@ -38,8 +38,7 @@ class Attributepolicy extends MY_Controller
     /**
      * @param null $idpid
      */
-    public function show($idpid = null)
-    {
+    public function show($idpid = null) {
         if (!ctype_digit($idpid)) {
             show_404();
         }
@@ -81,14 +80,14 @@ class Attributepolicy extends MY_Controller
      * @return \models\Provider
      * @throws Exception
      */
-    private function initiateProvider($idpid = null){
-        if(!ctype_digit($idpid)){
+    private function initiateProvider($idpid = null) {
+        if (!ctype_digit($idpid)) {
             throw new Exception('missing idp is');
         }
         /**
          * @var $ent models\Provider
          */
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid,'type'=>array('IDP','BOTH')));
+        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid, 'type' => array('IDP', 'BOTH')));
         if ($ent === null) {
             throw new Exception('Provider not found');
         }
@@ -102,19 +101,14 @@ class Attributepolicy extends MY_Controller
         return $ent;
 
 
-
     }
 
-    public function getsupported($idpid = null)
-    {
-        if (!$this->initiateAjaxAccess($idpid)) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
+    public function getsupported($idpid = null) {
 
-        try{
+        try {
+            $this->initiateAjaxAccess($idpid);
             $ent = $this->initiateProvider($idpid);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
@@ -139,16 +133,11 @@ class Attributepolicy extends MY_Controller
 
     }
 
-    public function getentcats($idpid = null)
-    {
-        if (!$this->initiateAjaxAccess($idpid)) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
-
-        try{
+    public function getentcats($idpid = null) {
+        try {
+            $this->initiateAjaxAccess($idpid);
             $ent = $this->initiateProvider($idpid);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
@@ -170,15 +159,11 @@ class Attributepolicy extends MY_Controller
 
     }
 
-    public function getspecattrs($idpid = null)
-    {
-        if (!$this->initiateAjaxAccess($idpid)) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
-        try{
+    public function getspecattrs($idpid = null) {
+        try {
+            $this->initiateAjaxAccess($idpid);
             $ent = $this->initiateProvider($idpid);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
@@ -200,9 +185,8 @@ class Attributepolicy extends MY_Controller
         $addReqSPs = array();
         foreach ($result['data']['sps'] as $ksp => $vsp) {
 
-            if(!array_key_exists($ksp,$sps))
-            {
-              log_message('error',__METHOD__.' orphaned policy found for entityid: '.$ent->getEntityId().' :: SPID: '.$ksp.' does not exist');
+            if (!array_key_exists($ksp, $sps)) {
+                log_message('error', __METHOD__ . ' orphaned policy found for entityid: ' . $ent->getEntityId() . ' :: SPID: ' . $ksp . ' does not exist');
                 unset($result['data']['sps'][$ksp]);
             }
             if (!array_key_exists('req', $vsp)) {
@@ -236,15 +220,12 @@ class Attributepolicy extends MY_Controller
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
-    public function getentcatattrs($idpid = null)
-    {
-        if (!$this->initiateAjaxAccess($idpid)) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
-        try{
+    public function getentcatattrs($idpid = null) {
+
+        try {
+            $this->initiateAjaxAccess($idpid);
             $ent = $this->initiateProvider($idpid);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
@@ -289,16 +270,12 @@ class Attributepolicy extends MY_Controller
     }
 
 
-    public function addattrspec($idpid = null)
-    {
-        if (!$this->initiateAjaxAccess($idpid)) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
+    public function addattrspec($idpid = null) {
 
-        try{
+        try {
+            $this->initiateAjaxAccess($idpid);
             $ent = $this->initiateProvider($idpid);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
@@ -306,8 +283,7 @@ class Attributepolicy extends MY_Controller
         if ($isLocked) {
             return $this->output->set_status_header(403)->set_output('Entity is locked');
         }
-        if($this->updateattrspValidate() !== true)
-        {
+        if ($this->updateattrspValidate() !== true) {
             return $this->output->set_status_header(403)->set_output('Incorrect data input');
         }
         $attrid = trim($this->input->post('attrid'));
@@ -318,19 +294,16 @@ class Attributepolicy extends MY_Controller
         $customvals = trim($this->input->post('customvals'));
 
 
-        if (!ctype_digit($spid) || !ctype_digit($attrid) || !ctype_digit($policy) || !in_array($policy, array('0', '1', '2','100'))) {
+        if (!ctype_digit($spid) || !ctype_digit($attrid) || !ctype_digit($policy) || !in_array($policy, array('0', '1', '2', '100'))) {
             return $this->output->set_status_header(403)->set_output('Posted invalid data');
         }
         try {
             $controlCheck = $this->em->getRepository('models\AttributeReleasePolicy')->findOneBy(array('idp' => $ent->getId(), 'attribute' => $attrid, 'requester' => $spid, 'type' => array('sp', 'customsp')));
-        }
-        catch(Exception $e)
-        {
-            log_message('error',__METHOD__.' '.$e);
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
             return $this->output->set_status_header(500)->set_output('Internal Server Error');
         }
-        if($controlCheck !== null)
-        {
+        if ($controlCheck !== null) {
             return $this->output->set_status_header(403)->set_output('Policy alredy exists. please use edit instead');
         }
 
@@ -339,73 +312,63 @@ class Attributepolicy extends MY_Controller
          * @var $attribute models\Attribute
          * @var $sp models\Provider
          */
-        $attribute = $this->em->getRepository('models\Attribute')->findOneBy(array('id'=>$attrid));
-        $sp = $this->em->getRepository('models\Provider')->findOneBy(array('id'=>$spid));
+        $attribute = $this->em->getRepository('models\Attribute')->findOneBy(array('id' => $attrid));
+        $sp = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $spid));
 
-        if($attribute === null)
-        {
+        if ($attribute === null) {
             return $this->output->set_status_header(403)->set_output('Attribute passed in post does not exist');
         }
         $entype = $sp->getType();
-        if($sp === null || !in_array($entype,array('SP','BOTH')) )
-        {
+        if ($sp === null || !in_array($entype, array('SP', 'BOTH'))) {
             return $this->output->set_status_header(403)->set_output('SP passed in post does not exist or not valid entity type');
         }
 
-        if($policy !== '100') {
+        if ($policy !== '100') {
             $attrPolicy = new models\AttributeReleasePolicy();
             $attrPolicy->setSpecificPolicy($ent, $attribute, $spid, $policy);
             $this->em->persist($attrPolicy);
         }
-        if(!empty($customenable) && $customenable === 'yes' && !empty($custompolicy) && in_array($custompolicy,array('permit','deny')) && !empty($customvals))
-        {
+        if (!empty($customenable) && $customenable === 'yes' && !empty($custompolicy) && in_array($custompolicy, array('permit', 'deny')) && !empty($customvals)) {
             $customRawDataArray = array();
-            $explcustomvals = explode(',',$customvals);
-            foreach($explcustomvals as $r)
-            {
+            $explcustomvals = explode(',', $customvals);
+            foreach ($explcustomvals as $r) {
                 $rp = trim($r);
-                if(!empty($rp))
-                {
+                if (!empty($rp)) {
                     $customRawDataArray[] = $rp;
                 }
             }
 
-            if(count($customRawDataArray)>0) {
+            if (count($customRawDataArray) > 0) {
                 $customAttrPolicy = new models\AttributeReleasePolicy();
                 $customAttrPolicy->setAttribute($attribute);
                 $customAttrPolicy->setProvider($ent);
                 $customAttrPolicy->setType('customsp');
                 $customAttrPolicy->setRequester($spid);
-                $customAttrPolicy->setRawdata(array(''.$custompolicy.''=>$customRawDataArray));
+                $customAttrPolicy->setRawdata(array('' . $custompolicy . '' => $customRawDataArray));
                 $this->em->persist($customAttrPolicy);
             }
 
         }
 
-        try{
+        try {
             $this->em->flush();
             return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
 
-        }
-        catch(Exception $e)
-        {
-            log_message('error',__METHOD__.' '.$e);
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
             return $this->output->set_status_header(500)->set_output('Internal Server Error');
         }
 
 
     }
 
-    public function addattrentcat($idpid = null)
-    {
-        if (!$this->initiateAjaxAccess($idpid)) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
+    public function addattrentcat($idpid = null) {
 
-        try{
+
+        try {
+            $this->initiateAjaxAccess($idpid);
             $ent = $this->initiateProvider($idpid);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
@@ -448,21 +411,17 @@ class Attributepolicy extends MY_Controller
 
     }
 
-    public function getfedattrs($idpid = null)
-    {
-        if (!$this->initiateAjaxAccess($idpid)) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
+    public function getfedattrs($idpid = null) {
 
-        try{
+        try {
+            $this->initiateAjaxAccess($idpid);
             $ent = $this->initiateProvider($idpid);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
         $result['type'] = 'federation';
 
-    
+
         $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => lang('notsupported'));
         $result['definitions']['columns'] = array(lang('attrname'), lang('policy'), lang('reqstatus'), lang('rr_action'));
         $result['definitions']['lang']['federation'] = lang('rr_federation');
@@ -520,16 +479,13 @@ class Attributepolicy extends MY_Controller
     }
 
 
-    public function delattr($idpid = null)
-    {
-        if (!$this->initiateAjaxAccess($idpid)) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
+    public function delattr($idpid = null) {
 
-        try{
+
+        try {
+            $this->initiateAjaxAccess($idpid);
             $ent = $this->initiateProvider($idpid);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
         $isLocked = $ent->getLocked();
@@ -555,16 +511,12 @@ class Attributepolicy extends MY_Controller
     }
 
 
-    public function updateattrglobal($idpid = null)
-    {
-        if (!$this->initiateAjaxAccess($idpid)) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
+    public function updateattrglobal($idpid = null) {
 
-        try{
+        try {
+            $this->initiateAjaxAccess($idpid);
             $ent = $this->initiateProvider($idpid);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
@@ -623,16 +575,11 @@ class Attributepolicy extends MY_Controller
 
     }
 
-    public function updateattrentcat($idpid = null)
-    {
-        if (!$this->initiateAjaxAccess($idpid)) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
-
-        try{
+    public function updateattrentcat($idpid = null) {
+        try {
+            $this->initiateAjaxAccess($idpid);
             $ent = $this->initiateProvider($idpid);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
@@ -687,17 +634,11 @@ class Attributepolicy extends MY_Controller
         }
     }
 
-    public function updateattrfed($idpid = null)
-    {
-
-        if (!$this->initiateAjaxAccess($idpid)) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
-
-        try{
+    public function updateattrfed($idpid = null) {
+        try {
+            $this->initiateAjaxAccess($idpid);
             $ent = $this->initiateProvider($idpid);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
@@ -754,8 +695,7 @@ class Attributepolicy extends MY_Controller
 
     }
 
-    private function updateattrspValidate()
-    {
+    private function updateattrspValidate() {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('customvals', '' . lang('permdenvalue') . '', 'trim|alpha_dash_comma');
         $this->form_validation->set_rules('custompolicy', 'Custom Policy', 'trim');
@@ -764,16 +704,12 @@ class Attributepolicy extends MY_Controller
         $this->form_validation->set_rules('spid', 'Service Provider ID', 'trim|required|numeric');
         return $this->form_validation->run();
     }
-    public function updateattrsp($idpid = null)
-    {
-        if (!$this->initiateAjaxAccess($idpid)) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
 
-        try{
+    public function updateattrsp($idpid = null) {
+        try {
+            $this->initiateAjaxAccess($idpid);
             $ent = $this->initiateProvider($idpid);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
         $isLocked = $ent->getLocked();
@@ -799,9 +735,8 @@ class Attributepolicy extends MY_Controller
         }
 
 
-        if($this->updateattrspValidate() !== true)
-        {
-            return $this->output->set_status_header(401)->set_output(validation_errors('<div>','</div>'));
+        if ($this->updateattrspValidate() !== true) {
+            return $this->output->set_status_header(401)->set_output(validation_errors('<div>', '</div>'));
         }
         /**
          * @var $attrPolicy models\AttributeReleasePolicy
@@ -811,7 +746,6 @@ class Attributepolicy extends MY_Controller
          * @var $customattrPolicy models\AttributeReleasePolicy
          */
         $customattrPolicy = $this->em->getRepository('models\AttributeReleasePolicy')->findOneBy(array('attribute' => $attrid, 'idp' => $ent->getId(), 'type' => 'customsp', 'requester' => $spid));
-
 
 
         if ($policy === '100') {
@@ -829,26 +763,22 @@ class Attributepolicy extends MY_Controller
             $this->em->persist($attrPolicy);
         }
 
-        if(empty($customenabled) || $customenabled !== 'yes' || empty($customvals))
-        {
-            if($customattrPolicy !== null) {
+        if (empty($customenabled) || $customenabled !== 'yes' || empty($customvals)) {
+            if ($customattrPolicy !== null) {
                 $this->em->remove($customattrPolicy);
             }
-        }
-        else
-        {
+        } else {
             $valsarray = array();
-            $cvalsExploded = explode(',',$customvals);
+            $cvalsExploded = explode(',', $customvals);
             $cvals = array();
-            foreach($cvalsExploded as $rf)
-            {
+            foreach ($cvalsExploded as $rf) {
                 $cvals[] = trim($rf);
             }
             $cvals = array_filter($cvals);
-            if(count($cvals)>0) {
+            if (count($cvals) > 0) {
                 if ($custompolicy === 'permit' || $custompolicy === 'deny') {
 
-                    $valsarray[''.$custompolicy.''] = $cvals;
+                    $valsarray['' . $custompolicy . ''] = $cvals;
 
                 }
                 if ($customattrPolicy === null) {
@@ -874,17 +804,13 @@ class Attributepolicy extends MY_Controller
     }
 
 
-    public function getcustomsp($idpid = null)
-    {
-        if (!$this->initiateAjaxAccess($idpid)) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
+    public function getcustomsp($idpid = null) {
 
 
-        try{
+        try {
+            $this->initiateAjaxAccess($idpid);
             $ent = $this->initiateProvider($idpid);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
@@ -907,23 +833,15 @@ class Attributepolicy extends MY_Controller
 
     }
 
-    public function getspecsp($idpid = null)
-    {
-        if (!$this->initiateAjaxAccess($idpid)) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
+    public function getspecsp($idpid = null) {
+        try {
+            $this->initiateAjaxAccess($idpid);
+            $ent = $this->initiateProvider($idpid);
+        } catch (Exception $e) {
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
-        /**
-         * @var $ent models\Provider
-         */
-        $ent = $this->getEntity($idpid);
-        if ($ent === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
-        }
-        $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$hasWriteAccess) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
+
+
         $result = array('attrs' => array(), 'members' => array());
         /**
          * @var $attrs models\Attribute[]
@@ -950,20 +868,15 @@ class Attributepolicy extends MY_Controller
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
-    public function getspecforedit($idpid = null)
-    {
-        if (!$this->initiateAjaxAccess($idpid)) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
+    public function getspecforedit($idpid = null) {
+        try {
+            $this->initiateAjaxAccess($idpid);
+            $ent = $this->initiateProvider($idpid);
+        } catch (Exception $e) {
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
-        $ent = $this->getEntity($idpid);
-        if ($ent === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
-        }
-        $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$hasWriteAccess) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
+
+
         $attrid = trim($this->input->post('attrid'));
         $spid = trim($this->input->post('spid'));
         if (!ctype_digit($attrid) || !ctype_digit($spid)) {
@@ -973,22 +886,17 @@ class Attributepolicy extends MY_Controller
         /**
          * @var $pols models\AttributeReleasePolicy[]
          */
-        $pols = $this->em->getRepository('models\AttributeReleasePolicy')->findBy(array('idp'=>$ent->getId(),'requester'=>$spid,'attribute'=>$attrid,'type'=>array('sp','customsp')));
+        $pols = $this->em->getRepository('models\AttributeReleasePolicy')->findBy(array('idp' => $ent->getId(), 'requester' => $spid, 'attribute' => $attrid, 'type' => array('sp', 'customsp')));
 
         $result['data'] = array();
 
 
-
-        foreach($pols as $pol)
-        {
+        foreach ($pols as $pol) {
             $type = $pol->getType();
-            if($type === 'customsp')
-            {
+            if ($type === 'customsp') {
                 $result['data']['customsp'] = $pol->getRawdata();
-            }
-            else
-            {
-                $result['data']['sp']= $pol->getPolicy();
+            } else {
+                $result['data']['sp'] = $pol->getPolicy();
             }
 
         }
