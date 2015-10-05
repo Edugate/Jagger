@@ -1,34 +1,23 @@
 <?php
-
 namespace models;
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
+
 
 use \Doctrine\Common\Collections\ArrayCollection;
 use \Doctrine\ORM\Query\ResultSetMapping;
 
 /**
- * ResourceRegistry3
- *
- * @package     RR3
+ * @package     Jagger
  * @author      Middleware Team HEAnet
+ * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
  */
 
-/**
- * Providers Class
- *
- * @package     RR3
- * @subpackage  Models
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
 class Providers
 {
-
-
     protected $providers;
     protected $em;
     protected $ci;

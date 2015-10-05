@@ -6,7 +6,11 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  */
 
 /**
- * Class Attributepolicy
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 class Attributepolicy extends MY_Controller
 {
@@ -31,6 +35,9 @@ class Attributepolicy extends MY_Controller
         return $ent;
     }
 
+    /**
+     * @param null $idpid
+     */
     public function show($idpid = null)
     {
         if (!ctype_digit($idpid)) {
@@ -69,27 +76,48 @@ class Attributepolicy extends MY_Controller
         $this->load->view('page', $data);
     }
 
+    /**
+     * @param null $idpid
+     * @return \models\Provider
+     * @throws Exception
+     */
+    private function initiateProvider($idpid = null){
+        if(!ctype_digit($idpid)){
+            throw new Exception('missing idp is');
+        }
+        /**
+         * @var $ent models\Provider
+         */
+        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid,'type'=>array('IDP','BOTH')));
+        if ($ent === null) {
+            throw new Exception('Provider not found');
+        }
+
+        $this->load->library('zacl');
+        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
+        if (!$hasWriteAccess) {
+            throw new Exception('Access denied');
+        }
+        $this->load->library('arpgen');
+        return $ent;
+
+
+
+    }
+
     public function getsupported($idpid = null)
     {
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
 
-
-        /**
-         * @var $ent models\Provider
-         */
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
-        if ($ent === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
+        try{
+            $ent = $this->initiateProvider($idpid);
         }
-        $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$hasWriteAccess) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
+        catch(Exception $e){
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
-        $this->load->library('arpgen');
         $policiesDefs = $this->arpgen->genPolicyDefs($ent);
 
 
@@ -116,18 +144,14 @@ class Attributepolicy extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        /**
-         * @var $ent models\Provider
-         */
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
-        if ($ent === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
+
+        try{
+            $ent = $this->initiateProvider($idpid);
         }
-        $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$hasWriteAccess) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
+        catch(Exception $e){
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
+
         /**
          * @var $cocs models\Coc[]
          */
@@ -151,19 +175,13 @@ class Attributepolicy extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        /**
-         * @var $ent models\Provider
-         */
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
-        if ($ent === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
+        try{
+            $ent = $this->initiateProvider($idpid);
         }
-        $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$hasWriteAccess) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
+        catch(Exception $e){
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
-        $this->load->library('arpgen');
+
 
         $tmpSPDefinition = new models\Providers();
 
@@ -223,19 +241,14 @@ class Attributepolicy extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        /**
-         * @var $ent models\Provider
-         */
-        $ent = $this->getEntity($idpid);
-        if ($ent === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
+        try{
+            $ent = $this->initiateProvider($idpid);
         }
-        $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$hasWriteAccess) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
+        catch(Exception $e){
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
-        $this->load->library('arpgen');
+
+
         $result['type'] = 'entcat';
         $result['data']['global'] = $this->arpgen->genGlobal($ent);
         $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
@@ -281,18 +294,14 @@ class Attributepolicy extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        /**
-         * @var $ent models\Provider
-         */
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
-        if ($ent === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
+
+        try{
+            $ent = $this->initiateProvider($idpid);
         }
-        $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$hasWriteAccess) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
+        catch(Exception $e){
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
+
         $isLocked = $ent->getLocked();
         if ($isLocked) {
             return $this->output->set_status_header(403)->set_output('Entity is locked');
@@ -392,18 +401,15 @@ class Attributepolicy extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        /**
-         * @var $ent models\Provider
-         */
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
-        if ($ent === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
+
+        try{
+            $ent = $this->initiateProvider($idpid);
         }
-        $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$hasWriteAccess) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
+        catch(Exception $e){
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
+
+
         $entcatid = trim($this->input->post('entcatid'));
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
@@ -448,20 +454,12 @@ class Attributepolicy extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
 
-
-        /**
-         * @var $ent models\Provider
-         */
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
-        if ($ent === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
+        try{
+            $ent = $this->initiateProvider($idpid);
         }
-        $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$hasWriteAccess) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
+        catch(Exception $e){
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
-        $this->load->library('arpgen');
         $result['type'] = 'federation';
 
     
@@ -527,16 +525,13 @@ class Attributepolicy extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
-        if ($ent === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
-        }
-        $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$hasWriteAccess) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
 
+        try{
+            $ent = $this->initiateProvider($idpid);
+        }
+        catch(Exception $e){
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
+        }
         $isLocked = $ent->getLocked();
         if ($isLocked) {
             return $this->output->set_status_header(403)->set_output('Entity is locked');
@@ -565,17 +560,12 @@ class Attributepolicy extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        /**
-         * @var $ent models\Provider
-         */
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid));
-        if ($ent === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
+
+        try{
+            $ent = $this->initiateProvider($idpid);
         }
-        $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$hasWriteAccess) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
+        catch(Exception $e){
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
         $isLocked = $ent->getLocked();
@@ -638,18 +628,14 @@ class Attributepolicy extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        /**
-         * @var $ent models\Provider
-         */
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid, 'type' => array('IDP', 'BOTH')));
-        if ($ent === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
+
+        try{
+            $ent = $this->initiateProvider($idpid);
         }
-        $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$hasWriteAccess) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
+        catch(Exception $e){
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
+
         $isLocked = $ent->getLocked();
         if ($isLocked) {
             return $this->output->set_status_header(403)->set_output('Entity is locked');
@@ -707,18 +693,14 @@ class Attributepolicy extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        /**
-         * @var $ent models\Provider
-         */
-        $ent = $this->getEntity($idpid);
-        if ($ent === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
+
+        try{
+            $ent = $this->initiateProvider($idpid);
         }
-        $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$hasWriteAccess) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
+        catch(Exception $e){
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
+
         $isLocked = $ent->getLocked();
         if ($isLocked) {
             return $this->output->set_status_header(403)->set_output('Entity is locked');
@@ -787,18 +769,12 @@ class Attributepolicy extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        /**
-         * @var $ent models\Provider
-         */
-        $ent = $this->getEntity($idpid);
-        if ($ent === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
-        }
-        $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
 
-        if (!$hasWriteAccess) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
+        try{
+            $ent = $this->initiateProvider($idpid);
+        }
+        catch(Exception $e){
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
         $isLocked = $ent->getLocked();
         if ($isLocked) {
@@ -903,15 +879,15 @@ class Attributepolicy extends MY_Controller
         if (!$this->initiateAjaxAccess($idpid)) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
-        $ent = $this->getEntity($idpid);
-        if ($ent === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
+
+
+        try{
+            $ent = $this->initiateProvider($idpid);
         }
-        $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-        if (!$hasWriteAccess) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
+        catch(Exception $e){
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
+
         $attrid = trim($this->input->post('attrid'));
         $spid = trim($this->input->post('spid'));
         if (!ctype_digit($attrid) || !ctype_digit($spid)) {
