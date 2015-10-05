@@ -4788,6 +4788,27 @@ $(document).on('click', 'a.updateprefs', function (e) {
 $(".select2").select2();
 $("#itestcombo").select2();
 
+$("#userlogout").on('click',function(e){
+
+    var url = $(this).attr('href');
+    var baseurl = $("[name='baseurl']").val();
+    var redirecturl = baseurl;
+    if(baseurl === null)
+    {
+        redirecturl = url;
+    }
+    $.ajax({
+        'type': 'GET',
+        'url': url,
+        'cache': false,
+        success: function(){
+            window.location.href = redirecturl;
+        }
+
+    });
+    return false;
+});
+
 
 
 
