@@ -3,37 +3,37 @@
 namespace models;
 
 
-/**
- * ResourceRegistry3
- * 
- * @package     RR3
- * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
- */
-/**
- * ProviderStatsDef Class
- * 
- * @package     RR3
- * @subpackage  Models
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
+    /**
+     * ResourceRegistry3
+     *
+     * @package     RR3
+     * @author      Middleware Team HEAnet
+     * @copyright   Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
+     * @license     MIT http://www.opensource.org/licenses/mit-license.php
+     *
+     */
+    /**
+     * ProviderStatsDef Class
+     *
+     * @package     RR3
+     * @subpackage  Models
+     * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+     */
 
 /**
  * ProviderStatsDef Model
  *
  * This model for Statitstics  definitions for IdPs and SPs
- * 
+ *
  * @Entity
  * @HasLifecycleCallbacks
  * @Table(name="providerstatsdef")
  * @author janusz
  */
-class ProviderStatsDef {
+class ProviderStatsDef
+{
 
 
-   
     /**
      * @Id
      * @Column(type="bigint", nullable=false)
@@ -51,14 +51,14 @@ class ProviderStatsDef {
      * title for stats
      * @Column(type="string", length=128, nullable=false)
      */
-     protected $titlename;
+    protected $titlename;
 
     /**
      * @ManyToOne(targetEntity="Provider",inversedBy="statsdef")
      */
     protected $provider;
 
-     /**
+    /**
      * @OneToMany(targetEntity="ProviderStatsCollection",mappedBy="statdefinition",cascade={"persist", "remove"})
      */
     protected $statistic;
@@ -72,7 +72,7 @@ class ProviderStatsDef {
     protected $type;
 
     /**
-     * used  if type==sys 
+     * used  if type==sys
      * @Column(type="string", length=50, nullable=true)
      */
     protected $predefinedcol;
@@ -81,7 +81,7 @@ class ProviderStatsDef {
      * http methods for external source GET/POST , default GET
      * @Column(type="string", length=5, nullable=true)
      */
-     protected $method;
+    protected $method;
 
     /**
      * when external source definition of collected stats format like image, rrd etc
@@ -122,7 +122,7 @@ class ProviderStatsDef {
      * @Column(type="text" , nullable=true)
      */
     protected $postoptions;
-    
+
 
     /**
      * @Column(type="text", nullable=false)
@@ -132,7 +132,7 @@ class ProviderStatsDef {
     /**
      * @Column(type="boolean", nullable=true)
      */
-     protected $overwrite;
+    protected $overwrite;
 
 
     /**
@@ -146,227 +146,216 @@ class ProviderStatsDef {
     protected $updatedAt;
 
 
-
-    public function getId()
-    {
-       return $this->id;
+    public function getId() {
+        return $this->id;
     }
 
-    public function  getName()
-    {
-       return $this->shortname;
+    public function  getName() {
+        return $this->shortname;
     }
-    
-    public function getTitle()
-    {
-       return $this->titlename;
+
+    public function getTitle() {
+        return $this->titlename;
     }
 
     /**
      * @return Provider
      */
-    public function getProvider()
-    {
-       return $this->provider;
-    }
-  
-    public function getSysDef()
-    {
-      return $this->predefinedcol;
+    public function getProvider() {
+        return $this->provider;
     }
 
-    public function getStatistics()
-    {
-       return $this->statistic;
-    }
-    public function getType()
-    {
-       return $this->type;
-    }
-    public function getHttpMethod()
-    {
-       return $this->method;
+    public function getSysDef() {
+        return $this->predefinedcol;
     }
 
-    public function getFormatType()
-    {
-       return $this->formattype;
-    }
-   
-    public function getSourceUrl()
-    {
-       return $this->sourceurl;
-    } 
-
-    public function getAccessType()
-    {
-       return $this->accesstype;
-    }
-    public function getAuthUser()
-    {
-       return $this->authuser;
-    }
-    public function getAuthPass()
-    {
-       return $this->authpass;
-    }
-    public function getPostOptions()
-    {
-       $result = $this->postoptions;
-       if(!empty($result))
-       {
-          $result = unserialize($result);
-       }
-       return $result;
+    public function getStatistics() {
+        return $this->statistic;
     }
 
+    public function getType() {
+        return $this->type;
+    }
 
-    public function getDisplayOptions()
-    {
-        $result = $this->displayoptions;
-        if(!empty($result))
-        {
-           $result = unserialize($result);
+    public function getHttpMethod() {
+        return $this->method;
+    }
+
+    public function getFormatType() {
+        return $this->formattype;
+    }
+
+    public function getSourceUrl() {
+        return $this->sourceurl;
+    }
+
+    public function getAccessType() {
+        return $this->accesstype;
+    }
+
+    public function getAuthUser() {
+        return $this->authuser;
+    }
+
+    public function getAuthPass() {
+        return $this->authpass;
+    }
+
+    public function getPostOptions() {
+        $result = $this->postoptions;
+        if (!empty($result)) {
+            $result = unserialize($result);
         }
         return $result;
     }
-    public function getDescription()
-    {
-       return $this->description;
-    } 
 
-    public function getOverwrite()
-    {
-       return $this->overwrite;
-    }
-   
 
-   
-    public function setName($name)
-    {
-       $this->shortname = $name;
-       return $this;
-    } 
-    
-    public function setOverwriteOn()
-    {
-          $this->overwrite = TRUE;
-          return $this;
-     }
-    public function setOverwriteOff()
-    {
-          $this->overwrite = FALSE;
-          return $this;
-     }
- 
-    public function setTitle($title)
-    {
-       $this->titlename = $title;
-       return $this;
-       
-    }
-    public function setType($t)
-    {
-       $this->type = $t;
-       return $this;
+    public function getDisplayOptions() {
+        $result = $this->displayoptions;
+        if (!empty($result)) {
+            $result = unserialize($result);
+        }
+        return $result;
     }
 
-    public function setSysDef($d)
-    {
-       $this->predefinedcol = $d;
-       return $this;
+    public function getDescription() {
+        return $this->description;
     }
-    public function setDescription($desc)
-    {
-       $this->description = $desc;
-       return $this;
+
+    public function getOverwrite() {
+        return $this->overwrite;
     }
-    public function setHttpMethod($method)
-    {
+
+
+    /**
+     * @return array
+     */
+    public function toParamArray(){
+        return array(
+            'defid' => $this->getId(),
+            'entityid' => $this->getProvider()->getEntityId(),
+            'url' => $this->getSourceUrl(),
+            'type' => $this->getType(),
+            'sysdef' => $this->getSysDef(),
+            'title' => $this->getTitle(),
+            'httpmethod' => $this->getHttpMethod(),
+            'format' => $this->getFormatType(),
+            'accesstype' => $this->getAccessType(),
+            'authuser' => $this->getAuthUser(),
+            'authpass' => $this->getAuthPass(),
+            'postoptions' => $this->getPostOptions(),
+            'displayoptions' => $this->getDisplayOptions(),
+            'overwrite' => $this->getOverwrite()
+        );
+    }
+
+
+    public function setName($name) {
+        $this->shortname = $name;
+        return $this;
+    }
+
+    public function setOverwriteOn() {
+        $this->overwrite = true;
+        return $this;
+    }
+
+    public function setOverwriteOff() {
+        $this->overwrite = false;
+        return $this;
+    }
+
+    public function setTitle($title) {
+        $this->titlename = $title;
+        return $this;
+
+    }
+
+    public function setType($t) {
+        $this->type = $t;
+        return $this;
+    }
+
+    public function setSysDef($d) {
+        $this->predefinedcol = $d;
+        return $this;
+    }
+
+    public function setDescription($desc) {
+        $this->description = $desc;
+        return $this;
+    }
+
+    public function setHttpMethod($method) {
         $this->method = $method;
         return $this;
     }
-    public function setUrl($url)
-    {
-      $this->sourceurl = $url;
-      return $this;
-    }
-    public function setFormatType($t)
-    {
-       $this->formattype = $t;
-       return $this;
-    }
-     
-    public function setAccess($type)
-    {
-       $this->accesstype= $type;
-       return $this;
-    }
-    public function setAuthuser($u)
-    {
-       $this->authuser = $u;
-       return $this;
-    }
-    public function setAuthpass($p)
-    {
-       $this->authpass = $p;
-       return $this;
+
+    public function setUrl($url) {
+        $this->sourceurl = $url;
+        return $this;
     }
 
-    public function setPostOptions($arr=null)
-    {
-       if(!empty($arr))
-       {
-           $this->postoptions = serialize($arr);
-       }
-       else
-       {
-          $this->postoptions = null;
-       }
-       return $this;
+    public function setFormatType($t) {
+        $this->formattype = $t;
+        return $this;
     }
 
-    public function  setProvider(Provider $provider)
-    {
-         $this->provider = $provider;
-         return $this;   
+    public function setAccess($type) {
+        $this->accesstype = $type;
+        return $this;
     }
 
-    public function setDisplayOptions($opt=null)
-    {
-        if(!empty($opt))
-        {
-           if(is_array($opt))
-           {
-               $this->displayoptions = serialize($opt);
-           }
-           else
-           {
-              log_message('error','array expected');
-           }
+    public function setAuthuser($u) {
+        $this->authuser = $u;
+        return $this;
+    }
+
+    public function setAuthpass($p) {
+        $this->authpass = $p;
+        return $this;
+    }
+
+    public function setPostOptions($arr = null) {
+        if (!empty($arr)) {
+            $this->postoptions = serialize($arr);
+        } else {
+            $this->postoptions = null;
         }
-        else
-        {
+        return $this;
+    }
+
+    public function  setProvider(Provider $provider) {
+        $this->provider = $provider;
+        return $this;
+    }
+
+    public function setDisplayOptions($opt = null) {
+        if (!empty($opt)) {
+            if (is_array($opt)) {
+                $this->displayoptions = serialize($opt);
+            } else {
+                log_message('error', 'array expected');
+            }
+        } else {
             $this->displayoptions = null;
         }
-        
+
     }
 
     /**
-     * @prePersist 
+     * @prePersist
      */
-    public function created()
-    {
-         $this->createdAt = new \DateTime("now",new \DateTimeZone('UTC'));
-         $this->updatedAt = new \DateTime("now",new \DateTimeZone('UTC'));
+    public function created() {
+        $this->createdAt = new \DateTime("now", new \DateTimeZone('UTC'));
+        $this->updatedAt = new \DateTime("now", new \DateTimeZone('UTC'));
     }
 
     /**
      * @PreUpdate
      */
-    public function updated()
-    {
-        $this->updatedAt = new \DateTime("now",new \DateTimeZone('UTC'));
+    public function updated() {
+        $this->updatedAt = new \DateTime("now", new \DateTimeZone('UTC'));
     }
 
 
