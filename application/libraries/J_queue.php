@@ -528,15 +528,12 @@ class J_queue
         }
         $tmpl = array('table_open' => '<table id="details" class="zebra">');
         $this->ci->table->set_template($tmpl);
-        $this->ci->table->set_caption(lang('rr_requestawaiting') . ' JANUSZ');
+        $this->ci->table->set_caption(lang('rr_requestawaiting'));
 
         $text = '<span style="white-space: normal">' . lang('adminofprov') . ': ' . $queue->getName() . ' ' . lang('askedyourfed') . ': (' . $federation->getName() . ')</span>';
 
         $rows = array(
-            array(
-                'data' => $text,
-                'colspan' => 2
-            ),
+            array('data' => $text,'colspan' => 2),
             array('data' => lang('rr_details'), 'class' => 'highlight', 'colspan' => 2),
             array(lang('requestor'), $queue->getCreator()->getFullname() . ' (' . $queue->getCreator()->getUsername() . ')'),
             array(lang('rr_sourceip'), $queue->getIP()),
@@ -567,14 +564,19 @@ class J_queue
                 }
             }
         }
-        $rows[] = array(lang('manValidator'), $valMandatory);
-        $rows[] = array(lang('optValidator'), $valOptional);
-        $rows[] = array(lang('rr_federation'), $federation->getName() . ' ');
+        array_push($rows,
+            array(lang('manValidator'), $valMandatory),
+            array(lang('optValidator'), $valOptional),
+            array(lang('rr_federation'), $federation->getName() . ' ')
+        );
         $data = $queue->getData();
-        $rows[] = array(lang('rr_provider'), $data['name']);
-        $rows[] = array(lang('rr_entityid'), $data['entityid']);
-        $rows[] = array('Provider status', '<div  data-jagger-getmoreajax= "' . base_url() . 'providers/detail/status/' . $data['id'] . '" data-jagger-response-msg="providerstatus"></div><div id="providerstatus" data-alert class="alert-box info">' . lang('rr_noentitywarnings') . '</div>');
-        $rows[] = array(lang('request'), lang('acceptprovtofed'));
+        array_push($rows,
+            array(lang('rr_provider'), $data['name']),
+            array(lang('rr_entityid'), $data['entityid']),
+            array('Provider status', '<div  data-jagger-getmoreajax= "' . base_url() . 'providers/detail/status/' . $data['id'] . '" data-jagger-response-msg="providerstatus"></div><div id="providerstatus" data-alert class="alert-box info">' . lang('rr_noentitywarnings') . '</div>'),
+            array(lang('request'), lang('acceptprovtofed'))
+        );
+
         if (isset($data['message'])) {
             $rows[] = array(lang('rr_message'), $data['message']);
         }
