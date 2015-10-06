@@ -27,7 +27,7 @@
                 <?php
                 if ($loggedin) {
                     echo '<li><a href="' . $base_url . 'reports/awaitinglist"><sup id="qcounter" class="label alert tiny round" style="box-shadow: 0px 1px 5px #0a0a0a, inset 0px 1px 2px #bdbdbd;">&nbsp;</sup></a></li>';
-                    echo '<li class="show-for-small-only"><a href="' . $base_url . 'auth/logout" class="button alert logoutbutton tiny" id="userlogout">' . lang('btnlogout') . '</a></li>';
+                    echo '<li class="show-for-small-only"><a href="' . $base_url . 'auth/logout" class="button alert logoutbutton tiny userlogout" jagger-data-logout="'.$shibLogoutUri.'">' . lang('btnlogout') . '</a></li>';
 
                     ?>
                 <?php
@@ -57,8 +57,7 @@
                             <li>
                                 <a href="<?php echo $base_url . 'notifications/subscriber/mysubscriptions/' . base64url_encode($user) . ''; ?>"><?php echo lang('rrmynotifications'); ?></a>
                             </li>
-                            <li class="show-for-medium-up"><a href="<?php echo $base_url; ?>auth/logout" class="alert"
-                                                              id="userlogout"><?php echo lang('btnlogout'); ?></a></li>
+                            <li class="show-for-medium-up"><a href="<?php echo $base_url; ?>auth/logout" class="alert userlogout" jagger-data-logout="<?php echo $shibLogoutUri;?>"><?php echo lang('btnlogout'); ?></a></li>
                         </ul>
                     </li>
 

@@ -27,7 +27,12 @@ if (!empty($inqueue)) {
 
 $args['isAdministrator'] = $isAdministrator;
 $args['loggedin'] = $loggedin;
-
+$shibCnf = $this->config->item('Shibboleth');
+$shibLogoutUri = null;
+if(isset($shibCnf['logout_uri'])){
+    $shibLogoutUri = $shibCnf['logout_uri'];
+}
+$args['shibLogoutUri'] = $shibLogoutUri;
 $foundation = $base_url . 'foundation/';
 ?>
 <!DOCTYPE html>

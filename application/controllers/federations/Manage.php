@@ -1,20 +1,13 @@
 <?php
-
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 /**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
-/**
- * Manage Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 
 /**
@@ -23,24 +16,18 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Manage extends MY_Controller
 {
 
-    private $tmp_providers;
+    private $tmpProviders;
 
-    function __construct()
-    {
+    function __construct() {
         parent::__construct();
-        $this->current_site = current_url();
         $this->load->helper(array('cert', 'form'));
         $this->session->set_userdata(array('currentMenu' => 'federation'));
-        /**
-         * @todo add check loggedin
-         */
-        $this->tmp_providers = new models\Providers;
+        $this->tmpProviders = new models\Providers;
         MY_Controller::$menuactive = 'fed';
         $this->load->library('j_ncache');
     }
 
-    function index()
-    {
+    function index() {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
@@ -69,8 +56,7 @@ class Manage extends MY_Controller
 
     }
 
-    private function getMembers(models\Federation $federation, $lang)
-    {
+    private function getMembers(models\Federation $federation, $lang) {
         $cachedResult = $this->j_ncache->getFederationMembers($federation->getId(), $lang);
         if (!empty($cachedResult)) {
             log_message('debug', __METHOD__ . ' retrieved fedmembers (lang:' . $lang . ') from cache');
@@ -118,87 +104,76 @@ class Manage extends MY_Controller
         return $membersInArray;
     }
 
-    function showmembers($fedid)
-    {
-        if (!$this->input->is_ajax_request()) {
-            set_status_header(404);
-            echo 'Request not allowed';
-            return;
-        }
-        if (!$this->jauth->isLoggedIn()) {
-            set_status_header(403);
-            echo 'access denied. invalid session';
-            return;
+    function showmembers($fedid) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         $lang = MY_Controller::getLang();
-
         $this->load->library('zacl');
-
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
-        if (empty($federation)) {
-            set_status_header(404);
-            echo 'Federarion not found';
-            return;
+        /**
+         * @var models\Federation $federation
+         */
+        $federation = $this->em->getRepository('models\Federation')->findOneBy(array('id' => $fedid));
+        if ($federation === null) {
+            return $this->output->set_status_header(404)->set_output('Federation not found');
         }
 
         $result = $this->getMembers($federation, $lang);
         $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
-    function fedmemberscount($fedid)
-    {
+    public function fedmemberscount($fedid) {
         if (!$this->input->is_ajax_request() || !ctype_digit($fedid)) {
-            set_status_header(403);
-            echo 'Request not allowed';
-            return;
+            return $this->output->set_status_header(403)->set_output('Request not allowed');
         }
+        /**
+         * @var models\Federation $federation
+         */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
-        if (empty($federation)) {
-            set_status_header(404);
-            echo 'Federarion not found';
-            return;
+        if ($federation === null) {
+            return $this->output->set_status_header(404)->set_output('Federation not found');
         }
         $preresult = $this->getMembers($federation, MY_Controller::getLang());
         $result = array('idp' => count($preresult['idp']), 'sp' => count($preresult['sp']), 'both' => count($preresult['both']), 'definitions' => $preresult['definitions']);
-        $this->output->set_content_type('application/json')->set_output(json_encode($result));
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
-    function showcontactlist($fed_name, $type = NULL)
-    {
+    public function showcontactlist($encodedFedName, $type = null) {
         if (!$this->jauth->isLoggedIn()) {
-            set_status_header(403);
-            echo 'Access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         $this->load->library('zacl');
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
-        if (empty($federation)) {
-            show_error('Federation not found', 404);
+        /**
+         * @var models\Federation $federation
+         */
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($encodedFedName)));
+        if ($federation === null) {
+            return $this->output->set_status_header(404)->set_output('Federation not found');
         }
         /**
          * @var $federationMembers models\Provider[]
          */
         $federationMembers = $federation->getActiveMembers();
-        $members_ids = array();
+        $membersByIds = array();
         if (strcasecmp($type, 'idp') == 0 || strcasecmp($type, 'sp') == 0) {
             foreach ($federationMembers as $m) {
                 $entype = $m->getType();
                 if (strcasecmp($entype, $type) == 0) {
-                    $members_ids[] = $m->getId();
+                    $membersByIds[] = $m->getId();
                 }
             }
         } else {
             foreach ($federationMembers as $m) {
-                $members_ids[] = $m->getId();
+                $membersByIds[] = $m->getId();
             }
         }
-        if (count($members_ids) == 0) {
+        if (count($membersByIds) == 0) {
             show_error(lang('error_nomembersforfed'), 404);
         }
         /**
-         * @var $contacts models\Contact[]
+         * @var models\Contact[] $contacts
          */
-        $contacts = $this->em->getRepository("models\Contact")->findBy(array('provider' => $members_ids));
+        $contacts = $this->em->getRepository("models\Contact")->findBy(array('provider' => $membersByIds));
         $cont_array = array();
         foreach ($contacts as $c) {
             $cont_array[$c->getEmail()] = $c->getFullName();
@@ -212,8 +187,7 @@ class Manage extends MY_Controller
         force_download('federationcontactlist.txt', $result, 'text/plain');
     }
 
-    private function showMetadataTab(models\Federation $federation, $hasWriteAccess)
-    {
+    private function showMetadataTab(models\Federation $federation, $hasWriteAccess) {
         $d = array();
         $altMetaUrlEnabled = $federation->getAltMetaUrlEnabled();
 
@@ -266,17 +240,16 @@ class Manage extends MY_Controller
         return $d;
     }
 
-    function show($encodedFedName)
-    {
+    public function show($encodedFedName) {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
-        $this->load->library(array( 'zacl'));
+        $this->load->library(array('zacl'));
         /**
          * @var $federation models\Federation
          */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($encodedFedName)));
-        if (empty($federation)) {
+        if ($federation === null) {
             show_error(lang('error_fednotfound'), 404);
         }
         $federationID = $federation->getId();
@@ -341,10 +314,13 @@ class Manage extends MY_Controller
             'result' => array('fvalidators' => array()),
         );
         if ($access['hasWriteAccess']) {
-            $data['fvalidator'] = TRUE;
+            $data['fvalidator'] = true;
             $data['result']['fvalidators'][] = array('data' => array('data' => '<a href="' . base_url('manage/fvalidatoredit/vedit/' . $federation->getId() . '') . '" class="button small">' . lang('rr_add') . '</a>', 'class' => 'text-right', 'colspan' => 2));
         }
 
+        /**
+         * @var models\AttributeRequirement[] $requiredAttributes
+         */
         $requiredAttributes = $federation->getAttributesRequirement()->getValues();
         $contactLists = array(
             'idp' => anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/idp', lang('rr_fed_cntidps_list') . ' <i class="fi-download"></i>'),
@@ -428,24 +404,21 @@ class Manage extends MY_Controller
         $this->load->view('page', $data);
     }
 
-    private function inviteSubmitValidate()
-    {
+    private function inviteSubmitValidate() {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('provider', lang('rr_provider'), 'required|numeric|xss_clean');
         $this->form_validation->set_rules('message', lang('rr_message'), 'required|xss_clean');
         return $this->form_validation->run();
     }
 
-    private function removeSubmitValidate()
-    {
+    private function removeSubmitValidate() {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('provider', lang('rr_provider'), 'required|numeric|xss_clean');
         $this->form_validation->set_rules('message', lang('rr_message'), 'required|xss_clean');
         return $this->form_validation->run();
     }
 
-    public function inviteprovider($encodedFedName)
-    {
+    public function inviteprovider($encodedFedName) {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
@@ -455,7 +428,7 @@ class Manage extends MY_Controller
          * @var $federation models\Federation
          */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($encodedFedName)));
-        if (empty($federation)) {
+        if ($federation === null) {
             show_error('Federation not found', 404);
         }
 
@@ -469,7 +442,7 @@ class Manage extends MY_Controller
             /**
              * @var $invitedProvider models\Provider
              */
-            $invitedProvider = $this->tmp_providers->getOneById($provider_id);
+            $invitedProvider = $this->tmpProviders->getOneById($provider_id);
             if (empty($invitedProvider)) {
                 $data['error'] = lang('rerror_providernotexist');
             } else {
@@ -495,7 +468,7 @@ class Manage extends MY_Controller
             }
         }
         $current_members = $federation->getMembers();
-        $local_providers = $this->tmp_providers->getLocalProviders();
+        $local_providers = $this->tmpProviders->getLocalProviders();
         $list = array('IDP' => array(), 'SP' => array(), 'BOTH' => array());
         foreach ($local_providers as $l) {
             if (!$current_members->contains($l)) {
@@ -524,8 +497,7 @@ class Manage extends MY_Controller
         $this->load->view('page', $data);
     }
 
-    public function removeprovider($encodedFedName)
-    {
+    public function removeprovider($encodedFedName) {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
@@ -534,7 +506,7 @@ class Manage extends MY_Controller
          * @var $federation models\Federation
          */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($encodedFedName)));
-        if (empty($federation)) {
+        if ($federation === null) {
             show_error('Federation not found', 404);
         }
         $myLang = MY_Controller::getLang();
@@ -548,7 +520,7 @@ class Manage extends MY_Controller
             /**
              * @var $invitedProvider models\Provider
              */
-            $invitedProvider = $this->tmp_providers->getOneById($provider_id);
+            $invitedProvider = $this->tmpProviders->getOneById($provider_id);
             if (empty($invitedProvider)) {
                 $data['error_message'] = lang('rerror_providernotexist');
             } else {
@@ -647,8 +619,7 @@ class Manage extends MY_Controller
      * @param \models\Federation $federation
      * @return array
      */
-    private function genEntitiesDescriptorId(\models\Federation $federation)
-    {
+    private function genEntitiesDescriptorId(\models\Federation $federation) {
         $entitiesDescriptorId = $federation->getDescriptorId();
         if (!empty($entitiesDescriptorId)) {
             return array('EntitiesDescriptor ID', html_escape($entitiesDescriptorId));
@@ -664,8 +635,7 @@ class Manage extends MY_Controller
         return array(lang('rr_fed_descid'), html_escape($entitiesDescriptorId) . ' <span class="label">' . lang('rr_entdesciddyn') . '</span>');
     }
 
-    private function genValidators(\models\Federation $federation, $hasWriteAccess = false)
-    {
+    private function genValidators(\models\Federation $federation, $hasWriteAccess = false) {
         /**
          * @var $fvalidators models\FederationValidator[]
          */
