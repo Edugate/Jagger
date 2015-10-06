@@ -1,6 +1,7 @@
 <?php
-
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 /**
  * ResourceRegistry3
  *
@@ -27,8 +28,7 @@ class J_queue
     private $tmp_federations;
     private $attributesByName;
 
-    function __construct()
-    {
+    function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->tmp_providers = new models\Providers;
@@ -47,8 +47,7 @@ class J_queue
      * @param bool $onlycancel
      * @return string
      */
-    function displayFormsButtons($qid, $onlycancel = FALSE)
-    {
+    function displayFormsButtons($qid, $onlycancel = FALSE) {
         /* add approve form */
         $approveForm = '';
         $rejecttext = lang('rr_cancel');
@@ -67,8 +66,7 @@ class J_queue
         return $result;
     }
 
-    function createUserFromQueue(models\Queue $q)
-    {
+    function createUserFromQueue(models\Queue $q) {
         $objdata = $q->getData();
         if (!is_array($objdata)) {
             log_message('error', __METHOD__ . ' data not in array');
@@ -139,8 +137,7 @@ class J_queue
         return true;
     }
 
-    private function genCocArray(models\Queue $q, $type)
-    {
+    private function genCocArray(models\Queue $q, $type) {
         if ($type === 'entcat') {
             $r = array(
                 array('header' => lang('request')),
@@ -172,13 +169,13 @@ class J_queue
             $r[] = array('name' => lang('rr_provider'), 'value' => $entityid . ' <span class="label alert">' . lang('prov_notexist') . '</span>');
         }
         $entcatid = $q->getRecipient();
-        $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $entcatid, 'type' => ''.$type.''));
+        $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $entcatid, 'type' => '' . $type . ''));
 
         if (empty($coc)) {
             $r[] = array('name' => $typeLabel, 'value' => '<div data-alert class="alert-box alert">' . lang('regpol_notexist') . '</div>');
         } else {
             $lenabled = '';
-            if (!$coc->getAvailable())  {
+            if (!$coc->getAvailable()) {
                 $lenabled = '<span class="label alert">' . lang('rr_disabled') . '</span>';
             }
             $r[] = array('name' => $typeLabel, 'value' => '<span class="label info">' . $coc->getLang() . '</span> ' . $coc->getName() . ': ' . $coc->getUrl() . ' ' . $lenabled);
@@ -187,18 +184,15 @@ class J_queue
 
     }
 
-    function displayApplyForEntityCategory(models\Queue $q)
-    {
-        return $this->genCocArray($q,'entcat');
+    function displayApplyForEntityCategory(models\Queue $q) {
+        return $this->genCocArray($q, 'entcat');
     }
 
-    function displayApplyForRegistrationPolicy(models\Queue $q)
-    {
-        return $this->genCocArray($q,'regpol');
+    function displayApplyForRegistrationPolicy(models\Queue $q) {
+        return $this->genCocArray($q, 'regpol');
     }
 
-    function displayRegisterUser(models\Queue $q)
-    {
+    function displayRegisterUser(models\Queue $q) {
         $objdata = $q->getData();
         $r = array(
             array('header' => lang('request')),
@@ -239,8 +233,7 @@ class J_queue
      * @param \models\Queue $q
      * @return array
      */
-    function displayRegisterFederation(models\Queue $q)
-    {
+    function displayRegisterFederation(models\Queue $q) {
         $objData = new models\Federation;
         $objData->importFromArray($q->getData());
         $creator = $q->getCreator();
@@ -268,8 +261,7 @@ class J_queue
      * @param \models\Queue $q
      * @return array
      */
-    function displayDeleteFederation(models\Queue $q)
-    {
+    function displayDeleteFederation(models\Queue $q) {
         $objData = new models\Federation;
         $objData->importFromArray($q->getData());
         $creator = $q->getCreator();
@@ -291,8 +283,7 @@ class J_queue
         return $fedrows;
     }
 
-    function displayRegisterProvider(models\Queue $q)
-    {
+    function displayRegisterProvider(models\Queue $q) {
         $showXML = FALSE;
         $objData = null;
         $data = $q->getData();
@@ -481,8 +472,7 @@ class J_queue
         return $dataRows;
     }
 
-    function displayInviteProvider(models\Queue $queue)
-    {
+    function displayInviteProvider(models\Queue $queue) {
 
         $this->ci->load->library('table');
         if ($queue->getRecipientType() == 'provider') {
@@ -490,7 +480,7 @@ class J_queue
             $provider = $this->tmp_providers->getOneById($queue->getRecipient());
         }
         if (empty($provider)) {
-            log_message('error',__METHOD__.' entity with ID: '.$queue->getRecipient().' not found in db');
+            log_message('error', __METHOD__ . ' entity with ID: ' . $queue->getRecipient() . ' not found in db');
             return false;
         }
         $tmpl = array('table_open' => '<table id="details" class="zebra">');
@@ -520,8 +510,12 @@ class J_queue
         return $result;
     }
 
-    function displayInviteFederation(models\Queue $queue, $canApprove = false)
-    {
+    /**
+     * @param \models\Queue $queue
+     * @param bool|false $canApprove
+     * @return mixed
+     */
+    function displayInviteFederation(models\Queue $queue, $canApprove = false) {
 
         $this->ci->load->library('table');
         $recipientType = $queue->getRecipientType();
@@ -534,16 +528,20 @@ class J_queue
         }
         $tmpl = array('table_open' => '<table id="details" class="zebra">');
         $this->ci->table->set_template($tmpl);
-        $this->ci->table->set_caption(lang('rr_requestawaiting'));
+        $this->ci->table->set_caption(lang('rr_requestawaiting') . ' JANUSZ');
+
         $text = '<span style="white-space: normal">' . lang('adminofprov') . ': ' . $queue->getName() . ' ' . lang('askedyourfed') . ': (' . $federation->getName() . ')</span>';
-        $cell = array('data' => $text, 'colspan' => 2);
-        $this->ci->table->add_row($cell);
-        $cell = array('data' => lang('rr_details'), 'class' => 'highlight', 'colspan' => 2);
-        $this->ci->table->add_row($cell);
-        $cell = array(lang('requestor'), $queue->getCreator()->getFullname() . ' (' . $queue->getCreator()->getUsername() . ')');
-        $this->ci->table->add_row($cell);
-        $cell = array(lang('rr_sourceip'), $queue->getIP());
-        $this->ci->table->add_row($cell);
+
+        $rows = array(
+            array(
+                'data' => $text,
+                'colspan' => 2
+            ),
+            array('data' => lang('rr_details'), 'class' => 'highlight', 'colspan' => 2),
+            array(lang('requestor'), $queue->getCreator()->getFullname() . ' (' . $queue->getCreator()->getUsername() . ')'),
+            array(lang('rr_sourceip'), $queue->getIP()),
+        );
+
 
         $data = $queue->getData();
         /**
@@ -569,34 +567,27 @@ class J_queue
                 }
             }
         }
-        $cell = array(lang('manValidator'), $valMandatory);
-        $this->ci->table->add_row($cell);
-        $cell = array(lang('optValidator'), $valOptional);
-        $this->ci->table->add_row($cell);
-        $cell = array(lang('rr_federation'), $federation->getName() . ' ');
-        $this->ci->table->add_row($cell);
+        $rows[] = array(lang('manValidator'), $valMandatory);
+        $rows[] = array(lang('optValidator'), $valOptional);
+        $rows[] = array(lang('rr_federation'), $federation->getName() . ' ');
         $data = $queue->getData();
-        $cell = array(lang('rr_provider'), $data['name']);
-        $this->ci->table->add_row($cell);
-        $cell = array(lang('rr_entityid'), $data['entityid']);
-        $this->ci->table->add_row($cell);
-
-
-        $cell = array('Provider status', '<div  data-jagger-getmoreajax= "' . base_url() . 'providers/detail/status/' . $data['id'] . '" data-jagger-response-msg="providerstatus"></div><div id="providerstatus" data-alert class="alert-box info">' . lang('rr_noentitywarnings') . '</div>');
-        $this->ci->table->add_row($cell);
-        $cell = array(lang('request'), lang('acceptprovtofed'));
-        $this->ci->table->add_row($cell);
-
+        $rows[] = array(lang('rr_provider'), $data['name']);
+        $rows[] = array(lang('rr_entityid'), $data['entityid']);
+        $rows[] = array('Provider status', '<div  data-jagger-getmoreajax= "' . base_url() . 'providers/detail/status/' . $data['id'] . '" data-jagger-response-msg="providerstatus"></div><div id="providerstatus" data-alert class="alert-box info">' . lang('rr_noentitywarnings') . '</div>');
+        $rows[] = array(lang('request'), lang('acceptprovtofed'));
         if (isset($data['message'])) {
-            $cell = array(lang('rr_message'), $data['message']);
-            $this->ci->table->add_row($cell);
+            $rows[] = array(lang('rr_message'), $data['message']);
         }
-        $cell = array('data' => $this->displayFormsButtons($queue->getId(), !$canApprove), 'colspan' => 2);
-        $this->ci->table->add_row($cell);
+        $rows[] = array('data' => $this->displayFormsButtons($queue->getId(), !$canApprove), 'colspan' => 2);
+
+
         # show additional information returned by validator
         $text = '<div id="fvresult" style="display:none;" data-alert class="alert-box info"><div><b>' . lang('fvalidcodereceived') . '</b>: <span id="fvreturncode"></span></div><div><p><b>' . lang('fvalidmsgsreceived') . '</b>:</p><div id="fvmessages"></div></div></div><div id="fvalidesc"></div>';
-        $cell = array('data' => $text, 'colspan' => 2);
-        $this->ci->table->add_row($cell);
+
+        $rows[] = array('data' => $text, 'colspan' => 2);
+        foreach ($rows as $row) {
+            $this->ci->table->add_row($row);
+        }
         $result = $this->ci->table->generate();
         $this->ci->table->clear();
         return $result;
