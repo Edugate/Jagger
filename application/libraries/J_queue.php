@@ -23,7 +23,10 @@ class J_queue
 {
 
     private $ci;
-    private $em;
+    /**
+     * @var $em Doctrine\ORM\EntityManager
+     */
+    protected $em;
     private $tmp_providers;
     private $tmp_federations;
     private $attributesByName;
@@ -77,7 +80,7 @@ class J_queue
             return false;
         }
         /**
-         * @var $checkuser models\User
+         * @var models\User $checkuser
          */
         $checkuser = $this->em->createQuery("SELECT u FROM models\User u WHERE u.username = '{$objdata['username']}'")->getResult();
         if (!empty($checkuser)) {
@@ -283,8 +286,9 @@ class J_queue
         return $fedrows;
     }
 
-    function displayRegisterProvider(models\Queue $q) {
-        $showXML = FALSE;
+    public function displayRegisterProvider(models\Queue $q) {
+        $showXML = false;
+
         $objData = null;
         $data = $q->getData();
         $objData = new models\Provider;
@@ -295,10 +299,10 @@ class J_queue
             $this->ci->load->library('xmlvalidator');
             libxml_use_internal_errors(true);
             $metadataDOM = new \DOMDocument();
-            $metadataDOM->strictErrorChecking = FALSE;
-            $metadataDOM->WarningChecking = FALSE;
+            $metadataDOM->strictErrorChecking = false;
+            $metadataDOM->WarningChecking = false;
             $metadataDOM->loadXML($metadataXml);
-            $isValid = $this->ci->xmlvalidator->validateMetadata($metadataDOM, FALSE, FALSE);
+            $isValid = $this->ci->xmlvalidator->validateMetadata($metadataDOM, false, false);
             if (!$isValid) {
                 log_message('error', __METHOD__ . ' invalid metadata in the queue ');
             } else {
@@ -311,10 +315,10 @@ class J_queue
                 $domlist = $metadataDOM->getElementsByTagName('EntityDescriptor');
                 if (count($domlist) == 1) {
                     foreach ($domlist as $l) {
-                        $entarray = $this->ci->metadata2array->entityDOMToArray($l, TRUE);
+                        $entarray = $this->ci->metadata2array->entityDOMToArray($l, false);
                     }
                     $objData = new models\Provider;
-                    $objData->setProviderFromArray(current($entarray), TRUE);
+                    $objData->setProviderFromArray(current($entarray), false);
                     $objData->setReqAttrsFromArray(current($entarray), $this->attributesByName);
                     $metadataXML = $this->ci->providertoxml->entityConvertNewDocument($objData, array('attrs' => 1), true);
                     $showXML = TRUE;
@@ -371,6 +375,9 @@ class J_queue
         $valOptional = null;
         $attrs = array('id' => 'fvform', 'style' => 'display: inline', 'class' => '');
         if (count($fedIdsCollection) > 0) {
+            /**
+             * @var models\FederationValidator[] $validators
+             */
             $validators = $this->em->getRepository("models\FederationValidator")->findBy(array('federation' => $fedIdsCollection, 'isEnabled' => true));
             foreach ($validators as $v) {
                 if ($v->getMandatory()) {
@@ -401,13 +408,16 @@ class J_queue
 
         $dataRows[$i++]['value'] = $objData->getEntityId();
         $type = $objData->getType();
+        $nameids = '';
         if ($type === 'IDP') {
+            $nameids = implode(', ', $objData->getNameIds('idpsso'));
             $dataRows[$i]['name'] = lang('type');
             $dataRows[$i++]['value'] = lang('identityprovider');
 
             $dataRows[$i]['name'] = lang('rr_scope') . ' <br /><small>IDPSSODescriptor</small>';
             $dataRows[$i++]['value'] = implode(';', $objData->getScope('idpsso'));
         } elseif ($type === 'SP') {
+            $nameids = implode(', ', $objData->getNameIds('spsso'));
             $dataRows[$i]['name'] = lang('type');
             $dataRows[$i++]['value'] = lang('serviceprovider');
         }
@@ -421,53 +431,39 @@ class J_queue
         foreach ($objData->getServiceLocations() as $service) {
             $serviceType = $service->getType();
             $dataRows[$i]['name'] = $serviceType;
+            $orderString = '';
             if (in_array($serviceType, $servicetypesWithIndex)) {
                 $orderString = 'index: ' . $service->getOrder();
-            } else {
-                $orderString = '';
-            }
+            } 
             $dataRows[$i]['value'] = "" . $service->getUrl() . "<br /><small>" . $service->getBindingName() . " " . $orderString . " </small><br />";
             $i++;
         }
-        $dataRows[$i++]['header'] = lang('rr_supportednameids');
-        $dataRows[$i]['name'] = lang('nameid');
-        if ($type === 'IDP') {
-            $dataRows[$i++]['value'] = implode(', ', $objData->getNameIds('idpsso'));
-        } elseif ($type === 'SP') {
-            $dataRows[$i++]['value'] = implode(', ', $objData->getNameIds('spsso'));
-        }
 
-
-        $dataRows[$i++]['header'] = lang('rr_certificates');
+        array_push($dataRows,array('header'=>lang('rr_supportednameids')),array('name'=>lang('nameid'),'value'=>$nameids),array('header'=>lang('rr_certificates')));
         foreach ($objData->getCertificates() as $cert) {
-            $dataRows[$i]['name'] = "Certificate (" . $cert->getCertUse() . ")";
             $certdatacell = reformatPEM($cert->getCertdata());
-
-
-            $dataRows[$i]['value'] = "<span class=\"span-10\"><code>" . $certdatacell . "</code></span>";
-            $i++;
+            array_push($dataRows,array('name'=>lang('rr_certificateuse').' <span class="label info">'.html_escape($cert->getCertUseInStr()).'</span>','value'=>'<span class="span-10"><code>' . $certdatacell . '</code></span>'));
         }
 
-        $dataRows[$i++]['header'] = lang('rr_contacts');
+        array_push($dataRows,array('header'=>lang('rr_contacts')));
+
         foreach ($objData->getContacts() as $contact) {
             $phone = $contact->getPhone();
+            $phoneStr = '';
             if (!empty($phone)) {
                 $phoneStr = 'Tel:' . $phone;
-            } else {
-                $phoneStr = '';
             }
-            $dataRows[$i]['name'] = lang('rr_contact') . ' (' . $contact->getType() . ')';
-            $dataRows[$i]['value'] = $contact->getFullName() . " &lt;" . $contact->getEmail() . "&gt; " . $phoneStr;
-            $i++;
+            array_push($dataRows,array('name'=>''.lang('rr_contact') . ' (' . $contact->getType() . ')','value'=>''.$contact->getFullName() . " &lt;" . $contact->getEmail() . "&gt; " . $phoneStr.''));
         }
-        if ($showXML) {
+
+        if ($showXML === true) {
+            $dataRows[]['header'] = 'Metadata view';
+            $this->ci->load->library('geshilib');
             $params = array(
                 'enable_classes' => true,
             );
+            array_push($dataRows,array('name'=>'XML','value'=>'' . $this->ci->geshilib->highlight($metadataXML, 'xml', $params) . ''));
 
-            $dataRows[$i]['name'] = 'XML';
-            $this->ci->load->library('geshilib');
-            $dataRows[$i]['value'] = '' . $this->ci->geshilib->highlight($metadataXML, 'xml', $params) . '';
         }
         return $dataRows;
     }
@@ -475,6 +471,9 @@ class J_queue
     function displayInviteProvider(models\Queue $queue) {
 
         $this->ci->load->library('table');
+        /**
+         * @var models\Provider $provider
+         */
         if ($queue->getRecipientType() == 'provider') {
 
             $provider = $this->tmp_providers->getOneById($queue->getRecipient());
@@ -519,10 +518,14 @@ class J_queue
 
         $this->ci->load->library('table');
         $recipientType = $queue->getRecipientType();
+        /**
+         * @var models\Federation $federation
+         */
+        $federation = null;
         if (strcasecmp($recipientType, 'federation') == 0) {
             $federation = $this->tmp_federations->getOneFederationById($queue->getRecipient());
         }
-        if (empty($federation)) {
+        if ($federation === null) {
             \log_message('error', __METHOD__ . ' Federation (' . $queue->getRecipient() . ') does not exist anymore');
             return false;
         }
@@ -533,7 +536,7 @@ class J_queue
         $text = '<span style="white-space: normal">' . lang('adminofprov') . ': ' . $queue->getName() . ' ' . lang('askedyourfed') . ': (' . $federation->getName() . ')</span>';
 
         $rows = array(
-            array('data' => $text,'colspan' => 2),
+            array('data' => $text, 'colspan' => 2),
             array('data' => lang('rr_details'), 'class' => 'highlight', 'colspan' => 2),
             array(lang('requestor'), $queue->getCreator()->getFullname() . ' (' . $queue->getCreator()->getUsername() . ')'),
             array(lang('rr_sourceip'), $queue->getIP()),

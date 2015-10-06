@@ -146,6 +146,9 @@ class FederationValidator
         return $this->name;
     }
 
+    /**
+     * @return Federation|null
+     */
     public function getFederation()
     {
         return $this->federation;
