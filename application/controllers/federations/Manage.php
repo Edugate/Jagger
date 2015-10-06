@@ -18,7 +18,7 @@ class Manage extends MY_Controller
 
     private $tmpProviders;
 
-    function __construct() {
+    public function __construct() {
         parent::__construct();
         $this->load->helper(array('cert', 'form'));
         $this->session->set_userdata(array('currentMenu' => 'federation'));
@@ -27,33 +27,38 @@ class Manage extends MY_Controller
         $this->load->library('j_ncache');
     }
 
-    function index() {
+    private function getFedcatsToArray(){
+        $result = array();
+        /**
+         * @var $federationCategories models\FederationCategory[]
+         */
+        $federationCategories = $this->em->getRepository("models\FederationCategory")->findAll();
+        foreach ($federationCategories as $v) {
+            $result[] = array('catid' => '' . $v->getId() . '',
+                'name' => '' . $v->getName() . '',
+                'title' => '' . $v->getFullName() . '',
+                'desc' => '' . $v->getDescription() . '',
+                'default' => '' . $v->isDefault() . '');
+        }
+        return $result;
+    }
+
+    public function index() {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
         $this->title = lang('title_fedlist');
-        /**
-         * @var $federationCategories models\FederationCategory[]
-         */
-        $federationCategories = $this->em->getRepository("models\FederationCategory")->findAll();
+
         $data = array(
-            'categories' => array(),
+            'categories' => $this->getFedcatsToArray(),
             'titlepage' => lang('rr_federation_list'),
             'content_view' => 'federation/list_view.php',
             'breadcrumbs' => array(
                 array('url' => base_url('federations/manage'), 'name' => lang('rr_federations'), 'type' => 'current')
             ),
         );
-        foreach ($federationCategories as $v) {
-            $data['categories'][] = array('catid' => '' . $v->getId() . '',
-                'name' => '' . $v->getName() . '',
-                'title' => '' . $v->getFullName() . '',
-                'desc' => '' . $v->getDescription() . '',
-                'default' => '' . $v->isDefault() . '');
-        }
         $this->load->view('page', $data);
-
     }
 
     private function getMembers(models\Federation $federation, $lang) {
@@ -104,7 +109,7 @@ class Manage extends MY_Controller
         return $membersInArray;
     }
 
-    function showmembers($fedid) {
+    public function showmembers($fedid) {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Access denied');
         }
@@ -240,19 +245,27 @@ class Manage extends MY_Controller
         return $d;
     }
 
+
+
     public function show($encodedFedName) {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
+        $this->title = lang('rr_federation_detail');
+
         $this->load->library(array('zacl'));
         /**
          * @var $federation models\Federation
          */
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($encodedFedName)));
+        $federation = $this->em->getRepository('models\Federation')->findOneBy(array('name' => base64url_decode($encodedFedName)));
         if ($federation === null) {
             show_error(lang('error_fednotfound'), 404);
         }
         $federationID = $federation->getId();
+
+        /**
+         * @var bool[] $access
+         */
         $access = array(
             'hasReadAccess' => $this->zacl->check_acl('f_' . $federationID, 'read', 'federation', ''),
             'hasWriteAccess' => $this->zacl->check_acl('f_' . $federationID, 'write', 'federation', ''),
@@ -262,7 +275,7 @@ class Manage extends MY_Controller
         $canEdit = (boolean)($access['hasManageAccess'] || $access['hasWriteAccess']);
         $editAttributesLink = '';
 
-        $this->title = lang('rr_federation_detail');
+
 
         $breadcrumbs = array(
             array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
@@ -270,7 +283,7 @@ class Manage extends MY_Controller
 
         );
 
-        if (!$access['hasReadAccess'] && ($federation->getPublic() === FALSE)) {
+        if (!$access['hasReadAccess'] && ($federation->getPublic() === false)) {
             $data = array(
                 'content_view' => 'nopermission',
                 'error' => lang('rrerror_noperm_viewfed'),
@@ -679,11 +692,12 @@ class Manage extends MY_Controller
                     $retvaluesToHtml = '';
                     foreach ($retvalues as $k => $v) {
                         $retvaluesToHtml .= '<div>' . $k . ': ';
-                        if (!empty($v) && is_array($v)) {
+                        if (is_array($v)) {
                             foreach ($v as $v1) {
-                                $retvaluesToHtml .= '"' . $v1 . '"; ';
+                                $retvaluesToHtml .= '' . $v1 . '; ';
                             }
                         }
+                        $retvaluesToHtml .='</div>';
                     }
 
                     $tbl = array(
