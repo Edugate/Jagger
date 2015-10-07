@@ -43,6 +43,7 @@ class J_queue
         foreach ($attrs as $a) {
             $this->attributesByName['' . $a->getOid() . ''] = $a;
         }
+        $this->ci->load->library('table');
     }
 
     /**
@@ -470,7 +471,6 @@ class J_queue
 
     function displayInviteProvider(models\Queue $queue) {
 
-        $this->ci->load->library('table');
         /**
          * @var models\Provider $provider
          */
@@ -516,7 +516,7 @@ class J_queue
      */
     function displayInviteFederation(models\Queue $queue, $canApprove = false) {
 
-        $this->ci->load->library('table');
+
         $recipientType = $queue->getRecipientType();
         /**
          * @var models\Federation $federation
@@ -533,12 +533,12 @@ class J_queue
         $this->ci->table->set_template($tmpl);
         $this->ci->table->set_caption(lang('rr_requestawaiting'));
 
-        $text = '<span style="white-space: normal">' . lang('adminofprov') . ': ' . $queue->getName() . ' ' . lang('askedyourfed') . ': (' . $federation->getName() . ')</span>';
+        $text = '<span style="white-space: normal">' . lang('adminofprov') . ': ' . html_escape($queue->getName()) . ' ' . lang('askedyourfed') . ': (' . html_escape($federation->getName()) . ')</span>';
 
         $rows = array(
             array('data' => $text, 'colspan' => 2),
             array('data' => lang('rr_details'), 'class' => 'highlight', 'colspan' => 2),
-            array(lang('requestor'), $queue->getCreator()->getFullname() . ' (' . $queue->getCreator()->getUsername() . ')'),
+            array(lang('requestor'), html_escape($queue->getCreator()->getFullname()) . ' (' . html_escape($queue->getCreator()->getUsername()) . ')'),
             array(lang('rr_sourceip'), $queue->getIP()),
         );
 
@@ -554,17 +554,14 @@ class J_queue
         $attrs = array('id' => 'fvform', 'style' => 'display: inline', 'class' => '');
         foreach ($validators as $v) {
             if ($v->getEnabled()) {
+                $hidden = array('fedid' => $federation->getId(), 'provid' => $provider->getId(), 'fvid' => $v->getId());
+                $valOptional .= form_open(base_url() . 'federations/fvalidator/validate', $attrs, $hidden);
                 if ($v->getMandatory()) {
-                    $hidden = array('fedid' => $federation->getId(), 'provid' => $provider->getId(), 'fvid' => $v->getId());
-                    $valMandatory .= form_open(base_url() . 'federations/fvalidator/validate', $attrs, $hidden);
                     $valMandatory .= '<button id="' . $v->getId() . '" title="' . $v->getDescription() . '" name="mandatory">' . $v->getName() . '</button> ';
-                    $valMandatory .= form_close();
                 } else {
-                    $hidden = array('fedid' => $federation->getId(), 'provid' => $provider->getId(), 'fvid' => $v->getId());
-                    $valOptional .= form_open(base_url() . 'federations/fvalidator/validate', $attrs, $hidden);
                     $valOptional .= '<button id="' . $v->getId() . '" title="' . $v->getDescription() . '">' . $v->getName() . '</button> ';
-                    $valOptional .= form_close();
                 }
+                $valMandatory .= form_close();
             }
         }
         array_push($rows,

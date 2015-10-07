@@ -94,6 +94,7 @@ class Oidcauth extends MY_Controller
             $error_message = 'Missing required claim "sub" from Authorization Server';
             return $this->load->view('page', array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
+        log_message('debug','CLAIMS: '.serialize($claims));
         $username = (string)$claims['sub'] . '@' . $claims['iss'];
         $fname = null;
         $sname = null;
