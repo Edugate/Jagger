@@ -1,29 +1,19 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 /**
- * ResourceRegistry3
- *
- * @package   RR3
- * @author    Middleware Team HEAnet
- * @copyright Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @package   Jagger
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
-
-/**
- * Disco Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 class Disco extends MY_Controller
 {
 
     protected $logoUrl, $logoBasePath, $logoBaseUrl, $wayfList;
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $this->output->set_content_type('application/json');
         $this->logoBasePath = $this->config->item('rr_logouriprefix');
@@ -43,8 +33,7 @@ class Disco extends MY_Controller
      * @param $type
      * @return mixed
      */
-    private function providerToDisco(models\Provider $ent, $type)
-    {
+    private function providerToDisco(models\Provider $ent, $type) {
         $result['entityID'] = $ent->getEntityId();
         $result['title'] = $ent->getNameToWebInLang('en');
         $doFilter = array('t' => array('' . $type . ''), 'n' => array('mdui'), 'e' => array('GeolocationHint', 'Logo'));
@@ -82,8 +71,7 @@ class Disco extends MY_Controller
     /**
      * @return bool
      */
-    private function isFeatureEnabled()
-    {
+    private function isFeatureEnabled() {
         $cnf = $this->config->item('featdisable');
         if (isset($cnf['discojuice']) && $cnf['discojuice'] === true) {
             return false;
@@ -91,18 +79,7 @@ class Disco extends MY_Controller
         return true;
     }
 
-
-    public function getall($filename = null)
-    {
-        if ($filename !== 'metadata.json') {
-            return $this->output->set_status_header(403)->set_output('Request not allowed');
-        }
-        if (!$this->isFeatureEnabled()) {
-            return $this->output->set_status_header(404)->set_output('The feature not enabled');
-        }
-        $call = $this->input->get('callback');
-        $callArray = array_filter(explode('_', $call));
-        $inopaq = (count($callArray) == 3 && $callArray['0'] == 'dj' && $callArray['1'] == 'md' && is_numeric($callArray['2']));
+    private function getFullDiscoData() {
         $cachedDisco = $this->j_ncache->getFullDisco();
         if (empty($cachedDisco)) {
             $tmpProviders = new models\Providers;
@@ -111,7 +88,7 @@ class Disco extends MY_Controller
              */
             $providersForWayf = $tmpProviders->getAllIdPsForWayf();
             if (empty($providersForWayf)) {
-                return $this->output->set_status_header(404)->set_output('no result');
+                throw new Exception('No result');
             }
             $output = array();
             $icounter = 0;
@@ -121,19 +98,42 @@ class Disco extends MY_Controller
             }
             $jsonoutput = json_encode($output);
             $this->j_ncache->saveFullDisco($jsonoutput);
-            if ($inopaq) {
-                $data['result'] = $call . '(' . $jsonoutput . ')';
-            } else {
-                $data['result'] = $jsonoutput;
-            }
-        } else {
-            if ($inopaq) {
-                $data['result'] = $call . '(' . $cachedDisco . ')';
-            } else {
-                $data['result'] = $cachedDisco;
-            }
+            return $jsonoutput;
         }
-        $this->load->view('disco_view', $data);
+        return $cachedDisco;
+
+    }
+
+
+    /**
+     * @param null $filename
+     * @return CI_Output
+     */
+    public function getall($filename = null) {
+        if ($filename !== 'metadata.json') {
+            return $this->output->set_status_header(403)->set_output('Request not allowed');
+        }
+        if (!$this->isFeatureEnabled()) {
+            return $this->output->set_status_header(404)->set_output('The feature not enabled');
+        }
+        $call = $this->input->get('callback');
+        $callArray = array_filter(explode('_', $call));
+        $inopaq = (count($callArray) == 3 && $callArray['0'] == 'dj' && $callArray['1'] == 'md' && is_numeric($callArray['2']));
+
+
+        try {
+            $result = $this->getFullDiscoData();
+            if ($inopaq) {
+                $data['result'] = $call . '(' . $result . ')';
+            } else {
+                $data['result'] = $result;
+            }
+            $this->load->view('disco_view', $data);
+        } catch (Exception $e) {
+            return $this->output->set_status_header(403)->set_output($e->getMessage());
+        }
+
+
     }
 
     /**
@@ -141,8 +141,7 @@ class Disco extends MY_Controller
      * @param null $filename
      * @return CI_Output
      */
-    public function circle($entityId, $filename = null)
-    {
+    public function circle($entityId, $filename = null) {
 
         if ($filename !== 'metadata.json') {
             return $this->output->set_status_header(403)->set_output('Request not allowed');
@@ -215,8 +214,7 @@ class Disco extends MY_Controller
     }
 
 
-    public function requester($encodedEntity = null)
-    {
+    public function requester($encodedEntity = null) {
         if ($encodedEntity === null) {
             return $this->output->set_status_header(404)->set_output('entityID not provided');
         }
