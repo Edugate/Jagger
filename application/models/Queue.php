@@ -273,6 +273,9 @@ class Queue {
     }
 
 
+    /**
+     * @return User|null
+     */
     public function getCreator() {
         return $this->creator;
     }

@@ -31,6 +31,9 @@ class Auth extends MY_Controller
         if ($this->jauth->isLoggedIn()) {
             $this->jauth->logout();
         }
+        if($this->input->is_ajax_request()){
+            return $this->output->set_status_header(200)->set_output('OK');
+        }
         $this->load->view('auth/logout');
     }
 

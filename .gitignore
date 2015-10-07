@@ -17,6 +17,8 @@ application/config/memcached.php
 application/controllers/c/*.php
 application/vendor/*
 application/extplugins/*
+jaggertheme/node_modules/*
+jaggertheme/bower_components/*
 logos/*
 vendor/*
 !index.html

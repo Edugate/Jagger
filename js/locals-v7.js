@@ -321,7 +321,7 @@ var createRowTaskParams = function (label1, label2) {
     }
 
     return $('<div class=\"row\"><div class=\"small-6 column\"><label>' + label1 + '<input name=\"params[' + rname + '][name]\" type=\"text\" value=\"\"/></label></div>' +
-    '<div class=\"small-6 column\"><label>' + label2 + '<input name=\"params[' + rname + '][value]\" type="text"  value=\"\"/></label></div></div>');
+        '<div class=\"small-6 column\"><label>' + label2 + '<input name=\"params[' + rname + '][value]\" type="text"  value=\"\"/></label></div></div>');
 };
 
 
@@ -1439,6 +1439,8 @@ var GINIT = {
 
 $(document).ready(function () {
 
+    var spinner = $('#spinner');
+
     $(window).scroll(function () {
         if ($(this).scrollTop() >= 100) {
             $('#return-to-top').fadeIn(200);
@@ -1927,14 +1929,12 @@ $(document).ready(function () {
             }
 
 
-
             var hiddeninputsize = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][size]" value="' + logosize + '">';
             var hiddeninputlang = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][lang]" value="' + logolang + '">';
             var origblock = $('li#nlogo' + type + 'row');
             var newblock = origblock.clone(true);
             newblock.removeAttr('id');
-            if(logoembeddedcheck !== null && logoembeddedcheck.is(':checked') && logoembeddedcheck.val() === 'embedded' && logoraw !== undefined && logoraw !== null && logoraw !== '')
-            {
+            if (logoembeddedcheck !== null && logoembeddedcheck.is(':checked') && logoembeddedcheck.val() === 'embedded' && logoraw !== undefined && logoraw !== null && logoraw !== '') {
                 var hiddeninputurl = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][url]" value="' + logoraw + '">';
                 newblock.find('img').first().attr('src', logoraw).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputlang);
                 newblock.find('div.logoinfo').first().append('' + logolangtxt + '<br />').append(logosize + '<br />');
@@ -2098,10 +2098,10 @@ $(document).ready(function () {
             cache: false,
             dataType: "json",
             beforeSend: function () {
-                $("#spinner").show();
+                spinner.show();
             },
             success: function (json) {
-                $("#spinner").hide();
+                spinner.hide();
                 if (json) {
 
                     var attrdefs = json.attrs;
@@ -2160,7 +2160,7 @@ $(document).ready(function () {
                 }
             },
             error: function () {
-                $("#spinner").hide();
+                spinner.hide();
             }
         })
     });
@@ -2193,10 +2193,10 @@ $(document).ready(function () {
                 method: 'GET',
                 dataType: 'json',
                 beforeSend: function () {
-                    $('#spinner').show();
+                    spinner.show();
                 },
                 success: function (data) {
-                    $('#spinner').hide();
+                    spinner.hide();
                     meter.css('width', '100%');
                     var idf;
                     var supplbl;
@@ -2347,7 +2347,7 @@ $(document).ready(function () {
                         tbl += '</tr></thead>';
 
                         $.each(data.data.entcats, function (i, v) {
-                            tbl += '<tr><td colspan="' + nrcols + '" class="highlight">EntityCategory: ' + data.definitions.entcats[i]['name'] + '  ' + data.definitions.entcats[i]['value'] + ' <i class="ecmembers fi-list"  data-jagger-jsource="'+ecmemberurl+'/'+i+'"></i></td></tr>';
+                            tbl += '<tr><td colspan="' + nrcols + '" class="highlight">EntityCategory: ' + data.definitions.entcats[i]['name'] + '  ' + data.definitions.entcats[i]['value'] + ' <i class="ecmembers fi-list"  data-jagger-jsource="' + ecmemberurl + '/' + i + '"></i></td></tr>';
 
                             $.each(v, function (j, w) {
                                 unsupwttr = '';
@@ -2416,12 +2416,11 @@ $(document).ready(function () {
                                         tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight" >' + v.entityid + '</td></tr>';
                                     }
                                     else {
-                                        if(data.definitions.sps.hasOwnProperty(i)) {
+                                        if (data.definitions.sps.hasOwnProperty(i)) {
                                             tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight">' + data.definitions.sps[i]['entityid'] + ' <span class="label alert">disabled</span></td></tr>';
                                         }
-                                        else
-                                        {
-                                            console.log('undefined '+i+' in data.definitions.sps');
+                                        else {
+                                            console.log('undefined ' + i + ' in data.definitions.sps');
                                         }
                                     }
                                     $.each(v.spec, function (j, l) {
@@ -2464,11 +2463,11 @@ $(document).ready(function () {
                                         }
 
                                         tbl += '<tr><td>' + attrName + '</td>' +
-                                        '<td><span class="label ' + policyLabels[l] + '">' + data.definitions.policy[l] + '</span>  ' + supportedStatus + ' ' + customattrpol + '</td>' +
-                                        '<td>' + data.definitions.req[spReqAttrStr] + '</td>' +
-                                        '<td>' +
-                                        '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + l + '" data-jagger-entityid="' + data.definitions.sps[i]['entityid'] + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + j + '">' +
-                                        '<i class="fi-pencil"></i></a></td></tr>';
+                                            '<td><span class="label ' + policyLabels[l] + '">' + data.definitions.policy[l] + '</span>  ' + supportedStatus + ' ' + customattrpol + '</td>' +
+                                            '<td>' + data.definitions.req[spReqAttrStr] + '</td>' +
+                                            '<td>' +
+                                            '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + l + '" data-jagger-entityid="' + data.definitions.sps[i]['entityid'] + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + j + '">' +
+                                            '<i class="fi-pencil"></i></a></td></tr>';
                                     });
                                     for (var vkey in spReqAttr) {
                                         customattrpol = '';
@@ -2497,9 +2496,9 @@ $(document).ready(function () {
                                         attrName = data.data.definitions.attrs[vkey];
                                         if (spReqAttr.hasOwnProperty(vkey)) {
                                             tbl += '<tr><td>' + attrName + '</td>' +
-                                            '<td><span class="label ' + policyLabels['100'] + '">' + data.definitions.policy['100'] + '</span>  ' + supportedStatus + ' ' + customattrpol + '</td>' +
-                                            '<td>' + data.definitions.req[spReqAttr[vkey]] + '</td>' +
-                                            '<td><a href="#" class="modalconfirm" data-jagger-attrpolicy="100" data-jagger-entityid="' + data.definitions.sps[i]['entityid'] + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fi-pencil"></i></i></td></tr>';
+                                                '<td><span class="label ' + policyLabels['100'] + '">' + data.definitions.policy['100'] + '</span>  ' + supportedStatus + ' ' + customattrpol + '</td>' +
+                                                '<td>' + data.definitions.req[spReqAttr[vkey]] + '</td>' +
+                                                '<td><a href="#" class="modalconfirm" data-jagger-attrpolicy="100" data-jagger-entityid="' + data.definitions.sps[i]['entityid'] + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fi-pencil"></i></i></td></tr>';
                                         }
                                     }
 
@@ -2520,7 +2519,7 @@ $(document).ready(function () {
 
                 },
                 error: function (xhr, status, error) {
-                    $("#spinner").hide();
+                    spinner.hide();
                     target.html('<div data-aler class="alert-box alert">' + xhr.responseText + '</div>');
                 }
             });
@@ -2835,8 +2834,7 @@ $(document).ready(function () {
             if (selectedname === undefined || !(selectedname === 'spid' || selectedname === 'attrid')) {
                 console.log('TT');
             }
-            if(selectedname === 'spid')
-            {
+            if (selectedname === 'spid') {
                 console.log('DDDDDDDDDDDD');
             }
 
@@ -3034,7 +3032,7 @@ $(document).ready(function () {
             cache: false,
             dataType: "json",
             success: function (json) {
-                $('#spinner').hide();
+                spinner.hide();
 
                 if (json) {
                     var startTime = new Date();
@@ -3128,10 +3126,10 @@ $(document).ready(function () {
                 }
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinner.show();
             },
             error: function (xhr, status, error) {
-                $('#spinner').hide();
+                spinner.hide();
                 var alerthtml = '<div class="small-12 medium-11 columns small-centered"><div data-alert class="alert-box error">' + error + '</div></div>';
                 matrixdiv.html(alerthtml);
                 return false;
@@ -3287,8 +3285,7 @@ $(document).ready(function () {
             dataType: "json",
             value: $('table.fedistpercat'),
             success: function (data) {
-                $('#spinner').hide();
-
+                spinner.hide();
                 if (!data) {
                     window.alert('no data in federation category');
                 }
@@ -3319,7 +3316,7 @@ $(document).ready(function () {
             dataType: "json",
             value: value,
             success: function (data) {
-                $('#spinner').hide();
+                spinner.hide();
                 if (!data) {
                     window.alert('no data in federation category');
                 }
@@ -3333,15 +3330,44 @@ $(document).ready(function () {
 
             },
             beforeSend: function () {
-                $('#spinner').show();
+               spinner.show();
             },
             error: function () {
-                $('#spinner').hide();
+               spinner.hide();
                 window.alert('problem with loading data');
             }
         }).done(function () {
             var nextrow = value.html();
             //$("table.fedistpercat").append(nextrow);
+        });
+        return false;
+    });
+
+
+    $(".userlogout").on('click', function (e) {
+        var baseurl = $("[name='baseurl']").val();
+        var addtitionalLogout = $(this).attr('jagger-data-logout');
+        var url = $(this).attr('href');
+
+        var redirecturl = baseurl;
+        if (baseurl === null) {
+            redirecturl = url;
+        }
+        if (addtitionalLogout !== null && addtitionalLogout !== '') {
+            $.ajax({
+                'type': 'GET',
+                'url': addtitionalLogout,
+                'cache': false,
+            });
+        }
+        $.ajax({
+            'type': 'GET',
+            'url': url,
+            'cache': false,
+            success: function () {
+                window.location.href = redirecturl;
+            }
+
         });
         return false;
     });
@@ -4654,24 +4680,24 @@ $(document).ready(
     }
 );
 
-$('.oidclink').on('click', function(e){
+$('.oidclink').on('click', function (e) {
     e.preventDefault();
 
     var url = $(this).attr('href');
     var csrfname = $("[name='csrfname']").val();
     var csrfhash = $("[name='csrfhash']").val();
     var op = $(this).attr('data-jagger-oidc');
-    var data = [ {name: csrfname, value: csrfhash}, {
-            name: 'op',
-            value: op
-        }];
+    var data = [{name: csrfname, value: csrfhash}, {
+        name: 'op',
+        value: op
+    }];
     $.ajax({
         type: 'POST',
         url: url,
         data: data,
         cache: false,
         dataType: 'json',
-        success: function(json){
+        success: function (json) {
             window.location.href = json.redirect;
         }
 
@@ -4787,6 +4813,8 @@ $(document).on('click', 'a.updateprefs', function (e) {
 
 $(".select2").select2();
 $("#itestcombo").select2();
+
+
 
 
 

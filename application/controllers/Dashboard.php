@@ -2,6 +2,7 @@
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
+
 /**
  * ResourceRegistry3
  *
@@ -11,19 +12,16 @@ if (!defined('BASEPATH')) {
  * @copyright 2012 HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
-
-
 class Dashboard extends MY_Controller
 {
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
+        $this->title = lang('dashboard');
     }
 
 
-    private function isMigrationUptodate()
-    {
+    private function isMigrationUptodate() {
         $this->load->config('migration');
         $targetVersion = config_item('migration_version');
         /**
@@ -41,25 +39,34 @@ class Dashboard extends MY_Controller
         }
     }
 
-    public function index()
-    {
+    private function showFrontPage() {
+        /**
+         * @var $frontpage models\Staticpage
+         */
+        try {
+            $frontpage = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode' => 'front_page', 'enabled' => true, 'ispublic' => true));
+        } catch (Exception $e) {
+
+            log_message('error', __METHOD__ . ' ' . $e);
+            show_error('Internal server error', 500);
+        }
+        if ($frontpage !== null) {
+            $data = array(
+                'pcontent' => jaggerTagsReplacer($frontpage->getContent()),
+                'ptitle' => $frontpage->getTitle(),
+            );
+            $this->title = $frontpage->getTitle();
+        }
+        $data['content_view'] = 'staticpages_view';
+        return $this->load->view('page', $data);
+    }
+
+    public function index() {
         if (!$this->jauth->isLoggedIn()) {
-            $data['content_view'] = 'staticpages_view';
             /**
              * @var $frontpage models\Staticpage
              */
-            try {
-                $frontpage = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode' => 'front_page', 'enabled' => true, 'ispublic' => true));
-            } catch (Exception $e) {
-
-                log_message('error', __METHOD__ . ' ' . $e);
-                show_error('Internal server error', 500);
-            }
-            if ($frontpage !== null) {
-                $data['pcontent'] = jaggerTagsReplacer($frontpage->getContent());
-                $data['ptitle'] = $frontpage->getTitle();
-            }
-            return $this->load->view('page', $data);
+            return $this->showFrontPage();
         }
         try {
             $this->load->library('zacl');
@@ -95,7 +102,7 @@ class Dashboard extends MY_Controller
                 $this->session->set_userdata(array('alertnotified' => true));
             }
         }
-        $this->title = lang('dashboard');
+
         $board = $this->session->userdata('board');
         if (!is_array($board)) {
             $curUser = $this->jauth->getLoggedinUsername();
@@ -107,17 +114,20 @@ class Dashboard extends MY_Controller
         }
 
         $bookmarList = $this->genBookmarkList($board);
-        $data['idps'] = $bookmarList['idps'];
-        $data['sps'] = $bookmarList['sps'];
-        $data['feds'] = $bookmarList['feds'];
-        $data['titlepage'] = lang('quick_access');
-        $data['content_view'] = 'default_body';
+        $data2 = array(
+            'idps' => $bookmarList['idps'],
+            'sps' => $bookmarList['sps'],
+            'feds' => $bookmarList['feds'],
+            'titlepage' => lang('quick_access'),
+            'content_view' => 'default_body'
+        );
+        $data = array_merge($data, $data2);
+
         $this->load->view('page', $data);
 
     }
 
-    private function genBookmarkList($board)
-    {
+    private function genBookmarkList($board) {
         $idps = array();
         $sps = array();
         $feds = array();

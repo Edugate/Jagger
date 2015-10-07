@@ -70,23 +70,7 @@ class Statdefs extends MY_Controller
         if (!$hasAccess) {
             return $this->output->set_status_header(403)->set_output('Access denied');
         }
-        $params = array(
-            'defid' => $statDefinition->getId(),
-            'entityid' => $provider->getEntityId(),
-            'url' => $statDefinition->getSourceUrl(),
-            'type' => $statDefinition->getType(),
-            'sysdef' => $statDefinition->getSysDef(),
-            'title' => $statDefinition->getTitle(),
-            'httpmethod' => $statDefinition->getHttpMethod(),
-            'format' => $statDefinition->getFormatType(),
-            'accesstype' => $statDefinition->getAccessType(),
-            'authuser' => $statDefinition->getAuthUser(),
-            'authpass' => $statDefinition->getAuthPass(),
-            'postoptions' => $statDefinition->getPostOptions(),
-            'displayoptions' => $statDefinition->getDisplayOptions(),
-            'overwrite' => $statDefinition->getOverwrite()
-        );
-
+        $params = $statDefinition->toParamArray();
         $gmclient = new GearmanClient();
         $jobservers = array();
         $gearmanConfig = $this->config->item('gearmanconf');

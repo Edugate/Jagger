@@ -107,6 +107,9 @@ class Gworkertemplates
             return false;
         }
         $statid = $params['statid'];
+        /**
+         * @var models\ProviderStatsDef $statDefinition
+         */
         $statDefinition = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $statid));
         if ($statDefinition === null) {
             log_message('error', 'Task scheduler can run stat collector as stadef not found with id:' . $statid);
@@ -117,22 +120,7 @@ class Gworkertemplates
             log_message('error', 'Task scheduler can run stat collector as provider not found for stadefid:' . $statid);
             return false;
         }
-        $result['fparams'] = array(
-            'defid' => $statDefinition->getId(),
-            'entityid' => $provider->getEntityId(),
-            'url' => $statDefinition->getSourceUrl(),
-            'type' => $statDefinition->getType(),
-            'sysdef' => $statDefinition->getSysDef(),
-            'title' => $statDefinition->getTitle(),
-            'httpmethod' => $statDefinition->getHttpMethod(),
-            'format' => $statDefinition->getFormatType(),
-            'accesstype' => $statDefinition->getAccessType(),
-            'authuser' => $statDefinition->getAuthUser(),
-            'authpass' => $statDefinition->getAuthPass(),
-            'postoptions' => $statDefinition->getPostOptions(),
-            'displayoptions' => $statDefinition->getDisplayOptions(),
-            'overwrite' => $statDefinition->getOverwrite()
-        );
+        $result['fparams'] = $statDefinition->toParamArray();
 
 
         if (array_key_exists('type', $result['fparams'])) {
