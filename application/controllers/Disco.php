@@ -156,11 +156,10 @@ class Disco extends MY_Controller
         $inopaq = (count($callArray) === 3 && $callArray['0'] === 'dj' && $callArray['1'] === 'md' && is_numeric($callArray['2']));
         $data = array();
         $decodedEntityId = base64url_decode($entityId);
-        $tmpSPs = new models\Providers;
         /**
          * @var $ent models\Provider
          */
-        $ent = $tmpSPs->getOneSpByEntityId($decodedEntityId);
+        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('entityid'=>$decodedEntityId,'type'=>array('SP','BOTH')));
         if ($ent === null) {
             log_message('warning', 'Failed generating json  for provided entity:' . $decodedEntityId);
 
