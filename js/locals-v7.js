@@ -1439,6 +1439,8 @@ var GINIT = {
 
 $(document).ready(function () {
 
+    var spinner = $('#spinner');
+
     $(window).scroll(function () {
         if ($(this).scrollTop() >= 100) {
             $('#return-to-top').fadeIn(200);
@@ -2096,10 +2098,10 @@ $(document).ready(function () {
             cache: false,
             dataType: "json",
             beforeSend: function () {
-                $("#spinner").show();
+                spinner.show();
             },
             success: function (json) {
-                $("#spinner").hide();
+                spinner.hide();
                 if (json) {
 
                     var attrdefs = json.attrs;
@@ -2158,7 +2160,7 @@ $(document).ready(function () {
                 }
             },
             error: function () {
-                $("#spinner").hide();
+                spinner.hide();
             }
         })
     });
@@ -2191,10 +2193,10 @@ $(document).ready(function () {
                 method: 'GET',
                 dataType: 'json',
                 beforeSend: function () {
-                    $('#spinner').show();
+                    spinner.show();
                 },
                 success: function (data) {
-                    $('#spinner').hide();
+                    spinner.hide();
                     meter.css('width', '100%');
                     var idf;
                     var supplbl;
@@ -2517,7 +2519,7 @@ $(document).ready(function () {
 
                 },
                 error: function (xhr, status, error) {
-                    $("#spinner").hide();
+                    spinner.hide();
                     target.html('<div data-aler class="alert-box alert">' + xhr.responseText + '</div>');
                 }
             });
@@ -3030,7 +3032,7 @@ $(document).ready(function () {
             cache: false,
             dataType: "json",
             success: function (json) {
-                $('#spinner').hide();
+                spinner.hide();
 
                 if (json) {
                     var startTime = new Date();
@@ -3124,10 +3126,10 @@ $(document).ready(function () {
                 }
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinner.show();
             },
             error: function (xhr, status, error) {
-                $('#spinner').hide();
+                spinner.hide();
                 var alerthtml = '<div class="small-12 medium-11 columns small-centered"><div data-alert class="alert-box error">' + error + '</div></div>';
                 matrixdiv.html(alerthtml);
                 return false;
@@ -3283,8 +3285,7 @@ $(document).ready(function () {
             dataType: "json",
             value: $('table.fedistpercat'),
             success: function (data) {
-                $('#spinner').hide();
-
+                spinner.hide();
                 if (!data) {
                     window.alert('no data in federation category');
                 }
@@ -3315,7 +3316,7 @@ $(document).ready(function () {
             dataType: "json",
             value: value,
             success: function (data) {
-                $('#spinner').hide();
+                spinner.hide();
                 if (!data) {
                     window.alert('no data in federation category');
                 }
@@ -3329,15 +3330,44 @@ $(document).ready(function () {
 
             },
             beforeSend: function () {
-                $('#spinner').show();
+               spinner.show();
             },
             error: function () {
-                $('#spinner').hide();
+               spinner.hide();
                 window.alert('problem with loading data');
             }
         }).done(function () {
             var nextrow = value.html();
             //$("table.fedistpercat").append(nextrow);
+        });
+        return false;
+    });
+
+
+    $(".userlogout").on('click', function (e) {
+        var baseurl = $("[name='baseurl']").val();
+        var addtitionalLogout = $(this).attr('jagger-data-logout');
+        var url = $(this).attr('href');
+
+        var redirecturl = baseurl;
+        if (baseurl === null) {
+            redirecturl = url;
+        }
+        if (addtitionalLogout !== null && addtitionalLogout !== '') {
+            $.ajax({
+                'type': 'GET',
+                'url': addtitionalLogout,
+                'cache': false,
+            });
+        }
+        $.ajax({
+            'type': 'GET',
+            'url': url,
+            'cache': false,
+            success: function () {
+                window.location.href = redirecturl;
+            }
+
         });
         return false;
     });
@@ -4784,33 +4814,7 @@ $(document).on('click', 'a.updateprefs', function (e) {
 $(".select2").select2();
 $("#itestcombo").select2();
 
-$(".userlogout").on('click', function (e) {
-    var baseurl = $("[name='baseurl']").val();
-    var addtitionalLogout = $(this).attr('jagger-data-logout');
-    var url = $(this).attr('href');
 
-    var redirecturl = baseurl;
-    if (baseurl === null) {
-        redirecturl = url;
-    }
-    if (addtitionalLogout !== null && addtitionalLogout !== '') {
-        $.ajax({
-            'type': 'GET',
-            'url': addtitionalLogout,
-            'cache': false,
-        });
-    }
-    $.ajax({
-        'type': 'GET',
-        'url': url,
-        'cache': false,
-        success: function () {
-            window.location.href = redirecturl;
-        }
-
-    });
-    return false;
-});
 
 
 
