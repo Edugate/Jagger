@@ -1894,19 +1894,21 @@ class Formelement
         // BEGIN IDPSSO PART
         $enid = 0;
 
-        $ipHints = array();
-        $domainHints = array();
-        $geo = array();
+        $dataByBlocks = array(
+            'ip'     => array(),
+            'domain' => array(),
+            'geo'    => array()
+        );
         if ($sessform) {
 
             if (isset($ses['uii']['idpsso']['iphint']) && is_array($ses['uii']['idpsso']['iphint'])) {
-                $ipHints = $ses['uii']['idpsso']['iphint'];
+                $dataByBlocks['ip'] = $ses['uii']['idpsso']['iphint'];
             }
             if (isset($ses['uii']['idpsso']['domainhint']) && is_array($ses['uii']['idpsso']['domainhint'])) {
-                $domainHints = $ses['uii']['idpsso']['domainhint'];
+                $dataByBlocks['domain'] = $ses['uii']['idpsso']['domainhint'];
             }
             if (isset($ses['uii']['idpsso']['geo']) && is_array($ses['uii']['idpsso']['geo'])) {
-                $geo = $ses['uii']['idpsso']['geo'];
+                $dataByBlocks['geo'] = $ses['uii']['idpsso']['geo'];
             }
         } else {
             foreach ($extendMetadata as $e) {
@@ -1920,15 +1922,15 @@ class Formelement
                     $eelement = $e->getElement();
                     $evalue = $e->getEvalue();
                     if (strcasecmp($eelement, 'IPHint') == 0) {
-                        $ipHints['' . $eid . ''] = trim($evalue);
+                       $dataByBlocks['ip']['' . $eid . ''] = trim($evalue);
                         continue;
                     }
                     if (strcasecmp($eelement, 'DomainHint') == 0) {
-                        $domainHints['' . $eid . ''] = trim($evalue);
+                        $dataByBlocks['domain']['' . $eid . ''] = trim($evalue);
                         continue;
                     }
                     if (strcasecmp($eelement, 'GeolocationHint') == 0) {
-                        $geo['' . $eid . ''] = trim($evalue);
+                        $dataByBlocks['geo']['' . $eid . ''] = trim($evalue);
                         continue;
                     }
                 }
@@ -1937,7 +1939,7 @@ class Formelement
 
         // start domainHintBlock
         $domainHintBlock = '';
-        foreach ($domainHints as $k => $v) {
+        foreach ($dataByBlocks['domain'] as $k => $v) {
             $domainHintBlock .= '<div class="small-12 columns">' .
                 $this->_generateLangInputWithRemove('Domain Hint', 'f[uii][idpsso][domainhint][' . $k . ']', 'uiiidpssodomainhint', '' . $k . '', set_value('f[uii][idpsso][domainhint][' . $k . ']', $v, false), '') .
                 '</div>';
@@ -1948,11 +1950,10 @@ class Formelement
         // end domainHintBlock
         // start ipHintBlock
         $ipHintBlock = '';
-        foreach ($ipHints as $k => $v) {
+        foreach ($dataByBlocks['ip'] as $k => $v) {
 
             $ipHintBlock .= '<div class="small-12 columns">' .
-                $this->_generateLangInputWithRemove(
-                    'IP Hint', 'f[uii][idpsso][iphint][' . $k . ']', 'uiiidpssoiphint', '' . $k . '', set_value('f[uii][idpsso][iphint][' . $k . ']', $v), '') .
+                $this->_generateLangInputWithRemove('IP Hint', 'f[uii][idpsso][iphint][' . $k . ']', 'uiiidpssoiphint', '' . $k . '', set_value('f[uii][idpsso][iphint][' . $k . ']', $v), '') .
                 '</div>';
         }
         $ipHintBlock .= '<div class="small-12 columns">' .
@@ -1964,7 +1965,7 @@ class Formelement
 
         // start geolocation
         $geosinputs = '';
-        foreach ($geo as $k => $g) {
+        foreach ($dataByBlocks['geo'] as $k => $g) {
             $geosinputs .= '<div class="small-12 column collapse georow"><div class="small-11 column"><input name="f[uii][idpsso][geo][' . $k . ']" type="text" value="' . html_escape($g) . '" readonly="readonly"></div><div class="small-1 column"><a href="#" class="rmgeo"><i class="fi-trash alert" style="color: red"></i></a></div></div>';
         }
 
