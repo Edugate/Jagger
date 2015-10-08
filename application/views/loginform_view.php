@@ -65,14 +65,18 @@ if ($fedenabled || $oidcEnabled) {
     echo '<div class="large-6 columns end">';
     if ($fedenabled) {
 
-        echo '<div class="small-12 columns end text-center"><a href="' . $shib_url . '" id="fedlogin" class="button small">' . html_escape($fedloginbtn) . '</a></div>';
+        echo '<div class="small-12 columns end text-center"><a href="' . $shib_url . '" id="fedlogin" class="button small fedlogin"><span></span>' . html_escape($fedloginbtn) . '</a></div>';
 
     }
     if ($oidcEnabled) {
         echo '<div class="small-12 columns end text-center"><h4 class="loginheader small-12 columns end text-center">OpenId Connect</h4></div>';
         echo '<div class="small-12 columns end text-center">';
         foreach($oidcOps as $key => $oidcOp){
-            echo '<a href="'.base_url('oidcauth/authn').'" class="oidclink tiny button" data-jagger-oidc="'.$key.'">'.$oidcOp['name'].'</a>';
+            $btnClass = '';
+            if(array_key_exists('btnclass',$oidcOp)){
+                $btnClass = $oidcOp['btnclass'];
+            }
+            echo '<a href="'.base_url('oidcauth/authn').'" class="button oidclink tiny split '.$btnClass.'" data-jagger-oidc="'.$key.'"><span></span>'.$oidcOp['name'].'</a>';
         }
         echo '</div>';
 
