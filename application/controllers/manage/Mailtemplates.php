@@ -83,7 +83,7 @@ class Mailtemplates extends MY_Controller
                 'msgenabled' => $mTemplate->isEnabled(),
                 'msgdefault' => $mTemplate->isDefault(),
                 'msgattach' => $mTemplate->isAlwaysAttached(),
-                'newtmpl' => FALSE,
+                'newtmpl' => false,
                 'success' => lang('msgtmplupdated'),
                 'titlepage' => lang('title_mailtmpledit'),
             );
