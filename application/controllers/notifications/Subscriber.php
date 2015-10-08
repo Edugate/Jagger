@@ -89,7 +89,11 @@ class Subscriber extends MY_Controller
      * @return \models\User
      * @throws Exception
      */
-    private function getSubscriberOwner($username){
+    private function getSubscriberOwner($encodedusername = null){
+        if($encodedusername === null){
+            throw new Exception('missing username');
+        }
+        $username = base64url_decode($encodedusername);
         $loggeduser = $this->jauth->getLoggedinUsername();
         $isAdmin = $this->jauth->isAdministrator();
         if ($isAdmin !== true && strcasecmp($username, $loggeduser) != 0) {
@@ -108,22 +112,16 @@ class Subscriber extends MY_Controller
     }
 
     public function mysubscriptions($encodeduser = null) {
-        if ($encodeduser === null) {
-            show_error('not found', 404);
-        }
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
-        $decodeduser = base64url_decode($encodeduser);
-
         try {
-            $subscribtionOwner = $this->getSubscriberOwner($decodeduser);
+            $subscribtionOwner = $this->getSubscriberOwner($encodeduser);
         }
         catch(Exception $e){
             show_error(403, $e->getMessage());
         }
-
         $data = array(
             'encodeduser' => $encodeduser,
             'subscriber' => array(
@@ -137,16 +135,15 @@ class Subscriber extends MY_Controller
 
 
         $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
+        $data['breadcrumbs'] = array(
+            array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
+            array('url' => base_url('manage/users/show/' . $encodeduser . ''), 'name' => html_escape($subscribtionOwner->getUsername()),),
+            array('url' => base_url('#'), 'name' => lang('title_usersubscriptions'), 'type' => 'current')
+        );
         if (!$accessListUsers) {
             $data['breadcrumbs'] = array(
                 array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist'), 'type' => 'unavailable'),
                 array('url' => base_url('manage/users/show/' . $encodeduser . ''), 'name' => html_escape($subscribtionOwner->getUsername())),
-                array('url' => base_url('#'), 'name' => lang('title_usersubscriptions'), 'type' => 'current')
-            );
-        } else {
-            $data['breadcrumbs'] = array(
-                array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
-                array('url' => base_url('manage/users/show/' . $encodeduser . ''), 'name' => html_escape($subscribtionOwner->getUsername()),),
                 array('url' => base_url('#'), 'name' => lang('title_usersubscriptions'), 'type' => 'current')
             );
         }
