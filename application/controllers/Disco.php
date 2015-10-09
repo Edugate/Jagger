@@ -168,7 +168,7 @@ class Disco extends MY_Controller
         }
 
         $result = $this->j_ncache->getCircleDisco($ent->getId());
-        if ($result === null) {
+        if (empty($result)) {
             $overwayf = $ent->getWayfList();
             $white = false;
 
