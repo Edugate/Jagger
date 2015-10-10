@@ -42,11 +42,10 @@ class Gworkertemplates
 
         if (strcasecmp($templateName, 'metadatasigner') == 0) {
             return $this->metadatasigner($params);
-
-        } elseif (strcasecmp($templateName, 'statcollector') == 0) {
+        }
+        if (strcasecmp($templateName, 'statcollector') == 0) {
             return $this->statcollector($params);
         }
-
         return null;
 
     }

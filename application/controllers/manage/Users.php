@@ -269,6 +269,9 @@ class Users extends MY_Controller
             return $this->load->view('page', array('error' => lang('error403'), 'content_view' => 'nopermission'));
         }
         $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
+
+
+
         $breadcrumbs = array(
             array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
             array('url' => base_url('#'), 'name' => html_escape($user->getUsername()), 'type' => 'current')
@@ -321,6 +324,7 @@ class Users extends MY_Controller
             $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext);
         }
 
+
         $bookmarks = $this->getBookmarks($user);
         $tab2[] = array('key' => lang('rr_bookmarked'), 'val' => implode('', $bookmarks));
 
@@ -328,7 +332,7 @@ class Users extends MY_Controller
         $tab3[] = array('data' => array('data' => lang('authnlogs') . ' - ' . lang('rr_lastrecent') . ' ' . $limitAuthnRows, 'class' => 'highlight', 'colspan' => 2));
 
         /**
-         * @var $authnLogs models\Tracker[]
+         * @var models\Tracker[] $authnLogs
          */
         $authnLogs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'), $limitAuthnRows);
         foreach ($authnLogs as $ath) {

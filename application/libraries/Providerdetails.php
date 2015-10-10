@@ -1354,7 +1354,7 @@ class Providerdetails
         }
         $d[++$i]['name'] = '';
         if ($hasManageAccess) {
-            $d[$i]['value'] = lang('rr_displayaccess') . anchor(base_url() . 'manage/access_manage/entity/' . $id, '<i class="fi-arrow-right"></i>');
+            $d[$i]['value'] = lang('rr_displayaccess') . anchor(base_url() . 'manage/accessmanage/entity/' . $id, '<i class="fi-arrow-right"></i>');
         } else {
             $d[$i]['value'] = lang('rr_displayaccess') . '';
         }

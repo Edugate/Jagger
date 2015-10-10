@@ -13,12 +13,12 @@ if (!defined('BASEPATH')) {
  */
 
 /**
- * Access_manage Class
+ * Accessmanage Class
  * 
  * @package     RR3
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
-class Access_manage extends MY_Controller {
+class Accessmanage extends MY_Controller {
 
     public function __construct()
     {
@@ -160,7 +160,7 @@ class Access_manage extends MY_Controller {
             }
             else
             {
-                log_message('error', 'access_manage: incorrect submit:' . $submited);
+                log_message('error', 'accessmanage: incorrect submit:' . $submited);
             }
         }
         else
@@ -344,7 +344,7 @@ class Access_manage extends MY_Controller {
             }
             else
             {
-                log_message('error', 'access_manage: incorrect submit:' . $submited);
+                log_message('error', 'accessmanage: incorrect submit:' . $submited);
             }
         }
         else

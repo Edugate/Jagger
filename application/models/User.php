@@ -147,12 +147,10 @@ class User
         return $this;
     }
 
+
     /**
-     * Encrypt the password before we store it
-     *
-     * @access    public
-     * @param    string $password
-     * @return    void
+     * @param $password
+     * @return $this
      */
     public function setPassword($password)
     {
@@ -168,12 +166,8 @@ class User
 
 
     /**
-     * Encrypt a Password
-     *
-     * @static
-     * @access    public
-     * @param    string $password
-     * @return    void
+     * @param $password
+     * @return string
      */
     public function encryptPassword($password)
     {
@@ -371,8 +365,7 @@ class User
         if (empty($pref) || !is_array($pref)) {
             $pref = array();
         } else {
-            unset($pref['board']['idp'][$id]);
-            unset($pref['board']['sp'][$id]);
+            unset($pref['board']['sp'][$id],$pref['board']['idp'][$id] );
         }
         $this->setUserpref($pref);
     }
@@ -445,10 +438,10 @@ class User
 
     }
 
-    public function setSecondFactor($f = null)
+    public function setSecondFactor($sFactorName = null)
     {
-        if (!empty($f) && strcmp($f, 'duo') == 0) {
-            $factor = $f;
+        if (!empty($sFactorName) && strcmp($sFactorName, 'duo') == 0) {
+            $factor = $sFactorName;
         } else {
             $factor = null;
         }
@@ -479,7 +472,7 @@ class User
      */
     public function updated()
     {
-        $this->lastlogin = new \DateTime("now", new \DateTimeZone('UTC'));
+        $this->lastlogin = new \DateTime('now', new \DateTimeZone('UTC'));
     }
 
     public function getId()
@@ -494,7 +487,7 @@ class User
 
     public function getFullname()
     {
-        $fullname = $this->givenname . " " . $this->surname;
+        $fullname = $this->givenname . ' ' . $this->surname;
         return $fullname;
     }
 
