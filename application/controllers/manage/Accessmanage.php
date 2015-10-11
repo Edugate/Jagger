@@ -20,16 +20,13 @@ if (!defined('BASEPATH')) {
  */
 class Accessmanage extends MY_Controller {
 
+    protected $tmpProviders;
+
     public function __construct()
     {
         parent::__construct();
-        $loggedin = $this->jauth->isLoggedIn();
-        $this->current_site = current_url();
-        if (!$loggedin)
-        {
-            redirect('auth/login', 'location');
-        }
-        $this->tmp_providers = new models\Providers;
+
+        $this->tmpProviders = new models\Providers;
         $this->load->helper('form');
     }
 
@@ -49,13 +46,57 @@ class Accessmanage extends MY_Controller {
         return $form;
     }
 
+    public function getusersrights($resourceType=null,$resourceId=null){
+        if (!in_array($resourceType, array('federation','entity'), true)|| !ctype_digit($resourceId) || !$this->jauth->isLoggedIn())
+        {
+            return $this->output->set_header(403)->set_output('Access denied');
+        }
+        $this->load->library('zacl');
+        if($resourceType === 'federation'){
+            /**
+             * @var models\Federation $resource
+             */
+            $resource = $this->em->getRepository('models\Federation')->findOneBy(array('id' => $resourceId));
+            $group = 'federation';
+            $prefixId = 'f_';
+
+        }
+        else {
+            /**
+             * @var models\Provider $resource
+             */
+            $resource = $this->em->getRepository('models\Provider')->findOneBy(array('id'=> $resourceId));
+            $group = '';
+            $prefixId = '';
+        }
+        if($resource === null){
+            return $this->output->set_header(404)->set_output('Resource not found');
+        }
+        $hasManageAccess = $this->zacl->check_acl(''.$prefixId . $resource->getId(), 'manage', $group, '');
+        if(!$hasManageAccess){
+            return $this->output->set_header(403)->set_output('Access denied');
+        }
+
+        /**
+         * @var models\User[] $users
+         */
+        $users = $this->em->getRepository('models\Users')->findAll();
+
+
+
+    }
+
     public function entity($id)
     {
+        if (!$this->jauth->isLoggedIn())
+        {
+            redirect('auth/login', 'location');
+        }
 
         /**
          * @var $ent models\Provider
          */
-        $ent = $this->tmp_providers->getOneById($id);
+        $ent = $this->tmpProviders->getOneById($id);
         if ($ent === null)
         {
             show_error(lang('rerror_providernotexist'), 404);
@@ -269,25 +310,29 @@ class Accessmanage extends MY_Controller {
 
     public function federation($id)
     {
+        if (!$this->jauth->isLoggedIn())
+        {
+            redirect('auth/login', 'location');
+        }
         $this->load->library('zacl');
         /**
-         * @var models\Federation $fed
+         * @var models\Federation $federation
          */
-        $fed = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $id));
-        if ($fed === null)
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $id));
+        if ($federation === null)
         {
             show_error(lang('error_fednotfound'), 404);
         }
-        $fedurl= base64url_encode($fed->getName());
+        $fedurl= base64url_encode($federation->getName());
         $data['breadcrumbs'] = array(
             array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
-            array('url' => base_url('federations/manage/show/'.$fedurl.''), 'name' => '' . $fed->getName() . ''),
+            array('url' => base_url('federations/manage/show/'.$fedurl.''), 'name' => '' . $federation->getName() . ''),
             array('url'=>'#','type'=>'current','name'=>lang('rr_accessmngmt'))
 
         );
 
         $group = 'federation';
-        $has_manage_access = $this->zacl->check_acl('f_' . $fed->getId(), 'manage', $group, '');
+        $has_manage_access = $this->zacl->check_acl('f_' . $federation->getId(), 'manage', $group, '');
         if (!$has_manage_access)
         {
             show_error(lang('rerror_noperm_mngperm'), 403);
@@ -298,7 +343,7 @@ class Accessmanage extends MY_Controller {
             log_message('debug', 'change access submited');
             if ($submited === 'deny')
             {
-                $fresource = 'f_' . $fed->getId();
+                $fresource = 'f_' . $federation->getId();
                 $action = $this->input->post('action');
                 $user = $this->input->post('user');
                 $resource_type = 'federation';
@@ -321,7 +366,7 @@ class Accessmanage extends MY_Controller {
             }
             elseif ($submited === 'allow')
             {
-                $fresource = 'f_' . $fed->getId();
+                $fresource = 'f_' . $federation->getId();
                 $action = $this->input->post('action');
                 $user = $this->input->post('user');
                 $resource_type = 'federation';
@@ -359,7 +404,7 @@ class Accessmanage extends MY_Controller {
         $users_array = array();
         $users_objects = array();
         $actions = array('read', 'write', 'manage');
-        $id_of_fed = 'f_' . $fed->getId();
+        $id_of_fed = 'f_' . $federation->getId();
         foreach ($tmp_users as $u)
         {
             $users_objects[$u->getUsername()] = $u;
@@ -427,8 +472,8 @@ class Accessmanage extends MY_Controller {
             }
             $i++;
         }
-        $data['fedlink'] = base_url() . 'federations/manage/show/' . base64url_encode($fed->getName());
-        $data['resourcename'] = $fed->getName();
+        $data['fedlink'] = base_url() . 'federations/manage/show/' . base64url_encode($federation->getName());
+        $data['resourcename'] = $federation->getName();
         $data['row'] = $row;
         $data['titlepage'] = lang('rr_federation') . ' ' . lang('rr_accessmngmt') . ': ' . anchor($data['fedlink'], $data['resourcename']);
         $data['readlegend'] = lang('fedaclreadinfo');
