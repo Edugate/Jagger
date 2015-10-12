@@ -1455,6 +1455,78 @@ $(document).ready(function () {
     });
 
     GINIT.initialize();
+//
+
+
+    var accessmngmtDiv = $('#accessmngmt');
+    var accessmngmtForm;
+    if(accessmngmtDiv.length){
+        accessmngmtForm = accessmngmtDiv.closest('form');
+        var dataLink = accessmngmtDiv.attr('data-jagger-jsource');
+
+        $.ajax({
+            type: 'GET',
+            url: dataLink,
+            dataTypa: 'json',
+            beforeSend: function () {
+                spinner.show();
+            },
+            success: function (json) {
+                var dictAllow = json.definitions.dictionary.allow;
+                var dictDeny = json.definitions.dictionary.deny;
+                var dictHasAccess = json.definitions.dictionary.hasaccess;
+                var dictHasAccess = json.definitions.dictionary.hasaccess;
+                var dictHasNoAccess = json.definitions.dictionary.hasnoaccess;
+
+                spinner.hide();
+                var tbl = [];
+                tbl.push('<table><thead><tr><th>username</th>');
+                $.each(json.definitions.actions, function(a, action){
+                   tbl.push('<th>'+action+'</th>');
+                });
+                tbl.push('</tr></thead>');
+                tbl.push('<tbody>');
+
+                $.each(json.data, function(k,d){
+                    tbl.push('<tr>');
+                    tbl.push('<td>'+k+' ('+ d.fullname+')</td>');
+                    $.each(json.definitions.actions, function(a, action){
+                        if(d.perms[action] === true){
+                            tbl.push('<td>'+dictHasAccess+' <div><button class="resetbutton deleteicon tiny alert" value="'+k+'|'+action+'|deny" name="changeaccess" type="submit">'+dictDeny+'</button></div></td>');
+                        }
+                        else{
+                            tbl.push('<td>'+dictHasNoAccess+' <div><button class="tiny" value="'+k+'|'+action+'|allow" name="changeaccess" type="submit">'+dictAllow+'</button></div></td>');
+                        }
+                    });
+
+                    tbl.push('</tr>');
+                });
+
+                tbl.push('</tbody>');
+                tbl.push('</table>');
+
+                var tblHtml = tbl.join('');
+                accessmngmtDiv.html(tblHtml);
+
+            },
+            error: function(){
+                spinner.hide();
+            }
+        });
+
+
+
+        accessmngmtForm.on('click','button', function(e){
+         //   e.preventDefault();
+            var serializedData = accessmngmtForm.serializeArray();
+            console.log(serializedData);
+            alert($(this).val());
+            return false;
+        });
+
+
+
+    }
 
 
 // idp/sp editform

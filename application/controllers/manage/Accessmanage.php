@@ -54,7 +54,7 @@ class Accessmanage extends MY_Controller
             $resource = $this->em->getRepository('models\Federation')->findOneBy(array('id' => $resourceId));
             $group = 'federation';
             $prefixId = 'f_';
-            $actions = array('read','write','manage','approve');
+            $actions = array('read', 'write', 'manage', 'approve');
 
         } else {
             /**
@@ -63,7 +63,7 @@ class Accessmanage extends MY_Controller
             $resource = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $resourceId));
             $group = 'entity';
             $prefixId = '';
-            $actions = array('read','write','manage');
+            $actions = array('read', 'write', 'manage');
         }
         if ($resource === null) {
             return $this->output->set_header(404)->set_output('Resource not found');
@@ -73,7 +73,7 @@ class Accessmanage extends MY_Controller
             return $this->output->set_header(403)->set_output('Access denied');
         }
 
-        $result = array();
+        $result = array('definitions'=>array('actions'=>$actions,'dictionary'=>array('allow'=>'allow','deny'=>'deny','hasaccess'=>lang('rr_hasaccess'),'hasnoaccess'=>lang('rr_hasnoaccess'))));
 
         /**
          * @var models\User[] $users
@@ -81,25 +81,60 @@ class Accessmanage extends MY_Controller
          */
         $users = $this->em->getRepository('models\User')->findAll();
 
-        foreach($users as $user){
-            $result['data'][$user->getUsername()]= array('isadmin' => false, 'fullname'=>$user->getFullname(),'email'=>$user->getEmail());
-            foreach($actions as $action){
-                $result['data'][$user->getUsername()]['perms'][$action] =  $this->zacl->check_acl_for_user($prefixId.$resourceId, $action, $user->getUsername(), $group);
+        foreach ($users as $user) {
+            $result['data'][$user->getUsername()] = array('isadmin' => false, 'fullname' => $user->getFullname(), 'email' => $user->getEmail());
+            foreach ($actions as $action) {
+                $result['data'][$user->getUsername()]['perms'][$action] = $this->zacl->check_acl_for_user($prefixId . $resourceId, $action, $user->getUsername(), $group);
             }
         }
         $adminRole = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator'));
         $admins = $adminRole->getMembers();
 
-        foreach($admins as $admin){
-            $result['admins'][] = $admin->getUsername();
+        foreach ($admins as $admin) {
+           // $result['admins'][] = $admin->getUsername();
             $adminUsername = $admin->getUsername();
-            if(array_key_exists($adminUsername,$result['data'])){
-                $result['data'][''.$adminUsername.'']['isadmin'] = true;
+            if (array_key_exists($adminUsername, $result['data'])) {
+                $result['data']['' . $adminUsername . '']['isadmin'] = true;
             }
 
         }
 
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
+
+
+    }
+
+
+    public function entity2($id) {
+        if (!$this->jauth->isLoggedIn()) {
+            redirect('auth/login', 'location');
+        }
+        /**
+         * @var models\Provider $ent
+         */
+        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id'=>$id));
+        if($ent === null){
+            show_error(lang('rerror_providernotexist'), 404);
+        }
+        $myLang = MY_Controller::getLang();
+        $data['resourcename'] = $ent->getNameToWebInLang($myLang);
+        if (strcasecmp($ent->getType(), 'SP') == 0) {
+            $plist = array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders'));
+        } else {
+            $plist = array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders'));
+        }
+        $data['breadcrumbs'] = array(
+            $plist,
+            array('url' => base_url('providers/detail/show/' . $ent->getId() . ''), 'name' => '' . html_escape($data['resourcename']) . ''),
+            array('url' => '#', 'name' => lang('rr_accessmngmt'), 'type' => 'current'),
+        );
+
+        $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $ent->getId() . '">' . $data['resourcename'] . '</a>';
+        $data['subtitlepage'] = lang('rr_accessmngmt');
+        $data['resourcetype'] = 'entity';
+        $data['resourceid'] = $id;
+        $data['content_view'] = 'manage/accessmanage_view';
+        $this->load->view('page',$data);
 
 
     }
