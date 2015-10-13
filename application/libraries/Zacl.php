@@ -10,7 +10,6 @@ if (!defined('BASEPATH')) {
  * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
-
 class Zacl
 {
 
@@ -58,8 +57,8 @@ class Zacl
          * @var models\User $loggedinUser
          */
         $loggedinUser = $this->em->getRepository("models\User")->findOneBy(array('username' => $loggedinUsername));
-        if($loggedinUser === null){
-            log_message('error',__METHOD__.' Loggedin username: '.$loggedinUsername.' not found in user table');
+        if ($loggedinUser === null) {
+            log_message('error', __METHOD__ . ' Loggedin username: ' . $loggedinUsername . ' not found in user table');
             throw new \Exception('User not found');
         }
 
@@ -68,6 +67,7 @@ class Zacl
          */
         $loggedinUserRoles = $loggedinUser->getRoles();
 
+
         $my_roles_array = array('system' => array(), 'group' => array(), 'user' => array());
         if (!empty($loggedinUserRoles)) {
             foreach ($loggedinUserRoles as $p) {
@@ -75,13 +75,24 @@ class Zacl
                 $my_roles_array[$type][] = $p->getName();
             }
         }
+        $isAdmin = array_search('Administrator',$my_roles_array['system']);
+
+        if (in_array('Administrator', $my_roles_array['system'], true)) {
+
+            $isAdmin = true;
+        }
         $parents = array();
-        foreach($my_roles_array as $groupRoles){
-            foreach($groupRoles as $krole){
-                 $parents[] = $krole;
+        foreach ($my_roles_array as $groupRoles) {
+            foreach ($groupRoles as $krole) {
+                $parents[] = $krole;
             }
         }
 
+        if($isAdmin){
+            $kad = array_search('Administrator',$parents);
+            unset($parents[$kad]);
+            $parents[] = 'Administrator';
+        }
         if (count($parents) > 0) {
             $this->acl->addRole('current_user', $parents);
         } else {
@@ -181,11 +192,23 @@ class Zacl
                 $my_roles_array[$type][] = $p->getName();
             }
         }
+       $isAdmin = array_search('Administrator',$my_roles_array['system']);
+
+        if (in_array('Administrator', $my_roles_array['system'], true)) {
+
+            $isAdmin = true;
+        }
         $parents = array();
-        foreach($my_roles_array as $roleGroup){
-            foreach($roleGroup as $krole){
+        foreach ($my_roles_array as $roleGroup) {
+            foreach ($roleGroup as $krole) {
                 $parents[] = $krole;
             }
+        }
+
+        if($isAdmin){
+            $kad = array_search('Administrator',$parents);
+            unset($parents[$kad]);
+            $parents[] = 'Administrator';
         }
         if (count($parents) > 0) {
             $this->acl->addRole('selected_user', $parents);
@@ -351,7 +374,7 @@ class Zacl
 
         $roles = $s_user->getRoles();
         if (count($roles) > 0) {
-            log_message('debug', 'number of roles is: ' .count($roles));
+            log_message('debug', 'number of roles is: ' . count($roles));
             foreach ($roles as $r) {
                 $type = $r->getType();
                 $role_name = $r->getName();
