@@ -75,7 +75,7 @@ class Zacl
                 $my_roles_array[$type][] = $p->getName();
             }
         }
-        $isAdmin = array_search('Administrator',$my_roles_array['system']);
+        $isAdmin = array_search('Administrator', $my_roles_array['system']);
 
         if (in_array('Administrator', $my_roles_array['system'], true)) {
 
@@ -88,8 +88,8 @@ class Zacl
             }
         }
 
-        if($isAdmin){
-            $kad = array_search('Administrator',$parents);
+        if ($isAdmin) {
+            $kad = array_search('Administrator', $parents);
             unset($parents[$kad]);
             $parents[] = 'Administrator';
         }
@@ -177,12 +177,8 @@ class Zacl
     }
 
     private function check_user_acl($resource, $action, $user, $group) {
-        if (!$user instanceof models\User) {
-            $s_user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user));
-        } else {
-            $s_user = $user;
-        }
-        if (!empty($s_user)) {
+        $s_user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user));
+        if ($s_user !== null) {
             $user_roles = $s_user->getRoles();
         }
         $my_roles_array = array('system' => array(), 'group' => array(), 'user' => array());
@@ -192,7 +188,7 @@ class Zacl
                 $my_roles_array[$type][] = $p->getName();
             }
         }
-       $isAdmin = array_search('Administrator',$my_roles_array['system']);
+        $isAdmin = array_search('Administrator', $my_roles_array['system']);
 
         if (in_array('Administrator', $my_roles_array['system'], true)) {
 
@@ -205,8 +201,8 @@ class Zacl
             }
         }
 
-        if($isAdmin){
-            $kad = array_search('Administrator',$parents);
+        if ($isAdmin) {
+            $kad = array_search('Administrator', $parents);
             unset($parents[$kad]);
             $parents[] = 'Administrator';
         }
