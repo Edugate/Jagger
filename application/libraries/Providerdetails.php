@@ -506,7 +506,7 @@ class Providerdetails
         $d[$i]['value'] = '<b>' . date('Y-m-d H:i:s', $ent->getLastModified()->format('U') + jauth::$timeOffset) . '</b>';
         $entityIdRecord = array('name' => lang('rr_entityid'), 'value' => $ent->getEntityId());
         $d[++$i] = &$entityIdRecord;
-        $d[++$i] = array('name' => lang('rr_entityid'), 'value' => $ent->getEntityId());
+
 
 
         $d[++$i]['name'] = lang('e_orgname');
