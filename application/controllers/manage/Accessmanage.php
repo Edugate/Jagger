@@ -210,7 +210,6 @@ class Accessmanage extends MY_Controller
         $admins = $adminRole->getMembers();
 
         foreach ($admins as $admin) {
-            // $result['admins'][] = $admin->getUsername();
             $adminUsername = $admin->getUsername();
             if (array_key_exists($adminUsername, $result['data'])) {
                 $result['data']['' . $adminUsername . '']['isadmin'] = true;
