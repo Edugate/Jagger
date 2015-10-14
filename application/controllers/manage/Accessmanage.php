@@ -30,19 +30,7 @@ class Accessmanage extends MY_Controller
         $this->load->helper('form');
         $this->load->library('form_validation');
     }
-
-    private function displayFormChng($access, $user, $action) {
-
-        $form = '<div class="permset">' . form_open() . form_hidden('user', $user) . form_hidden('action', $action);
-        if ($access === 'allow') {
-            $form .= '<button type="submit" name="change_access"  value="' . $access . '" class="addbutton addicon button tiny">' . lang('btn_allow') . '</button>';
-        } else {
-            $form .= '<button  type="submit" name="change_access"  value="' . $access . '"  class="resetbutton deleteicon button tiny alert">' . lang('btn_deny') . '</button>';
-        }
-        $form .= form_close() . '</div>';
-
-        return $form;
-    }
+    
 
     private function prepareResourceData($resourceType = null, $resourceId = null) {
         if (!in_array($resourceType, array('federation', 'entity'), true) || !ctype_digit($resourceId) || !$this->jauth->isLoggedIn()) {
@@ -89,8 +77,7 @@ class Accessmanage extends MY_Controller
                     $this->em->persist($aclResource);
                     $this->em->flush();
                 }
-            }
-            else{
+            } else {
                 throw new Exception('Cannot manage access to external entity.');
             }
         }
@@ -135,6 +122,9 @@ class Accessmanage extends MY_Controller
         if (count($extractedData) !== 3 || !in_array($extractedData[1], $resourceData['actions'], true)) {
             return $this->output->set_status_header(403)->set_output('Invalid data in post');
         }
+        if ($extractedData[1] === 'approve' && !$this->jauth->isAdministrator()) {
+            return $this->output->set_status_header(403)->set_output('Not sufficient right to change access');
+        }
 
         /**
          * @var models\User $user
@@ -169,6 +159,9 @@ class Accessmanage extends MY_Controller
             $this->zacl->add_access_toUser($resource, 'read', $username, $group, $resourcetype);
         } elseif ($action === 'read') {
             $this->zacl->add_access_toUser($resource, 'read', $username, $group, $resourcetype);
+        } elseif ($action === 'approve') {
+            $this->zacl->add_access_toUser($resource, 'read', $username, $group, $resourcetype);
+            $this->zacl->add_access_toUser($resource, 'approve', $username, $group, $resourcetype);
         } else {
             return false;
         }
@@ -184,10 +177,12 @@ class Accessmanage extends MY_Controller
             $this->zacl->deny_access_fromUser($resource, 'manage', $username, $group, $resourcetype);
             $this->zacl->deny_access_fromUser($resource, 'write', $username, $group, $resourcetype);
         } elseif ($action === 'read') {
-
             $this->zacl->deny_access_fromUser($resource, 'manage', $username, $group, $resourcetype);
             $this->zacl->deny_access_fromUser($resource, 'write', $username, $group, $resourcetype);
             $this->zacl->deny_access_fromUser($resource, 'read', $username, $group, $resourcetype);
+        } elseif ($action === 'approve') {
+
+            $this->zacl->deny_access_fromUser($resource, 'approve', $username, $group, $resourcetype);
         } else {
             return false;
         }
@@ -205,7 +200,7 @@ class Accessmanage extends MY_Controller
             return $this->output->set_status_header(403)->set_output(html_escape($e->getMessage()));
         }
 
-        $result = array('definitions' => array('actions' => $resourceData['actions'], 'dictionary' => array('allow' => 'allow', 'deny' => 'deny', 'hasaccess' => lang('rr_hasaccess'), 'hasnoaccess' => lang('rr_hasnoaccess'), 'username' => lang('rr_username'))));
+        $result = array('definitions' => array('admin' => $this->jauth->isAdministrator(), 'actions' => $resourceData['actions'], 'dictionary' => array('allow' => 'allow', 'deny' => 'deny', 'hasaccess' => lang('rr_hasaccess'), 'hasnoaccess' => lang('rr_hasnoaccess'), 'username' => lang('rr_username'))));
 
         /**
          * @var models\User[] $users
@@ -232,11 +227,40 @@ class Accessmanage extends MY_Controller
         }
         $result['data']['' . $this->jauth->getLoggedinUsername() . '']['isyou'] = true;
 
+
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
 
     }
 
+
+    public function federation($id) {
+        if (!$this->jauth->isLoggedIn()) {
+            redirect('auth/login', 'location');
+        }
+        /**
+         * @var models\Federation $federation
+         */
+        $federation = $this->em->getRepository('models\Federation')->findOneBy(array('id' => $id));
+        if ($federation === null) {
+            show_error('Federation not found', 404);
+        }
+        $myLang = MY_Controller::getLang();
+        $fedurl = base64url_encode($federation->getName());
+        $data['breadcrumbs'] = array(
+            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
+            array('url' => base_url('federations/manage/show/' . $fedurl . ''), 'name' => '' . $federation->getName() . ''),
+            array('url' => '#', 'type' => 'current', 'name' => lang('rr_accessmngmt'))
+
+        );
+        $data['resourceid'] = $id;
+        $data['resourcename'] = $federation->getName();
+        $data['resourcetype'] = 'federation';
+        $data['content_view'] = 'manage/accessmanage_view';
+        $data['fedlink'] = base_url() . 'federations/manage/show/' . base64url_encode($federation->getName());
+        $data['titlepage'] = lang('rr_federation') . ' ' . lang('rr_accessmngmt') . ': ' . anchor($data['fedlink'], $data['resourcename']);
+        $this->load->view('page', $data);
+    }
 
     public function entity($id) {
         if (!$this->jauth->isLoggedIn()) {
@@ -270,137 +294,6 @@ class Accessmanage extends MY_Controller
         $this->load->view('page', $data);
 
 
-    }
-
-    public function federation($id) {
-        if (!$this->jauth->isLoggedIn()) {
-            redirect('auth/login', 'location');
-        }
-        $this->load->library('zacl');
-        /**
-         * @var models\Federation $federation
-         */
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $id));
-        if ($federation === null) {
-            show_error(lang('error_fednotfound'), 404);
-        }
-        $fedurl = base64url_encode($federation->getName());
-        $data['breadcrumbs'] = array(
-            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
-            array('url' => base_url('federations/manage/show/' . $fedurl . ''), 'name' => '' . $federation->getName() . ''),
-            array('url' => '#', 'type' => 'current', 'name' => lang('rr_accessmngmt'))
-
-        );
-
-        $group = 'federation';
-        $has_manage_access = $this->zacl->check_acl('f_' . $federation->getId(), 'manage', $group, '');
-        if (!$has_manage_access) {
-            show_error(lang('rerror_noperm_mngperm'), 403);
-        }
-        $submited = $this->input->post('change_access');
-        if (!empty($submited)) {
-            log_message('debug', 'change access submited');
-            if ($submited === 'deny') {
-                $fresource = 'f_' . $federation->getId();
-                $action = $this->input->post('action');
-                $user = $this->input->post('user');
-                $resource_type = 'federation';
-                if ($action === 'read') {
-                    $this->zacl->deny_access_fromUser($fresource, $action, $user, $group, $resource_type);
-                    $this->zacl->deny_access_fromUser($fresource, 'write', $user, $group, $resource_type);
-                    $this->zacl->deny_access_fromUser($fresource, 'manage', $user, $group, $resource_type);
-                } elseif ($action === 'write') {
-                    $this->zacl->deny_access_fromUser($fresource, $action, $user, $group, $resource_type);
-                    $this->zacl->deny_access_fromUser($fresource, 'manage', $user, $group, $resource_type);
-                } elseif ($action === 'manage') {
-                    $this->zacl->deny_access_fromUser($fresource, $action, $user, $group, $resource_type);
-                }
-                $this->em->flush();
-            } elseif ($submited === 'allow') {
-                $fresource = 'f_' . $federation->getId();
-                $action = $this->input->post('action');
-                $user = $this->input->post('user');
-                $resource_type = 'federation';
-                if ($action === 'manage') {
-                    $this->zacl->add_access_toUser($fresource, $action, $user, $group, $resource_type);
-                    $this->zacl->add_access_toUser($fresource, 'write', $user, $group, $resource_type);
-                    $this->zacl->add_access_toUser($fresource, 'read', $user, $group, $resource_type);
-                } elseif ($action === 'write') {
-                    $this->zacl->add_access_toUser($fresource, $action, $user, $group, $resource_type);
-                    $this->zacl->add_access_toUser($fresource, 'read', $user, $group, $resource_type);
-                } elseif ($action === 'read') {
-                    $this->zacl->add_access_toUser($fresource, $action, $user, $group, $resource_type);
-                }
-                $this->em->flush();
-            } else {
-                log_message('error', 'accessmanage: incorrect submit:' . $submited);
-            }
-        } else {
-            log_message('debug', 'no change access submited');
-        }
-        $this->em->flush();
-        $this->zacl = new Zacl();
-        $tmp_users = $this->em->getRepository("models\User")->findAll();
-        $admin_role = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Administrator'));
-        $admins = $admin_role->getMembers();
-        $users_array = array();
-        $users_objects = array();
-        $actions = array('read', 'write', 'manage');
-        $id_of_fed = 'f_' . $federation->getId();
-        foreach ($tmp_users as $u) {
-            $users_objects[$u->getUsername()] = $u;
-            foreach ($actions as $a) {
-                $users_array[$u->getUsername()][$a] = $this->zacl->check_acl_for_user($id_of_fed, $a, $u, $group);
-            }
-        }
-        $row = array();
-        $i = 0;
-        $sessionUser = $this->jauth->getLoggedinUsername();
-
-        foreach ($users_array as $key => $value) {
-            $is_me = '';
-            $isitme = false;
-            if ($sessionUser == $key) {
-                $is_me = '<span class="alert">' . lang('rr_you') . '</span>';
-                $isitme = true;
-            }
-            $u = $admins->contains($users_objects[$key]);
-            if ($u) {
-                $k = 'admin';
-            } else {
-                $k = '';
-            }
-            if ($k) {
-                $row[$i] = array('' . $is_me . ' ' . $key . ' (Administrator' . showBubbleHelp('' . lang('rhelp_admfullright') . '') . ')', '' . lang('rr_hasaccess') . '', '' . lang('rr_hasaccess') . '', '' . lang('rr_hasaccess') . '');
-            } else {
-                $row[$i][] = $is_me . ' ' . $key . ' ';
-                $hasAccess = lang('rr_hasaccess');
-                $hasNoAccess = lang('rr_hasnoaccess');
-                foreach ($value as $ackey => $acvalue) {
-                    if ($acvalue) {
-                        if (!$isitme) {
-                            $row[$i][] = $hasAccess . $this->displayFormChng('deny', $key, $ackey);
-                        } else {
-                            $row[$i][] = $hasAccess;
-                        }
-                    } else {
-                        if (!$isitme) {
-                            $row[$i][] = $hasNoAccess . $this->displayFormChng('allow', $key, $ackey);
-                        } else {
-                            $row[$i][] = $hasNoAccess;
-                        }
-                    }
-                }
-            }
-            $i++;
-        }
-        $data['fedlink'] = base_url() . 'federations/manage/show/' . base64url_encode($federation->getName());
-        $data['resourcename'] = $federation->getName();
-        $data['row'] = $row;
-        $data['titlepage'] = lang('rr_federation') . ' ' . lang('rr_accessmngmt') . ': ' . anchor($data['fedlink'], $data['resourcename']);
-        $data['readlegend'] = lang('fedaclreadinfo');
-        $data['content_view'] = 'manage/fedaccess_manage_view';
-        $this->load->view('page', $data);
     }
 
 }
