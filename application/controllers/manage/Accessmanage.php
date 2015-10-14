@@ -30,7 +30,7 @@ class Accessmanage extends MY_Controller
         $this->load->helper('form');
         $this->load->library('form_validation');
     }
-    
+
 
     private function prepareResourceData($resourceType = null, $resourceId = null) {
         if (!in_array($resourceType, array('federation', 'entity'), true) || !ctype_digit($resourceId) || !$this->jauth->isLoggedIn()) {
@@ -245,7 +245,6 @@ class Accessmanage extends MY_Controller
         if ($federation === null) {
             show_error('Federation not found', 404);
         }
-        $myLang = MY_Controller::getLang();
         $fedurl = base64url_encode($federation->getName());
         $data['breadcrumbs'] = array(
             array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
