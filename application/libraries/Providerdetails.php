@@ -506,7 +506,7 @@ class Providerdetails
         $d[$i]['value'] = '<b>' . date('Y-m-d H:i:s', $ent->getLastModified()->format('U') + jauth::$timeOffset) . '</b>';
         $entityIdRecord = array('name' => lang('rr_entityid'), 'value' => $ent->getEntityId());
         $d[++$i] = &$entityIdRecord;
-        $d[++$i] = array('name' => lang('rr_entityid'), 'value' => $ent->getEntityId());
+
 
 
         $d[++$i]['name'] = lang('e_orgname');
@@ -1354,7 +1354,7 @@ class Providerdetails
         }
         $d[++$i]['name'] = '';
         if ($hasManageAccess) {
-            $d[$i]['value'] = lang('rr_displayaccess') . anchor(base_url() . 'manage/access_manage/entity/' . $id, '<i class="fi-arrow-right"></i>');
+            $d[$i]['value'] = lang('rr_displayaccess') . anchor(base_url() . 'manage/accessmanage/entity/' . $id, '<i class="fi-arrow-right"></i>');
         } else {
             $d[$i]['value'] = lang('rr_displayaccess') . '';
         }

@@ -96,6 +96,10 @@ use \Doctrine\Common\Collections\ArrayCollection;
      {
         return $this->resource;
      }
+
+     /**
+      * @return AclResource|null
+      */
      public function getParent()
      {
         return $this->parent;

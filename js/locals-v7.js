@@ -180,7 +180,7 @@ jQuery.uiTableFilter = function (jq, phrase, column, ifHidden) {
             return false;
         }
 
-        var words = words[-1]; // just search for the newest word
+        words = words[-1]; // just search for the newest word
 
         // only hide visible rows
         matches = function (elem) {
@@ -1455,6 +1455,122 @@ $(document).ready(function () {
     });
 
     GINIT.initialize();
+//
+
+
+    var accessmngmtDiv = $('#accessmngmt');
+    var accessmngmtForm;
+    if (accessmngmtDiv.length) {
+        accessmngmtForm = accessmngmtDiv.closest('form');
+        var dataLink = accessmngmtDiv.attr('data-jagger-jsource');
+
+        $.ajax({
+            type: 'GET',
+            url: dataLink,
+            dataTypa: 'json',
+            beforeSend: function () {
+                spinner.show();
+            },
+            success: function (json) {
+                var administrator = json.definitions.admin;
+                var dictAllow = json.definitions.dictionary.allow;
+                var dictDeny = json.definitions.dictionary.deny;
+                var dictHasAccess = json.definitions.dictionary.hasaccess;
+                var dictHasAccess = json.definitions.dictionary.hasaccess;
+                var dictHasNoAccess = json.definitions.dictionary.hasnoaccess;
+                var dictUsername = json.definitions.dictionary.username;
+                var dictIsAdmin = 'Administrator';
+                var dictIsYou = 'You';
+
+                spinner.hide();
+                var tbl = [];
+                tbl.push('<table><thead><tr><th>' + dictUsername + '</th>');
+                $.each(json.definitions.actions, function (a, action) {
+                    tbl.push('<th>' + action + '</th>');
+                });
+                tbl.push('</tr></thead>');
+                tbl.push('<tbody>');
+
+                $.each(json.data, function (k, d) {
+                    tbl.push('<tr><td>');
+
+                    var addLabel = '';
+                    var disableBtn = ''
+                    var disableBtnClass = '';
+                    if (d.isyou === true) {
+                        addLabel = addLabel + ' <span class="label warning">' + dictIsYou + '</span>';
+                        disableBtn = ' disabled="disabled" ';
+                    }
+                    if (d.isadmin === true) {
+                        addLabel = addLabel + ' <span class="label">' + dictIsAdmin + '</span>';
+                    }
+                    tbl.push('' + k + ' (' + d.fullname + ')' + addLabel + '');
+
+
+                    tbl.push('</td>');
+                    $.each(json.definitions.actions, function (a, action) {
+                        disableBtnClass = '';
+                        if (d.isadmin === true) {
+                            tbl.push('<td>' + dictHasAccess + '</td>');
+                        }
+                        else {
+                            if(action === 'approve' && administrator !== true){
+                                disableBtn = ' disabled="disabled" ';
+                                disableBtnClass = 'secondary';
+
+                            }
+                            if (d.perms[action] === true) {
+                                tbl.push('<td>' + dictHasAccess + ' <div><button ' + disableBtn + ' class="tiny alert '+disableBtnClass+'" value="' + k + '$|$' + action + '$|$deny" name="changeaccess" type="submit" >' + dictDeny + '</button></div></td>');
+                            }
+                            else {
+                                tbl.push('<td>' + dictHasNoAccess + ' <div><button ' + disableBtn + ' class="tiny '+disableBtnClass+'" value="' + k + '$|$' + action + '$|$allow" name="changeaccess" type="submit">' + dictAllow + '</button></div></td>');
+                            }
+                        }
+                    });
+
+                    tbl.push('</tr>');
+                });
+
+                tbl.push('</tbody>');
+                tbl.push('</table>');
+
+                var tblHtml = tbl.join('');
+                accessmngmtDiv.html(tblHtml);
+
+            },
+            error: function (xhr, status, error) {
+                spinner.hide();
+                window.alert(xhr.responseText);
+            }
+        });
+
+
+        accessmngmtForm.on('click', 'button', function (e) {
+            //   e.preventDefault();
+            var clickedBtn = $(this);
+            var serializedData = accessmngmtForm.serializeArray();
+            serializedData.push({
+                name: clickedBtn.attr('name'),
+                value: clickedBtn.val()
+            });
+            console.log(serializedData);
+            $.ajax({
+                method: 'POST',
+                data: serializedData,
+                url: accessmngmtForm.attr('action'),
+                success: function (result) {
+                    window.location.href = window.location.href;
+                },
+                error: function (xhr, status, error) {
+                }
+
+
+            });
+            return false;
+        });
+
+
+    }
 
 
 // idp/sp editform
@@ -3330,10 +3446,10 @@ $(document).ready(function () {
 
             },
             beforeSend: function () {
-               spinner.show();
+                spinner.show();
             },
             error: function () {
-               spinner.hide();
+                spinner.hide();
                 window.alert('problem with loading data');
             }
         }).done(function () {

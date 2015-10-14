@@ -84,30 +84,44 @@ class Subscriber extends MY_Controller
         return json_encode($result);
     }
 
-    public function mysubscriptions($encodeduser = null) {
-        if ($encodeduser === null) {
-            show_error('not found', 404);
+    /**
+     * @param $username
+     * @return \models\User
+     * @throws Exception
+     */
+    private function getSubscriberOwner($encodedusername = null){
+        if($encodedusername === null){
+            throw new Exception('missing username');
         }
-        if (!$this->jauth->isLoggedIn()) {
-            redirect('auth/login', 'location');
-        }
-        $this->load->library('zacl');
-        $decodeduser = base64url_decode($encodeduser);
+        $username = base64url_decode($encodedusername);
         $loggeduser = $this->jauth->getLoggedinUsername();
         $isAdmin = $this->jauth->isAdministrator();
-        if ($isAdmin !== true && strcasecmp($decodeduser, $loggeduser) != 0) {
-            log_message('warning', __METHOD__ . ': User ' . $loggeduser . ' tried to get access to other users subsricriptions:' . $decodeduser);
-            show_error('permission denied', 403);
+        if ($isAdmin !== true && strcasecmp($username, $loggeduser) != 0) {
+            log_message('warning', __METHOD__ . ': User ' . $loggeduser . ' tried to get access to other users subsricriptions:' . $username);
+            throw new Exception('permission denied');
         }
 
         /**
          * @var $subscribtionOwner models\User
          */
-        $subscribtionOwner = $this->em->getRepository("models\User")->findOneBy(array('username' => $decodeduser));
+        $subscribtionOwner = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         if ($subscribtionOwner === null) {
-            show_error('not found', 404);
+            throw new Exception('not found');
         }
+        return $subscribtionOwner;
+    }
 
+    public function mysubscriptions($encodeduser = null) {
+        if (!$this->jauth->isLoggedIn()) {
+            redirect('auth/login', 'location');
+        }
+        $this->load->library('zacl');
+        try {
+            $subscribtionOwner = $this->getSubscriberOwner($encodeduser);
+        }
+        catch(Exception $e){
+            show_error(403, $e->getMessage());
+        }
         $data = array(
             'encodeduser' => $encodeduser,
             'subscriber' => array(
@@ -121,16 +135,15 @@ class Subscriber extends MY_Controller
 
 
         $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
+        $data['breadcrumbs'] = array(
+            array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
+            array('url' => base_url('manage/users/show/' . $encodeduser . ''), 'name' => html_escape($subscribtionOwner->getUsername()),),
+            array('url' => base_url('#'), 'name' => lang('title_usersubscriptions'), 'type' => 'current')
+        );
         if (!$accessListUsers) {
             $data['breadcrumbs'] = array(
                 array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist'), 'type' => 'unavailable'),
                 array('url' => base_url('manage/users/show/' . $encodeduser . ''), 'name' => html_escape($subscribtionOwner->getUsername())),
-                array('url' => base_url('#'), 'name' => lang('title_usersubscriptions'), 'type' => 'current')
-            );
-        } else {
-            $data['breadcrumbs'] = array(
-                array('url' => base_url('manage/users/showlist'), 'name' => lang('rr_userslist')),
-                array('url' => base_url('manage/users/show/' . $encodeduser . ''), 'name' => html_escape($subscribtionOwner->getUsername()),),
                 array('url' => base_url('#'), 'name' => lang('title_usersubscriptions'), 'type' => 'current')
             );
         }
@@ -161,7 +174,7 @@ class Subscriber extends MY_Controller
         }
 
         $data['rows'] = $row;
-        if ($isAdmin) {
+        if ($this->jauth->isAdministrator()) {
             $data['statusdropdown'] = array('approve' => lang('rr_approve'), 'disapprove' => lang('rr_disapprove'), 'enable' => lang('rr_enable'), 'disable' => lang('rr_disable'), 'remove' => lang('rr_remove'));
         } else {
             $data['statusdropdown'] = array('enable' => lang('rr_enable'), 'disable' => lang('rr_disable'), 'remove' => lang('rr_remove'));
@@ -177,6 +190,7 @@ class Subscriber extends MY_Controller
             return $this->output->set_status_header(403)->set_output('denied');
         }
         $username = $this->jauth->getLoggedinUsername();
+        $user = null;
         if (!empty($username)) {
             /**
              * @var $user models\User

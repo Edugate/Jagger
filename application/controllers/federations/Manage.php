@@ -378,7 +378,7 @@ class Manage extends MY_Controller
 
 
         if ($access['hasManageAccess']) {
-            $data['result']['management'][] = array('data' => array('data' => lang('access_mngmt') . anchor(base_url() . 'manage/access_manage/federation/' . $federationID, '<i class="fi-arrow-right"></i>'), 'colspan' => 2));
+            $data['result']['management'][] = array('data' => array('data' => lang('access_mngmt') . anchor(base_url() . 'manage/accessmanage/federation/' . $federationID, '<i class="fi-arrow-right"></i>'), 'colspan' => 2));
             $data['hiddenspan'] = '<span id="fednameencoded" style="display:none">' . $encodedFedName . '</span>';
             if ($federation->getActive()) {
                 $b = '<button type="button" name="fedstatus" value="disablefed" class="resetbutton reseticon alert small" title="' . lang('btn_deactivatefed') . ': ' . html_escape($federation->getName()) . '">' . lang('btn_deactivatefed') . '</button>';

@@ -97,6 +97,10 @@ class AclRole {
      {
         return $this->type;
      }
+
+    /**
+     * @return AclRole|null
+     */
      public function getParent()
      {
         return $this->parent;

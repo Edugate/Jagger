@@ -11,7 +11,7 @@ class Providerformelements
     protected $langs;
     protected $isAdmin;
     protected $ent;
-    protected $ses = null;
+    protected $ses;
 
     function __construct($params)
     {
