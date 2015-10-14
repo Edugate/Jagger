@@ -175,15 +175,8 @@ class Zacl
         return $access;
     }
 
-    private function check_user_acl($resource, $action, $user, $group) {
-        if ($user instanceof models\User) {
-            $s_user = $user;
-        } else {
-            $s_user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user));
-        }
-        if ($s_user !== null) {
-            $user_roles = $s_user->getRoles();
-        }
+    private function check_user_acl($resource, $action, models\User $user, $group) {
+        $user_roles = $user->getRoles();
         $my_roles_array = array('system' => array(), 'group' => array(), 'user' => array());
         if (!empty($user_roles)) {
             foreach ($user_roles as $p) {
@@ -227,7 +220,7 @@ class Zacl
 
         $this->acl->allow('Administrator', $resource, $action);
         $is_allowed = $this->acl->isAllowed('selected_user', $resource, $action);
-        log_message('debug', $s_user->getUsername() . ' is_allowed to ' . $action . ' to resource ' . $resource . ' :: ' . (string)$is_allowed);
+        log_message('debug', $user->getUsername() . ' is_allowed to ' . $action . ' to resource ' . $resource . ' :: ' . (string)$is_allowed);
         $role_exists = $this->acl->hasRole('selected_user');
         if ($role_exists) {
             $this->acl->removeRole('selected_user');
