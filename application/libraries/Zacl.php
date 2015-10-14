@@ -160,13 +160,16 @@ class Zacl
             }
             $resource = $group;
         }
-
         $this->acl->allow('Administrator', $resource, $action);
 
         return $this->acl->isAllowed($role, $resource, $action);
     }
 
-    public function check_acl_for_user($resource, $action, $user, $group) {
+    public function printZacl() {
+        print_r($this->acl);
+    }
+
+    public function check_acl_for_user($resource, $action, models\User $user, $group) {
         $access = $this->check_user_acl($resource, $action, $user, $group);
         $role_exists = $this->acl->hasRole('selected_user');
         if ($role_exists) {
@@ -177,7 +180,11 @@ class Zacl
     }
 
     private function check_user_acl($resource, $action, $user, $group) {
-        $s_user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user));
+        if ($user instanceof models\User) {
+            $s_user = $user;
+        } else {
+            $s_user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user));
+        }
         if ($s_user !== null) {
             $user_roles = $s_user->getRoles();
         }
@@ -345,7 +352,6 @@ class Zacl
     }
 
     public function deny_access_fromUser($resource, $action, $user, $group, $resource_type = null) {
-
         if (!$user instanceof models\User) {
             $s_user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user));
             log_message('debug', 's_user not instance of  models\User search by username=' . $user);
@@ -357,61 +363,52 @@ class Zacl
             log_message('debug', 'user has no rights to mamage permission');
 
             return false;
-        } else {
-
-            log_message('debug', 'user can manage permissions');
         }
         $alreadyHasAccess = $this->check_user_acl($resource, $action, $s_user, $group);
         if (!$alreadyHasAccess) {
             log_message('debug', 'user already has no access to resource, we dont have to deny it');
-
             return true;
         }
+
+        $personalRole = null;
 
         $roles = $s_user->getRoles();
         if (count($roles) > 0) {
             log_message('debug', 'number of roles is: ' . count($roles));
             foreach ($roles as $r) {
-                $type = $r->getType();
-                $role_name = $r->getName();
-                log_message('debug', 'check role: ' . $role_name);
-                if ($type == 'user' && $role_name == $s_user->getUsername()) {
-                    $role = $r;
+                $roleType = $r->getType();
+                $roleName = $r->getName();
+                log_message('debug', 'check role: ' . $roleName);
+                if ($roleType === 'user' && $roleName === $s_user->getUsername()) {
+                    $personalRole = $r;
                     break;
                 }
             }
-            /* check if user has personal role */
-            log_message('debug', 'check if user has personal role');
-            if (empty($role)) {
-                log_message('debug', 'user has no personal role set');
-                $tmp_role = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $s_user->getUsername(), 'type' => 'user'));
-                if (!empty($tmp_role)) {
-                    log_message('error', 'acl role: ' . $tmp_role->getName() . ' with type \'user\' exists but not linked1 to the user');
-                    show_error('Internal error', 500);
-                } else {
-                    log_message('debug', 'no acl_role creating new one...');
-                    $aclRole = new models\AclRole;
-                    $aclRole->setName($s_user->getUsername());
-                    $aclRole->setType('user');
-                    $aclRole->setDescription('individual role for user ' . $s_user->getUsername());
-                    $s_user->setRole($aclRole);
-                }
+        }
+
+
+        /* check if user has personal role */
+        log_message('debug', 'check if user has personal role');
+        if ($personalRole === null) {
+            log_message('debug', 'user has no personal role set');
+            $tmp_role = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $s_user->getUsername(), 'type' => 'user'));
+            if (!empty($tmp_role)) {
+                log_message('error', 'acl role: ' . $tmp_role->getName() . ' with type \'user\' exists but not linked1 to the user');
+                throw new \Exception('ACL Role name already exists but it so not linked to to user '.$s_user->getUsername());
             } else {
-                $aclRole = $role;
-            }
-            if (!$aclRole instanceof models\AclRole) {
-                log_message('error', '\$role to be expected instance of models\AclRole');
-                show_error('Internal server error', 500);
+                log_message('debug', 'no acl_role creating new one...');
+                $aclRole = new models\AclRole;
+                $aclRole->setName($s_user->getUsername());
+                $aclRole->setType('user');
+                $aclRole->setDescription('individual role for user ' . $s_user->getUsername());
+                $s_user->setRole($aclRole);
+                $this->acl->addRole($s_user->getUsername(),'default_role');
             }
         } else {
-            /* user has no roles , we need to set one */
-            log_message('debug', 'user ' . $s_user->getUsername() . ' has  no acl_role creating new personal one...');
-            $aclRole = new models\AclRole;
-            $aclRole->setName($s_user->getUsername());
-            $aclRole->setType('user');
-            $aclRole->setDescription('individual role for user ' . $s_user->getUsername());
-            $s_user->setRole($aclRole);
+            $aclRole = $personalRole;
         }
+
+
 
         /* resource and group */
         /**

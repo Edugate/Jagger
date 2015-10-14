@@ -180,7 +180,7 @@ jQuery.uiTableFilter = function (jq, phrase, column, ifHidden) {
             return false;
         }
 
-        var words = words[-1]; // just search for the newest word
+        words = words[-1]; // just search for the newest word
 
         // only hide visible rows
         matches = function (elem) {
@@ -1477,10 +1477,13 @@ $(document).ready(function () {
                 var dictHasAccess = json.definitions.dictionary.hasaccess;
                 var dictHasAccess = json.definitions.dictionary.hasaccess;
                 var dictHasNoAccess = json.definitions.dictionary.hasnoaccess;
+                var dictUsername = json.definitions.dictionary.username;
+                var dictIsAdmin = 'Administrator';
+                var dictIsYou = 'You';
 
                 spinner.hide();
                 var tbl = [];
-                tbl.push('<table><thead><tr><th>username</th>');
+                tbl.push('<table><thead><tr><th>'+dictUsername+'</th>');
                 $.each(json.definitions.actions, function(a, action){
                    tbl.push('<th>'+action+'</th>');
                 });
@@ -1488,14 +1491,30 @@ $(document).ready(function () {
                 tbl.push('<tbody>');
 
                 $.each(json.data, function(k,d){
-                    tbl.push('<tr>');
-                    tbl.push('<td>'+k+' ('+ d.fullname+')</td>');
+                    tbl.push('<tr><td>');
+
+                    var addLabel = '';
+                    var disableBtn =''
+                    if(d.isyou === true){
+                        addLabel = addLabel+' <span class="label warning">'+dictIsYou+'</span>';
+                        disableBtn = ' disabled="disabled" ';
+                    }
+                    if(d.isadmin === true){
+                              addLabel = addLabel+' <span class="label">'+dictIsAdmin+'</span>';
+                    }
+                    tbl.push(''+k+' ('+ d.fullname+')'+addLabel+'');
+
+
+                    tbl.push('</td>');
                     $.each(json.definitions.actions, function(a, action){
-                        if(d.perms[action] === true){
-                            tbl.push('<td>'+dictHasAccess+' <div><button class="resetbutton deleteicon tiny alert" value="'+k+'|'+action+'|deny" name="changeaccess" type="submit">'+dictDeny+'</button></div></td>');
+                        if(d.isadmin === true){
+                            tbl.push('<td>'+dictHasAccess+'</td>');
+                        }
+                        else if(d.perms[action] === true){
+                            tbl.push('<td>'+dictHasAccess+' <div><button class="resetbutton deleteicon tiny alert" value="'+k+'$|$'+action+'$|$deny" name="changeaccess" type="submit" '+disableBtn+'>'+dictDeny+'</button></div></td>');
                         }
                         else{
-                            tbl.push('<td>'+dictHasNoAccess+' <div><button class="tiny" value="'+k+'|'+action+'|allow" name="changeaccess" type="submit">'+dictAllow+'</button></div></td>');
+                            tbl.push('<td>'+dictHasNoAccess+' <div><button class="tiny" value="'+k+'$|$'+action+'$|$allow" name="changeaccess" type="submit" '+disableBtn+'>'+dictAllow+'</button></div></td>');
                         }
                     });
 
@@ -1509,8 +1528,9 @@ $(document).ready(function () {
                 accessmngmtDiv.html(tblHtml);
 
             },
-            error: function(){
+            error: function(xhr,status,error){
                 spinner.hide();
+                window.alert(xhr.responseText);
             }
         });
 
@@ -1518,9 +1538,24 @@ $(document).ready(function () {
 
         accessmngmtForm.on('click','button', function(e){
          //   e.preventDefault();
+            var clickedBtn = $(this);
             var serializedData = accessmngmtForm.serializeArray();
+            serializedData.push({
+                name: clickedBtn.attr('name'),
+                value: clickedBtn.val()
+            });
             console.log(serializedData);
-            alert($(this).val());
+            $.ajax({
+                method: 'POST',
+                data: serializedData,
+                url: accessmngmtForm.attr('action'),
+                success: function(result){
+                     window.location.href = window.location.href;
+                },
+                error: function(xhr,status,error){}
+
+
+            });
             return false;
         });
 
