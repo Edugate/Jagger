@@ -165,10 +165,6 @@ class Zacl
         return $this->acl->isAllowed($role, $resource, $action);
     }
 
-    public function printZacl() {
-        print_r($this->acl);
-    }
-
     public function check_acl_for_user($resource, $action, models\User $user, $group) {
         $access = $this->check_user_acl($resource, $action, $user, $group);
         $role_exists = $this->acl->hasRole('selected_user');
