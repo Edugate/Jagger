@@ -981,7 +981,7 @@ class Awaiting extends MY_Controller
                 }
                 if ($reject_access === false) {
                     if (strcasecmp($queueAction, 'Create') == 0) {
-                        if(strcasecmp($queueObjType,'idp') == 0 || strcasecmp($queueObjType.'sp') == 0)
+                        if(strcasecmp($queueObjType,'idp') == 0 || strcasecmp($queueObjType,'sp') == 0)
                         {
                             $reject_access = $this->hasApproveByFedadmin($queueObj) || $this->zacl->check_acl($queueObjType, 'create', 'entity', '');
                         } elseif (strcasecmp($queueObj->getType(), 'Federation') == 0) {
