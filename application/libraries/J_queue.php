@@ -303,6 +303,7 @@ class J_queue
             $metadataDOM->strictErrorChecking = false;
             $metadataDOM->WarningChecking = false;
             $metadataDOM->loadXML($metadataXml);
+
             $isValid = $this->ci->xmlvalidator->validateMetadata($metadataDOM, false, false);
             if (!$isValid) {
                 log_message('error', __METHOD__ . ' invalid metadata in the queue ');
@@ -316,7 +317,7 @@ class J_queue
                 $domlist = $metadataDOM->getElementsByTagName('EntityDescriptor');
                 if (count($domlist) == 1) {
                     foreach ($domlist as $l) {
-                        $entarray = $this->ci->metadata2array->entityDOMToArray($l, false);
+                        $entarray = $this->ci->metadata2array->entityDOMToArray($l, true);
                     }
                     $objData = new models\Provider;
                     $objData->setProviderFromArray(current($entarray), false);
