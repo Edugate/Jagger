@@ -80,7 +80,7 @@ class Disco extends MY_Controller
 
     private function getFullDiscoData() {
         $cachedDisco = $this->j_ncache->getFullDisco();
-        if ($cachedDisco === null) {
+        if (empty($cachedDisco) {
             $tmpProviders = new models\Providers;
             /**
              * @var $providersForWayf models\Provider[]
