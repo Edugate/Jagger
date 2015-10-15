@@ -99,15 +99,15 @@ class Logomngmt extends MY_Controller
         if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST') || empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0) || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output(lang('error403'));
         }
+        /**
+         * @var models\Provider $provider
+         */
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id, 'type' => array('BOTH', '' . strtoupper($type) . '')));
-        if (empty($provider)) {
+        if ($provider === null) {
             return $this->output->set_status_header(404)->set_output(lang('rerror_provnotfound'));
         }
         $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
-        $unlocked = !($provider->getLocked());
-        $local = $provider->getLocal();
-        $canEdit = (boolean)($hasWriteAccess && $unlocked && $local);
+        $canEdit = (boolean)($this->zacl->check_acl($provider->getId(), 'write', 'entity', '') && !($provider->getLocked()) && $provider->getLocal());
         $logopost = $this->input->post('filename');
         if (!$canEdit || empty($logopost)) {
             return $this->output->set_status_header(403)->set_output(lang('error403'));
@@ -120,40 +120,39 @@ class Logomngmt extends MY_Controller
         $new_logoname = $explodedLogopost['0'];
         $original_sizes = explode('x', $explodedLogopost['1']);
         $logo_attr = array();
-        if (!empty($new_logoname)) {
-            $width = $this->input->post('width');
-            $height = $this->input->post('height');
-            if (!empty($width)) {
-                $logo_attr['width'] = $width;
-            }
-            if (!empty($height)) {
-                $logo_attr['height'] = $height;
-            }
-            if (empty($logo_attr['width']) && empty($logo_attr['height'])) {
-                $logo_attr['width'] = $original_sizes['0'];
-                $logo_attr['height'] = $original_sizes['1'];
-            }
-            /**
-             * @var models\ExtendMetadata $parent
-             */
-            $parent = $this->em->getRepository("models\ExtendMetadata")->findOneBy(array('element' => 'UIInfo', 'provider' => $provider->getId(), 'namespace' => 'mdui', 'etype' => $type));
-            if ($parent === null) {
-                $parent = new models\ExtendMetadata;
-                $parent->setElement('UIInfo');
-                $parent->setProvider($provider);
-                $parent->setParent(null);
-                $parent->setNamespace('mdui');
-                $parent->setType($type);
-                $this->em->persist($parent);
-            }
-            $logo = new models\ExtendMetadata;
-            $logo->setLogo($new_logoname, $provider, $parent, $logo_attr, $type);
-            $this->em->persist($logo);
-            $this->em->flush();
-            return $this->output->set_status_header(200)->set_output(lang('rr_logoisassigned'));
-        } else {
+        if (empty($new_logoname)) {
             return $this->output->set_status_header(403)->set_output(lang('error403'));
         }
+        $width = $this->input->post('width');
+        $height = $this->input->post('height');
+        if (!empty($width)) {
+            $logo_attr['width'] = $width;
+        }
+        if (!empty($height)) {
+            $logo_attr['height'] = $height;
+        }
+        if (empty($logo_attr['width']) && empty($logo_attr['height'])) {
+            $logo_attr['width'] = $original_sizes['0'];
+            $logo_attr['height'] = $original_sizes['1'];
+        }
+        /**
+         * @var models\ExtendMetadata $parent
+         */
+        $parent = $this->em->getRepository("models\ExtendMetadata")->findOneBy(array('element' => 'UIInfo', 'provider' => $provider->getId(), 'namespace' => 'mdui', 'etype' => $type));
+        if ($parent === null) {
+            $parent = new models\ExtendMetadata;
+            $parent->setElement('UIInfo');
+            $parent->setProvider($provider);
+            $parent->setParent(null);
+            $parent->setNamespace('mdui');
+            $parent->setType($type);
+            $this->em->persist($parent);
+        }
+        $logo = new models\ExtendMetadata;
+        $logo->setLogo($new_logoname, $provider, $parent, $logo_attr, $type);
+        $this->em->persist($logo);
+        $this->em->flush();
+        return $this->output->set_status_header(200)->set_output(lang('rr_logoisassigned'));
     }
 
     public function unsign($type = null, $id = null) {
@@ -222,22 +221,24 @@ class Logomngmt extends MY_Controller
         $logofile = $this->input->post('upload');
         $providerid = $this->input->post('prvid');
         $provtype = $this->input->post('prvtype');
+        /**
+         * @var models\Provider $provider
+         */
+        $provider = null;
         if (!(!empty($providerid) &&
             is_integer($providerid) && !empty($provtype) &&
             (strcmp($provtype, 'idp') == 0 || strcmp($provtype, 'sp') == 0))
         ) {
             $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid, 'type' => array('' . strtoupper($provtype) . '', 'BOTH')));
         }
-        if (empty($provider)) {
-            set_status_header(404);
-            echo lang('rerror_provnotfound');
-            return;
+        if ($provider === null) {
+            return $this->output->set_status_header(404)->set_output(lang('rerror_provnotfound'));
         }
         $this->load->library('zacl');
-        $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
+        $hasWriteAccess = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
         $local = $provider->getLocal();
         $locked = $provider->getLocked();
-        $canEdit = (boolean)($has_write_access && !$locked && $local);
+        $canEdit = (boolean)($hasWriteAccess && !$locked && $local);
         if (!$canEdit) {
             return $this->output->set_status_header(403)->set_output(lang('error403'));
         }
@@ -259,9 +260,7 @@ class Logomngmt extends MY_Controller
                 $finfo = new finfo(FILEINFO_MIME_TYPE);
                 $mimeType = $finfo->buffer($datafile);
                 if (!array_key_exists($mimeType, $img_mimes)) {
-                    set_status_header(403);
-                    echo lang('rr_errextlogourlformat');
-                    return;
+                    return $this->output->set_status_header(403)->set_output(lang('rr_errextlogourlformat'));
                 }
                 if (!function_exists('getimagesizefromstring')) {
                     function getimagesizefromstring($string_data) {
@@ -291,24 +290,17 @@ class Logomngmt extends MY_Controller
                 $logo->setLogo($imagelocation, $provider, $parent, $logo_attr, $provtype);
                 $this->em->persist($logo);
                 $this->em->flush();
-                echo lang('rr_logoisassigned');
-                return;
+                return $this->output->set_status_header(200)->set_output(lang('rr_logoisassigned'));
             } else {
-                set_status_header(403);
-                echo $this->curl->error_string;
-                return;
+                return $this->output->set_status_header(403)->set_output($this->curl->error_string);
             }
         } elseif (!empty($logofile)) {
             if (empty($upload_enabled) || empty($upload_logos_path)) {
-                set_status_header(403);
-                echo 'Upload images feature is disabled';
-                return;
+                return $this->output->set_status_header(403)->set_output('Upload images feature is disabled');
             }
             if (substr($upload_logos_path, 0, 1) == '/') {
                 log_message('error', 'upload_logos_path in you config must not begin with forward slash');
-                set_status_header(500);
-                echo 'System error ocurred';
-                return;
+                return $this->output->set_status_header(500)->set_output('System error ocurred');
             }
             $path = realpath(APPPATH . '../' . $upload_logos_path);
             $config = array(
@@ -321,12 +313,9 @@ class Logomngmt extends MY_Controller
             $this->load->library('upload', $config);
             if ($this->input->post('upload')) {
                 if ($this->upload->do_upload()) {
-                    echo lang('rr_imguploaded');
-                    return;
+                    return $this->output->set_status_header(200)->set_output(lang('rr_imguploaded'));
                 } else {
-                    set_status_header(403);
-                    echo $this->upload->display_errors();
-                    return;
+                    return $this->output->set_status_header(403)->set_output($this->upload->display_errors());
                 }
             } else {
                 set_status_header(403);
@@ -349,22 +338,22 @@ class Logomngmt extends MY_Controller
             redirect('auth/login', 'location');
         }
 
+        /**
+         * @var models\Provider $provider
+         */
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id, 'type' => array('BOTH', '' . strtoupper($type) . '')));
-        if (empty($provider)) {
+        if ($provider === null) {
             show_error(lang('rerror_provnotfound'), 404);
         }
         $this->load->library('zacl');
-        $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
-        $unlocked = !($provider->getLocked());
-        $local = $provider->getLocal();
-        $canEdit = (boolean)($has_write_access && $unlocked && $local);
+        $canEdit = (boolean)($this->zacl->check_acl($provider->getId(), 'write', 'entity', '') && !($provider->getLocked()) && $provider->getLocal());
 
         if ($canEdit) {
-            $data['canEdit'] = TRUE;
-            $data['showavailable'] = TRUE;
+            $data['canEdit'] = true;
+            $data['showavailable'] = true;
         } else {
-            $data['canEdit'] = FALSE;
-            $data['showavailable'] = FALSE;
+            $data['canEdit'] = false;
+            $data['showavailable'] = false;
         }
         $data['upload_enabled'] = $this->config->item('rr_logoupload');
         if ($canEdit) {
@@ -378,33 +367,23 @@ class Logomngmt extends MY_Controller
             $data['infomessage'] .= '<li>Assign logo from logos available in local storage</li>';
             $data['infomessage'] .= '</ol>';
         }
-        $attributes = array('class' => 'span-16', 'id' => 'assignedlogos');
-        $target_url = base_url() . 'manage/logomngmt/unsign/' . $type . '/' . $id;
-        $data['targeturl'] = $target_url;
+        $attributes = array('id' => 'assignedlogos');
+        $data['targeturl'] = base_url('manage/logomngmt/unsign/' . $type . '/' . $id);
         $existing_logos = $this->em->getRepository("models\ExtendMetadata")->findBy(array('etype' => $type, 'namespace' => 'mdui', 'element' => 'Logo', 'provider' => $id));
-
-        $count_existing_logos = count($existing_logos);
-        if ($count_existing_logos > 0) {
-            $form1 = '<span>';
-            $form1 .= form_open(base_url() . 'manage/logomngmt/unsign/' . $type . '/' . $id, $attributes);
-            $form1 .= $this->logo->displayCurrentInGridForm($provider, $type, $canEdit);
-            $form1 .= '<div class="buttons" id="unsignlogosbtn" >';
-            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="resetbutton reseticon alert">' . lang('rr_unsignselectedlogo') . '</button> ';
-            $form1 .= '</div>';
-            $form1 .= form_close();
-            $form1 .= '</span>';
-            $data['assignedlogos'] = $form1;
+        if (count($existing_logos) > 0) {
+            $data['assignedlogos'] = '<span>' .
+                form_open(base_url() . 'manage/logomngmt/unsign/' . $type . '/' . $id, $attributes) .
+                $this->logo->displayCurrentInGridForm($provider, $type, $canEdit) .
+                '<div class="buttons" id="unsignlogosbtn" >' .
+                '<button name="remove" type="submit" value="Remove selected" class="resetbutton reseticon alert">' . lang('rr_unsignselectedlogo') . '</button> ' .
+                '</div>' .
+                form_close() . '</span>';
         }
         $data['addnewlogobtn'] = true;
         $data['content_view'] = 'manage/logomngmt_view';
         $data['sub'] = lang('assignedlogoslistfor') . ' ';
-        $lang = MY_Controller::getLang();
-        $displayname = $provider->getNameToWebInLang($lang, $type);
-        if (empty($displayname)) {
-            $displayname = $provider->getEntityId();
-        }
-
-        $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $provider->getId() . '">' . $displayname . '</a>';
+        $myLang = MY_Controller::getLang();
+        $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $provider->getId() . '">' .  $provider->getNameToWebInLang($myLang, $type) . '</a>';
         $data['subtitlepage'] = lang('rr_logosmngt');
         $data['provider_detail']['name'] = $provider->getName();
         $data['provider_detail']['id'] = $provider->getId();
