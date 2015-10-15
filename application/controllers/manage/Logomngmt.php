@@ -20,16 +20,14 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Logomngmt extends MY_Controller
 {
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $this->load->helper('form');
         $this->load->library('logo');
         $this->load->library('form_validation');
     }
 
-    public function getAssignedLogosInGrid($type = null, $id = null)
-    {
+    public function getAssignedLogosInGrid($type = null, $id = null) {
         if (!$this->input->is_ajax_request() || empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0)) {
             set_status_header(403);
             echo lang('error403');
@@ -51,7 +49,7 @@ class Logomngmt extends MY_Controller
         $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
         $unlocked = !($provider->getLocked());
         $local = $provider->getLocal();
-        $canEdit = (boolean) ($has_write_access && $unlocked && $local);
+        $canEdit = (boolean)($has_write_access && $unlocked && $local);
         $attributes = array('class' => 'span-16', 'id' => 'assignedlogos');
         $existing_logos = $this->em->getRepository("models\ExtendMetadata")->findBy(array('etype' => $type, 'namespace' => 'mdui', 'element' => 'Logo', 'provider' => $id));
 
@@ -66,15 +64,13 @@ class Logomngmt extends MY_Controller
             $form1 .= form_close();
             $form1 .= '</span>';
             echo $form1;
-        }
-        else {
+        } else {
 
             echo 'No assigned Logos';
         }
     }
 
-    public function getAvailableLogosInGrid($type = null, $id = null)
-    {
+    public function getAvailableLogosInGrid($type = null, $id = null) {
         if ($this->input->is_ajax_request() && $this->jauth->isLoggedIn() && !empty($type) && !empty($id)) {
             $this->load->library('logo');
             $attributes = array('class' => 'span-20', 'id' => 'availablelogos');
@@ -86,56 +82,40 @@ class Logomngmt extends MY_Controller
                 $form1 .= '<div class="buttons" style="display: none"><button name="submit" type="submit" value="submit" class="savebutton saveicon">
                       ' . lang('rr_btn_assignselecetedlogo') . '</button></div>';
                 $form1 .= $availableImages;
-            }
-            else {
+            } else {
                 $form1 .= '<div class="alert">' . lang('rr_nolocalimages') . '</div>';
             }
             $form1 .= form_fieldset_close();
             $form1 .= form_close();
             echo $form1;
-        }
-        else {
+        } else {
             set_status_header(403);
             echo lang('error403');
             return;
         }
     }
 
-    public function assign($type = null, $id = null)
-    {
-        if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST') || empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0) ||!$this->jauth->isLoggedIn() ) {
-            set_status_header(403);
-            echo lang('error403');
-            return;
+    public function assign($type = null, $id = null) {
+        if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST') || empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0) || !$this->jauth->isLoggedIn()) {
+            return $this->output->set_status_header(403)->set_output(lang('error403'));
         }
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id, 'type' => array('BOTH', '' . strtoupper($type) . '')));
         if (empty($provider)) {
-            set_status_header(404);
-            echo lang('rerror_provnotfound');
-            return;
+            return $this->output->set_status_header(404)->set_output(lang('rerror_provnotfound'));
         }
         $this->load->library('zacl');
-        $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
+        $hasWriteAccess = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
         $unlocked = !($provider->getLocked());
         $local = $provider->getLocal();
-        $canEdit = (boolean) ($has_write_access && $unlocked && $local);
-        if (!$canEdit) {
-            set_status_header(403);
-            echo lang('error403');
-            return;
-        }
+        $canEdit = (boolean)($hasWriteAccess && $unlocked && $local);
         $logopost = $this->input->post('filename');
-        if (empty($logopost)) {
-            set_status_header(403);
-            echo lang('error403') .' ';
-            return;
+        if (!$canEdit || empty($logopost)) {
+            return $this->output->set_status_header(403)->set_output(lang('error403'));
         }
         $explodedLogopost = explode('_size_', $logopost);
         if (count($explodedLogopost) != 2) {
             log_message('error', 'incorrect  value given:' . $this->input->post('filename') . ' , must be in format: filename_size_widthxheight');
-            set_status_header(403);
-            echo lang('error403') . ': '.lang('error_incorrectinput');
-            return;
+            return $this->output->set_status_header(403)->set_output(lang('error403') . ' : ' . lang('error_incorrectinput'));
         }
         $new_logoname = $explodedLogopost['0'];
         $original_sizes = explode('x', $explodedLogopost['1']);
@@ -153,8 +133,11 @@ class Logomngmt extends MY_Controller
                 $logo_attr['width'] = $original_sizes['0'];
                 $logo_attr['height'] = $original_sizes['1'];
             }
+            /**
+             * @var models\ExtendMetadata $parent
+             */
             $parent = $this->em->getRepository("models\ExtendMetadata")->findOneBy(array('element' => 'UIInfo', 'provider' => $provider->getId(), 'namespace' => 'mdui', 'etype' => $type));
-            if (empty($parent)) {
+            if ($parent === null) {
                 $parent = new models\ExtendMetadata;
                 $parent->setElement('UIInfo');
                 $parent->setProvider($provider);
@@ -167,93 +150,71 @@ class Logomngmt extends MY_Controller
             $logo->setLogo($new_logoname, $provider, $parent, $logo_attr, $type);
             $this->em->persist($logo);
             $this->em->flush();
-            echo lang('rr_logoisassigned');
-        }
-        else {
-            set_status_header(403);
-            echo lang('error403');
-            return;
+            return $this->output->set_status_header(200)->set_output(lang('rr_logoisassigned'));
+        } else {
+            return $this->output->set_status_header(403)->set_output(lang('error403'));
         }
     }
 
-    public function unsign($type = null, $id = null)
-    {
+    public function unsign($type = null, $id = null) {
         if (!$this->input->is_ajax_request() || ($_SERVER['REQUEST_METHOD'] !== 'POST') || !$this->jauth->isLoggedIn()) {
-            $s=403;
-            $msg =  lang('error403');
+            $s = 403;
+            $msg = lang('error403');
+        } elseif (empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0)) {
+            $s = 404;
+            $msg = lang('error403');
         }
-        elseif (empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0)) {
-            $s=404;
-            $msg =lang('error403');
+        if (!empty($s)) {
+            return $this->output->set_status_header($s)->set_output($msg);
         }
-        if(!empty($s))
-        {
-            set_status_header($s);
-            echo $msg;
-            return;
-        }
+        /**
+         * @var models\Provider $provider
+         */
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id, 'type' => array('BOTH', '' . strtoupper($type) . '')));
-        if (empty($provider)) {
-            set_status_header(404);
-            echo lang('error404');
-            return;
+        if ($provider === null) {
+            return $this->output->set_status_header(404)->set_output(lang('error404'));
         }
         $this->load->library('zacl');
         $hasWriteAccess = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
         $unlocked = !($provider->getLocked());
         $local = $provider->getLocal();
-        $canEdit = (boolean) ($hasWriteAccess && $unlocked && $local);
+        $canEdit = (boolean)($hasWriteAccess && $unlocked && $local);
         if (!$canEdit) {
-            set_status_header(403);
-            echo lang('error403');
-            return;
+            return $this->output->set_status_header(403)->set_output(lang('error403'));
         }
         $logoidPost = $this->input->post('logoid');
         if (empty($logoidPost) || !ctype_digit($logoidPost)) {
-            set_status_header(403);
-            echo lang('error403');
-            return;
+            return $this->output->set_status_header(403)->set_output(lang('error403'));
         }
+        /**
+         * @var models\ExtendMetadata $existingLogo
+         */
         $existingLogo = $this->em->getRepository("models\ExtendMetadata")->findOneBy(array('id' => $logoidPost, 'etype' => $type, 'namespace' => 'mdui', 'element' => 'Logo', 'provider' => $id));
-        if (empty($existingLogo)) {
-            set_status_header(404);
-            echo lang('logo404');
-            return;
+        if ($existingLogo === null) {
+            return $this->output->set_status_header(404)->set_output(lang('logo404'));
         }
         $this->em->remove($existingLogo);
-        try
-        {
+        try {
             $this->em->flush();
-            echo lang('rr_logoisunsigned');
-        }
-        catch (Exception $e)
-        {
+            return $this->output->set_status_header(200)->set_output(lang('rr_logoisunsigned'));
+        } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
-            set_status_header(500);
-            echo 'Server Error occured';
+            return $this->output->set_status_header(500)->set_output('Server Error occured');
         }
     }
 
-    private function _submit_validate_extlogo()
-    {
+    private function _submit_validate_extlogo() {
         $this->form_validation->set_rules('extlogourl', 'External source', 'valid_url');
         $result = $this->form_validation->run();
-
         return $result;
     }
 
-    public function uploadlogos()
-    {
+    public function uploadlogos() {
         if (!$this->input->is_ajax_request()) {
-            set_status_header(403);
-            echo 'Method not allowed';
-            return;
+            return $this->output->set_status_header(403)->set_output('Method not allowed');
         }
-        $loggedin = $this->jauth->isLoggedIn();
-        if (!$loggedin) {
-            set_status_header(403);
-            echo lang('errsess');
-            return;
+        if (!$this->jauth->isLoggedIn()) {
+            return $this->output->set_status_header(403)->set_output(lang('errsess'));
         }
         $upload_enabled = $this->config->item('rr_logoupload');
         $upload_logos_path = trim($this->config->item('rr_logoupload_relpath'));
@@ -262,8 +223,9 @@ class Logomngmt extends MY_Controller
         $providerid = $this->input->post('prvid');
         $provtype = $this->input->post('prvtype');
         if (!(!empty($providerid) &&
-                is_integer($providerid) && !empty($provtype) &&
-                (strcmp($provtype, 'idp') == 0 || strcmp($provtype, 'sp') == 0))) {
+            is_integer($providerid) && !empty($provtype) &&
+            (strcmp($provtype, 'idp') == 0 || strcmp($provtype, 'sp') == 0))
+        ) {
             $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerid, 'type' => array('' . strtoupper($provtype) . '', 'BOTH')));
         }
         if (empty($provider)) {
@@ -275,17 +237,13 @@ class Logomngmt extends MY_Controller
         $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
         $local = $provider->getLocal();
         $locked = $provider->getLocked();
-        $canEdit = (boolean) ($has_write_access && !$locked && $local);
+        $canEdit = (boolean)($has_write_access && !$locked && $local);
         if (!$canEdit) {
-            set_status_header(403);
-            echo lang('error403');
-            return;
+            return $this->output->set_status_header(403)->set_output(lang('error403'));
         }
         if (!empty($extlogourl)) {
             if (!$this->_submit_validate_extlogo()) {
-                set_status_header(403);
-                echo lang('rr_errextlogourl');
-                return;
+                return $this->output->set_status_header(403)->set_output(lang('rr_errextlogourl'));
             }
             $this->load->library('curl');
             $datafile = $this->curl->simple_get($extlogourl);
@@ -305,12 +263,10 @@ class Logomngmt extends MY_Controller
                     echo lang('rr_errextlogourlformat');
                     return;
                 }
-                if (!function_exists('getimagesizefromstring'))
-                {
-                    function getimagesizefromstring($string_data)
-                    {
-                      $uri = 'data://application/octet-stream;base64,'  . base64_encode($string_data);
-                      return getimagesize($uri);
+                if (!function_exists('getimagesizefromstring')) {
+                    function getimagesizefromstring($string_data) {
+                        $uri = 'data://application/octet-stream;base64,' . base64_encode($string_data);
+                        return getimagesize($uri);
                     }
                 }
                 $imagesize = getimagesizefromstring($datafile);
@@ -337,14 +293,12 @@ class Logomngmt extends MY_Controller
                 $this->em->flush();
                 echo lang('rr_logoisassigned');
                 return;
-            }
-            else {
+            } else {
                 set_status_header(403);
                 echo $this->curl->error_string;
                 return;
             }
-        }
-        elseif (!empty($logofile)) {
+        } elseif (!empty($logofile)) {
             if (empty($upload_enabled) || empty($upload_logos_path)) {
                 set_status_header(403);
                 echo 'Upload images feature is disabled';
@@ -369,28 +323,24 @@ class Logomngmt extends MY_Controller
                 if ($this->upload->do_upload()) {
                     echo lang('rr_imguploaded');
                     return;
-                }
-                else {
+                } else {
                     set_status_header(403);
                     echo $this->upload->display_errors();
                     return;
                 }
-            }
-            else {
+            } else {
                 set_status_header(403);
                 echo "missing upload";
                 return;
             }
-        }
-        else {
+        } else {
             set_status_header(500);
             echo 'Unknown error';
             return;
         }
     }
 
-    public function provider($type = null, $id = null)
-    {
+    public function provider($type = null, $id = null) {
         if (empty($type) || empty($id) || !ctype_digit($id) || !(strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0)) {
             show_error('Not found', 404);
         }
@@ -407,13 +357,12 @@ class Logomngmt extends MY_Controller
         $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
         $unlocked = !($provider->getLocked());
         $local = $provider->getLocal();
-        $canEdit = (boolean) ($has_write_access && $unlocked && $local);
+        $canEdit = (boolean)($has_write_access && $unlocked && $local);
 
         if ($canEdit) {
             $data['canEdit'] = TRUE;
             $data['showavailable'] = TRUE;
-        }
-        else {
+        } else {
             $data['canEdit'] = FALSE;
             $data['showavailable'] = FALSE;
         }
@@ -450,13 +399,12 @@ class Logomngmt extends MY_Controller
         $data['content_view'] = 'manage/logomngmt_view';
         $data['sub'] = lang('assignedlogoslistfor') . ' ';
         $lang = MY_Controller::getLang();
-        $displayname = $provider->getNameToWebInLang($lang,$type);
-        if(empty($displayname))
-        {
+        $displayname = $provider->getNameToWebInLang($lang, $type);
+        if (empty($displayname)) {
             $displayname = $provider->getEntityId();
         }
 
-        $data['titlepage'] = '<a href="'.base_url().'providers/detail/show/'.$provider->getId().'">'.$displayname.'</a>';
+        $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $provider->getId() . '">' . $displayname . '</a>';
         $data['subtitlepage'] = lang('rr_logosmngt');
         $data['provider_detail']['name'] = $provider->getName();
         $data['provider_detail']['id'] = $provider->getId();
