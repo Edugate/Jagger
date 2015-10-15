@@ -119,21 +119,19 @@ class Logomngmt extends MY_Controller
         }
         $new_logoname = $explodedLogopost['0'];
         $original_sizes = explode('x', $explodedLogopost['1']);
-        $logo_attr = array();
         if (empty($new_logoname)) {
             return $this->output->set_status_header(403)->set_output(lang('error403'));
         }
-        $width = $this->input->post('width');
-        $height = $this->input->post('height');
-        if (!empty($width)) {
-            $logo_attr['width'] = $width;
-        }
-        if (!empty($height)) {
-            $logo_attr['height'] = $height;
-        }
+        $logo_attr = array(
+            'width' => $this->input->post('width'),
+            'height' => $this->input->post('height')
+        );
+
         if (empty($logo_attr['width']) && empty($logo_attr['height'])) {
-            $logo_attr['width'] = $original_sizes['0'];
-            $logo_attr['height'] = $original_sizes['1'];
+            $logo_attr = array(
+                'width' => $original_sizes['0'],
+                'height' => $original_sizes['1']
+            );
         }
         /**
          * @var models\ExtendMetadata $parent
@@ -383,7 +381,7 @@ class Logomngmt extends MY_Controller
         $data['content_view'] = 'manage/logomngmt_view';
         $data['sub'] = lang('assignedlogoslistfor') . ' ';
         $myLang = MY_Controller::getLang();
-        $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $provider->getId() . '">' .  $provider->getNameToWebInLang($myLang, $type) . '</a>';
+        $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $provider->getId() . '">' . $provider->getNameToWebInLang($myLang, $type) . '</a>';
         $data['subtitlepage'] = lang('rr_logosmngt');
         $data['provider_detail']['name'] = $provider->getName();
         $data['provider_detail']['id'] = $provider->getId();
