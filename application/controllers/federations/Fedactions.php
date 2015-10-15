@@ -1,122 +1,125 @@
 <?php
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
-
+/**
+ * @package   Jagger
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
+ */
 class Fedactions extends MY_Controller
 {
-    private $tmp_providers;
+    protected $tmpProviders;
 
-    function __construct()
-    {
+    function __construct() {
         parent::__construct();
-        $this->load->helper(array('cert', 'form'));
         MY_Controller::$menuactive = 'fed';
-        $this->load->library('j_ncache');
-        $this->tmp_providers = new models\Providers;
+        $this->tmpProviders = new models\Providers;
     }
 
 
-    function changestatus()
-    {
+    function changestatus() {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
-            set_status_header(403);
-            echo 'access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         $status = trim($this->input->post('status'));
         $fedname = trim($this->input->post('fedname'));
         if (empty($status) || empty($fedname)) {
-            set_status_header(403);
-            echo 'missing arguments';
-            return;
+            return $this->output->set_status_header(403)->set_output('Missing params in post');
         }
+        /**
+         * @var models\Federation $federation
+         */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => '' . htmlspecialchars(base64url_decode($fedname)) . ''));
-        if (empty($federation)) {
-            set_status_header(404);
-            echo 'Federarion not found';
-            return;
+        if ($federation === null) {
+            return $this->output->set_status_header(404)->set_output('Federation not found');
         }
         $this->load->library('zacl');
-        $has_manage_access = $this->zacl->check_acl('f_' . $federation->getId(), 'manage', 'federation', '');
-        if (!$has_manage_access) {
-            set_status_header(403);
-            echo 'Access denied';
-            return;
+        $hasManageAccess = $this->zacl->check_acl('f_' . $federation->getId(), 'manage', 'federation', '');
+        if (!$hasManageAccess) {
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         $currentStatus = $federation->getActive();
         if ($currentStatus && strcmp($status, 'disablefed') == 0) {
             $federation->setAsDisactive();
             $this->em->persist($federation);
             $this->em->flush();
-            echo "deactivated";
-            return;
+            return $this->output->set_status_header(200)->set_output('deactivated');
         } elseif (!$currentStatus && strcmp($status, 'enablefed') == 0) {
             $federation->setAsActive();
             $this->em->persist($federation);
             $this->em->flush();
-            echo "activated";
-            return;
+            return $this->output->set_status_header(200)->set_output('activated');
         } elseif (!$currentStatus && strcmp($status, 'delfed') == 0) {
             /**
              * @todo finish
              */
-            $this->load->library('Approval');
+            $this->load->library('approval');
             $q = $this->approval->removeFederation($federation);
             $this->em->persist($q);
             $this->em->flush();
-            echo "todelete";
-            return;
+            return $this->output->set_status_header(200)->set_output('todelete');
         }
-        set_status_header(403);
-        echo "incorrect params sent";
-        return;
+        return $this->output->set_status_header(403)->set_output('incorrect params sent');
     }
 
-    function addbulk($fed_name, $type, $message = null)
-    {
+    /**
+     * @param $federationName
+     * @param $type
+     * @param null $message
+     */
+    function addbulk($federationName, $type, $message = null) {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library(array('zacl'));
-        $form_elements = array();
-        if (strcasecmp($type, 'idp') == 0 || strcasecmp($type, 'sp') == 0) {
-            /**
-             * @var $federation models\Federation
-             */
-            $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($fed_name)));
-            if (empty($federation)) {
-                show_error(lang('error_fednotfound'), 404);
-            }
-
-            $hasAddbulkAccess = $this->zacl->check_acl('f_'.$federation->getId(), 'addbulk', 'federation', '');
-            if (!$hasAddbulkAccess) {
-                $data['content_view'] = 'nopermission';
-                $data['error'] = lang('rr_noperm');
-                return $this->load->view('page', $data);
-            }
-            $data['federation_name'] = $federation->getName();
-            $data['federation_urn'] = $federation->getUrn();
-            $data['federation_desc'] = $federation->getDescription();
-            $data['federation_is_active'] = $federation->getActive();
-            $federationMembers = $federation->getMembers();
-            if (strcasecmp($type, 'idp') == 0) {
-                $providers = $this->tmp_providers->getIdps();
-                $data['subtitlepage'] = lang('rr_addnewidpsnoinv');
-            } else {
-                $providers = $this->tmp_providers->getSps();
-                $data['subtitlepage'] = lang('rr_addnewspsnoinv');
-            }
-            $data['memberstype'] = strtolower($type);
-        } else {
+        $formElements = array();
+        /**
+         * @var models\Provider[] $providers
+         */
+        if (strcasecmp($type, 'idp') != 0 && strcasecmp($type, 'sp') != 0) {
             log_message('error', 'type is expected to be sp or idp but ' . $type . 'given');
             show_error('wrong type', 404);
         }
+
+        /**
+         * @var models\Federation $federation
+         */
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($federationName)));
+        if ($federation === null) {
+            show_error(lang('error_fednotfound'), 404);
+        }
+
+        $hasAddbulkAccess = $this->zacl->check_acl('f_' . $federation->getId(), 'addbulk', 'federation', '');
+        if (!$hasAddbulkAccess) {
+            $data['content_view'] = 'nopermission';
+            $data['error'] = lang('rr_noperm');
+            return $this->load->view('page', $data);
+        }
+        $data['federation_name'] = $federation->getName();
+        $data['federation_urn'] = $federation->getUrn();
+        $data['federation_desc'] = $federation->getDescription();
+        $data['federation_is_active'] = $federation->getActive();
+        $federationMembers = $federation->getMembers();
+
+        if (strcasecmp($type, 'idp') == 0) {
+            $providers = $this->tmpProviders->getIdps();
+            $data['subtitlepage'] = lang('rr_addnewidpsnoinv');
+        } else {
+            $providers = $this->tmpProviders->getSps();
+            $data['subtitlepage'] = lang('rr_addnewspsnoinv');
+        }
+        $data['memberstype'] = strtolower($type);
+
         foreach ($providers as $i) {
             if (!$federationMembers->contains($i)) {
                 $checkbox = array(
                     'id' => 'member[' . $i->getId() . ']',
                     'name' => 'member[' . $i->getId() . ']',
                     'value' => 1,);
-                $form_elements[] = array(
+                $formElements[] = array(
                     'name' => $i->getName() . ' (' . $i->getEntityId() . ')',
                     'box' => form_checkbox($checkbox),
                 );
@@ -124,8 +127,8 @@ class Fedactions extends MY_Controller
         }
 
         $data['content_view'] = 'federation/bulkadd_view';
-        $data['form_elements'] = $form_elements;
-        $data['fed_encoded'] = $fed_name;
+        $data['form_elements'] = $formElements;
+        $data['fed_encoded'] = $federationName;
         $data['message'] = $message;
         $data['titlepage'] = lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . $data['fed_encoded'] . '">' . html_escape($federation->getName()) . '</a>';
         $data['breadcrumbs'] = array(
@@ -136,8 +139,7 @@ class Fedactions extends MY_Controller
         $this->load->view('page', $data);
     }
 
-    public function bulkaddsubmit()
-    {
+    public function bulkaddsubmit() {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
@@ -152,11 +154,15 @@ class Fedactions extends MY_Controller
         if (empty($federation)) {
             show_error('federation not found', 404);
         }
-        $hasAddbulkAccess = $this->zacl->check_acl('f_'.$federation->getId(), 'addbulk', 'federation', '');
+        $hasAddbulkAccess = $this->zacl->check_acl('f_' . $federation->getId(), 'addbulk', 'federation', '');
         if (!$hasAddbulkAccess) {
-            $data = array('content_view'>'nopermission','error'=>lang('rr_noperm'));
+            $data = array('content_view' => 'nopermission', 'error' => lang('rr_noperm'));
             return $this->load->view('page', $data);
         }
+        /**
+         * @var models\Provider[] $existingMembers
+         * @var models\Provider[] $newMembersList
+         */
         $existingMembers = $federation->getMembershipProviders();
         $m = $this->input->post('member');
         if (!empty($m) && is_array($m) && count($m) > 0) {
@@ -180,6 +186,9 @@ class Fedactions extends MY_Controller
                     $this->em->persist($newMembership);
                 } else {
                     $doFilter = array('' . $federation->getId() . '');
+                    /**
+                     * @var models\FederationMembers[] $m1
+                     */
                     $m1 = $nmember->getMembership()->filter(
                         function (models\FederationMembers $entry) use ($doFilter) {
                             return (in_array($entry->getFederation()->getId(), $doFilter));
