@@ -207,12 +207,10 @@ class Logomngmt extends MY_Controller
     }
 
     public function uploadlogos() {
-        if (!$this->input->is_ajax_request()) {
-            return $this->output->set_status_header(403)->set_output('Method not allowed');
+        if (!$this->input->is_ajax_request()|| !$this->jauth->isLoggedIn()) {
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
-        if (!$this->jauth->isLoggedIn()) {
-            return $this->output->set_status_header(403)->set_output(lang('errsess'));
-        }
+
         $upload_enabled = $this->config->item('rr_logoupload');
         $upload_logos_path = trim($this->config->item('rr_logoupload_relpath'));
         $extlogourl = $this->input->post('extlogourl');
@@ -233,11 +231,11 @@ class Logomngmt extends MY_Controller
             return $this->output->set_status_header(404)->set_output(lang('rerror_provnotfound'));
         }
         $this->load->library('zacl');
-        $hasWriteAccess = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
-        $local = $provider->getLocal();
-        $locked = $provider->getLocked();
-        $canEdit = (boolean)($hasWriteAccess && !$locked && $local);
-        if (!$canEdit) {
+        if ($upload_enabled !== true || empty($upload_logos_path)) {
+            return $this->output->set_status_header(403)->set_output('Upload images feature is disabled');
+        }
+        $canProceed = (boolean)($this->zacl->check_acl($provider->getId(), 'write', 'entity', '') && !$provider->getLocked() && $provider->getLocal());
+        if ($canProceed !== true) {
             return $this->output->set_status_header(403)->set_output(lang('error403'));
         }
         if (!empty($extlogourl)) {
@@ -293,9 +291,7 @@ class Logomngmt extends MY_Controller
                 return $this->output->set_status_header(403)->set_output($this->curl->error_string);
             }
         } elseif (!empty($logofile)) {
-            if (empty($upload_enabled) || empty($upload_logos_path)) {
-                return $this->output->set_status_header(403)->set_output('Upload images feature is disabled');
-            }
+
             if (substr($upload_logos_path, 0, 1) == '/') {
                 log_message('error', 'upload_logos_path in you config must not begin with forward slash');
                 return $this->output->set_status_header(500)->set_output('System error ocurred');
