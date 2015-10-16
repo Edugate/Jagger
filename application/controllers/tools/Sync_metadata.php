@@ -136,7 +136,7 @@ class Sync_metadata extends CI_Controller
         }
 
         $protectpass = $this->config->item('syncpass');
-        if (empty($protectpass) || strlen($protectpass) < 10 || strcmp($protectpass, $syncpass) != 0) {
+        if (strlen($protectpass) < 10 || $protectpass !== $syncpass) {
             return $this->output->set_status_header(403)->set_output('Access Denied - invalid token');
         }
         $conditions_default = array(
@@ -151,7 +151,7 @@ class Sync_metadata extends CI_Controller
             'email'          => null,
         );
         $conditions_in_array = array();
-        if (!empty($conditions_to_set)) {
+        if ($conditions_to_set !== null) {
             $conditions_in_array = unserialize(base64url_decode($conditions_to_set));
         }
         $conditions = array_merge($conditions_default, $conditions_in_array);
@@ -159,17 +159,13 @@ class Sync_metadata extends CI_Controller
 
         $url = base64url_decode($encoded_url);
         $federationurn = base64url_decode($encoded_federationurn);
-        $tmp_feds = new models\Federations();
-        $fed = $tmp_feds->getOneByUrn($federationurn);
-        if (empty($fed)) {
+        $tmpFeds = new models\Federations();
+        $fed = $tmpFeds->getOneByUrn($federationurn);
+        if ($fed === null) {
             return $this->output->set_status_header(500)->set_output('Federation not found');
         }
         log_message('debug', __METHOD__ . ' downloading metadata from ' . $url);
-        $time_start = microtime(true);
         $metadata_body = $this->curl->simple_get($url);
-        $time_end = microtime(true);
-        $exectime = $time_end - $time_start;
-        log_message('debug', __METHOD__ . ' time execustion of downloading metadata from ' . $url . ' :: ' . $exectime . ' seconds');
         if (empty($metadata_body)) {
             return $this->output->set_status_header(500)->set_output('could not retrieve data from');
         }
