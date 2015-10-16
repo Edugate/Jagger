@@ -514,17 +514,9 @@ class Metadata2array
             if ($enode->nodeName === 'mdui:DiscoHints' && $enode->hasChildNodes()) {
                 foreach ($enode->childNodes as $agnode) {
                     if ($agnode->nodeName === 'mdui:GeolocationHint') {
-                        $geovalue = explode(',', str_ireplace('geo:', '', $agnode->nodeValue));
-                        if (count($geovalue) == 2) {
-                            $numericvalues = true;
-                            foreach ($geovalue as $g) {
-                                if (!is_numeric($g)) {
-                                    $numericvalues = false;
-                                }
-                            }
-                            if ($numericvalues === true) {
-                                $ext['geo'][] = array_values($geovalue);
-                            }
+                        $geovalue = $this->convertGeoToArray($agnode->nodeValue);
+                        if(is_array($geovalue)){
+                            $ext['geo'][] = $geovalue;
                         }
                     } elseif ($agnode->nodeName === 'mdui:IPHint') {
                         $ext['iphint'][] = trim($agnode->nodeValue);
@@ -536,6 +528,26 @@ class Metadata2array
         }
 
         return $ext;
+    }
+
+    /**
+     * @param $val
+     * @return array|null
+     */
+    private function convertGeoToArray($val){
+        $geovalue = explode(',', str_ireplace('geo:', '', $val));
+        if (count($geovalue) == 2) {
+            $numericvalues = true;
+            foreach ($geovalue as $g) {
+                if (!is_numeric($g)) {
+                    $numericvalues = false;
+                }
+            }
+            if ($numericvalues === true) {
+                return array_values($geovalue);
+            }
+        }
+        return null;
     }
 
     private function organizationConvert(\DOMElement $node) {
