@@ -130,14 +130,17 @@ class Sync_metadata extends CI_Controller
      */
     public function semiautomatic($syncpass, $encoded_url, $encoded_federationurn, $conditions_to_set = null) {
 
+        if(!is_cli()){
+            return $this->output->set_status_header(403)->set_output('Access denied'.PHP_EOL);
+        }
         $featenabled = $this->config->item('featdisable');
         if (is_array($featenabled) && isset($featenabled['metasync'])) {
-            return $this->output->set_status_header(403)->set_output('denied');
+            return $this->output->set_status_header(403)->set_output('ERROR: Access denied - metasync is not enabled'.PHP_EOL);
         }
 
         $protectpass = $this->config->item('syncpass');
         if (strlen($protectpass) < 10 || $protectpass !== $syncpass) {
-            return $this->output->set_status_header(403)->set_output('Access Denied - invalid token');
+            return $this->output->set_status_header(403)->set_output('ERROR: Access Denied - invalid token'.PHP_EOL);
         }
         $conditions_default = array(
             'type'           => 'all',
