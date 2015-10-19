@@ -107,6 +107,8 @@ class Mailtemplates extends MY_Controller
         $data['groupdropdown'] = $groupDropdown;
         $data['langdropdown'] = $langsDropdown;
         $data['mailtmplGroups'] = Email_sender::mailTemplatesGroups();
+
+
         if ($this->submitValidate($data['newtmpl']) !== true) {
             $data['content_view'] = 'manage/mailtemplatesedit_view';
             return $this->load->view('page', $data);
@@ -136,10 +138,8 @@ class Mailtemplates extends MY_Controller
 
         $mTemplate->setBody($this->input->post('msgbody'));
         $mTemplate->setSubject($this->input->post('msgsubj'));
-        $tEnabled = (bool)(!empty($nmsgenabled) && $nmsgenabled === 'yes');
-        $mTemplate->setEnabled($tEnabled);
-        $tAttach = (bool)(!empty($nmsgattach) && $nmsgattach === 'yes');
-        $mTemplate->setAlwaysAttach($tAttach);
+        $mTemplate->setEnabled( $nmsgenabled === 'yes');
+        $mTemplate->setAlwaysAttach($nmsgattach === 'yes');
 
         $this->em->persist($mTemplate);
         try {
