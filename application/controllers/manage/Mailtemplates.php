@@ -40,7 +40,18 @@ class Mailtemplates extends MY_Controller
         $this->form_validation->set_rules('msgsubj', lang('mtmplsbj'), 'required|xss_clean');
 
         $this->form_validation->set_rules('msgbody', lang('mtmplbody'), 'required');
+
         return $this->form_validation->run();
+    }
+
+    private function getMailtmpGroups() {
+        $mailtmplGroups = Email_sender::mailTemplatesGroups();
+        $groupDropdown = array();
+        foreach ($mailtmplGroups as $k => $v) {
+            $groupDropdown['' . $k . ''] = lang('' . $v['desclang'] . '');
+        }
+
+        return $groupDropdown;
     }
 
     public function edit($mailTempId = null) {
@@ -49,43 +60,39 @@ class Mailtemplates extends MY_Controller
         }
 
         $langsDropdown = MY_Controller::$langselect;
-        $mailtmplGroups = Email_sender::mailTemplatesGroups();
-        $groupDropdown = array();
-        foreach ($mailtmplGroups as $k => $v) {
-            $groupDropdown['' . $k . ''] = lang('' . $v['desclang'] . '');
-        }
+        $groupDropdown = $this->getMailtmpGroups();
         /**
          * @var models\MailLocalization $mTemplate
          */
         if ($mailTempId === null) {
             $mTemplate = new models\MailLocalization;
             $data = array(
-                'msgsubj' => '',
-                'msgbody' => '',
-                'msglang' => '',
-                'msgenabled' => TRUE,
-                'msgdefault' => FALSE,
-                'msgattach' => FALSE,
-                'newtmpl' => TRUE,
-                'titlepage' => lang('title_mailtmplnew'),
-                'success' => lang('msgtmpladded'),
+                'msgsubj'    => '',
+                'msgbody'    => '',
+                'msglang'    => '',
+                'msgenabled' => true,
+                'msgdefault' => false,
+                'msgattach'  => false,
+                'newtmpl'    => true,
+                'titlepage'  => lang('title_mailtmplnew'),
+                'success'    => lang('msgtmpladded'),
             );
         } elseif (ctype_digit($mailTempId)) {
-            $mTemplate = $this->em->getRepository("models\MailLocalization")->findOneById($mailTempId);
+            $mTemplate = $this->em->getRepository('models\MailLocalization')->findOneBy(array('id'=>$mailTempId));
             if ($mTemplate === null) {
                 show_error('Not found', 404);
             }
             $data = array(
-                'msggroup' => $mTemplate->getGroup(),
-                'msgsubj' => $mTemplate->getSubject(),
-                'msgbody' => $mTemplate->getBody(),
-                'msglang' => $mTemplate->getLanguage(),
+                'msggroup'   => $mTemplate->getGroup(),
+                'msgsubj'    => $mTemplate->getSubject(),
+                'msgbody'    => $mTemplate->getBody(),
+                'msglang'    => $mTemplate->getLanguage(),
                 'msgenabled' => $mTemplate->isEnabled(),
                 'msgdefault' => $mTemplate->isDefault(),
-                'msgattach' => $mTemplate->isAlwaysAttached(),
-                'newtmpl' => false,
-                'success' => lang('msgtmplupdated'),
-                'titlepage' => lang('title_mailtmpledit'),
+                'msgattach'  => $mTemplate->isAlwaysAttached(),
+                'newtmpl'    => false,
+                'success'    => lang('msgtmplupdated'),
+                'titlepage'  => lang('title_mailtmpledit'),
             );
         } else {
             show_error('Incorrect arg passed', 404);
@@ -99,52 +106,51 @@ class Mailtemplates extends MY_Controller
         );
         $data['groupdropdown'] = $groupDropdown;
         $data['langdropdown'] = $langsDropdown;
-        $data['mailtmplGroups'] = $mailtmplGroups;
+        $data['mailtmplGroups'] = Email_sender::mailTemplatesGroups();
         if ($this->submitValidate($data['newtmpl']) !== true) {
             $data['content_view'] = 'manage/mailtemplatesedit_view';
-            $this->load->view('page', $data);
-        } else {
+            return $this->load->view('page', $data);
+        }
 
-            $nmsgenabled = $this->input->post('msgenabled');
-            $nmsgdefault = $this->input->post('msgdefault');
-            $nmsgattach = $this->input->post('msgattach');
+        $nmsgenabled = $this->input->post('msgenabled');
+        $nmsgdefault = $this->input->post('msgdefault');
+        $nmsgattach = $this->input->post('msgattach');
 
-            if ($data['newtmpl'] === true) {
-                $mTemplate->setLanguage($this->input->post('msglang'));
-                $mTemplate->setGroup($this->input->post('msggroup'));
-            }
-            $tDefault = (bool)(!empty($nmsgdefault) && strcmp($nmsgdefault, 'yes') == 0);
-            $mTemplate->setDefault($tDefault);
-            if ($tDefault) {
-                $mid = $mTemplate->getId();
-                /**
-                 * @var models\MailLocalization $existingDefault
-                 */
-                $existingDefault = $this->em->getRepository("models\MailLocalization")->findOneBy(array('mgroup' => $mTemplate->getGroup(), 'isdefault' => true));
-                if ($existingDefault !== null && (empty($mid) || ($mid !== $existingDefault->getId()) )) {
-                    $existingDefault->setDefault(false);
-                    $this->em->persist($existingDefault);
+        if ($data['newtmpl'] === true) {
+            $mTemplate->setLanguage($this->input->post('msglang'));
+            $mTemplate->setGroup($this->input->post('msggroup'));
+        }
+        $mTemplate->setDefault(($nmsgdefault === 'yes'));
+        if ($nmsgdefault === 'yes') {
+            $mid = $mTemplate->getId();
+            /**
+             * @var models\MailLocalization $existingDefault
+             */
+            $existingDefault = $this->em->getRepository("models\MailLocalization")->findOneBy(array('mgroup' => $mTemplate->getGroup(), 'isdefault' => true));
+            if ($existingDefault !== null && ($mid !== $existingDefault->getId())) {
+                $existingDefault->setDefault(false);
+                $this->em->persist($existingDefault);
 
-                }
-            }
-
-            $mTemplate->setBody($this->input->post('msgbody'));
-            $mTemplate->setSubject($this->input->post('msgsubj'));
-            $tEnabled = (bool)(!empty($nmsgenabled) && strcmp($nmsgenabled, 'yes') == 0);
-            $mTemplate->setEnabled($tEnabled);
-            $tAttach = (bool)(!empty($nmsgattach) && strcmp($nmsgattach, 'yes') == 0);
-            $mTemplate->setAlwaysAttach($tAttach);
-
-            $this->em->persist($mTemplate);
-            try {
-                $this->em->flush();
-                $data['content_view'] = 'manage/mailtemplateseditsuccess_view';
-                $this->load->view('page', $data);
-            } catch (Exception $e) {
-                log_message('error', __METHOD__ . ' ' . $e);
-                show_error(500,'Internal server error');
             }
         }
+
+        $mTemplate->setBody($this->input->post('msgbody'));
+        $mTemplate->setSubject($this->input->post('msgsubj'));
+        $tEnabled = (bool)(!empty($nmsgenabled) && $nmsgenabled === 'yes');
+        $mTemplate->setEnabled($tEnabled);
+        $tAttach = (bool)(!empty($nmsgattach) && $nmsgattach === 'yes');
+        $mTemplate->setAlwaysAttach($tAttach);
+
+        $this->em->persist($mTemplate);
+        try {
+            $this->em->flush();
+            $data['content_view'] = 'manage/mailtemplateseditsuccess_view';
+            $this->load->view('page', $data);
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
+            show_error(500, 'Internal server error');
+        }
+
 
     }
 
@@ -153,6 +159,9 @@ class Mailtemplates extends MY_Controller
             show_error('Permission denied', 403);
         }
         $data['showaddbtn'] = true;
+        /**
+         * @var models\MailLocalization[] $mtemplates
+         */
         $mtemplates = $this->em->getRepository("models\MailLocalization")->findAll();
         $templgroups = Email_sender::mailTemplatesGroups();
         foreach ($mtemplates as $t) {
