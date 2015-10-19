@@ -54,6 +54,20 @@ class Mailtemplates extends MY_Controller
         return $groupDropdown;
     }
 
+    private function getMailTemplate($mid = null) {
+        $mTemplate = null;
+        if ($mid === null) {
+            $mTemplate = new models\MailLocalization;
+            $mTemplate->setEnabled(true);
+            $mTemplate->setDefault(false);
+            $mTemplate->isAlwaysAttached(false);
+        } elseif (ctype_digit($mid)) {
+            $mTemplate = $this->em->getRepository('models\MailLocalization')->findOneBy(array('id' => $mid));
+        }
+
+        return $mTemplate;
+    }
+
     public function edit($mailTempId = null) {
         if (!$this->jauth->isAdministrator()) {
             show_error('Permission denied', 403);
@@ -64,53 +78,40 @@ class Mailtemplates extends MY_Controller
         /**
          * @var models\MailLocalization $mTemplate
          */
-        if ($mailTempId === null) {
-            $mTemplate = new models\MailLocalization;
-            $data = array(
-                'msgsubj'    => '',
-                'msgbody'    => '',
-                'msglang'    => '',
-                'msgenabled' => true,
-                'msgdefault' => false,
-                'msgattach'  => false,
-                'newtmpl'    => true,
-                'titlepage'  => lang('title_mailtmplnew'),
-                'success'    => lang('msgtmpladded'),
-            );
-        } elseif (ctype_digit($mailTempId)) {
-            $mTemplate = $this->em->getRepository('models\MailLocalization')->findOneBy(array('id'=>$mailTempId));
-            if ($mTemplate === null) {
-                show_error('Not found', 404);
-            }
-            $data = array(
-                'msggroup'   => $mTemplate->getGroup(),
-                'msgsubj'    => $mTemplate->getSubject(),
-                'msgbody'    => $mTemplate->getBody(),
-                'msglang'    => $mTemplate->getLanguage(),
-                'msgenabled' => $mTemplate->isEnabled(),
-                'msgdefault' => $mTemplate->isDefault(),
-                'msgattach'  => $mTemplate->isAlwaysAttached(),
-                'newtmpl'    => false,
-                'success'    => lang('msgtmplupdated'),
-                'titlepage'  => lang('title_mailtmpledit'),
-            );
-        } else {
-            show_error('Incorrect arg passed', 404);
+        $mTemplate = $this->getMailTemplate($mailTempId);
+        if ($mTemplate === null) {
+            show_error('Not found', 404);
         }
-
-
-        $data['breadcrumbs'] = array(
-            array('url' => '#', 'name' => lang('rr_administration'), 'type' => 'unavailable'),
-            array('url' => base_url('manage/mailtemplates/showlist'), 'name' => lang('title_mailtemplates')),
-            array('url' => '#', 'name' => lang('title_editform'), 'type' => 'current'),
+        $idExist = $mTemplate->getId();
+        $data = array(
+            'msggroup'       => $mTemplate->getGroup(),
+            'msgsubj'        => $mTemplate->getSubject(),
+            'msgbody'        => $mTemplate->getBody(),
+            'msglang'        => $mTemplate->getLanguage(),
+            'msgenabled'     => $mTemplate->isEnabled(),
+            'msgdefault'     => $mTemplate->isDefault(),
+            'msgattach'      => $mTemplate->isAlwaysAttached(),
+            'newtmpl'        => (bool)($idExist === null),
+            'titlepage'      => lang('title_mailtmplnew'),
+            'success'        => lang('msgtmpladded'),
+            'breadcrumbs'    => array(
+                array('url' => '#', 'name' => lang('rr_administration'), 'type' => 'unavailable'),
+                array('url' => base_url('manage/mailtemplates/showlist'), 'name' => lang('title_mailtemplates')),
+                array('url' => '#', 'name' => lang('title_editform'), 'type' => 'current'),
+            ),
+            'groupdropdown'  => $groupDropdown,
+            'langdropdown'   => $langsDropdown,
+            'mailtmplGroups' => Email_sender::mailTemplatesGroups(),
         );
-        $data['groupdropdown'] = $groupDropdown;
-        $data['langdropdown'] = $langsDropdown;
-        $data['mailtmplGroups'] = Email_sender::mailTemplatesGroups();
+        if ($idExist !== null) {
+            $data['success'] = lang('msgtmplupdated');
+            $data['titlepage'] = lang('title_mailtmpledit');
+        }
 
 
         if ($this->submitValidate($data['newtmpl']) !== true) {
             $data['content_view'] = 'manage/mailtemplatesedit_view';
+
             return $this->load->view('page', $data);
         }
 
@@ -138,7 +139,7 @@ class Mailtemplates extends MY_Controller
 
         $mTemplate->setBody($this->input->post('msgbody'));
         $mTemplate->setSubject($this->input->post('msgsubj'));
-        $mTemplate->setEnabled( $nmsgenabled === 'yes');
+        $mTemplate->setEnabled($nmsgenabled === 'yes');
         $mTemplate->setAlwaysAttach($nmsgattach === 'yes');
 
         $this->em->persist($mTemplate);
