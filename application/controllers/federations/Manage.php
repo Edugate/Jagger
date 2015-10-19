@@ -277,24 +277,25 @@ class Manage extends MY_Controller
         $editAttributesLink = '';
 
 
-        $breadcrumbs = array(
-            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
-            array('url' => '#', 'name' => '' . $federation->getName() . '', 'type' => 'current'),
-
-        );
-
         if (!$access['hasReadAccess'] && ($federation->getPublic() === false)) {
             return $this->load->view('page', array(
                 'content_view' => 'nopermission',
                 'error' => lang('rrerror_noperm_viewfed'),
-                'breadcrumbs' => $breadcrumbs
+                'breadcrumbs' => array(
+                    array(
+                        'url' => base_url('federations/manage'), 'name' => lang('rr_federations')
+                    ),
+                    array(
+                        'url' => '#', 'name' => '' . $federation->getName() . '', 'type' => 'current'
+                    ),
+
+                )
             ));
         }
 
 
         if (!$canEdit) {
             $sideicons[] = '<a href="#" title="' . lang('noperm_fededit') . '"><i class="fi-prohibited"></i></a>';
-
         } else {
             $sideicons[] = '<a href="' . base_url() . 'manage/fededit/show/' . $federationID . '" title="' . lang('rr_fededit') . '"><i class="fi-pencil"></i></a>';
             $editAttributesLink = '<a href="' . base_url() . 'manage/attrrequirement/fed/' . $federationID . ' " class="editbutton editicon button small">' . lang('rr_edit') . ' ' . lang('rr_attributes') . '</a>';
@@ -320,7 +321,11 @@ class Manage extends MY_Controller
             'federation_is_active' => $federation->getActive(),
             'titlepage' => lang('rr_feddetail') . ': ' . html_escape($federation->getName()),
             'content_view' => 'federation/federation_show_view',
-            'breadcrumbs' => $breadcrumbs,
+            'breadcrumbs' => array(
+                array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
+                array('url' => '#', 'name' => '' . $federation->getName() . '', 'type' => 'current'),
+
+            ),
             'fedpiechart' => '<div class="row"><div><canvas id="fedpiechart" ></canvas></div><div id="fedpiechartlegend"></div></div>',
             'sideicons' => &$sideicons,
             'result' => array('fvalidators' => array()),
@@ -351,7 +356,7 @@ class Manage extends MY_Controller
             array(lang('rr_downcontactsintxt'), $contactLists['idp'] . '<br />' . $contactLists['sp'] . '<br />' . $contactLists['all']),
             array(lang('rr_timeline'), '<a href="' . base_url('reports/timelines/showregistered/' . $federation->getId() . '') . '" class="button secondary">Diagram</a>')
         );
-        
+
         $data['result']['attrs'][] = array('data' => array('data' => $editAttributesLink . '', 'class' => 'text-right', 'colspan' => 2));
 
         foreach ($requiredAttributes as $key) {
