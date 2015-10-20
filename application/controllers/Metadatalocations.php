@@ -38,7 +38,7 @@ class Metadatalocations extends MY_Controller {
          * @var $idps models\Provider[]
          */
         $sps = $tmpProviders->getPublicSpsInNative();
-        $idps = $tmpProviders->getPublicIdps_inNative();
+        $idps = $tmpProviders->getPublicIdpsInNative();
         $farray = array();
         foreach($feds as $fed)
         {
