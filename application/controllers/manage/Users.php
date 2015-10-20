@@ -248,6 +248,46 @@ class Users extends MY_Controller
         return $bookmarks;
     }
 
+    private function genBasicProfile(models\User $user){
+
+        $systemTwoFactorAuthn = $this->config->item('twofactorauthn');
+        $secondFactor = $user->getSecondFactor();
+        $accessTypeStr = array();
+
+        if ($user->getLocal()) {
+            $accessTypeStr[] = lang('rr_local_authn');
+        }
+        if ($user->getFederated()) {
+            $accessTypeStr[] = lang('federated_access');
+        }
+
+        $result = array(
+            array('key' => lang('rr_username'), 'val' => html_escape($user->getUsername())),
+            array('key' => '' . lang('rr_userfullname') . '', 'val' => html_escape($user->getFullname())),
+            array('key' => '' . lang('rr_uemail') . '', 'val' => html_escape($user->getEmail())),
+            array('key' => '' . lang('rr_typeaccess') . '', 'val' => implode(', ', $accessTypeStr)),
+            array('key' => '' . lang('rr_assignedroles') . '', 'val' => '<span id="currentroles">' . implode(', ', $user->getSystemRoleNames()) . '</span> '),
+            array('key' => '' . lang('rrnotifications') . '', 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . base64url_encode($user->getUsername()) . '', lang('rrmynotifications')))
+        );
+
+        $twoFactorLabel = '<span data-tooltip aria-haspopup="true" class="has-tip" title="' . lang('rr_twofactorauthn') . '">' . lang('rr_twofactorauthn') . '</span>';
+
+        if ($secondFactor) {
+            $secondFactortext = '<span id="val2f" data-tooltip aria-haspopup="true" class="has-tip" title="' . $secondFactor . ' ">' . $secondFactor . '</span>';
+            if ($systemTwoFactorAuthn) {
+                $result[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . '');
+            } else {
+                $result[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . ' <span class="label alert">Disabled</span>');
+            }
+        } elseif ($systemTwoFactorAuthn) {
+            $secondFactortext = '<span id="val2f" data-tooltip aria-haspopup="true" class="has-tip" title="none">none</span>';
+            $result[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext);
+        }
+
+        return $result;
+
+    }
+
     public function show($encodedUsername) {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
@@ -277,42 +317,9 @@ class Users extends MY_Controller
         }
 
 
-        $localAccess = $user->getLocal();
-        $federatedAccess = $user->getFederated();
-
-        $systemTwoFactorAuthn = $this->config->item('twofactorauthn');
-        $secondFactor = $user->getSecondFactor();
-        $accessTypeStr = array();
-        if ($localAccess) {
-            $accessTypeStr[] = lang('rr_local_authn');
-        }
-        if ($federatedAccess) {
-            $accessTypeStr[] = lang('federated_access');
-        }
+        $tab1 = $this->genBasicProfile($user);
 
 
-        $twoFactorLabel = '<span data-tooltip aria-haspopup="true" class="has-tip" title="' . lang('rr_twofactorauthn') . '">' . lang('rr_twofactorauthn') . '</span>';
-
-        $tab1 = array(
-            array('key' => lang('rr_username'), 'val' => html_escape($user->getUsername())),
-            array('key' => '' . lang('rr_userfullname') . '', 'val' => html_escape($user->getFullname())),
-            array('key' => '' . lang('rr_uemail') . '', 'val' => html_escape($user->getEmail())),
-            array('key' => '' . lang('rr_typeaccess') . '', 'val' => implode(', ', $accessTypeStr)),
-            array('key' => '' . lang('rr_assignedroles') . '', 'val' => '<span id="currentroles">' . implode(', ', $user->getSystemRoleNames()) . '</span> '),
-            array('key' => '' . lang('rrnotifications') . '', 'val' => anchor(base_url() . 'notifications/subscriber/mysubscriptions/' . $encodedUsername . '', lang('rrmynotifications')))
-        );
-
-        if ($secondFactor) {
-            $secondFactortext = '<span id="val2f" data-tooltip aria-haspopup="true" class="has-tip" title="' . $secondFactor . ' ">' . $secondFactor . '</span>';
-            if ($systemTwoFactorAuthn) {
-                $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . '');
-            } else {
-                $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext . ' <span class="label alert">Disabled</span>');
-            }
-        } elseif ($systemTwoFactorAuthn) {
-            $secondFactortext = '<span id="val2f" data-tooltip aria-haspopup="true" class="has-tip" title="none">none</span>';
-            $tab1[] = array('key' => '' . $twoFactorLabel . '', 'val' => '' . $secondFactortext);
-        }
 
         $tab2[] = array('key' => lang('rr_bookmarked'), 'val' => implode('', $this->getBookmarks($user)));
 
