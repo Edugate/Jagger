@@ -15,35 +15,20 @@ use \Doctrine\ORM\Query\ResultSetMapping;
  * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
  */
-
 class Providers
 {
     protected $providers;
     protected $em;
     protected $ci;
 
-    function __construct()
-    {
+    function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    public function getCircleMembers(Provider $provider)
-    {
-        $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
-        $federations = $provider->getFederations();
-        foreach ($federations->getValues() as $f) {
-            $y = $f->getMembers();
-            foreach ($y->getKeys() as $key) {
-                $this->providers->set($key, $y->get($key));
-            }
-        }
-        return $this->providers;
-    }
 
-    public function getTrustedActiveFeds(Provider $provider)
-    {
+    public function getTrustedActiveFeds(Provider $provider) {
         $feds = new \Doctrine\Common\Collections\ArrayCollection();
         $query = $this->em->createQuery("SELECT m,f FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = ?1 AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
         $query->setParameter(1, $provider->getId());
@@ -51,11 +36,11 @@ class Providers
         foreach ($result as $r) {
             $feds->add($r->getFederation());
         }
+
         return $feds;
     }
 
-    public function getSPsForArp(Provider $provider)
-    {
+    public function getSPsForArp(Provider $provider) {
         $query1 = $this->em->createQuery("SELECT partial m.{id, federation},partial f.{id} FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = ?1 AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
         $query1->setParameter(1, $provider->getId());
         $query1->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
@@ -75,11 +60,11 @@ class Providers
         foreach ($result as $r) {
             $r2->add($r);
         }
+
         return $r2;
     }
 
-    public function getSPsForArpIncEntCats(Provider $provider, array $excludedEntityIDs)
-    {
+    public function getSPsForArpIncEntCats(Provider $provider, array $excludedEntityIDs) {
         $query1 = $this->em->createQuery("SELECT partial m.{id, federation},partial f.{id} FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = ?1 AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
         $query1->setParameter(1, $provider->getId());
         $query1->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
@@ -91,12 +76,10 @@ class Providers
         if (count($feds) == 0) {
             return array();
         }
-        if(count($excludedEntityIDs)>0) {
+        if (count($excludedEntityIDs) > 0) {
             $query = $this->em->createQuery("SELECT partial p.{id, entityid,type},partial m.{id, provider, federation},partial f.{id},c FROM models\Provider p LEFT JOIN p.membership m LEFT JOIN m.federation f LEFT JOIN p.coc c WHERE m.federation IN (:feds) AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.entityid NOT IN (:excludedents) AND  p.type IN ('SP','BOTH') AND  p.is_active = '1' AND p.is_approved = '1'");
             $query->setParameter('excludedents', $excludedEntityIDs);
-        }
-        else
-        {
+        } else {
             $query = $this->em->createQuery("SELECT partial p.{id, entityid,type},partial m.{id, provider, federation},partial f.{id},c FROM models\Provider p LEFT JOIN p.membership m LEFT JOIN m.federation f LEFT JOIN p.coc c WHERE m.federation IN (:feds) AND  m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND p.type IN ('SP','BOTH') AND  p.is_active = '1' AND p.is_approved = '1'");
         }
 
@@ -108,6 +91,7 @@ class Providers
         foreach ($result as $r) {
             $r2->add($r);
         }
+
         return $r2;
     }
 
@@ -118,12 +102,12 @@ class Providers
         $query->setParameter('now', $currentTime);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
+
         return $result;
     }
 
 
-    public function getIdPsForWayf(Provider $provider)
-    {
+    public function getIdPsForWayf(Provider $provider) {
         $spid = $provider->getId();
         $startTime = microtime(true);
         $query1 = $this->em->createQuery("SELECT m,f FROM models\FederationMembers m JOIN m.federation f WHERE m.provider = ?1 AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'");
@@ -147,60 +131,16 @@ class Providers
         $endTime = microtime(true);
         $execTime = $endTime - $startTime;
         \log_message('info', __METHOD__ . ' time execution: ' . $execTime);
+
         return $result;
     }
 
-    /**
-     * getting trusted entities by given provider
-     * if provider is IDP then result give only trusted SPs
-     * if provider is SP then result give only trusted IDPs
-     */
-    public function getCircleMembersByType(Provider $provider, $excludeDisabledFeds = FALSE)
-    {
-        $trustedEntities = new \Doctrine\Common\Collections\ArrayCollection();
-        $entype = $provider->getType();
-        $membership = $provider->getMembership();
-        $feds = array();
-        foreach ($membership as $m) {
-            $fullTrustEnabled = $m->isFinalMembership();
-            if ($excludeDisabledFeds) {
-                $isFedEnabled = TRUE;
-            } else {
-                $isFedEnabled = $m->getFederation()->getActive();
-            }
-            if ($fullTrustEnabled && $isFedEnabled) {
-                $feds[] = $m->getFederation()->getId();
-            }
-        }
-        if (count($feds) == 0) {
-            return array();
-        }
-
-        /**
-         * @var FederationMembers[] $fedmembers
-         */
-        $fedmembers = $this->em->getRepository("models\FederationMembers")->findBy(array('federation' => $feds, 'isDisabled' => FALSE, 'isBanned' => FALSE, 'joinstate' => array('0', '1', '3')));
-        if ($entype === 'IDP' || $entype === 'SP') {
-            foreach ($fedmembers as $m) {
-                $pr = $m->getProvider();
-                if (strcmp($pr->getType(), $entype) != 0) {
-                    $trustedEntities->add($pr);
-                }
-            }
-        } else {
-            foreach ($fedmembers as $m) {
-                $trustedEntities->add($m->getProvider());
-            }
-        }
-        \log_message('debug', __METHOD__ . ': trusted_fedmebers=' . $trustedEntities->count());
-        return $trustedEntities;
-    }
+   
 
     /**
      * get all trusted entites excluding the same type as param including their feds
      */
-    public function getTrustedServicesWithFeds(Provider $provider)
-    {
+    public function getTrustedServicesWithFeds(Provider $provider) {
         $type = $provider->getType();
         if ($type === 'IDP') {
 
@@ -231,11 +171,11 @@ class Providers
         $query->setParameter('types', $rtype);
         $query->setParameter('provid', $provider->getId());
         $result = $query->getResult();
+
         return $result;
     }
 
-    public function getCircleMembersLight(Provider $provider)
-    {
+    public function getCircleMembersLight(Provider $provider) {
         $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
         $type = $provider->getType();
         if ($type === 'IDP') {
@@ -258,14 +198,14 @@ class Providers
             $query->setParameter('types', $types);
             $query->setParameter('feds', $feds);
             $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+
             return $query->getResult();
         }
 
         return $this->providers;
     }
 
-    public function getCircleMembersSP(Provider $provider)
-    {
+    public function getCircleMembersSP(Provider $provider) {
         $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
         /**
          * @todo add confition only active federations
@@ -284,13 +224,13 @@ class Providers
                 }
             }
         }
+
         return $this->providers;
     }
 
-    public function getCircleMembersIDP(Provider $provider, $federations = null, $onlylocal = false)
-    {
+    public function getCircleMembersIDP(Provider $provider, $federations = null, $onlylocal = false) {
         $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
-        if (is_null($federations)) {
+        if ($federations === null) {
             $federations = $provider->getFederations();
         }
 
@@ -312,79 +252,80 @@ class Providers
                 }
             }
         }
+
         return $this->providers;
     }
 
-    public function getAll()
-    {
+    public function getAll() {
         $this->providers = $this->em->getRepository("models\Provider")->findBy(array(), array('name' => 'ASC'));
+
         return $this->providers;
     }
 
-    public function getLocalProviders()
-    {
-        $this->providers = $this->em->getRepository("models\Provider")->findBy(array('is_local' => TRUE), array('name' => 'ASC'));
+    public function getLocalProviders() {
+        $this->providers = $this->em->getRepository("models\Provider")->findBy(array('is_local' => true), array('name' => 'ASC'));
+
         return $this->providers;
     }
 
-    public function getLocalPublicVisibleProviders()
-    {
-        $this->providers = $this->em->getRepository("models\Provider")->findBy(array('is_local' => TRUE, 'hidepublic' => FALSE, 'is_active' => TRUE), array('name' => 'ASC'));
+    public function getLocalPublicVisibleProviders() {
+        $this->providers = $this->em->getRepository("models\Provider")->findBy(array('is_local' => true, 'hidepublic' => false, 'is_active' => true), array('name' => 'ASC'));
+
         return $this->providers;
     }
 
-    public function getIdps()
-    {
+    public function getIdps() {
         $this->providers = $this->em->getRepository("models\Provider")->findBy(array('type' => array('IDP', 'BOTH')), array('name' => 'ASC'));
+
         return $this->providers;
     }
 
-    public function getIdpsLight()
-    {
+    public function getIdpsLight() {
         log_message('debug', 'run: models\Providers::getIdpsLight()');
         $dql = "SELECT p,a FROM models\Provider p LEFT JOIN p.extend a  WHERE p.type IN ('IDP','BOTH') ORDER BY p.name ASC ";
         $query = $this->em->createQuery($dql);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+
         return $query->getResult();
     }
 
-    public function getIdpsLightLocal()
-    {
+    public function getIdpsLightLocal() {
         log_message('debug', 'run: models\Providers::getIdpsLightLocal()');
         $dql = "SELECT p,a FROM models\Provider p LEFT JOIN p.extend a WHERE p.type IN ('IDP','BOTH') AND p.is_local = '1' ORDER BY p.name ASC ";
         $query = $this->em->createQuery($dql);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+
         return $query->getResult();
     }
 
-    public function getIdpsLightExternal()
-    {
+    public function getIdpsLightExternal() {
         log_message('debug', 'run: models\Providers::getIdpsLightExternal()');
         $dql = "SELECT p,a FROM models\Provider p LEFT JOIN p.extend a WHERE p.type IN ('IDP','BOTH') AND p.is_local = '0' ORDER BY p.name ASC ";
         $query = $this->em->createQuery($dql);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+
         return $query->getResult();
     }
 
-    public function getProvidersListPartialInfo($type)
-    {
+    public function getProvidersListPartialInfo($type) {
         $dql = "SELECT partial p.{id,entityid,name,lname,displayname,ldisplayname,type,helpdeskurl,lhelpdeskurl,registerdate,validfrom,validto,is_approved,is_active,is_locked,is_local,hidepublic},a FROM models\Provider p LEFT OUTER JOIN p.extend a  WHERE p.type IN (?1,?2)";
         $query = $this->em->createQuery($dql);
         $query->setParameter(1, '' . $type . '');
         $query->setParameter(2, 'BOTH');
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+
         return $query->getResult();
 
     }
 
 
-     public function getSPsEntities()
-    {
+    public function getSPsEntities() {
         $dql = "SELECT partial p.{id,entityid} FROM models\Provider p WHERE p.type IN (?1,?2)";
         $query = $this->em->createQuery($dql);
         $query->setParameter(1, 'SP');
         $query->setParameter(2, 'BOTH');
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+
         return $query->getResult();
 
     }
@@ -393,8 +334,7 @@ class Providers
      *  getIdpsInNative and getSpsInNative to display just the list of entities without details.
      *   it's faster than getIdps and getSps but its sesnsitive to database changes like column names etc
      */
-    public function getIdpsInNative($local = null)
-    {
+    public function getIdpsInNative($local = null) {
 
         $rsm = new ResultSetMapping;
 
@@ -409,7 +349,7 @@ class Providers
         $rsm->addFieldResult('u', 'validto', 'validto');
         $rsm->addFieldResult('u', 'displayname', 'displayname');
         $rsm->addFieldResult('u', 'contacts', 'contacts');
-        if (!empty($local) && $local === TRUE) {
+        if (!empty($local) && $local === true) {
             $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' ORDER BY name ASC', $rsm);
         } else {
             $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) ORDER BY name ASC', $rsm);
@@ -421,8 +361,7 @@ class Providers
         return $this->providers;
     }
 
-    public function getPublicIdps_inNative()
-    {
+    public function getPublicIdpsInNative() {
 
         $rsm = new ResultSetMapping;
 
@@ -445,41 +384,9 @@ class Providers
         return $this->providers;
     }
 
-    public function getSpsInNative($local = null)
-    {
+    public function getPublicSpsInNative() {
 
         $rsm = new ResultSetMapping;
-
-        $rsm->addEntityResult('models\Provider', 'u');
-        $rsm->addFieldResult('u', 'id', 'id');
-        $rsm->addFieldResult('u', 'name', 'name');
-        $rsm->addFieldResult('u', 'entityid', 'entityid');
-        $rsm->addFieldResult('u', 'helpdeskurl', 'helpdeskurl');
-        $rsm->addFieldResult('u', 'displayname', 'displayname');
-        $rsm->addFieldResult('u', 'is_active', 'is_active');
-        $rsm->addFieldResult('u', 'is_approved', 'is_approved');
-        $rsm->addFieldResult('u', 'validfrom', 'validfrom');
-        $rsm->addFieldResult('u', 'validto', 'validto');
-        $rsm->addFieldResult('u', 'contacts', 'contacts');
-        if (!empty($local) && $local === TRUE) {
-            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' ORDER BY name ASC', $rsm);
-            $query->setParameter(1, 'SP');
-            $query->setParameter(2, 'BOTH');
-        } else {
-            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) ORDER BY name ASC', $rsm);
-            $query->setParameter(1, 'SP');
-            $query->setParameter(2, 'BOTH');
-        }
-        $this->providers = $query->execute();
-
-        return $this->providers;
-    }
-
-    public function getPublicSpsInNative()
-    {
-
-        $rsm = new ResultSetMapping;
-
         $rsm->addEntityResult('models\Provider', 'u');
         $rsm->addFieldResult('u', 'id', 'id');
         $rsm->addFieldResult('u', 'name', 'name');
@@ -499,41 +406,35 @@ class Providers
         return $this->providers;
     }
 
-    public function getLocalIdpsIdsEntities()
-    {
-        $query = $this->em->createQuery("
-
-             SELECT p.id, p.entityid from models\Provider as p  WHERE p.is_local = '1' and p.type IN ('IDP','BOTH') ORDER by p.entityid ASC
-         ");
-        $result = $query->getResult();
-        return $result;
+    public function getLocalIdpsIdsEntities() {
+        $query = $this->em->createQuery("SELECT p.id, p.entityid from models\Provider as p  WHERE p.is_local = '1' and p.type IN ('IDP','BOTH') ORDER by p.entityid ASC");
+        return $query->getResult();
     }
 
-    public function getLocalIdsEntities()
-    {
+    public function getLocalIdsEntities() {
         $query = $this->em->createQuery("
 
              SELECT p.id, p.entityid, p.name from models\Provider as p  WHERE p.is_local = '1'  ORDER by p.entityid ASC
          ");
         $result = $query->getResult();
+
         return $result;
     }
 
-    public function getSpsByEntities($entityidsInArray)
-    {
+    public function getSpsByEntities($entityidsInArray) {
         $this->providers = $this->em->getRepository("models\Provider")->findBy(array('type' => array('SP', 'BOTH'), 'entityid' => $entityidsInArray));
+
         return $this->providers;
     }
 
-    public function getIdpsByEntities($entityidsInArray)
-    {
+    public function getIdpsByEntities($entityidsInArray) {
         $this->providers = $this->em->getRepository("models\Provider")->findBy(array('type' => array('IDP', 'BOTH'), 'entityid' => $entityidsInArray));
+
         return $this->providers;
     }
 
-    public function getActiveFederationmembersForExport(Federation $federation, $excludeType = null)
-    {
-        if (is_null($excludeType)) {
+    public function getActiveFederationmembersForExport(Federation $federation, $excludeType = null) {
+        if ($excludeType === null) {
             $query = $this->em->createQuery("SELECT p,m FROM models\Provider p LEFT JOIN p.membership m WHERE m.federation = ?1  AND m.joinstate IN ('0','1') AND m.isBanned='0' AND p.is_active='1' AND p.is_approved='1' AND p.is_local='1' AND (p.validto is null OR p.validto > :today) AND (p.validfrom is null OR p.validfrom < :today)");
         } else {
             $query = $this->em->createQuery("SELECT p,m FROM models\Provider p LEFT JOIN p.membership m WHERE m.federation = ?1  AND m.joinstate IN ('0','1') AND m.isBanned='0' AND p.type != :type AND  p.is_active='1' AND p.islocal='1' AND p.is_approved='1' AND (p.validto is null OR p.validto > :today) AND (p.validfrom is null OR p.validfrom < :today)");
@@ -547,9 +448,8 @@ class Providers
 
     }
 
-    public function getActiveFederationMembers(Federation $federation, $excludeType = null)
-    {
-        if (is_null($excludeType)) {
+    public function getActiveFederationMembers(Federation $federation, $excludeType = null) {
+        if ($excludeType === null) {
             $query = $this->em->createQuery("SELECT p,m FROM models\Provider p LEFT JOIN p.membership m WHERE m.federation = ?1  AND m.joinstate != '2' AND m.isBanned='0' AND p.is_active='1' AND p.is_approved='1' AND (p.validto is null OR p.validto > :today) AND (p.validfrom is null OR p.validfrom < :today)");
         } else {
             $query = $this->em->createQuery("SELECT p,m FROM models\Provider p LEFT JOIN p.membership m WHERE m.federation = ?1  AND m.joinstate != '2' AND m.isBanned='0' AND p.type != :type AND  p.is_active='1' AND p.is_approved='1' AND (p.validto is null OR p.validto > :today) AND (p.validfrom is null OR p.validfrom < :today)");
@@ -563,9 +463,8 @@ class Providers
     }
 
 
-    public function getActiveMembersOfFederations($federations, $excludeType = null)
-    {
-        if (is_null($excludeType)) {
+    public function getActiveMembersOfFederations($federations, $excludeType = null) {
+        if ($excludeType === null) {
             $query = $this->em->createQuery("SELECT p,m FROM models\Provider p LEFT JOIN p.membership m WHERE m.federation in (:feds)  AND m.joinstate != '2' AND m.isBanned='0' AND p.is_active='1' AND p.is_approved='1' AND (p.validto is null OR p.validto > :today) AND (p.validfrom is null OR p.validfrom < :today)");
         } else {
             $query = $this->em->createQuery("SELECT p,m FROM models\Provider p LEFT JOIN p.membership m WHERE m.federation in (:feds)  AND m.joinstate != '2' AND m.isBanned='0' AND p.type != :type AND  p.is_active='1' AND p.is_approved='1' AND (p.validto is null OR p.validto > :today) AND (p.validfrom is null OR p.validfrom < :today)");
@@ -578,88 +477,87 @@ class Providers
         return $query->getResult();
     }
 
-    public function getFederationMembersInLight(Federation $federation)
-    {
+    public function getFederationMembersInLight(Federation $federation) {
 
         $query = $this->em->createQuery("SELECT PARTIAL p.{id,entityid,name,lname,displayname,ldisplayname,type,validfrom,validto,is_approved,is_active,is_locked,is_local,registerdate},m,e FROM models\Provider p LEFT JOIN p.membership m LEFT JOIN p.extend e WHERE m.federation = ?1  AND m.joinstate != '2' AND p.is_approved = '1'");
         $query->setParameter(1, $federation->getId());
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+
         return $query->getResult();
     }
 
 
-    public function getOneIdpById($id)
-    {
+    public function getOneIdpById($id) {
         $this->providers = $this->em->getRepository("models\Provider")->findOneBy(array('type' => array('IDP', 'BOTH'), 'id' => $id));
+
         return $this->providers;
     }
 
-    public function getOneById($id)
-    {
+    public function getOneById($id) {
         $this->providers = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id));
+
         return $this->providers;
     }
 
-    public function getOneByEntityId($id)
-    {
+    public function getOneByEntityId($id) {
         $this->providers = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $id));
+
         return $this->providers;
     }
 
-    public function getOneIdpByEntityId($id)
-    {
+    public function getOneIdpByEntityId($id) {
         $this->providers = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $id, 'type' => array('IDP', 'BOTH')));
+
         return $this->providers;
     }
 
-    public function getOneSpByEntityId($id)
-    {
+    public function getOneSpByEntityId($id) {
         $this->providers = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $id, 'type' => array('SP', 'BOTH')));
+
         return $this->providers;
     }
 
-    public function getOneSpById($id)
-    {
+    public function getOneSpById($id) {
         $this->providers = $this->em->getRepository("models\Provider")->findOneBy(array('type' => array('SP', 'BOTH'), 'id' => $id));
+
         return $this->providers;
     }
 
-    public function getSps()
-    {
+    public function getSps() {
         log_message('debug', 'run: models\Providers::getSps()');
         $this->providers = $this->em->getRepository("models\Provider")->findBy(array('type' => array('SP', 'BOTH')), array('name' => 'ASC'));
+
         return $this->providers;
     }
 
-    public function getSpsLight()
-    {
+    public function getSpsLight() {
         log_message('debug', 'run: models\Providers::getSpsLight()');
         $dql = "SELECT p,a FROM models\Provider p LEFT JOIN p.extend a WHERE p.type IN ('SP','BOTH') ORDER BY p.name ASC ";
         $query = $this->em->createQuery($dql);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+
         return $query->getResult();
     }
 
-    public function getSpsLightExternal()
-    {
+    public function getSpsLightExternal() {
         log_message('debug', 'run: models\Providers::getSpsLightExternal()');
         $dql = "SELECT p,a FROM models\Provider p LEFT JOIN p.extend a WHERE p.type IN ('SP','BOTH') AND p.is_local = '0' ORDER BY p.name ASC ";
         $query = $this->em->createQuery($dql);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+
         return $query->getResult();
     }
 
-    public function getSpsLightLocal()
-    {
+    public function getSpsLightLocal() {
         log_message('debug', 'run: models\Providers::getSpsLightLocal()');
         $dql = "SELECT p,a FROM models\Provider p LEFT JOIN  p.extend a  WHERE p.type IN ('SP','BOTH') AND p.is_local = '1' ORDER BY p.name ASC ";
         $query = $this->em->createQuery($dql);
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+
         return $query->getResult();
     }
 
-    public function getProviders()
-    {
+    public function getProviders() {
         return $this->providers;
     }
 

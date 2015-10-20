@@ -13,8 +13,7 @@ class Providerformelements
     protected $ent;
     protected $ses;
 
-    function __construct($params)
-    {
+    function __construct($params) {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         if (!is_array($params) || !isset($params['provider'])) {
@@ -36,14 +35,12 @@ class Providerformelements
         $this->disallowedparts = $disallowedparts;
     }
 
-    private function _generateLangAddButton($spanclass, $dropname, $langs, $buttonvalue)
-    {
+    private function _generateLangAddButton($spanclass, $dropname, $langs, $buttonvalue) {
         $result = '<span class="' . $spanclass . '"><div class="small-6 medium-3 large-3 columns">' . form_dropdown('langcodes', $langs, $this->defaultlangselect) . '</div><div class="small-6 large-4 end columns"><button type="button" name="addinnewlang" value="' . $buttonvalue . '" class="editbutton addicon smallerbtn button inline left tiny">' . lang('btnaddinlang') . '</button></div></span>';
         return $result;
     }
 
-    private function _generateLangInputWithRemove($label, $name, $buttonname, $buttonvalue, $value = '', $classes = '')
-    {
+    private function _generateLangInputWithRemove($label, $name, $buttonname, $buttonvalue, $value = '', $classes = '') {
         $result = '<div class="small-3 columns"><label for="' . $name . '" class="right inline ">' . $label . '</label></div>' .
             '<div class="small-6 large-7 columns">' .
             form_input(array(
@@ -58,9 +55,8 @@ class Providerformelements
     }
 
 
-    public function generateGeneral()
-    {
-        $ent = &$this->ent;
+    public function generateGeneral() {
+        $ent = $this->ent;
         $entid = $ent->getId();
         $sessform = is_array($this->ses);
 
@@ -146,8 +142,7 @@ class Providerformelements
                     $tmprows .= '<div class="small-12 columns">' . $this->_generateLangInputWithRemove($gnamesLang[$key], 'f[' . $g['attrname'] . '][' . $key . ']', '' . $g['attrname'] . '', $key, $lvalue, '') . '</div>';
                     unset($gnamesLang['' . $key . '']);
                 }
-            }
-            elseif(array_key_exists($g['attrname'], $this->ses) && is_array($this->ses['' . $g['attrname'] . ''])){
+            } elseif (array_key_exists($g['attrname'], $this->ses) && is_array($this->ses['' . $g['attrname'] . ''])) {
                 $sessValues = $this->ses['' . $g['attrname'] . ''];
                 foreach ($sessValues as $key => $value) {
                     $lvalue = set_value('f[' . $g['attrname'] . '][' . $key . ']', $value, FALSE);
@@ -157,17 +152,17 @@ class Providerformelements
             }
             $tmprows .= '<div class="small-12 columns">' . $this->_generateLangAddButton('' . $g['addbtn']['a1'] . '', '' . $g['addbtn']['a2'], $btnlangs, '' . $g['addbtn']['a3'] . '') . '</div>';
             $tmprows .= '</fieldset>';
-            $result[] = $tmprows;
-            $result[] = '';
+            array_push($result,$tmprows,'');
+
         }
 
         if ($this->isAdmin && !empty($entid)) {
-            $result[] = '';
-            $result[] = jGenerateInput(lang('rr_regauthority'), 'f[regauthority]', $f_regauthority, '');
-            $result[] = '<div class="medium-3 column medium-text-right"><label for="f[registrationdate]" class="inline">' . lang('rr_regdate') . '</label></div>' .
+            $tmprow = '<div class="medium-3 column medium-text-right"><label for="f[registrationdate]" class="inline">' . lang('rr_regdate') . '</label></div>' .
                 '<div class="medium-3 large-2 column"><input id="f[registrationdate]" name="f[registrationdate]" type="text" class="datepicker" value="' . $f_regdate . '"></div>' .
                 '<div class="medium-2 large-1 column end"><input id="f[registrationtime]" name="f[registrationtime]" type="text" value="' . $f_regtime . '" placeholder="HH:mm"> <span class="inline"></div>';
-            $result[] = '';
+
+            array_push($result, '', jGenerateInput(lang('rr_regauthority'), 'f[regauthority]', $f_regauthority, ''), $tmprow, '');
+
         }
 
         return $result;

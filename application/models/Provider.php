@@ -305,8 +305,7 @@ class Provider
      */
     protected $updatedAt;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->contacts = new \Doctrine\Common\Collections\ArrayCollection();
         $this->certificates = new \Doctrine\Common\Collections\ArrayCollection();
         $this->serviceLocations = new \Doctrine\Common\Collections\ArrayCollection();
@@ -318,23 +317,21 @@ class Provider
         $this->attributeRequirement = new \Doctrine\Common\Collections\ArrayCollection();
         $this->coc = new \Doctrine\Common\Collections\ArrayCollection();
         $this->updatedAt = new \DateTime('now', new \DateTimeZone('UTC'));
-        $this->is_approved = TRUE;
-        $this->hidepublic = FALSE;
-        $this->is_locked = FALSE;
+        $this->is_approved = true;
+        $this->hidepublic = false;
+        $this->is_locked = false;
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
     }
 
-    public function __toString()
-    {
+    public function __toString() {
         return $this->entityid;
     }
 
     /**
      * @prePersist
      */
-    public function created()
-    {
+    public function created() {
         $this->createdAt = new \DateTime('now', new \DateTimeZone('UTC'));
         if (!isset($this->hidepublic)) {
             $this->hidepublic = false;
@@ -350,8 +347,7 @@ class Provider
     /**
      * @PostPersist
      */
-    public function createAclResource()
-    {
+    public function createAclResource() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $is_local = $this->is_local;
@@ -393,24 +389,21 @@ class Provider
     /**
      * @preRemove
      */
-    public function unsetOwner()
-    {
+    public function unsetOwner() {
 
     }
 
     /**
      * @PostRemove
      */
-    public function removeRequester()
-    {
+    public function removeRequester() {
         log_message('debug', 'Provider removed, not its time to remove all entries with that requester');
     }
 
     /**
      * @PreUpdate
      */
-    public function updated()
-    {
+    public function updated() {
         \log_message('debug', 'GG update providers updated time for:' . $this->entityid);
         $this->updatedAt = new \DateTime('now', new \DateTimeZone('UTC'));
     }
@@ -418,8 +411,7 @@ class Provider
     /**
      * @PostLoad
      */
-    public function setAddionals()
-    {
+    public function setAddionals() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
     }
@@ -427,19 +419,17 @@ class Provider
     /**
      * @PostLoad
      */
-    public function createEmptyFedColl()
-    {
+    public function createEmptyFedColl() {
         $this->federations = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    public function setName($name = null)
-    {
+    public function setName($name = null) {
         $this->name = $name;
+
         return $this;
     }
 
-    public function setLocalName(array $name = NULL)
-    {
+    public function setLocalName(array $name = null) {
         if ($name !== null) {
             foreach ($name as $k => $v) {
                 if (empty($v)) {
@@ -448,18 +438,17 @@ class Provider
             }
             $this->lname = serialize($name);
         } else {
-            $this->lname = NULL;
+            $this->lname = null;
         }
     }
 
-    public function setDisplayName($name = null)
-    {
+    public function setDisplayName($name = null) {
         $this->displayname = $name;
+
         return $this;
     }
 
-    public function setLocalDisplayName($name = NULL)
-    {
+    public function setLocalDisplayName($name = null) {
         if (is_array($name)) {
             foreach ($name as $k => $v) {
                 if (empty($v)) {
@@ -472,8 +461,7 @@ class Provider
         }
     }
 
-    public function setRegistrationPolicyFromArray($regarray, $reset = false)
-    {
+    public function setRegistrationPolicyFromArray($regarray, $reset = false) {
 
         if ($reset === true) {
             $this->regpolicy = serialize($regarray);
@@ -482,20 +470,21 @@ class Provider
             $n = array_merge($s, $regarray);
             $this->regpolicy = serialize($n);
         }
+
         return $this;
     }
 
-    public function setRegistrationPolicy($jlang, $url)
-    {
+    public function setRegistrationPolicy($jlang, $url) {
         $s = $this->getRegistrationPolicy();
         $s['' . $jlang . ''] = $url;
         $this->regpolicy = serialize($s);
+
         return $this;
     }
 
-    public function resetRegistrationPolicy()
-    {
+    public function resetRegistrationPolicy() {
         $this->regpolicy = serialize(array());
+
         return $this;
     }
 
@@ -504,8 +493,7 @@ class Provider
      * type : idpsso, aa
      * $scope: array();
      */
-    public function setScope($type, $scope)
-    {
+    public function setScope($type, $scope) {
         $ex = @unserialize($this->scope);
         if ($ex === 'b:0;' || $ex !== false) {
             $ex['' . $type . ''] = $scope;
@@ -514,11 +502,11 @@ class Provider
             $ex['' . $type . ''] = $scope;
         }
         $this->scope = serialize($ex);
+
         return $this;
     }
 
-    private function overwriteScopeFull(Provider $provider)
-    {
+    private function overwriteScopeFull(Provider $provider) {
         $pScope = $provider->getScopeFull();
         if (!isset($pScope['idpsso'])) {
             $pScope['idpsso'] = array();
@@ -531,34 +519,34 @@ class Provider
                 $this->setScope($k, $v);
             }
         }
+
         return $this;
     }
 
-    public function overwriteScope($n, Provider $provider)
-    {
+    public function overwriteScope($n, Provider $provider) {
         $this->setScope($n, $provider->getScope($n));
+
         return $this;
     }
 
-    public function setEntityId($entity)
-    {
+    public function setEntityId($entity) {
         $entity = trim($entity);
         if (!empty($entity)) {
             $this->entityid = $entity;
+
             return $this;
         } else {
             return false;
         }
     }
 
-    public function setDigest($a = null)
-    {
+    public function setDigest($a = null) {
         $this->digest = $a;
+
         return $this;
     }
 
-    public function setCountry($country = null)
-    {
+    public function setCountry($country = null) {
         if (!empty($country)) {
             $this->country = $country;
         }
@@ -567,17 +555,16 @@ class Provider
     /**
      * obsolete
      */
-    public function resetNameId()
-    {
+    public function resetNameId() {
         $this->nameidformat = new \Doctrine\Common\Collections\ArrayCollection();
+
         return $this;
     }
 
     /**
      * obsolete
      */
-    public function setNameId($nameid = NULL)
-    {
+    public function setNameId($nameid = null) {
         if (empty($nameid)) {
             $nameid = 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient';
         }
@@ -585,33 +572,32 @@ class Provider
             $this->nameidformat = new \Doctrine\Common\Collections\ArrayCollection();
         }
         $this->nameidformat->add($nameid);
+
         return $this;
     }
 
     /**
      * new
      */
-    public function setNameIds($n, $data)
-    {
+    public function setNameIds($n, $data) {
         $t = $this->getNameIds();
         $t['' . $n . ''] = $data;
         $this->nameids = serialize($t);
+
         return $this;
     }
 
-    public function setVisiblePublic()
-    {
+    public function setVisiblePublic() {
         $this->hidepublic = false;
+
         return $this;
     }
 
-    public function getMembership()
-    {
+    public function getMembership() {
         return $this->membership;
     }
 
-    public function addMembership(FederationMembers $membership)
-    {
+    public function addMembership(FederationMembers $membership) {
         if (!$this->membership->contains($membership)) {
             $this->membership->add($membership);
             $membership->setProvider($this);
@@ -620,20 +606,19 @@ class Provider
         return $this;
     }
 
-    public function setHidePublic()
-    {
+    public function setHidePublic() {
         $this->hidepublic = true;
+
         return $this;
     }
 
-    public function resetProtocol()
-    {
+    public function resetProtocol() {
         $this->protocol = new \Doctrine\Common\Collections\ArrayCollection();
+
         return $this;
     }
 
-    public function setProtocol($protocol = NULL)
-    {
+    public function setProtocol($protocol = null) {
         if (empty($protocol)) {
             $protocol = 'urn:oasis:names:tc:SAML:2.0:protocol';
         }
@@ -641,11 +626,11 @@ class Provider
             $this->protocol = new \Doctrine\Common\Collections\ArrayCollection();
         }
         $this->protocol->add($protocol);
+
         return $this;
     }
 
-    public function setProtocolSupport($n, $data)
-    {
+    public function setProtocolSupport($n, $data) {
         $allowed = array('aa', 'idpsso', 'spsso');
         if (is_array($data) && in_array($n, $allowed)) {
             foreach ($data as $k => $v) {
@@ -658,59 +643,59 @@ class Provider
             $r['' . $n . ''] = $data;
             $this->protocolsupport = serialize($r);
         }
+
         return $this;
     }
 
-    public function setType($type)
-    {
+    public function setType($type) {
         $this->type = $type;
+
         return $this;
     }
 
     /**
      * setting entity as SP
      */
-    public function setSP()
-    {
+    public function setSP() {
         $this->type = 'SP';
+
         return $this;
     }
 
-    public function setAsSP()
-    {
+    public function setAsSP() {
         $this->type = 'SP';
+
         return $this;
     }
 
     /**
      * setting entity as IDP
      */
-    public function setIDP()
-    {
+    public function setIDP() {
         $this->type = 'IDP';
+
         return $this;
     }
 
-    public function setAsIDP()
-    {
+    public function setAsIDP() {
         $this->type = 'IDP';
+
         return $this;
     }
 
-    public function setAsBoth()
-    {
+    public function setAsBoth() {
         $this->type = 'BOTH';
+
         return $this;
     }
 
-    public function setHelpdeskUrl($url = null)
-    {
+    public function setHelpdeskUrl($url = null) {
         $this->helpdeskurl = $url;
+
         return $this;
     }
 
-    public function setLocalHelpdeskUrl($urls = NULL)
-    {
+    public function setLocalHelpdeskUrl($urls = null) {
         if (!empty($urls) && is_array($urls)) {
             foreach ($urls as $k => $v) {
                 if (empty($v)) {
@@ -719,56 +704,57 @@ class Provider
             }
             $this->lhelpdeskurl = serialize($urls);
         } else {
-            $this->lhelpdeskurl = NULL;
+            $this->lhelpdeskurl = null;
         }
+
         return $this;
     }
 
-    public function setPrivacyUrl($url = null)
-    {
+    public function setPrivacyUrl($url = null) {
         $this->privacyurl = $url;
+
         return $this;
     }
 
-    public function setLocalPrivacyUrl(array $url = null)
-    {
+    public function setLocalPrivacyUrl(array $url = null) {
         if (!empty($url)) {
             $this->lprivacyurl = serialize($url);
         } else {
-            $this->lprivacyurl = NULL;
+            $this->lprivacyurl = null;
         }
+
         return $this;
     }
 
-    public function setRegistrationAuthority($reg = null)
-    {
+    public function setRegistrationAuthority($reg = null) {
         $this->registrar = $reg;
         if ($reg !== null && trim($reg) === '') {
             $this->registrar = null;
         }
+
         return $this;
     }
 
-    public function setRegistrationDate(\DateTime $date = null)
-    {
+    public function setRegistrationDate(\DateTime $date = null) {
         if ($date === null) {
-            $this->registerdate = NULL;
+            $this->registerdate = null;
         } else {
             $this->registerdate = $date->setTimezone(new \DateTimeZone('UTC'));
         }
+
         return $this;
     }
 
     /**
      * set time entity is valid to, if null then current time
      */
-    public function setValidTo(\DateTime $date = NULL)
-    {
+    public function setValidTo(\DateTime $date = null) {
         if ($date === null) {
-            $this->validto = NULL;
+            $this->validto = null;
         } else {
             $this->validto = $date->setTimezone(new \DateTimeZone('UTC'));
         }
+
         return $this;
     }
 
@@ -776,27 +762,26 @@ class Provider
      * @param \DateTime|NULL $date
      * @return $this
      */
-    public function setValidFrom(\DateTime $date = NULL)
-    {
+    public function setValidFrom(\DateTime $date = null) {
         if ($date === null) {
-            $this->validfrom = NULL;
+            $this->validfrom = null;
         } else {
             $this->validfrom = $date->setTimezone(new \DateTimeZone('UTC'));
         }
+
         return $this;
     }
 
-    public function setDescription($description)
-    {
+    public function setDescription($description) {
         $this->description = $description;
+
         return $this;
     }
 
     /**
      * updateLocalizedMdui1 for elements: Description, DisplayName, PrivacyURL, InformationURL
      */
-    public function updateLocalizedMdui1($elementName, $descriptions, $type)
-    {
+    public function updateLocalizedMdui1($elementName, $descriptions, $type) {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $ex = $this->getExtendMetadata();
@@ -851,25 +836,23 @@ class Provider
 
     }
 
-    public function setWayfList($wayflist = null)
-    {
+    public function setWayfList($wayflist = null) {
         if (is_array($wayflist)) {
             $this->wayflist = serialize($wayflist);
         }
     }
 
-    public function setExcarps($excarps = null)
-    {
+    public function setExcarps($excarps = null) {
         if (is_array($excarps) && count($excarps) > 0) {
             $this->excarps = serialize($excarps);
         } else {
             $this->excarps = null;
         }
+
         return $this;
     }
 
-    public function setDefaultState()
-    {
+    public function setDefaultState() {
         $this->is_approved = 1;
         $this->is_active = 1;
         $this->is_locked = 0;
@@ -877,73 +860,69 @@ class Provider
         $this->is_local = 1;
         $this->validfrom = null;
         $this->validto = null;
+
         return $this;
     }
 
-    public function setLocal($isLocal)
-    {
+    public function setLocal($isLocal) {
         if ($isLocal === true) {
             $this->is_local = true;
         } else {
             $this->is_local = false;
         }
+
         return $this;
     }
 
-    public function setAsLocal()
-    {
+    public function setAsLocal() {
         $this->is_local = 1;
+
         return $this;
     }
 
-    public function setAsExternal()
-    {
+    public function setAsExternal() {
         $this->is_local = 0;
+
         return $this;
     }
 
-    public function setActive($val = NULL)
-    {
+    public function setActive($val = null) {
         if (!empty($val)) {
             $this->is_active = 1;
         } else {
             $this->is_active = 0;
         }
+
         return $this;
     }
 
-    public function Disactivate()
-    {
+    public function Disactivate() {
         $this->is_active = 0;
     }
 
-    public function Activate()
-    {
+    public function Activate() {
         $this->is_active = 1;
     }
 
-    public function Lock()
-    {
+    public function Lock() {
         $this->is_locked = 1;
     }
 
-    public function Unlock()
-    {
+    public function Unlock() {
         $this->is_locked = 0;
     }
 
-    public function setApproved($val = NULL)
-    {
+    public function setApproved($val = null) {
         if (!empty($val)) {
             $this->is_approved = 1;
         } else {
             $this->is_approved = 0;
         }
+
         return $this;
     }
 
-    public function setFederation(Federation $federation)
-    {
+    public function setFederation(Federation $federation) {
         $doFilter['federation_id'] = array('' . $federation->getId() . '');
         $membership = $this->getMembership()->filter(
             function (FederationMembers $entry) use ($doFilter) {
@@ -957,11 +936,11 @@ class Provider
             $federation->addMembership($newMembership);
             $this->addMembership($newMembership);
         }
+
         return $this->getFederations();
     }
 
-    public function removeFederation(Federation $federation)
-    {
+    public function removeFederation(Federation $federation) {
 
         $doFilter['federation_id'] = array('' . $federation->getId() . '');
         $membership = $this->getMembership()->filter(
@@ -974,11 +953,11 @@ class Provider
         foreach ($membership as $m) {
             $this->removeMembership($m);
         }
+
         return $this->getFederations();
     }
 
-    public function removeMembership(FederationMembers $membership)
-    {
+    public function removeMembership(FederationMembers $membership) {
         if ($this->membership->contains($membership)) {
             $this->membership->removeElement($membership);
         }
@@ -986,103 +965,101 @@ class Provider
         return $this;
     }
 
-    public function setServiceLocation(ServiceLocation $service)
-    {
+    public function setServiceLocation(ServiceLocation $service) {
         $this->getServiceLocations()->add($service);
         $service->setProvider($this);
+
         return $this->serviceLocations;
     }
 
-    public function setExtendMetadata(ExtendMetadata $ext)
-    {
+    public function setExtendMetadata(ExtendMetadata $ext) {
         $this->getExtendMetadata()->add($ext);
         $ext->setProvider($this);
+
         return $this->extend;
     }
 
-    public function removeServiceLocation(ServiceLocation $service)
-    {
+    public function removeServiceLocation(ServiceLocation $service) {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->getServiceLocations()->removeElement($service);
         $this->em->remove($service);
+
         return $this->serviceLocations;
     }
 
-    public function removeCoc(Coc $coc)
-    {
+    public function removeCoc(Coc $coc) {
         $this->getCoc()->removeElement($coc);
         $coc->getProviders()->removeElement($this);
+
         return $this;
     }
 
-    public function setCoc(Coc $coc)
-    {
+    public function setCoc(Coc $coc) {
         $this->getCoc()->add($coc);
         $coc->getProviders()->add($this);
+
         return $this;
     }
 
-    public function setStatic($static)
-    {
+    public function setStatic($static) {
         if ($static === true) {
             $this->is_static = true;
         } else {
             $this->is_static = false;
         }
+
         return $this;
     }
 
-    public function setStaticMetadata(StaticMetadata $metadata)
-    {
+    public function setStaticMetadata(StaticMetadata $metadata) {
         $this->metadata = $metadata;
         $metadata->setProvider($this);
 
         return $this;
     }
 
-    public function overwriteStaticMetadata(StaticMetadata $metadata = null)
-    {
+    public function overwriteStaticMetadata(StaticMetadata $metadata = null) {
         $m = $this->getStaticMetadata();
         if (!empty($m)) {
             $m->setMetadata($metadata->getMetadata());
         } else {
             $this->setStaticMetadata($metadata);
         }
+
         return $this;
     }
 
-    public function setAttributesRequirement(AttributeRequirement $attribute)
-    {
+    public function setAttributesRequirement(AttributeRequirement $attribute) {
         $this->getAttributesRequirement()->add($attribute);
+
         return $this;
     }
 
-    public function setContact(Contact $contact)
-    {
+    public function setContact(Contact $contact) {
         $this->getContacts()->add($contact);
         $contact->setProvider($this);
+
         return $this->contacts;
     }
 
-    public function removeCertificate(Certificate $certificate)
-    {
+    public function removeCertificate(Certificate $certificate) {
         $this->getCertificates()->removeElement($certificate);
         $certificate->unsetProvider($this);
+
         return $this->certificates;
     }
 
-    public function removeContact(Contact $contact)
-    {
+    public function removeContact(Contact $contact) {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->getContacts()->removeElement($contact);
         $this->em->remove($contact);
+
         return $this->contacts;
     }
 
-    public function removeAllContacts()
-    {
+    public function removeAllContacts() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $contacts = $this->getContacts();
@@ -1090,28 +1067,28 @@ class Provider
             $contacts->removeElement($contact);
             $this->em->remove($contact);
         }
+
         return $this;
     }
 
-    public function setCertificate(Certificate $certificate)
-    {
+    public function setCertificate(Certificate $certificate) {
         $this->getCertificates()->add($certificate);
         $certificate->setProvider($this);
+
         return $this->certificates;
     }
 
-    public function setStatDefinition(ProviderStatsDef $p)
-    {
+    public function setStatDefinition(ProviderStatsDef $p) {
         $this->getStatDefinitions()->add($p);
         $p->setProvider($this);
+
         return $this;
     }
 
     /**
      * this object state will be overwriten by $provider object
      */
-    public function overwriteByProvider(Provider $provider)
-    {
+    public function overwriteByProvider(Provider $provider) {
         $this->setName($provider->getName());
         $this->setLocalName($provider->getLocalName());
         $this->setDisplayName($provider->getDisplayName());
@@ -1234,11 +1211,11 @@ class Provider
         foreach ($provider->getExtendMetadata() as $gg) {
             $this->setExtendMetadata($gg);
         }
+
         return $this;
     }
 
-    private function removeExtendWithChildren(ExtendMetadata $e)
-    {
+    private function removeExtendWithChildren(ExtendMetadata $e) {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
 
@@ -1254,21 +1231,18 @@ class Provider
         $this->em->remove($e);
     }
 
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
-    public function getRegistrationAuthority()
-    {
+    public function getRegistrationAuthority() {
         return $this->registrar;
     }
 
     /**
      * @return null|\DateTime
      */
-    public function getRegistrationDate()
-    {
+    public function getRegistrationDate() {
         return $this->registerdate;
     }
 
@@ -1276,45 +1250,40 @@ class Provider
      * @param $format
      * @return bool|null|string
      */
-    public function getRegistrationDateInFormat($format, $offset = 0)
-    {
+    public function getRegistrationDateInFormat($format, $offset = 0) {
         if (!empty($this->registerdate)) {
             return \date($format, $this->registerdate->format('U') + $offset);
         }
+
         return null;
     }
 
     /**
      * get collection of contacts which are used in metada
      */
-    public function getContacts()
-    {
+    public function getContacts() {
         return $this->contacts;
     }
 
-    public function getCertificates()
-    {
+    public function getCertificates() {
         return $this->certificates;
     }
 
-    public function getStatDefinitions()
-    {
+    public function getStatDefinitions() {
         return $this->statsdef;
     }
 
     /**
      * obsolete
      */
-    public function getNameIdToArray()
-    {
+    public function getNameIdToArray() {
         return $this->getNameId()->toArray();
     }
 
     /**
      * obsolete
      */
-    public function getNameId()
-    {
+    public function getNameId() {
         return $this->nameidformat;
     }
 
@@ -1322,8 +1291,7 @@ class Provider
      * new replacing getNameId()
      * $n one of : idpsso,spsso,aa
      */
-    public function getNameIds($n = null)
-    {
+    public function getNameIds($n = null) {
         if (empty($n)) {
             if (!empty($this->nameids)) {
                 return unserialize($this->nameids);
@@ -1338,35 +1306,32 @@ class Provider
                 return $r['' . $n . ''];
             }
         }
+
         return $default;
     }
 
-    public function getNotifications()
-    {
+    public function getNotifications() {
         return $this->notifications;
     }
 
-    public function addNotification(NotificationList $notification)
-    {
+    public function addNotification(NotificationList $notification) {
         $isin = $this->getNotifications()->contains($notification);
         if (empty($isin)) {
             $this->getNotifications()->add($notification);
         }
+
         return $this;
     }
 
-    public function getActive()
-    {
+    public function getActive() {
         return $this->is_active;
     }
 
-    public function getCoc()
-    {
+    public function getCoc() {
         return $this->coc;
     }
 
-    public function getProtocol()
-    {
+    public function getProtocol() {
         $col = new \Doctrine\Common\Collections\ArrayCollection();
         $tmp = $this->protocol;
         if (!empty($tmp)) {
@@ -1376,8 +1341,7 @@ class Provider
         }
     }
 
-    public function getProtocolSupport($n = null)
-    {
+    public function getProtocolSupport($n = null) {
         if (empty($n)) {
             $t = $this->protocolsupport;
             if (empty($t)) {
@@ -1394,20 +1358,20 @@ class Provider
                 return $r[$n];
             }
         }
+
         return $default;
     }
 
-    public function getRegistrationPolicy()
-    {
+    public function getRegistrationPolicy() {
         $s = @unserialize($this->regpolicy);
         if (empty($s)) {
             return array();
         }
+
         return $s;
     }
 
-    public function getScope($n)
-    {
+    public function getScope($n) {
         $s = @unserialize($this->scope);
         if (isset($s[$n])) {
             return $s[$n];
@@ -1416,8 +1380,7 @@ class Provider
         }
     }
 
-    public function getScopeFull()
-    {
+    public function getScopeFull() {
         $s = @unserialize($this->scope);
         if (!empty($s)) {
             return $s;
@@ -1429,8 +1392,7 @@ class Provider
     /**
      * used for convert strings to array
      */
-    public function convertScope()
-    {
+    public function convertScope() {
         $s = $this->scope;
         if (!empty($s)) {
             $s2 = @unserialize($s);
@@ -1438,28 +1400,25 @@ class Provider
                 $y = explode(',', $this->scope);
                 $z = array('idpsso' => $y, 'aa' => $y);
                 $this->scope = (serialize($z));
+
                 return $this;
             }
         }
     }
 
-    public function getAttributeReleasePolicies()
-    {
+    public function getAttributeReleasePolicies() {
         return $this->attributeReleaseIDP;
     }
 
-    public function getServiceLocations()
-    {
+    public function getServiceLocations() {
         return $this->serviceLocations;
     }
 
-    public function getAttributesRequirement()
-    {
+    public function getAttributesRequirement() {
         return $this->attributeRequirement;
     }
 
-    public function getFederations()
-    {
+    public function getFederations() {
         $mem = $this->membership;
         $federations = new \Doctrine\Common\Collections\ArrayCollection();
         foreach ($mem as $m) {
@@ -1468,11 +1427,11 @@ class Provider
                 $federations->add($m->getFederation());;
             }
         }
+
         return $federations;
     }
 
-    public function getActiveFederations()
-    {
+    public function getActiveFederations() {
         $mem = $this->membership;
         $federations = new \Doctrine\Common\Collections\ArrayCollection();
         foreach ($mem as $m) {
@@ -1480,25 +1439,24 @@ class Provider
                 $federations->add($m->getFederation());;
             }
         }
+
         return $federations;
     }
 
-    public function getFederationNames()
-    {
+    public function getFederationNames() {
         $feders = array();
         foreach ($this->membership as $entry) {
             $feders[] = $entry->getFederation();
         }
+
         return $feders;
     }
 
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
-    public function getLocalName()
-    {
+    public function getLocalName() {
         $p = unserialize($this->lname);
         if (empty($p)) {
             return array();
@@ -1507,17 +1465,16 @@ class Provider
         }
     }
 
-    public function getMergedLocalName()
-    {
+    public function getMergedLocalName() {
         $r = $this->getLocalName();
         if (!isset($r['en']) && !empty($this->name)) {
             $r['en'] = $this->name;
         }
+
         return $r;
     }
 
-    public function getNameToWebInLang($jlang, $type = null)
-    {
+    public function getNameToWebInLang($jlang, $type = null) {
         $result = null;
         $backupname = null;
         if ($type === null) {
@@ -1557,11 +1514,11 @@ class Provider
         if (empty($result)) {
             $result = $this->entityid;
         }
+
         return trim($result);
     }
 
-    public function getNameLocalized()
-    {
+    public function getNameLocalized() {
         $t['en'] = $this->name;
         $p = unserialize($this->lname);
         if (is_array($p)) {
@@ -1571,11 +1528,11 @@ class Provider
         } else {
             $p = $t;
         }
+
         return $p;
     }
 
-    public function getDisplayNameInLang($jlang)
-    {
+    public function getDisplayNameInLang($jlang) {
         $r = $this->getDisplayNameLocalized();
         if (isset($r['' . $jlang . ''])) {
             return $r['' . $jlang . ''];
@@ -1584,8 +1541,7 @@ class Provider
         }
     }
 
-    public function getNameInLang($jlang)
-    {
+    public function getNameInLang($jlang) {
         $r = $this->getNameLocalized();
         if (isset($r['' . $jlang . ''])) {
             return $r['' . $jlang . ''];
@@ -1594,8 +1550,7 @@ class Provider
         }
     }
 
-    public function getDisplayName($length = null)
-    {
+    public function getDisplayName($length = null) {
         if (empty($length) || !is_integer($length) || strlen($this->displayname) <= $length) {
             return $this->displayname;
         } else {
@@ -1603,25 +1558,24 @@ class Provider
         }
     }
 
-    public function getLocalDisplayName()
-    {
+    public function getLocalDisplayName() {
         if (!empty($this->ldisplayname)) {
             return unserialize($this->ldisplayname);
         }
+
         return array();
     }
 
-    public function getMergedLocalDisplayName()
-    {
+    public function getMergedLocalDisplayName() {
         $r = $this->getLocalDisplayName();
         if (!isset($r['en']) && !empty($this->displayname)) {
             $r['en'] = $this->displayname;
         }
+
         return $r;
     }
 
-    public function getLocalDisplayNamesToArray($type)
-    {
+    public function getLocalDisplayNamesToArray($type) {
         $result = array();
         $ex = $this->getExtendMetadata();
         foreach ($ex as $v) {
@@ -1630,48 +1584,45 @@ class Provider
                 $result[$l['xml:lang']] = $v->getElementValue();
             }
         }
+
         return $result;
     }
 
-    public function getDisplayNameLocalized()
-    {
+    public function getDisplayNameLocalized() {
         if (!empty($this->ldisplayname)) {
             $p = unserialize($this->ldisplayname);
             if (!array_key_exists('en', $p)) {
                 $p['en'] = $this->displayname;
             }
+
             return $p;
         } else {
             return array('en' => $this->displayname);
         }
     }
 
-    public function getDigest()
-    {
+    public function getDigest() {
         return $this->digest;
     }
 
     /**
      * @return null|\Datetime
      */
-    public function getValidTo()
-    {
+    public function getValidTo() {
         return $this->validto;
     }
 
     /**
      * @return null|\Datetime
      */
-    public function getValidFrom()
-    {
+    public function getValidFrom() {
         return $this->validfrom;
     }
 
     /**
      * @return bool
      */
-    public function isValidFromTo()
-    {
+    public function isValidFromTo() {
         /**
          * @todo fix broken time for the momemnt reurns true
          */
@@ -1685,24 +1636,22 @@ class Provider
             $validAfter = false;
 
         }
+
         return ($validAfter && $validBefore);
     }
 
-    public function getEntityId()
-    {
+    public function getEntityId() {
         return $this->entityid;
     }
 
-    public function getType()
-    {
+    public function getType() {
         return $this->type;
     }
 
     /**
      * @return array
      */
-    public function getTypesToArray()
-    {
+    public function getTypesToArray() {
         $result = array('idp' => false, 'sp' => false);
         if (strcasecmp($this->type, 'BOTH') == 0) {
             $result = array('idp' => true, 'sp' => true);
@@ -1711,11 +1660,11 @@ class Provider
         } else {
             $result['sp'] = true;
         }
+
         return $result;
     }
 
-    public function getCountry()
-    {
+    public function getCountry() {
         return $this->country;
     }
 
@@ -1723,8 +1672,7 @@ class Provider
      * return boolean if want to use static metadata
      */
 
-    public function getStatic()
-    {
+    public function getStatic() {
         return $this->is_static;
     }
 
@@ -1732,18 +1680,15 @@ class Provider
      * return static metadata body
      */
 
-    public function getStaticMetadata()
-    {
+    public function getStaticMetadata() {
         return $this->metadata;
     }
 
-    public function getExtendMetadata()
-    {
+    public function getExtendMetadata() {
         return $this->extend;
     }
 
-    public function isStaticMetadata()
-    {
+    public function isStaticMetadata() {
         $c = $this->getStatic();
         $d = $this->getStaticMetadata();
         if ($c && !empty($d)) {
@@ -1753,13 +1698,11 @@ class Provider
         }
     }
 
-    public function getHelpdeskUrl()
-    {
+    public function getHelpdeskUrl() {
         return $this->helpdeskurl;
     }
 
-    public function getLocalHelpdeskUrl()
-    {
+    public function getLocalHelpdeskUrl() {
         if (!empty($this->lhelpdeskurl)) {
             return unserialize($this->lhelpdeskurl);
         } else {
@@ -1767,8 +1710,7 @@ class Provider
         }
     }
 
-    public function getHelpdeskUrlLocalized()
-    {
+    public function getHelpdeskUrlLocalized() {
         $t['en'] = $this->helpdeskurl;
         $p = unserialize($this->lhelpdeskurl);
         if (is_array($p)) {
@@ -1778,21 +1720,19 @@ class Provider
         } else {
             $p = $t;
         }
+
         return array_filter($p);
     }
 
-    public function getPrivacyUrl()
-    {
+    public function getPrivacyUrl() {
         return $this->privacyurl;
     }
 
-    public function getLocalPrivacyUrl()
-    {
+    public function getLocalPrivacyUrl() {
         return unserialize($this->lprivacyurl);
     }
 
-    public function getLocalPrivacyStatementsToArray($type)
-    {
+    public function getLocalPrivacyStatementsToArray($type) {
         $result = array();
         $ex = $this->getExtendMetadata();
         foreach ($ex as $v) {
@@ -1801,11 +1741,11 @@ class Provider
                 $result[$l['xml:lang']] = $v->getElementValue();
             }
         }
+
         return $result;
     }
 
-    public function getPrivacyUrlLocalized()
-    {
+    public function getPrivacyUrlLocalized() {
         $t['en'] = $this->privacyurl;
         $p = unserialize($this->lprivacyurl);
         if (is_array($p)) {
@@ -1815,48 +1755,41 @@ class Provider
         } else {
             $p = $t;
         }
+
         return $p;
     }
 
-    public function getApproved()
-    {
+    public function getApproved() {
         return $this->is_approved;
     }
 
-    public function getLocked()
-    {
+    public function getLocked() {
 
         return $this->is_locked;
     }
 
-    public function getPublicVisible()
-    {
+    public function getPublicVisible() {
         return !($this->hidepublic);
     }
 
-    public function getAvailable()
-    {
+    public function getAvailable() {
 
         return ($this->is_active && $this->is_approved && $this->isValidFromTo());
     }
 
-    public function getLocal()
-    {
+    public function getLocal() {
         return $this->is_local;
     }
 
-    public function getLocalAvailable()
-    {
+    public function getLocalAvailable() {
         return ($this->is_local && $this->is_active && $this->is_approved && $this->isValidFromTo());
     }
 
-    public function getDescription()
-    {
+    public function getDescription() {
         return $this->description;
     }
 
-    public function getLocalDescriptionsToArray($type)
-    {
+    public function getLocalDescriptionsToArray($type) {
         $result = array();
         $ex = $this->getExtendMetadata();
         foreach ($ex as $v) {
@@ -1868,11 +1801,11 @@ class Provider
                 $result[$l['xml:lang']] = $v->getElementValue();
             }
         }
+
         return $result;
     }
 
-    public function getWayfList()
-    {
+    public function getWayfList() {
         $w = $this->wayflist;
         if (!empty($w)) {
             return unserialize($w);
@@ -1882,61 +1815,66 @@ class Provider
 
     }
 
-    public function getExcarps()
-    {
+    public function getExcarps() {
         $w = $this->excarps;
         if (!empty($w)) {
             return unserialize($w);
         }
+
         return array();
 
     }
 
-    public function getLastModified()
-    {
+    public function getLastModified() {
         if (empty($this->updatedAt)) {
             return $this->createdAt;
         }
+
         return $this->updatedAt;
 
     }
 
-    public function overwriteWithNameid(Provider $provider)
-    {
+    public function overwriteWithNameid(Provider $provider) {
         $this->nameids = serialize($provider->getNameIds());
     }
 
-    public function convertToArray($addmeta = FALSE)
-    {
-        $r = array();
-        $r['id'] = $this->getId();
-        $r['name'] = $this->getName();
-        $r['displayname'] = $this->getDisplayname();
-        $r['entityid'] = $this->getEntityId();
+    public function convertToArray($addmeta = false) {
+        $r = array(
+            'id'           => $this->id,
+            'entityid'     => $this->entityid,
+            'type'         => $this->type,
+            'validfrom'    => $this->getValidFrom(),
+            'validto'      => $this->getValidTo(),
+            'is_local'     => $this->getLocal(),
+            'is_approved'  => $this->getApproved(),
+            'is_active'    => $this->getActive(),
+            'is_locked'    => $this->getLocked(),
+            'is_static'    => $this->getStatic(),
+            'name'         => $this->getName(),
+            'displayname'  => $this->getDisplayname(),
+            'nameid'       => array(),
+            'protocol'     => array(),
+            'scope'        => $this->getScope('idpsso'),
+            'aascope'      => $this->getScope('aa'),
+            'helpdeskurl'  => $this->getHelpdeskUrl(),
+            'privacyurl'   => $this->getPrivacyUrl(),
+            'contacts'     => array(),
+            'services'     => array(),
+            'certificates' => array()
+        );
 
-        $r['nameid'] = array();
+
         $nameids = $this->getNameIds();
         if (!empty($nameids)) {
             $r['nameid'] = $nameids;
         }
-        $r['protocol'] = array();
+
+
         $protocols = $this->getProtocol()->getValues();
         if (!empty($protocols)) {
             $r['protocol'] = $protocols;
         }
-        $r['type'] = $this->getType();
-        $r['scope'] = $this->getScope('idpsso');
-        $r['aascope'] = $this->getScope('aa');
-        $r['helpdeskurl'] = $this->getHelpdeskUrl();
-        $r['privacyurl'] = $this->getPrivacyUrl();
-        $r['validfrom'] = $this->getValidFrom();
-        $r['validto'] = $this->getValidTo();
-        $r['is_approved'] = $this->getApproved();
-        $r['is_active'] = $this->getActive();
-        $r['is_locked'] = $this->getLocked();
-        $r['is_static'] = $this->getStatic();
-        $r['is_local'] = $this->getLocal();
-        $r['contacts'] = array();
+
         $contacts = $this->getContacts();
         if (!empty($contacts)) {
             foreach ($contacts->getValues() as $c) {
@@ -1944,7 +1882,7 @@ class Provider
             }
         }
 
-        $r['certificates'] = array();
+
         $certs = $this->getCertificates();
         if (!empty($certs)) {
             foreach ($certs->getValues() as $crt) {
@@ -1952,14 +1890,14 @@ class Provider
             }
         }
         $services = $this->getServiceLocations();
-        $r['services'] = array();
+
         if (!empty($services)) {
             foreach ($services->getValues() as $s) {
                 $r['services'][] = $s->convertToArray();
             }
         }
 
-        $r['federations'] = array();
+
         $membership = $this->getMembership();
         if (!empty($membership) && $membership->count() > 0) {
             foreach ($membership as $f) {
@@ -1973,8 +1911,7 @@ class Provider
         return $r;
     }
 
-    public function importFromArray(array $r)
-    {
+    public function importFromArray(array $r) {
         $etype = strtoupper($r['type']);
         $this->setName($r['name']);
         if (!empty($r['displayname'])) {
@@ -2064,8 +2001,7 @@ class Provider
      *
      * extensions inside IDPSSODEscriptor (idp) or SPSODescriptor (sp)
      */
-    private function ssoDescriptorExtensionsFromArray($ext, $type)
-    {
+    private function ssoDescriptorExtensionsFromArray($ext, $type) {
         $parentUIInfo = new ExtendMetadata;
         $parentUIInfo->setNamespace('mdui');
         $parentUIInfo->setElement('UIInfo');
@@ -2116,9 +2052,9 @@ class Provider
         }
 
         $otherExtends = array(
-            'desc' => 'Description',
-            'displayname' => 'DisplayName',
-            'privacyurl' => 'PrivacyStatementURL',
+            'desc'           => 'Description',
+            'displayname'    => 'DisplayName',
+            'privacyurl'     => 'PrivacyStatementURL',
             'informationurl' => 'InformationURL'
         );
 
@@ -2170,8 +2106,7 @@ class Provider
         }
     }
 
-    private function aaDescriptorFromArray($b)
-    {
+    private function aaDescriptorFromArray($b) {
         if (array_key_exists('protocols', $b)) {
             $this->setProtocolSupport('aa', $b['protocols']);
         }
@@ -2220,8 +2155,7 @@ class Provider
         }
     }
 
-    private function idpSSODescriptorFromArray($b)
-    {
+    private function idpSSODescriptorFromArray($b) {
         if (array_key_exists('extensions', $b)) {
             $this->ssoDescriptorExtensionsFromArray($b['extensions'], 'idp');
         }
@@ -2274,11 +2208,11 @@ class Provider
                 $this->setCertificate($cert);
             }
         }
+
         return $this;
     }
 
-    private function spSSODescriptorFromArray($b)
-    {
+    private function spSSODescriptorFromArray($b) {
         if (array_key_exists('extensions', $b)) {
             $this->ssoDescriptorExtensionsFromArray($b['extensions'], 'sp');
         }
@@ -2361,11 +2295,11 @@ class Provider
                 $this->setCertificate($cert);
             }
         }
+
         return $this;
     }
 
-    public function setReqAttrsFromArray($ent, $attributesByName)
-    {
+    public function setReqAttrsFromArray($ent, $attributesByName) {
         if (isset($ent['details']['reqattrs'])) {
             \log_message('info', 'DI1');
             $attrsset = array();
@@ -2390,11 +2324,11 @@ class Provider
                 }
             }
         }
+
         return $this;
     }
 
-    public function setProviderFromArray($a, $full = FALSE)
-    {
+    public function setProviderFromArray($a, $full = false) {
         if (!is_array($a)) {
             return null;
         }
@@ -2519,6 +2453,7 @@ class Provider
                 $this->spSSODescriptorFromArray($a['details']['spssodescriptor']);
             }
         }
+
         return $this;
     }
 
