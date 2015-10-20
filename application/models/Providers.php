@@ -27,18 +27,6 @@ class Providers
         $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    public function getCircleMembers(Provider $provider) {
-        $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
-        $federations = $provider->getFederations();
-        foreach ($federations->getValues() as $f) {
-            $y = $f->getMembers();
-            foreach ($y->getKeys() as $key) {
-                $this->providers->set($key, $y->get($key));
-            }
-        }
-
-        return $this->providers;
-    }
 
     public function getTrustedActiveFeds(Provider $provider) {
         $feds = new \Doctrine\Common\Collections\ArrayCollection();
@@ -147,51 +135,7 @@ class Providers
         return $result;
     }
 
-    /**
-     * getting trusted entities by given provider
-     * if provider is IDP then result give only trusted SPs
-     * if provider is SP then result give only trusted IDPs
-     */
-    public function getCircleMembersByType(Provider $provider, $excludeDisabledFeds = false) {
-        $trustedEntities = new \Doctrine\Common\Collections\ArrayCollection();
-        $entype = $provider->getType();
-        $membership = $provider->getMembership();
-        $feds = array();
-        foreach ($membership as $m) {
-            $fullTrustEnabled = $m->isFinalMembership();
-            if ($excludeDisabledFeds) {
-                $isFedEnabled = true;
-            } else {
-                $isFedEnabled = $m->getFederation()->getActive();
-            }
-            if ($fullTrustEnabled && $isFedEnabled) {
-                $feds[] = $m->getFederation()->getId();
-            }
-        }
-        if (count($feds) == 0) {
-            return array();
-        }
-
-        /**
-         * @var FederationMembers[] $fedmembers
-         */
-        $fedmembers = $this->em->getRepository("models\FederationMembers")->findBy(array('federation' => $feds, 'isDisabled' => false, 'isBanned' => false, 'joinstate' => array('0', '1', '3')));
-        if ($entype === 'IDP' || $entype === 'SP') {
-            foreach ($fedmembers as $m) {
-                $pr = $m->getProvider();
-                if (strcmp($pr->getType(), $entype) != 0) {
-                    $trustedEntities->add($pr);
-                }
-            }
-        } else {
-            foreach ($fedmembers as $m) {
-                $trustedEntities->add($m->getProvider());
-            }
-        }
-        \log_message('debug', __METHOD__ . ': trusted_fedmebers=' . $trustedEntities->count());
-
-        return $trustedEntities;
-    }
+   
 
     /**
      * get all trusted entites excluding the same type as param including their feds
