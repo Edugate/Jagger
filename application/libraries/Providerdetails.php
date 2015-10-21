@@ -79,7 +79,7 @@ class Providerdetails
                     $d[] = array('name' => lang('rr_fingerprint') . ' (md5)', 'value' => '' . generateFingerprint($certData, 'md5') . '');
                     $d[] = array('name' => lang('rr_fingerprint') . ' (sha1)', 'value' => '' . generateFingerprint($certData, 'sha1') . '');
                     $d[] = array(
-                        'name' => '',
+                        'name'  => '',
                         'value' => '<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c' . $cert->getId() . '" class="accordion-icon">' . lang('rr_certbody') . '</a><code id="c' . $cert->getId() . '" class="content">' . trim($certData) . '</code></dd></dl>'
                     );
                 }
@@ -126,6 +126,7 @@ class Providerdetails
                 }
             }
         }
+
         return $result;
     }
 
@@ -161,6 +162,7 @@ class Providerdetails
         if ($isStatic) {
             $entStatus .= ' ' . makeLabel('static', lang('lbl_static'), lang('lbl_static'));
         }
+
         return $entStatus;
     }
 
@@ -234,7 +236,7 @@ class Providerdetails
          */
         $serviceLocation = $provider->getServiceLocations();
         $serviceUrls = array();
-        foreach($serviceLocation as $aaa){
+        foreach ($serviceLocation as $aaa) {
             $serviceUrls[] = $aaa->getUrl();
         }
         $serviceUrls = array_unique($serviceUrls);
@@ -295,7 +297,7 @@ class Providerdetails
                 if (array_key_exists('ipv4', $hostsByIP)) {
                     foreach ($hostsByIP['ipv4'] as $ip) {
 
-                        if (!in_array('' . $ip . '_' . $urlPort.'', $srvsTcpChecked, true)) {
+                        if (!in_array('' . $ip . '_' . $urlPort . '', $srvsTcpChecked, true)) {
                             $fp = @fsockopen($ip, $urlPort, $errno, $errstr, 2);
                             if (!$fp) {
                                 $result[] = array('msg' => 'Service URL: ' . html_escape($surl) . ' : ' . $ip . ' : ' . $errstr . ' (' . $errno . ')', 'level' => 'alert');
@@ -308,7 +310,7 @@ class Providerdetails
 
 
                     foreach ($hostsByIP['ipv6'] as $ip) {
-                        if (!in_array('' . $ip . '_' . $urlPort, $srvsTcpChecked,true)) {
+                        if (!in_array('' . $ip . '_' . $urlPort, $srvsTcpChecked, true)) {
                             $fp = @fsockopen('tcp://[' . $ip . ']', $urlPort, $errno, $errstr, 2);
                             if (!$fp) {
                                 $result[] = array('msg' => 'Service URL: ' . html_escape($surl) . ' : ' . $ip . ' : ' . $errstr . ' (' . $errno . ')', 'level' => 'alert');
@@ -330,6 +332,7 @@ class Providerdetails
                 $result['' . $k . '']['msg'] = '(' . $msgprefix . ') ' . $v['msg'];
             }
         }
+
         return $result;
     }
 
@@ -380,11 +383,11 @@ class Providerdetails
         $result = array();
         $contacts = $this->ent->getContacts();
         $typesInLang = array(
-            'technical' => lang('rr_cnt_type_tech'),
+            'technical'      => lang('rr_cnt_type_tech'),
             'administrative' => lang('rr_cnt_type_admin'),
-            'support' => lang('rr_cnt_type_support'),
-            'billing' => lang('rr_cnt_type_bill'),
-            'other' => lang('rr_cnt_type_other')
+            'support'        => lang('rr_cnt_type_support'),
+            'billing'        => lang('rr_cnt_type_bill'),
+            'other'          => lang('rr_cnt_type_other')
         );
         if (count($contacts) > 0) {
             foreach ($contacts as $c) {
@@ -400,6 +403,7 @@ class Providerdetails
         } else {
             $result[]['2cols'] = '<div data-alert class="alert-box warning">' . lang('rr_notset') . '</div>';
         }
+
         return $result;
     }
 
@@ -508,7 +512,6 @@ class Providerdetails
         $d[++$i] = &$entityIdRecord;
 
 
-
         $d[++$i]['name'] = lang('e_orgname');
         $lname = $ent->getMergedLocalName();
         $lvalues = '';
@@ -561,7 +564,7 @@ class Providerdetails
 
         $d[++$i]['name'] = lang('rr_regdate');
         $regdate = $ent->getRegistrationDate();
-        if ($regdate !==null) {
+        if ($regdate !== null) {
             $d[$i]['value'] = '<span data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" class="has-tip" title="' . date('Y-m-d H:i', $regdate->format('U')) . ' UTC">' . date('Y-m-d H:i', $regdate->format('U') + jauth::$timeOffset) . '</span>';
         } else {
             $d[$i]['value'] = null;
@@ -658,11 +661,11 @@ class Providerdetails
             $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
             $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<i class="fi-arrow-right"></i>', '');
         }
-        $circleEnabled = !((isset($featdisable['circlemeta']) && $featdisable['circlemeta'] === TRUE) || (isset($feathide['circlemeta']) && $feathide['circlemeta'] === TRUE));
+        $circleEnabled = !((isset($featdisable['circlemeta']) && $featdisable['circlemeta'] === true) || (isset($feathide['circlemeta']) && $feathide['circlemeta'] === true));
 
         if ($circleEnabled) {
 
-            if (!$isLocal && !empty($disable_extcirclemeta) && $disable_extcirclemeta === TRUE) {
+            if (!$isLocal && !empty($disable_extcirclemeta) && $disable_extcirclemeta === true) {
                 $d[++$i]['name'] = lang('rr_circleoftrust');
                 $d[$i]['value'] = lang('disableexternalcirclemeta');
                 $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
@@ -716,10 +719,10 @@ class Providerdetails
         $no_feds = 0;
         $membership = $ent->getMembership();
         $membershipNotLeft = array();
-        $showMetalinks = TRUE;
+        $showMetalinks = true;
 
         if (isset($feathide['metasonprov']) && $feathide['metasonprov'] === true) {
-            $showMetalinks = FALSE;
+            $showMetalinks = false;
         }
         if (!empty($membership)) {
             $federationsString = '<ul class="no-bullet">';
@@ -967,8 +970,7 @@ class Providerdetails
             $d[++$i]['name'] = lang('rr_supportednameids');
 
 
-
-            $d[$i]['value'] = '<ul class="no-bullet"><li>'.implode('</li><li>',$ent->getNameIds('spsso')).'</li></ul>';
+            $d[$i]['value'] = '<ul class="no-bullet"><li>' . implode('</li><li>', $ent->getNameIds('spsso')) . '</li></ul>';
             if (array_key_exists('AssertionConsumerService', $services)) {
                 $acsvalues = '';
                 $d[++$i]['name'] = 'AssertionConsumerService';
@@ -1033,7 +1035,7 @@ class Providerdetails
          */
 
 
-        $xmldata = $this->CI->providertoxml->entityConvertNewDocument($ent, array('attrs' => 1), TRUE);
+        $xmldata = $this->CI->providertoxml->entityConvertNewDocument($ent, array('attrs' => 1), true);
         $subresult[1] = array('section' => 'xmlmeta', 'title' => '<i class="fi-clipboard-notes"></i>', 'data' => '<code>' . $this->CI->geshilib->highlight($xmldata, 'xml', $params) . '</code>');
 
         $d = array();
@@ -1096,7 +1098,7 @@ class Providerdetails
             if ($hasWriteAccess) {
                 $entmenu[20] = array('label' => '' . lang('rr_attributes') . '');
                 $entmenu[23] = array('name' => '' . lang('rr_attributepolicy') . '', 'link' => '' . base_url() . 'manage/attributepolicy/show/' . $id . '', 'class' => '');
-                if (!empty($logoUploadEnabled) && $logoUploadEnabled === TRUE) {
+                if (!empty($logoUploadEnabled) && $logoUploadEnabled === true) {
                     $entmenu[24] = array('name' => '' . lang('rr_logos') . ' <span class="label">deprecated</span>', 'link' => '' . base_url('manage/logomngmt/provider/idp/' . $ent->getId() . ''), 'class' => '');
                 }
             }
@@ -1122,7 +1124,7 @@ class Providerdetails
                 $d[++$i]['name'] = lang('rr_attrsoverview');
                 $d[$i]['value'] = anchor(base_url() . 'reports/spmatrix/show/' . $ent->getId(), lang('rr_attrsoverview'), 'class="button small editbutton"');
 
-                if (!empty($logoUploadEnabled) && $logoUploadEnabled === TRUE) {
+                if (!empty($logoUploadEnabled) && $logoUploadEnabled === true) {
                     $entmenu[24] = array('name' => '' . lang('rr_logos') . ' <span class="label">deprecated</span>', 'link' => '' . base_url('manage/logomngmt/provider/sp/' . $ent->getId() . ''), 'class' => '');
                 }
             }
@@ -1155,49 +1157,13 @@ class Providerdetails
             }
             $discohintsarray = &$uiiarray;
             $d[++$i]['name'] = lang('e_idpservicename');
-            if (isset($uiiarray['DisplayName'])) {
-                $str = '';
-                foreach ($uiiarray['DisplayName'] as $v) {
-                    $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
-                }
-                $d[$i]['value'] = $str;
-            } else {
-                $d[$i]['value'] = lang('rr_notset');
-            }
+            $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'DisplayName');
             $d[++$i]['name'] = lang('e_idpservicedesc');
-            if (isset($uiiarray['Description'])) {
-                $str = '';
-                foreach ($uiiarray['Description'] as $v) {
-                    $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
-                }
-                $d[$i]['value'] = $str;
-            } else {
-                $d[$i]['value'] = lang('rr_notset');
-            }
+            $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'Description');
             $d[++$i]['name'] = lang('e_idpserviceinfourl');
-            if (isset($uiiarray['InformationURL'])) {
-                $str = '';
-                foreach ($uiiarray['InformationURL'] as $v) {
-                    $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
-                }
-                $d[$i]['value'] = $str;
-            } else {
-                $d[$i]['value'] = lang('rr_notset');
-            }
+            $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'InformationURL');
             $d[++$i]['name'] = lang('e_idpserviceprivacyurl');
-            if (isset($uiiarray['PrivacyStatementURL'])) {
-                $str = '';
-                foreach ($uiiarray['PrivacyStatementURL'] as $v) {
-                    $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
-                }
-                $d[$i]['value'] = $str;
-            } else {
-                $d[$i]['value'] = lang('rr_notset');
-            }
+            $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'PrivacyStatementURL');
             $d[++$i]['name'] = lang('rr_logoofservice');
             if (isset($uiiarray['Logo'])) {
                 $str = '';
@@ -1229,49 +1195,13 @@ class Providerdetails
                 }
             }
             $d[++$i]['name'] = lang('e_spservicename');
-            if (isset($uiiarray['DisplayName'])) {
-                $str = '';
-                foreach ($uiiarray['DisplayName'] as $v) {
-                    $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
-                }
-                $d[$i]['value'] = $str;
-            } else {
-                $d[$i]['value'] = lang('rr_notset');
-            }
+            $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'DisplayName');
             $d[++$i]['name'] = lang('e_spservicedesc');
-            if (isset($uiiarray['Description'])) {
-                $str = '';
-                foreach ($uiiarray['Description'] as $v) {
-                    $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
-                }
-                $d[$i]['value'] = $str;
-            } else {
-                $d[$i]['value'] = lang('rr_notset');
-            }
+            $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'Description');
             $d[++$i]['name'] = lang('e_spserviceprivacyurl');
-            if (isset($uiiarray['PrivacyStatementURL'])) {
-                $str = '';
-                foreach ($uiiarray['PrivacyStatementURL'] as $v) {
-                    $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
-                }
-                $d[$i]['value'] = $str;
-            } else {
-                $d[$i]['value'] = lang('rr_notset');
-            }
+            $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'PrivacyStatementURL');
             $d[++$i]['name'] = lang('e_spserviceinfourl');
-            if (isset($uiiarray['InformationURL'])) {
-                $str = '';
-                foreach ($uiiarray['InformationURL'] as $v) {
-                    $attr = $v->getAttributes();
-                    $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($v->getEvalue()) . '<br />';
-                }
-                $d[$i]['value'] = $str;
-            } else {
-                $d[$i]['value'] = lang('rr_notset');
-            }
+            $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'InformationURL');
 
             $d[++$i]['name'] = lang('rr_logoofservice');
             if (isset($uiiarray['Logo'])) {
@@ -1372,7 +1302,26 @@ class Providerdetails
         $data['tabs'] = $result;
         Detail::$alerts = $alerts;
         $data['entmenu'] = $entmenu;
+
         return $data;
+    }
+
+    /**
+     * @param array $data
+     * @param $key
+     * @return string
+     */
+    private function getUrlsByLang(array $data, $key) {
+        if (!array_key_exists($key, $data) || !is_array($data[$key]) || count($data[$key]) == 0) {
+            return lang('rr_notset');
+        }
+        $str = '';
+        foreach ($data[$key] as $val) {
+            $attr = $val->getAttributes();
+            $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($val->getEvalue()) . '<br />';
+        }
+
+        return $str;
     }
 
 }
