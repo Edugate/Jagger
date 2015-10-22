@@ -2,22 +2,12 @@
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
-/**
- * Jagger
- *
- * @package   Jagger
- * @author    Middleware Team HEAnet
- * @copyright Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
- * @license   MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
 
 /**
- * Metadata2import Class
- *
- * @package    Jagger
- * @subpackage Libraries
- * @author     Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   Jagger
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 class Metadata2import
 {
@@ -26,22 +16,30 @@ class Metadata2import
     private $metadata;
     private $type;
     private $full;
+    /**
+     * @var array $defaults
+     */
     private $defaults;
     private $other;
     protected $ci;
     /**
-     * @var $em Doctrine\ORM\EntityManager
+     * @var bool $copyFedAttrReq
+     */
+    private $copyFedAttrReq;
+    /**
+     * @var Doctrine\ORM\EntityManager $em
      */
     protected $em;
+    protected $attrsDefinitions;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->library('metadata2array');
         $this->metadata = null;
         $this->type = null;
         $this->full = false;
+        $this->copyFedAttrReq = false;
 
         $this->defaults = array(
             'localimport' => false,
@@ -62,8 +60,7 @@ class Metadata2import
      * @param $report
      * @return bool
      */
-    private function genReport($report)
-    {
+    private function genReport($report) {
         if (!is_array($report)) {
             return false;
         }
@@ -93,25 +90,25 @@ class Metadata2import
         return true;
     }
 
-    private function getAttributesByNames()
-    {
-        /**
-         * @var $attrsDefinitions \models\Attribute[]
-         */
-        $attrsDefinitions = $this->em->getRepository("models\Attribute")->findAll();
-        $attributes = array();
-        foreach ($attrsDefinitions as $v) {
-            $attributes['' . $v->getOid() . ''] = $v;
+    private function getAttributesByNames() {
+        if (!is_array($this->attrsDefinitions)) {
+            /**
+             * @var $attrs \models\Attribute[]
+             */
+            $attrs = $this->em->getRepository("models\Attribute")->findAll();
+            $this->attrsDefinitions = array();
+            foreach ($attrs as $v) {
+                $this->attrsDefinitions['' . $v->getOid() . ''] = $v;
+            }
         }
-        return $attributes;
+        return $this->attrsDefinitions;
     }
 
     /**
      * @param \models\Federation $federation
      * @return array
      */
-    private function getAttrReqByFed(\models\Federation $federation)
-    {
+    private function getAttrReqByFed(\models\Federation $federation) {
         /**
          * @var $fedReqAttrs models\AttributeRequirement[]
          */
@@ -129,8 +126,7 @@ class Metadata2import
     }
 
 
-    public function import($metadata, $type, $full, array $defaults, $other = null)
-    {
+    public function import($metadata, $type, $full, array $defaults, $other = null) {
         $tmpProviders = new models\Providers;
         $this->metadata = &$metadata;
         $this->full = $full;
@@ -161,6 +157,9 @@ class Metadata2import
 
         $coclistconverted = array();
         $coclistarray = array();
+        /**
+         * @var models\Coc[] $regpollistconverted
+         */
         $regpollistconverted = array();
         $regpollistarray = array();
 
@@ -216,9 +215,8 @@ class Metadata2import
 
 
         $attrRequiredByFed = $this->getAttrReqByFed($federation);
-        $copyFedAttrReq = false;
         if ($attrreqinherit === true && count($attrRequiredByFed) > 0) {
-            $copyFedAttrReq = true;
+            $this->copyFedAttrReq = true;
         }
 
         $fedMembershipColl = $federation->getMembership();
@@ -297,48 +295,8 @@ class Metadata2import
 
                     // end entityCategory
                     // attr req  start
-                    $attrsset = array();
                     if (isset($ent['details']['reqattrs'])) {
-                        foreach ($ent['details']['reqattrs'] as $r) {
-                            if (array_key_exists($r['name'], $attributes)) {
-                                if (!in_array($r['name'], $attrsset)) {
-                                    $reqattr = new models\AttributeRequirement;
-                                    $reqattr->setAttribute($attributes['' . $r['name'] . '']);
-                                    $reqattr->setType('SP');
-                                    $reqattr->setSP($importedProvider);
-                                    if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0) {
-                                        $reqattr->setStatus('required');
-                                    } else {
-                                        $reqattr->setStatus('desired');
-                                    }
-                                    $importedProvider->setAttributesRequirement($reqattr);
-                                    $this->em->persist($reqattr);
-                                    $attrsset[] = $r['name'];
-                                }
-                            } else {
-                                log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
-                            }
-                        }
-
-                        if ($ent['details']['reqattrsinmeta'] === false && $copyFedAttrReq === true) {
-                            foreach ($attrRequiredByFed as $rt) {
-                                if (!in_array($rt['name'], $attrsset)) {
-                                    $reqattr = new models\AttributeRequirement;
-                                    $reqattr->setAttribute($attributes['' . $rt['name'] . '']);
-                                    $reqattr->setType('SP');
-                                    $reqattr->setSP($importedProvider);
-                                    if (isset($rt['req']) && strcasecmp($rt['req'], 'true') == 0) {
-                                        $reqattr->setStatus('required');
-                                    } else {
-                                        $reqattr->setStatus('desired');
-                                    }
-                                    $importedProvider->setAttributesRequirement($reqattr);
-                                    $this->em->persist($reqattr);
-                                    $attrsset[] = $rt['name'];
-                                }
-                            }
-                        }
-
+                        $this->setReqAttrs($ent['details']['reqattrs'], $attrRequiredByFed, $importedProvider);
                     }
 
                     // attr req end
@@ -465,7 +423,7 @@ class Metadata2import
                                     log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $nr['name']);
                                 }
                             }
-                            if ($ent['details']['reqattrsinmeta'] === false & $copyFedAttrReq === true) {
+                            if ($ent['details']['reqattrsinmeta'] === false & $this->copyFedAttrReq === true) {
                                 foreach ($attrRequiredByFed as $rt) {
                                     if (!in_array($rt['name'], $duplicateControl)) {
                                         $reqattr = new models\AttributeRequirement;
@@ -818,4 +776,54 @@ class Metadata2import
         }
     }
 
+
+    /**
+     * @param array $reqattrs
+     * @param array $attrRequiredByFed
+     * @param \models\Provider $ent
+     */
+    private function setReqAttrs(array $reqattrs, array $attrRequiredByFed, models\Provider $ent) {
+        $attrsset = array();
+        $attributes = $this->getAttributesByNames();
+        foreach ($reqattrs as $r) {
+            if (array_key_exists($r['name'], $attributes)) {
+                if (!in_array($r['name'], $attrsset)) {
+                    $reqattr = new models\AttributeRequirement;
+                    $reqattr->setAttribute($attributes['' . $r['name'] . '']);
+                    $reqattr->setType('SP');
+                    $reqattr->setSP($ent);
+                    if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0) {
+                        $reqattr->setStatus('required');
+                    } else {
+                        $reqattr->setStatus('desired');
+                    }
+                    $ent->setAttributesRequirement($reqattr);
+                    $this->em->persist($reqattr);
+                    $attrsset[] = $r['name'];
+                }
+            } else {
+                log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
+            }
+        }
+
+        if ($ent['details']['reqattrsinmeta'] === false && $this->copyFedAttrReq === true) {
+            foreach ($attrRequiredByFed as $rt) {
+                if (!in_array($rt['name'], $attrsset)) {
+                    $reqattr = new models\AttributeRequirement;
+                    $reqattr->setAttribute($attributes['' . $rt['name'] . '']);
+                    $reqattr->setType('SP');
+                    $reqattr->setSP($ent);
+                    if (isset($rt['req']) && strcasecmp($rt['req'], 'true') == 0) {
+                        $reqattr->setStatus('required');
+                    } else {
+                        $reqattr->setStatus('desired');
+                    }
+                    $ent->setAttributesRequirement($reqattr);
+                    $this->em->persist($reqattr);
+                    $attrsset[] = $rt['name'];
+                }
+            }
+        }
+
+    }
 }
