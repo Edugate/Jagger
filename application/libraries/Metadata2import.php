@@ -655,58 +655,9 @@ class Metadata2import
                         /**
                          *   attrs requirements processing
                          */
-                        $duplicateControl = array();
-                        $requiredAttrs = $existingProvider->getAttributesRequirement();
-                        foreach ($requiredAttrs as $a) {
-                            $oid = $a->getAttribute()->getOid();
-                            if (in_array('' . $oid . '', $duplicateControl)) {
-                                $requiredAttrs->removeElement($a);
-                                $this->em->remove($a);
-                            } else {
-                                $duplicateControl[] = $oid;
-                            }
-                        }
+
                         if (isset($ent['details']['reqattrs']) && is_array($ent['details']['reqattrs'])) {
-                            foreach ($requiredAttrs as $r) {
-                                $found = false;
-                                $roid = $r->getAttribute()->getOid();
-                                foreach ($ent['details']['reqattrs'] as $k => $v) {
-                                    if (strcmp($roid, $v['name']) == 0) {
-                                        $found = true;
-                                        if (isset($v['req']) && strcasecmp($v['req'], 'true') == 0) {
-                                            $r->setStatus('required');
-                                        } else {
-                                            $r->setStatus('desired');
-                                        }
-                                        unset($ent['details']['reqattrs']['' . $k . '']);
-                                        $this->em->persist($r);
-                                    }
-                                    if ($found) {
-                                        break;
-                                    }
-                                }
-                                if (!$found) {
-                                    $requiredAttrs->removeElement($r);
-                                    $this->em->remove($r);
-                                }
-                            }
-                            foreach ($ent['details']['reqattrs'] as $nr) {
-                                if (isset($nr['name']) && array_key_exists($nr['name'], $attributes)) {
-                                    $reqattr = new models\AttributeRequirement;
-                                    $reqattr->setAttribute($attributes['' . $nr['name'] . '']);
-                                    $reqattr->setType('SP');
-                                    $reqattr->setSP($existingProvider);
-                                    if (isset($nr['req']) && strcasecmp($nr['req'], 'true') == 0) {
-                                        $reqattr->setStatus('required');
-                                    } else {
-                                        $reqattr->setStatus('desired');
-                                    }
-                                    $existingProvider->setAttributesRequirement($reqattr);
-                                    $this->em->persist($reqattr);
-                                } else {
-                                    log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $nr['name']);
-                                }
-                            }
+                            $this->updateReqAttrs($ent['details']['reqattrs'], $existingProvider);
                         }
                         /**
                          * END attrs requirements processing
@@ -756,6 +707,64 @@ class Metadata2import
         }
     }
 
+
+    private function updateReqAttrs(array $newReqAttrs, models\Provider $ent) {
+        $attributes = $this->getAttributesByNames();
+        $duplicateControl = array();
+        $origReqAttrs = $ent->getAttributesRequirement();
+        /**
+         * @var models\AttributeRequirement $reqAttr
+         */
+        foreach ($origReqAttrs as $reqAttr) {
+            $oid = $reqAttr->getAttribute()->getOid();
+            if (in_array('' . $oid . '', $duplicateControl)) {
+                $origReqAttrs->removeElement($reqAttr);
+                $this->em->remove($reqAttr);
+            } else {
+                $duplicateControl[] = $oid;
+            }
+        }
+        foreach ($origReqAttrs as $r) {
+            $found = false;
+            $roid = $r->getAttribute()->getOid();
+            foreach ($ent['details']['reqattrs'] as $k => $v) {
+                if (strcmp($roid, $v['name']) == 0) {
+                    $found = true;
+                    if (isset($v['req']) && strcasecmp($v['req'], 'true') == 0) {
+                        $r->setStatus('required');
+                    } else {
+                        $r->setStatus('desired');
+                    }
+                    unset($ent['details']['reqattrs']['' . $k . '']);
+                    $this->em->persist($r);
+                }
+                if ($found) {
+                    break;
+                }
+            }
+            if (!$found) {
+                $origReqAttrs->removeElement($r);
+                $this->em->remove($r);
+            }
+        }
+        foreach ($newReqAttrs as $nr) {
+            if (isset($nr['name']) && array_key_exists($nr['name'], $attributes)) {
+                $newReqAttr = new models\AttributeRequirement;
+                $newReqAttr->setAttribute($attributes['' . $nr['name'] . '']);
+                $newReqAttr->setType('SP');
+                $newReqAttr->setSP($ent);
+                if (isset($nr['req']) && strcasecmp($nr['req'], 'true') == 0) {
+                    $newReqAttr->setStatus('required');
+                } else {
+                    $newReqAttr->setStatus('desired');
+                }
+                $ent->setAttributesRequirement($newReqAttr);
+                $this->em->persist($newReqAttr);
+            } else {
+                log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $nr['name']);
+            }
+        }
+    }
 
     /**
      * @param array $reqattrs
