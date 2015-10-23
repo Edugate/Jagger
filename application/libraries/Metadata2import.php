@@ -568,27 +568,7 @@ class Metadata2import
 
                     // attr req  start
                     if (isset($ent['details']['reqattrs'])) {
-                        $attrsset = array();
-                        foreach ($ent['details']['reqattrs'] as $r) {
-                            if (array_key_exists($r['name'], $attributes)) {
-                                if (!in_array($r['name'], $attrsset)) {
-                                    $reqattr = new models\AttributeRequirement;
-                                    $reqattr->setAttribute($attributes['' . $r['name'] . '']);
-                                    $reqattr->setType('SP');
-                                    $reqattr->setSP($importedProvider);
-                                    if (isset($r['req']) && strcasecmp($r['req'], 'true') == 0) {
-                                        $reqattr->setStatus('required');
-                                    } else {
-                                        $reqattr->setStatus('desired');
-                                    }
-                                    $importedProvider->setAttributesRequirement($reqattr);
-                                    $this->em->persist($reqattr);
-                                    $attrsset[] = $r['name'];
-                                }
-                            } else {
-                                log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
-                            }
-                        }
+                        $this->setReqAttrs($ent['details']['reqattrs'], array(), $importedProvider);
                     }
 
                     // attr req end
