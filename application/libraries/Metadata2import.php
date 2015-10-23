@@ -42,14 +42,14 @@ class Metadata2import
         $this->copyFedAttrReq = false;
 
         $this->defaults = array(
-            'localimport' => false,
-            'static' => true,
-            'local' => false,
-            'federationid' => null,
-            'live' => false,
+            'localimport'    => false,
+            'static'         => true,
+            'local'          => false,
+            'federationid'   => null,
+            'live'           => false,
             'removeexternal' => false,
-            'mailreport' => false,
-            'active' => false,
+            'mailreport'     => false,
+            'active'         => false,
             'overwritelocal' => false,
             'attrreqinherit' => false,
         );
@@ -71,13 +71,13 @@ class Metadata2import
         }
         $structureChanged = false;
         $sections = array(
-            'new' => 'List new providers registered during sync',
-            'joinfed' => 'List existing providers added to federation during sync',
-            'del' => 'List providers removed from the system during sync',
+            'new'      => 'List new providers registered during sync',
+            'joinfed'  => 'List existing providers added to federation during sync',
+            'del'      => 'List providers removed from the system during sync',
             'leavefed' => 'List providers removed from federation during sync');
         foreach ($sections as $section => $sectionTitle) {
             if (count($report['provider']['' . $section . '']) > 0) {
-                $structureChanged = TRUE;
+                $structureChanged = true;
                 $body .= $sectionTitle . ':' . PHP_EOL;
                 foreach ($report['provider']['' . $section . ''] as $a) {
                     $body .= $a . PHP_EOL;
@@ -87,6 +87,7 @@ class Metadata2import
         if ($structureChanged) {
             $this->ci->email_sender->addToMailQueue(array('gfedmemberschanged'), null, 'Federation sync/import report', $body, array(), false);
         }
+
         return true;
     }
 
@@ -101,6 +102,7 @@ class Metadata2import
                 $this->attrsDefinitions['' . $v->getOid() . ''] = $v;
             }
         }
+
         return $this->attrsDefinitions;
     }
 
@@ -119,9 +121,10 @@ class Metadata2import
         foreach ($fedReqAttrs as $rv) {
             $attrRequiredByFed[] = array(
                 'name' => $rv->getAttribute()->getOid(),
-                'req' => $rv->isRequiredToStr()
+                'req'  => $rv->isRequiredToStr()
             );
         }
+
         return $attrRequiredByFed;
     }
 
@@ -144,12 +147,12 @@ class Metadata2import
 
 
         $report = array(
-            'subject' => '',
-            'body' => array(),
+            'subject'  => '',
+            'body'     => array(),
             'provider' => array(
-                'new' => array(),
-                'del' => array(),
-                'joinfed' => array(),
+                'new'      => array(),
+                'del'      => array(),
+                'joinfed'  => array(),
                 'leavefed' => array(),
             ),
         );
@@ -183,6 +186,7 @@ class Metadata2import
             $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $this->defaults['federationid']));
             if ($federation === null) {
                 log_message('error', __METHOD__ . ' federation not found yu want to import to');
+
                 return false;
             }
 
@@ -209,6 +213,7 @@ class Metadata2import
         if (!is_array($this->metadataInArray) || count($this->metadataInArray) == 0) {
             \log_message('warning', __METHOD__ . ' converting xml metadata 
                                into array resulted empty array or null value');
+
             return false;
         }
 
@@ -268,7 +273,7 @@ class Metadata2import
                         if (isset($ncoclistarray['' . $attrname . ''])) {
                             foreach ($v as $kv => $pv) {
                                 $y = array_search($v, $ncoclistarray['' . $attrname . '']);
-                                if ($y !== NULL && $y !== FALSE) {
+                                if ($y !== null && $y !== false) {
                                     $celement = $coclistconverted['' . $y . ''];
                                     if (!empty($celement)) {
                                         $importedProvider->setCoc($celement);
@@ -280,7 +285,7 @@ class Metadata2import
                     foreach ($ent['regpol'] as $k => $v) {
                         $y = array_search($v['url'], $regpollistarray);
 
-                        if ($y != NULL && $y != FALSE) {
+                        if ($y != null && $y != false) {
                             foreach ($regpollistconverted as $p) {
                                 $purl = $p->getUrl();
                                 $plang = $p->getLang();
@@ -324,7 +329,7 @@ class Metadata2import
                                     $existingProvider->removeCoc($c);
                                 } else {
                                     $y = array_search($cUrl, $ent['coc']['' . $cSubtype . '']);
-                                    if ($y === NULL || $y === FALSE) {
+                                    if ($y === null || $y === false) {
                                         $existingProvider->removeCoc($c);
                                     } else {
                                         unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
@@ -333,16 +338,16 @@ class Metadata2import
                             } elseif ($cType === 'regpol') {
                                 $cUrl = $c->getUrl();
                                 $cLang = $c->getLang();
-                                $cExist = FALSE;
+                                $cExist = false;
                                 $cKey = null;
                                 foreach ($ent['regpol'] as $k => $v) {
                                     if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
-                                        $cExist = TRUE;
+                                        $cExist = true;
                                         $cKey = $k;
                                         break;
                                     }
                                 }
-                                if ($cExist === FALSE) {
+                                if ($cExist === false) {
                                     $existingProvider->removeCoc($c);
                                 } else {
                                     unset($ent['regpol']['' . $cKey . '']);
@@ -353,7 +358,7 @@ class Metadata2import
                             if (isset($ncoclistarray['' . $attrname . ''])) {
                                 foreach ($v as $k => $p) {
                                     $y = array_search($p, $ncoclistarray['' . $attrname . '']);
-                                    if ($y !== null && $y !== FALSE) {
+                                    if ($y !== null && $y !== false) {
                                         $existingProvider->setCoc($coclistconverted['' . $y . '']);
                                     }
                                 }
@@ -373,12 +378,8 @@ class Metadata2import
                         $existingProvider->setStatic($static);
 
 
-
-
                         if (isset($ent['details']['reqattrs']) && is_array($ent['details']['reqattrs'])) {
-                            $this->updateReqAttrs($ent['details']['reqattrs'],$attrRequiredByFed, $existingProvider, $ent['details']['reqattrsinmeta']);
-
-
+                            $this->updateReqAttrs($ent['details']['reqattrs'], $attrRequiredByFed, $existingProvider, $ent['details']['reqattrsinmeta']);
 
 
                         }
@@ -456,6 +457,7 @@ class Metadata2import
                 $this->em->flush();
             } catch (Exception $e) {
                 log_message('error', __METHOD__ . ' ' . $e);
+
                 return false;
             }
         }  // END SYNC
@@ -486,7 +488,7 @@ class Metadata2import
                     foreach ($ent['coc'] as $attrname => $v) {
                         if (isset($coclistarray['' . $attrname . ''])) {
                             $y = array_search($v, $coclistarray['' . $attrname . '']);
-                            if ($y != NULL && $y != FALSE) {
+                            if ($y != null && $y != false) {
                                 $celement = $coclistconverted['' . $y . ''];
                                 if (!empty($celement)) {
                                     $importedProvider->setCoc($celement);
@@ -543,7 +545,7 @@ class Metadata2import
                                     $existingProvider->removeCoc($c);
                                 } else {
                                     $y = array_search($cUrl, $ent['coc']['' . $cSubtype . '']);
-                                    if ($y === NULL || $y === FALSE) {
+                                    if ($y === null || $y === false) {
                                         $existingProvider->removeCoc($c);
                                     } else {
                                         unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
@@ -552,16 +554,16 @@ class Metadata2import
                             } elseif ($cType === 'regpol') {
                                 $cUrl = $c->getUrl();
                                 $cLang = $c->getLang();
-                                $cExist = FALSE;
+                                $cExist = false;
                                 $cKey = null;
                                 foreach ($ent['regpol'] as $k => $v) {
                                     if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
-                                        $cExist = TRUE;
+                                        $cExist = true;
                                         $cKey = $k;
                                         break;
                                     }
                                 }
-                                if ($cExist === FALSE) {
+                                if ($cExist === false) {
                                     $existingProvider->removeCoc($c);
                                 } else {
                                     unset($ent['regpol']['' . $cKey . '']);
@@ -573,7 +575,7 @@ class Metadata2import
                             if (isset($ncoclistarray['' . $attrname . ''])) {
                                 foreach ($v as $k => $p) {
                                     $y = array_search($p, $ncoclistarray['' . $attrname . '']);
-                                    if ($y !== null && $y !== FALSE) {
+                                    if ($y !== null && $y !== false) {
                                         $existingProvider->setCoc($coclistconverted['' . $y . '']);
                                     }
                                 }
@@ -597,7 +599,7 @@ class Metadata2import
                          */
 
                         if (isset($ent['details']['reqattrs']) && is_array($ent['details']['reqattrs'])) {
-                            $this->updateReqAttrs($ent['details']['reqattrs'],$attrRequiredByFed, $existingProvider);
+                            $this->updateReqAttrs($ent['details']['reqattrs'], $attrRequiredByFed, $existingProvider);
                         }
                         /**
                          * END attrs requirements processing
@@ -640,16 +642,17 @@ class Metadata2import
             if (!empty($importResult)) {
                 $this->ci->globalnotices['metadataimportmessage'] = $importResult;
             }
+
             return true;
         } catch (Exception $e) {
             \log_message('error', __METHOD__ . ' ' . $e);
+
             return false;
         }
     }
 
 
-    private function updateReqAttrs(array $newReqAttrs,array $attrRequiredByFed, models\Provider $ent, $reqAttrsInMeta = true) {
-        $attributes = $this->getAttributesByNames();
+    private function updateReqAttrs(array $newReqAttrs, array $attrRequiredByFed, models\Provider $ent, $reqAttrsInMeta = true) {
         $duplicateControl = array();
         $origReqAttrs = $ent->getAttributesRequirement();
         /**
@@ -685,57 +688,19 @@ class Metadata2import
                 $this->em->remove($r);
             }
         }
-        foreach ($newReqAttrs as $nr) {
-            if (isset($nr['name']) && array_key_exists($nr['name'], $attributes) && !in_array( $nr['name'],$duplicateControl,true)) {
-                $newReqAttr = new models\AttributeRequirement;
-                $newReqAttr->setAttribute($attributes['' . $nr['name'] . '']);
-                $newReqAttr->setType('SP');
-                $newReqAttr->setSP($ent);
-                if (isset($nr['req']) && strcasecmp($nr['req'], 'true') == 0) {
-                    $newReqAttr->setStatus('required');
-                } else {
-                    $newReqAttr->setStatus('desired');
-                }
-                $ent->setAttributesRequirement($newReqAttr);
-                $this->em->persist($newReqAttr);
-                $duplicateControl[] = $newReqAttr->getAttribute()->getOid();
-            } else {
-                log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $nr['name']);
-            }
-        }
+        $duplicateControl = $this->addReqAttrs($newReqAttrs, $ent, $duplicateControl);
 
         if ($reqAttrsInMeta === false & $this->copyFedAttrReq === true) {
-            foreach ($attrRequiredByFed as $rt) {
-                if (!in_array($rt['name'], $duplicateControl)) {
-                    $reqattr = new models\AttributeRequirement;
-                    $reqattr->setAttribute($attributes['' . $rt['name'] . '']);
-                    $reqattr->setType('SP');
-                    $reqattr->setSP($ent);
-                    if (isset($rt['req']) && strcasecmp($rt['req'], 'true') == 0) {
-                        $reqattr->setStatus('required');
-                    } else {
-                        $reqattr->setStatus('desired');
-                    }
-                    $ent->setAttributesRequirement($reqattr);
-                    $this->em->persist($reqattr);
-                    $duplicateControl[] = $rt['name'];
-                }
-            }
+            $this->addReqAttrs($attrRequiredByFed, $ent, $duplicateControl);
         }
 
     }
 
-    /**
-     * @param array $reqattrs
-     * @param array $attrRequiredByFed
-     * @param \models\Provider $ent
-     */
-    private function setReqAttrs(array $reqattrs, array $attrRequiredByFed, models\Provider $ent, $reqAttrsInMeta = true) {
-        $attrsset = array();
+    private function addReqAttrs(array $reqattrs, models\Provider $ent, array $duplicateControl) {
         $attributes = $this->getAttributesByNames();
         foreach ($reqattrs as $r) {
             if (array_key_exists($r['name'], $attributes)) {
-                if (!in_array($r['name'], $attrsset)) {
+                if (!in_array($r['name'], $duplicateControl)) {
                     $reqattr = new models\AttributeRequirement;
                     $reqattr->setAttribute($attributes['' . $r['name'] . '']);
                     $reqattr->setType('SP');
@@ -747,30 +712,25 @@ class Metadata2import
                     }
                     $ent->setAttributesRequirement($reqattr);
                     $this->em->persist($reqattr);
-                    $attrsset[] = $r['name'];
+                    $duplicateControl[] = $r['name'];
                 }
             } else {
                 log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
             }
         }
 
+        return $duplicateControl;
+    }
+
+    /**
+     * @param array $reqattrs
+     * @param array $attrRequiredByFed
+     * @param \models\Provider $ent
+     */
+    private function setReqAttrs(array $reqattrs, array $attrRequiredByFed, models\Provider $ent, $reqAttrsInMeta = true) {
+        $duplicateControl = $this->addReqAttrs($reqattrs, $ent, array());
         if ($reqAttrsInMeta === false && $this->copyFedAttrReq === true) {
-            foreach ($attrRequiredByFed as $rt) {
-                if (!in_array($rt['name'], $attrsset)) {
-                    $reqattr = new models\AttributeRequirement;
-                    $reqattr->setAttribute($attributes['' . $rt['name'] . '']);
-                    $reqattr->setType('SP');
-                    $reqattr->setSP($ent);
-                    if (isset($rt['req']) && strcasecmp($rt['req'], 'true') == 0) {
-                        $reqattr->setStatus('required');
-                    } else {
-                        $reqattr->setStatus('desired');
-                    }
-                    $ent->setAttributesRequirement($reqattr);
-                    $this->em->persist($reqattr);
-                    $attrsset[] = $rt['name'];
-                }
-            }
+            $this->addReqAttrs($attrRequiredByFed, $ent, $duplicateControl);
         }
 
     }
