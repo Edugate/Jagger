@@ -686,7 +686,7 @@ class Metadata2import
             }
         }
         foreach ($newReqAttrs as $nr) {
-            if (isset($nr['name']) && array_key_exists($nr['name'], $attributes)) {
+            if (isset($nr['name']) && array_key_exists($nr['name'], $attributes) && !in_array( $nr['name'],$duplicateControl,true)) {
                 $newReqAttr = new models\AttributeRequirement;
                 $newReqAttr->setAttribute($attributes['' . $nr['name'] . '']);
                 $newReqAttr->setType('SP');
@@ -730,7 +730,7 @@ class Metadata2import
      * @param array $attrRequiredByFed
      * @param \models\Provider $ent
      */
-    private function setReqAttrs(array $reqattrs, array $attrRequiredByFed, models\Provider $ent) {
+    private function setReqAttrs(array $reqattrs, array $attrRequiredByFed, models\Provider $ent, $reqAttrsInMeta = true) {
         $attrsset = array();
         $attributes = $this->getAttributesByNames();
         foreach ($reqattrs as $r) {
@@ -754,7 +754,7 @@ class Metadata2import
             }
         }
 
-        if ($ent['details']['reqattrsinmeta'] === false && $this->copyFedAttrReq === true) {
+        if ($reqAttrsInMeta === false && $this->copyFedAttrReq === true) {
             foreach ($attrRequiredByFed as $rt) {
                 if (!in_array($rt['name'], $attrsset)) {
                     $reqattr = new models\AttributeRequirement;

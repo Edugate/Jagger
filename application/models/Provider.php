@@ -1414,6 +1414,9 @@ class Provider
         return $this->serviceLocations;
     }
 
+    /**
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
     public function getAttributesRequirement() {
         return $this->attributeRequirement;
     }
