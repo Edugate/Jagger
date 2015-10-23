@@ -720,14 +720,14 @@ class Metadata2import
             if (in_array('' . $oid . '', $duplicateControl)) {
                 $origReqAttrs->removeElement($reqAttr);
                 $this->em->remove($reqAttr);
-            } else {
+                continue;
                 $duplicateControl[] = $oid;
             }
         }
         foreach ($origReqAttrs as $r) {
             $found = false;
             $roid = $r->getAttribute()->getOid();
-            foreach ($ent['details']['reqattrs'] as $k => $v) {
+            foreach ($newReqAttrs as $k => $v) {
                 if (strcmp($roid, $v['name']) == 0) {
                     $found = true;
                     if (isset($v['req']) && strcasecmp($v['req'], 'true') == 0) {
@@ -735,10 +735,8 @@ class Metadata2import
                     } else {
                         $r->setStatus('desired');
                     }
-                    unset($ent['details']['reqattrs']['' . $k . '']);
+                    unset($newReqAttrs['' . $k . '']);
                     $this->em->persist($r);
-                }
-                if ($found) {
                     break;
                 }
             }
