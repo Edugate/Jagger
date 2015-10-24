@@ -661,18 +661,14 @@ class Metadata2import
         foreach ($currentCocsByType['regpol'] as $c) {
             $cLang = $c->getLang();
             $cExist = false;
-            $cKey = null;
             foreach ($ent['regpol'] as $k => $v) {
                 if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
                     $cExist = true;
-                    $cKey = $k;
                     break;
                 }
             }
             if ($cExist === false) {
                 $provider->removeCoc($c);
-            } else {
-                unset($ent['regpol']['' . $cKey . '']);
             }
         }
         foreach ($ent['coc'] as $attrname => $v) {
