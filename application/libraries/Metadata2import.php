@@ -51,6 +51,11 @@ class Metadata2import
         $this->type = null;
         $this->full = false;
         $this->copyFedAttrReq = false;
+        $this->coclistconverted = array();
+        $this->coclistarray = array();
+        $this->ncoclistarray = array();
+        $this->regpollistconverted = array();
+        $this->regpollistarray = array();
 
         $this->defaults = array(
             'localimport'    => false,
@@ -140,6 +145,21 @@ class Metadata2import
     }
 
 
+    private function genGlobalCocs() {
+        $cocreglist = $this->em->getRepository("models\Coc")->findBy(array('type' => array('regpol', 'entcat')));
+        foreach ($cocreglist as $cocreg) {
+            $cocregtype = $cocreg->getType();
+            if ($cocregtype === 'entcat') {
+                $this->coclistconverted['' . $cocreg->getId() . ''] = $cocreg;
+                $this->coclistarray['' . $cocreg->getId() . ''] = $cocreg->getUrl();
+                $this->ncoclistarray['' . $cocreg->getSubtype() . '']['' . $cocreg->getId() . ''] = $cocreg->getUrl();
+            } else {
+                $this->regpollistconverted['' . $cocreg->getId() . ''] = $cocreg;
+                $this->regpollistarray['' . $cocreg->getId() . ''] = $cocreg->getUrl();
+            }
+        }
+    }
+
     public function import($metadata, $type, $full, array $defaults, $other = null) {
         $tmpProviders = new models\Providers;
         $this->metadata = &$metadata;
@@ -150,11 +170,6 @@ class Metadata2import
         if (empty($this->full) && empty($this->defaults['static'])) {
             return false;
         }
-
-        /**
-         * @var $cocreglist models\Coc[]
-         */
-        $cocreglist = $this->em->getRepository("models\Coc")->findBy(array('type' => array('regpol', 'entcat')));
 
 
         $report = array(
@@ -168,23 +183,8 @@ class Metadata2import
             ),
         );
 
-        $this->coclistconverted = array();
-        $this->coclistarray = array();
-        $this->ncoclistarray = array();
-        $this->regpollistconverted = array();
-        $this->regpollistarray = array();
 
-        foreach ($cocreglist as $cocreg) {
-            $cocregtype = $cocreg->getType();
-            if ($cocregtype === 'entcat') {
-                $this->coclistconverted['' . $cocreg->getId() . ''] = $cocreg;
-                $this->coclistarray['' . $cocreg->getId() . ''] = $cocreg->getUrl();
-                $this->ncoclistarray['' . $cocreg->getSubtype() . '']['' . $cocreg->getId() . ''] = $cocreg->getUrl();
-            } else {
-                $this->regpollistconverted['' . $cocreg->getId() . ''] = $cocreg;
-                $this->regpollistarray['' . $cocreg->getId() . ''] = $cocreg->getUrl();
-            }
-        }
+        $this->genGlobalCocs();
 
 
         /**
@@ -633,16 +633,25 @@ class Metadata2import
     }
 
     /**
+     * @param \models\Provider $provider
+     * @return array
+     */
+    private function getCurrCocsByType(models\Provider $provider) {
+
+        $currentCocsByType = array('entcat' => array(), 'regpol' => array());
+        foreach ($provider->getCoc() as $currCoc) {
+            $currentCocsByType['' . $currCoc->getType() . ''][] = $currCoc;
+        }
+        return $currentCocsByType;
+    }
+
+    /**
      * @param array $ent
      * @param \models\Provider $provider
      * @return array
      */
     private function updateCocColl(array $ent, models\Provider $provider) {
-        $currentCocs = $provider->getCoc();
-        $currentCocsByType = array('entcat' => array(), 'regpol' => array());
-        foreach ($currentCocs as $currCoc) {
-            $currentCocsByType['' . $currCoc->getType() . ''][] = $currCoc;
-        }
+        $currentCocsByType = $this->getCurrCocsByType($provider);
         foreach ($currentCocsByType['entcat'] as $c) {
             $cUrl = $c->getUrl();
             $cSubtype = $c->getSubtype();
