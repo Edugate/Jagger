@@ -646,18 +646,31 @@ class Metadata2import
         foreach ($currentCocsByType['entcat'] as $c) {
             $cUrl = $c->getUrl();
             $cSubtype = $c->getSubtype();
-            if (!isset($ent['coc']['' . $cSubtype . ''])) {
-                $provider->removeCoc($c);
+            if (isset($ent['coc']['' . $cSubtype . ''])) {
+                $y = array_search($cUrl, $ent['coc']['' . $cSubtype . '']);
+                if ($y !== null && $y !== false) {
+                    unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
+
+                } else {
+                    $provider->removeCoc($c);
+
+                }
                 continue;
             }
-            $y = array_search($cUrl, $ent['coc']['' . $cSubtype . '']);
-            if ($y === null || $y === false) {
-                $provider->removeCoc($c);
-            } else {
-                unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
-            }
-
+            $provider->removeCoc($c);
         }
+        foreach ($ent['coc'] as $attrname => $v) {
+            if (isset($this->ncoclistarray['' . $attrname . ''])) {
+                foreach ($v as $k => $p) {
+                    $y = array_search($p, $this->ncoclistarray['' . $attrname . '']);
+                    if ($y !== null && $y !== false) {
+                        $provider->setCoc($this->coclistconverted['' . $y . '']);
+                    }
+                }
+            }
+        }
+
+
         foreach ($currentCocsByType['regpol'] as $c) {
             $cLang = $c->getLang();
             $cExist = false;
@@ -671,16 +684,7 @@ class Metadata2import
                 $provider->removeCoc($c);
             }
         }
-        foreach ($ent['coc'] as $attrname => $v) {
-            if (isset($this->ncoclistarray['' . $attrname . ''])) {
-                foreach ($v as $k => $p) {
-                    $y = array_search($p, $this->ncoclistarray['' . $attrname . '']);
-                    if ($y !== null && $y !== false) {
-                        $provider->setCoc($this->coclistconverted['' . $y . '']);
-                    }
-                }
-            }
-        }
+
         foreach ($ent['regpol'] as $v) {
             foreach ($this->regpollistconverted as $c) {
                 if (strcmp($c->getUrl(), $v['url']) == 0 && strcasecmp($c->getLang(), $v['lang']) == 0) {
