@@ -432,9 +432,8 @@ class Attributepolicy extends MY_Controller
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
+
         $result['type'] = 'federation';
-
-
         $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => lang('notsupported'));
         $result['definitions']['columns'] = array(lang('attrname'), lang('policy'), lang('reqstatus'), lang('rr_action'));
         $result['definitions']['lang']['federation'] = lang('rr_federation');
