@@ -328,7 +328,7 @@ class Metadata2import
                     $updateAllowed = (($isLocal && $overwritelocal && !$isLocked) || !$isLocal);
                     if ($updateAllowed) {
                         $existingProvider->overwriteByProvider($importedProvider);
-                        $ent = $this->updateCocColl($ent,$existingProvider);
+                        $ent = $this->updateCocColl($ent, $existingProvider);
                         $existingProvider->setStatic($static);
 
 
@@ -442,7 +442,7 @@ class Metadata2import
                     foreach ($ent['coc'] as $attrname => $v) {
                         if (isset($this->coclistarray['' . $attrname . ''])) {
                             $y = array_search($v, $this->coclistarray['' . $attrname . '']);
-                            if ($y != null && $y != false) {
+                            if ($y !== null && $y !== false) {
                                 $celement = $this->coclistconverted['' . $y . ''];
                                 if (!empty($celement)) {
                                     $importedProvider->setCoc($celement);
@@ -636,9 +636,9 @@ class Metadata2import
         $currentCocs = $provider->getCoc();
         foreach ($currentCocs as $c) {
             $cType = $c->getType();
+            $cUrl = $c->getUrl();
+            $cSubtype = $c->getSubtype();
             if ($cType === 'entcat') {
-                $cUrl = $c->getUrl();
-                $cSubtype = $c->getSubtype();
                 if (!isset($ent['coc']['' . $cSubtype . ''])) {
                     $provider->removeCoc($c);
                 } else {
@@ -650,7 +650,6 @@ class Metadata2import
                     }
                 }
             } elseif ($cType === 'regpol') {
-                $cUrl = $c->getUrl();
                 $cLang = $c->getLang();
                 $cExist = false;
                 $cKey = null;
@@ -680,14 +679,13 @@ class Metadata2import
         }
         foreach ($ent['regpol'] as $v) {
             foreach ($this->regpollistconverted as $c) {
-                $cUrl = $c->getUrl();
-                $cLang = $c->getLang();
-                if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
+                if (strcmp($c->getUrl(), $v['url']) == 0 && strcasecmp($c->getLang(), $v['lang']) == 0) {
                     $provider->setCoc($c);
                     break;
                 }
             }
         }
+
         return $ent;
     }
 }
