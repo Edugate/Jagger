@@ -31,6 +31,17 @@ class Metadata2import
      */
     protected $em;
     protected $attrsDefinitions;
+    /**
+     * @var models\Coc[] $regpollistconverted
+     */
+    protected $regpollistconverted;
+    /**
+     * @var models\Coc[] $coclistconverted
+     */
+    protected $coclistconverted;
+
+    protected $coclistarray, $regpollistarray;
+
 
     public function __construct() {
         $this->ci = &get_instance();
@@ -157,23 +168,21 @@ class Metadata2import
             ),
         );
 
-        $coclistconverted = array();
-        $coclistarray = array();
-        /**
-         * @var models\Coc[] $regpollistconverted
-         */
-        $regpollistconverted = array();
-        $regpollistarray = array();
+        $this->coclistconverted = array();
+        $this->coclistarray = array();
+        $this->ncoclistarray = array();
+        $this->regpollistconverted = array();
+        $this->regpollistarray = array();
 
         foreach ($cocreglist as $cocreg) {
             $cocregtype = $cocreg->getType();
             if ($cocregtype === 'entcat') {
-                $coclistconverted['' . $cocreg->getId() . ''] = $cocreg;
-                $coclistarray['' . $cocreg->getId() . ''] = $cocreg->getUrl();
-                $ncoclistarray['' . $cocreg->getSubtype() . '']['' . $cocreg->getId() . ''] = $cocreg->getUrl();
+                $this->coclistconverted['' . $cocreg->getId() . ''] = $cocreg;
+                $this->coclistarray['' . $cocreg->getId() . ''] = $cocreg->getUrl();
+                $this->ncoclistarray['' . $cocreg->getSubtype() . '']['' . $cocreg->getId() . ''] = $cocreg->getUrl();
             } else {
-                $regpollistconverted['' . $cocreg->getId() . ''] = $cocreg;
-                $regpollistarray['' . $cocreg->getId() . ''] = $cocreg->getUrl();
+                $this->regpollistconverted['' . $cocreg->getId() . ''] = $cocreg;
+                $this->regpollistarray['' . $cocreg->getId() . ''] = $cocreg->getUrl();
             }
         }
 
@@ -270,11 +279,11 @@ class Metadata2import
                     $importedProvider->setActive($active);
                     // entityCategory begin
                     foreach ($ent['coc'] as $attrname => $v) {
-                        if (isset($ncoclistarray['' . $attrname . ''])) {
+                        if (isset($this->ncoclistarray['' . $attrname . ''])) {
                             foreach ($v as $kv => $pv) {
-                                $y = array_search($v, $ncoclistarray['' . $attrname . '']);
+                                $y = array_search($v, $this->ncoclistarray['' . $attrname . '']);
                                 if ($y !== null && $y !== false) {
-                                    $celement = $coclistconverted['' . $y . ''];
+                                    $celement = $this->coclistconverted['' . $y . ''];
                                     if (!empty($celement)) {
                                         $importedProvider->setCoc($celement);
                                     }
@@ -283,10 +292,10 @@ class Metadata2import
                         }
                     }
                     foreach ($ent['regpol'] as $k => $v) {
-                        $y = array_search($v['url'], $regpollistarray);
+                        $y = array_search($v['url'], $this->regpollistarray);
 
-                        if ($y != null && $y != false) {
-                            foreach ($regpollistconverted as $p) {
+                        if ($y !== null && $y !== false) {
+                            foreach ($this->regpollistconverted as $p) {
                                 $purl = $p->getUrl();
                                 $plang = $p->getLang();
                                 if (strcmp($purl, $v['url']) == 0 && strcasecmp($plang, $v['lang']) == 0) {
@@ -319,62 +328,7 @@ class Metadata2import
                     $updateAllowed = (($isLocal && $overwritelocal && !$isLocked) || !$isLocal);
                     if ($updateAllowed) {
                         $existingProvider->overwriteByProvider($importedProvider);
-                        $currentCocs = $existingProvider->getCoc();
-                        foreach ($currentCocs as $c) {
-                            $cType = $c->getType();
-                            if ($cType === 'entcat') {
-                                $cUrl = $c->getUrl();
-                                $cSubtype = $c->getSubtype();
-                                if (!isset($ent['coc']['' . $cSubtype . ''])) {
-                                    $existingProvider->removeCoc($c);
-                                } else {
-                                    $y = array_search($cUrl, $ent['coc']['' . $cSubtype . '']);
-                                    if ($y === null || $y === false) {
-                                        $existingProvider->removeCoc($c);
-                                    } else {
-                                        unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
-                                    }
-                                }
-                            } elseif ($cType === 'regpol') {
-                                $cUrl = $c->getUrl();
-                                $cLang = $c->getLang();
-                                $cExist = false;
-                                $cKey = null;
-                                foreach ($ent['regpol'] as $k => $v) {
-                                    if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
-                                        $cExist = true;
-                                        $cKey = $k;
-                                        break;
-                                    }
-                                }
-                                if ($cExist === false) {
-                                    $existingProvider->removeCoc($c);
-                                } else {
-                                    unset($ent['regpol']['' . $cKey . '']);
-                                }
-                            }
-                        }
-                        foreach ($ent['coc'] as $attrname => $v) {
-                            if (isset($ncoclistarray['' . $attrname . ''])) {
-                                foreach ($v as $k => $p) {
-                                    $y = array_search($p, $ncoclistarray['' . $attrname . '']);
-                                    if ($y !== null && $y !== false) {
-                                        $existingProvider->setCoc($coclistconverted['' . $y . '']);
-                                    }
-                                }
-                            }
-                        }
-                        foreach ($ent['regpol'] as $v) {
-                            foreach ($regpollistconverted as $c) {
-                                $cUrl = $c->getUrl();
-                                $cLang = $c->getLang();
-                                if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
-                                    $existingProvider->setCoc($c);
-                                    break;
-                                }
-                            }
-                        }
-
+                        $ent = $this->updateCocColl($ent,$existingProvider);
                         $existingProvider->setStatic($static);
 
 
@@ -486,10 +440,10 @@ class Metadata2import
                     // coc begin
 
                     foreach ($ent['coc'] as $attrname => $v) {
-                        if (isset($coclistarray['' . $attrname . ''])) {
-                            $y = array_search($v, $coclistarray['' . $attrname . '']);
+                        if (isset($this->coclistarray['' . $attrname . ''])) {
+                            $y = array_search($v, $this->coclistarray['' . $attrname . '']);
                             if ($y != null && $y != false) {
-                                $celement = $coclistconverted['' . $y . ''];
+                                $celement = $this->coclistconverted['' . $y . ''];
                                 if (!empty($celement)) {
                                     $importedProvider->setCoc($celement);
                                 }
@@ -498,7 +452,7 @@ class Metadata2import
                     }
                     // coc end
                     foreach ($ent['regpol'] as $v) {
-                        foreach ($regpollistconverted as $c) {
+                        foreach ($this->regpollistconverted as $c) {
                             $cUrl = $c->getUrl();
                             $cLang = $c->getLang();
                             if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
@@ -535,64 +489,7 @@ class Metadata2import
                         $importEntity .= lang('provupdated');
                         $existingProvider->overwriteByProvider($importedProvider);
                         $existingProvider->setLocal($this->defaults['local']);
-                        $currentCocs = $existingProvider->getCoc();
-                        foreach ($currentCocs as $c) {
-                            $cType = $c->getType();
-                            if ($cType === 'entcat') {
-                                $cUrl = $c->getUrl();
-                                $cSubtype = $c->getSubtype();
-                                if (!isset($ent['coc']['' . $cSubtype . ''])) {
-                                    $existingProvider->removeCoc($c);
-                                } else {
-                                    $y = array_search($cUrl, $ent['coc']['' . $cSubtype . '']);
-                                    if ($y === null || $y === false) {
-                                        $existingProvider->removeCoc($c);
-                                    } else {
-                                        unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
-                                    }
-                                }
-                            } elseif ($cType === 'regpol') {
-                                $cUrl = $c->getUrl();
-                                $cLang = $c->getLang();
-                                $cExist = false;
-                                $cKey = null;
-                                foreach ($ent['regpol'] as $k => $v) {
-                                    if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
-                                        $cExist = true;
-                                        $cKey = $k;
-                                        break;
-                                    }
-                                }
-                                if ($cExist === false) {
-                                    $existingProvider->removeCoc($c);
-                                } else {
-                                    unset($ent['regpol']['' . $cKey . '']);
-                                }
-                            }
-                        }
-
-                        foreach ($ent['coc'] as $attrname => $v) {
-                            if (isset($ncoclistarray['' . $attrname . ''])) {
-                                foreach ($v as $k => $p) {
-                                    $y = array_search($p, $ncoclistarray['' . $attrname . '']);
-                                    if ($y !== null && $y !== false) {
-                                        $existingProvider->setCoc($coclistconverted['' . $y . '']);
-                                    }
-                                }
-                            }
-                        }
-                        foreach ($ent['regpol'] as $v) {
-                            foreach ($regpollistconverted as $c) {
-                                $cUrl = $c->getUrl();
-                                $cLang = $c->getLang();
-                                if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
-                                    $existingProvider->setCoc($c);
-                                    break;
-                                }
-                            }
-                        }
-
-
+                        $ent = $this->updateCocColl($ent, $existingProvider);
                         $existingProvider->setStatic($static);
                         /**
                          *   attrs requirements processing
@@ -733,5 +630,64 @@ class Metadata2import
             $this->addReqAttrs($attrRequiredByFed, $ent, $duplicateControl);
         }
 
+    }
+
+    private function updateCocColl(array $ent, models\Provider $provider) {
+        $currentCocs = $provider->getCoc();
+        foreach ($currentCocs as $c) {
+            $cType = $c->getType();
+            if ($cType === 'entcat') {
+                $cUrl = $c->getUrl();
+                $cSubtype = $c->getSubtype();
+                if (!isset($ent['coc']['' . $cSubtype . ''])) {
+                    $provider->removeCoc($c);
+                } else {
+                    $y = array_search($cUrl, $ent['coc']['' . $cSubtype . '']);
+                    if ($y === null || $y === false) {
+                        $provider->removeCoc($c);
+                    } else {
+                        unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
+                    }
+                }
+            } elseif ($cType === 'regpol') {
+                $cUrl = $c->getUrl();
+                $cLang = $c->getLang();
+                $cExist = false;
+                $cKey = null;
+                foreach ($ent['regpol'] as $k => $v) {
+                    if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
+                        $cExist = true;
+                        $cKey = $k;
+                        break;
+                    }
+                }
+                if ($cExist === false) {
+                    $provider->removeCoc($c);
+                } else {
+                    unset($ent['regpol']['' . $cKey . '']);
+                }
+            }
+        }
+        foreach ($ent['coc'] as $attrname => $v) {
+            if (isset($this->ncoclistarray['' . $attrname . ''])) {
+                foreach ($v as $k => $p) {
+                    $y = array_search($p, $this->ncoclistarray['' . $attrname . '']);
+                    if ($y !== null && $y !== false) {
+                        $provider->setCoc($this->coclistconverted['' . $y . '']);
+                    }
+                }
+            }
+        }
+        foreach ($ent['regpol'] as $v) {
+            foreach ($this->regpollistconverted as $c) {
+                $cUrl = $c->getUrl();
+                $cLang = $c->getLang();
+                if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
+                    $provider->setCoc($c);
+                    break;
+                }
+            }
+        }
+        return $ent;
     }
 }
