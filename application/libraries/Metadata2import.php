@@ -14,7 +14,6 @@ class Metadata2import
 
     private $metadataInArray;
     private $metadata;
-    private $type;
     private $full;
     /**
      * @var array $defaults
@@ -48,7 +47,6 @@ class Metadata2import
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->library('metadata2array');
         $this->metadata = null;
-        $this->type = null;
         $this->full = false;
         $this->copyFedAttrReq = false;
         $this->coclistconverted = array();
@@ -164,7 +162,6 @@ class Metadata2import
         $tmpProviders = new models\Providers;
         $this->metadata = &$metadata;
         $this->full = $full;
-        $this->type = $type;
         $this->other = $other;
         $this->defaults = array_merge($this->defaults, $defaults);
         if (empty($this->full) && empty($this->defaults['static'])) {
@@ -634,10 +631,13 @@ class Metadata2import
 
     /**
      * @param \models\Provider $provider
-     * @return array
+     * @return models\Coc[][]
      */
     private function getCurrCocsByType(models\Provider $provider) {
 
+        /**
+         * @var models\Coc[][] $currentCocsByType
+         */
         $currentCocsByType = array('entcat' => array(), 'regpol' => array());
         foreach ($provider->getCoc() as $currCoc) {
             $currentCocsByType['' . $currCoc->getType() . ''][] = $currCoc;
@@ -653,10 +653,9 @@ class Metadata2import
     private function updateCocColl(array $ent, models\Provider $provider) {
         $currentCocsByType = $this->getCurrCocsByType($provider);
         foreach ($currentCocsByType['entcat'] as $c) {
-            $cUrl = $c->getUrl();
             $cSubtype = $c->getSubtype();
             if (isset($ent['coc']['' . $cSubtype . ''])) {
-                $y = array_search($cUrl, $ent['coc']['' . $cSubtype . '']);
+                $y = array_search($c->getUrl(), $ent['coc']['' . $cSubtype . '']);
                 if ($y !== null && $y !== false) {
                     unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
 
@@ -681,10 +680,9 @@ class Metadata2import
 
 
         foreach ($currentCocsByType['regpol'] as $c) {
-            $cLang = $c->getLang();
             $cExist = false;
             foreach ($ent['regpol'] as $k => $v) {
-                if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
+                if (strcmp($c->getUrl(), $v['url']) == 0 && strcasecmp($c->getLang(), $v['lang']) == 0) {
                     $cExist = true;
                     break;
                 }
