@@ -1,7 +1,5 @@
 <?php
 namespace models;
-use Proxies\__CG__\models\Federation;
-
 
 /**
  * Federation Model

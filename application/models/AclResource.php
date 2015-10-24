@@ -1,19 +1,21 @@
 <?php
 namespace models;
+
 use \Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * ResourceRegistry3
- * 
+ *
  * @package     RR3
- * @author      Middleware Team HEAnet 
+ * @author      Middleware Team HEAnet
  * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
+ *
  */
 
 /**
  * AclResource Class
- * 
+ *
  * @package     RR3
  * @subpackage  Models
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
@@ -23,15 +25,16 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * AclResource Model
  *
  * This model for Identity and Service Providers definitions
- * 
+ *
  * @Entity
  * @HasLifecycleCallbacks
  * @Table(name="acl_resource")
  * @author janusz
  */
- class AclResource {
- 
- 
+class AclResource
+{
+
+
     /**
      * @Id
      * @Column(type="bigint", nullable=false)
@@ -42,112 +45,102 @@ use \Doctrine\Common\Collections\ArrayCollection;
     /**
      * @Column(type="string",length=30, unique=true)
      */
-     protected $resource;
+    protected $resource;
     /**
      * @Column(type="string",length=255,nullable=true)
      */
-     protected $description;
+    protected $description;
 
-     /**
-      * @Column(type="string",length=255,nullable=true)
-      */
-      protected $type;
+    /**
+     * @Column(type="string",length=255,nullable=true)
+     */
+    protected $type;
     /**
      * @ManyToOne(targetEntity="AclResource",inversedBy="children")
      * @JoinColumn(name="parent_id", referencedColumnName="id")
      */
-     protected $parent; 
+    protected $parent;
 
-     /**
-      * @OneToMany(targetEntity="AclResource", mappedBy="parent", cascade={"remove"})
-      */
-     protected $children;
-
-
-
+    /**
+     * @OneToMany(targetEntity="AclResource", mappedBy="parent", cascade={"remove"})
+     */
+    protected $children;
 
 
     /**
      * @Column(type="string",length=10)
      */
-     protected $default_value;
+    protected $default_value;
 
-     /**
-      * @OneToMany(targetEntity="Acl",mappedBy="resource",cascade={"persist","remove"})
-      */
-     protected $acls;
-      
-     function __construct()
-     {
+    /**
+     * @OneToMany(targetEntity="Acl",mappedBy="resource",cascade={"persist","remove"})
+     */
+    protected $acls;
+
+    function __construct() {
         $this->default_value = 0;
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
         $this->acls = new \Doctrine\Common\Collections\ArrayCollection();
-     }
+    }
 
-     public function getId()
-     {
+    public function getId() {
         return $this->id;
-     }
-     public function getDefaultValue()
-     {
+    }
+
+    public function getDefaultValue() {
         return $this->default_value;
-     }
-     public function getResource()
-     {
+    }
+
+    public function getResource() {
         return $this->resource;
-     }
+    }
 
-     /**
-      * @return AclResource|null
-      */
-     public function getParent()
-     {
+    /**
+     * @return AclResource|null
+     */
+    public function getParent() {
         return $this->parent;
-     }
-     public function getChildren()
-     {
+    }
+
+    public function getChildren() {
         return $this->children;
-     }
-     public function getDescription()
-     {
+    }
+
+    public function getDescription() {
         return $this->description;
-     }
-     public function getType()
-     {
+    }
+
+    public function getType() {
         return $this->type;
-     }
-     public function getAcls()
-     {
+    }
+
+    public function getAcls() {
         return $this->acls;
-     }
+    }
 
-     public function setParent($parent)
-     {
+    public function setParent($parent) {
         $this->parent = $parent;
-     }
+    }
 
-     public function setResource($resource)
-     {
-        $this->resource=$resource;
-     }
-     public function setDefaultValue($default)
-     {
+    public function setResource($resource) {
+        $this->resource = $resource;
+    }
+
+    public function setDefaultValue($default) {
         $this->default_value = $default;
-     }
-     public function setDescription($description)
-     {
+    }
+
+    public function setDescription($description) {
         $this->description = $description;
-     }
-     public function setType($type)
-     {
+    }
+
+    public function setType($type) {
         $this->type = $type;
-     }
-     public function setAcl($acl)
-     {
+    }
+
+    public function setAcl($acl) {
         $this->getAcls()->add($acl);
-     }
-
-     
+    }
 
 
- }
+}

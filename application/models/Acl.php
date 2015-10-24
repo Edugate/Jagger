@@ -1,22 +1,15 @@
 <?php
-namespace models;
-    /**
-     * Jagger
-     *
-     * @package     Jagger
-     * @author      Middleware Team HEAnet
-     * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
-     * @license     MIT http://www.opensource.org/licenses/mit-license.php
-     *
-     */
 
-    /**
-     * Acl Class
-     *
-     * @package     Jagger
-     * @subpackage  Models
-     * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
-     */
+namespace models;
+
+/**
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2012, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
+ *
+ */
 
 /**
  * Acl Model

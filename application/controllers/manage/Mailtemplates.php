@@ -1,5 +1,4 @@
 <?php
-
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -16,8 +15,7 @@ class Mailtemplates extends MY_Controller
 
     public function __construct() {
         parent::__construct();
-        $loggedin = $this->jauth->isLoggedIn();
-        if (!$loggedin) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->title = lang('title_mailtemplates');
