@@ -632,39 +632,47 @@ class Metadata2import
 
     }
 
+    /**
+     * @param array $ent
+     * @param \models\Provider $provider
+     * @return array
+     */
     private function updateCocColl(array $ent, models\Provider $provider) {
         $currentCocs = $provider->getCoc();
-        foreach ($currentCocs as $c) {
-            $cType = $c->getType();
+        $currentCocsByType = array('entcat' => array(), 'regpol' => array());
+        foreach ($currentCocs as $currCoc) {
+            $currentCocsByType['' . $currCoc->getType() . ''][] = $currCoc;
+        }
+        foreach ($currentCocsByType['entcat'] as $c) {
             $cUrl = $c->getUrl();
             $cSubtype = $c->getSubtype();
-            if ($cType === 'entcat') {
-                if (!isset($ent['coc']['' . $cSubtype . ''])) {
-                    $provider->removeCoc($c);
-                } else {
-                    $y = array_search($cUrl, $ent['coc']['' . $cSubtype . '']);
-                    if ($y === null || $y === false) {
-                        $provider->removeCoc($c);
-                    } else {
-                        unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
-                    }
+            if (!isset($ent['coc']['' . $cSubtype . ''])) {
+                $provider->removeCoc($c);
+                continue;
+            }
+            $y = array_search($cUrl, $ent['coc']['' . $cSubtype . '']);
+            if ($y === null || $y === false) {
+                $provider->removeCoc($c);
+            } else {
+                unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
+            }
+
+        }
+        foreach ($currentCocsByType['regpol'] as $c) {
+            $cLang = $c->getLang();
+            $cExist = false;
+            $cKey = null;
+            foreach ($ent['regpol'] as $k => $v) {
+                if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
+                    $cExist = true;
+                    $cKey = $k;
+                    break;
                 }
-            } elseif ($cType === 'regpol') {
-                $cLang = $c->getLang();
-                $cExist = false;
-                $cKey = null;
-                foreach ($ent['regpol'] as $k => $v) {
-                    if (strcmp($cUrl, $v['url']) == 0 && strcasecmp($cLang, $v['lang']) == 0) {
-                        $cExist = true;
-                        $cKey = $k;
-                        break;
-                    }
-                }
-                if ($cExist === false) {
-                    $provider->removeCoc($c);
-                } else {
-                    unset($ent['regpol']['' . $cKey . '']);
-                }
+            }
+            if ($cExist === false) {
+                $provider->removeCoc($c);
+            } else {
+                unset($ent['regpol']['' . $cKey . '']);
             }
         }
         foreach ($ent['coc'] as $attrname => $v) {
