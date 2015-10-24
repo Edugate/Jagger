@@ -1,5 +1,6 @@
 <?php
 namespace models;
+use Proxies\__CG__\models\Federation;
 
 
 /**
@@ -144,6 +145,12 @@ class FederationMembers
     public function setDisabled($bool)
     {
         $this->isDisabled = $bool;
+        return $this;
+    }
+    public function createMembership(Provider $provider, Federation $federation, $joinState){
+        $this->provider = $provider;
+        $this->federation = $federation;
+        $this->joinstate = $joinState;
         return $this;
     }
 }
