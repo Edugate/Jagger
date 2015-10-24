@@ -345,20 +345,18 @@ class Attribute_policyajax extends MY_Controller
         }
         try {
             $this->em->flush();
-
-            $policyStr = '';
-            if (array_key_exists($statusPol, $dropdown)) {
-                $policyStr = $dropdown[$statusPol];
-            }
-            $result = array('status' => 1, 'policy' => $statusPol, 'attrid' => $postAttrID, 'policystr' => $policyStr);
-            $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idpID), -1);
-            return $this->output->set_content_type('application/json')->set_output(json_encode($result));
-
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
             return $this->output->set_status_header(500)->set_output('Internal server error');
-
         }
+
+        $policyStr = '';
+        if (array_key_exists($statusPol, $dropdown)) {
+            $policyStr = $dropdown[$statusPol];
+        }
+        $result = array('status' => 1, 'policy' => $statusPol, 'attrid' => $postAttrID, 'policystr' => $policyStr);
+        $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idpID), -1);
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
     }
 
@@ -387,7 +385,6 @@ class Attribute_policyajax extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Access denied');
         }
 
-        $changes = array();
         $statusPol = null;
         $dropdown = $this->config->item('policy_dropdown');
         $dropdown[100] = lang('dropnotset');
@@ -399,8 +396,6 @@ class Attribute_policyajax extends MY_Controller
             if (empty($globalPolicy)) {
                 $statusPol = 100;
             } else {
-                $changes['before'] = $dropdown['' . $globalPolicy->getPolicy() . ''];
-                $changes['after'] = $dropdown[100];
                 $this->em->remove($globalPolicy);
                 $statusPol = 100;
             }
