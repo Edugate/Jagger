@@ -311,9 +311,7 @@ class Metadata2import
 
                     // attr req end
                     $newmembership = new models\Federationmembers();
-                    $newmembership->setProvider($importedProvider);
-                    $newmembership->setFederation($federation);
-                    $newmembership->setJoinstate('3');
+                    $newmembership->createMembership($importedProvider, $federation, '3');
                     $report['provider']['new'][] = $importedProvider->getEntityId();
                     $this->em->persist($newmembership);
                     $this->em->persist($importedProvider);
@@ -342,9 +340,7 @@ class Metadata2import
 
                     if ((($isLocal && !$isLocked) || !($isLocal)) && !array_key_exists($existingProvider->getEntityId(), $membershipByEnt)) {
                         $newMembership = new models\FederationMembers;
-                        $newMembership->setProvider($existingProvider);
-                        $newMembership->setFederation($federation);
-                        $newMembership->setJoinstate('3');
+                        $newMembership->createMembership($existingProvider, $federation, '3');
                         $this->em->persist($newMembership);
                         $report['provider']['joinfed'][] = $existingProvider->getEntityId();
 
@@ -503,9 +499,7 @@ class Metadata2import
                         $settingMebership = $this->em->getRepository("models\FederationMembers")->findOneBy(array('provider' => $existingProvider, 'federation' => $federation->getId()));
                         if (empty($settingMebership)) {
                             $newMembership = new models\FederationMembers();
-                            $newMembership->setProvider($existingProvider);
-                            $newMembership->setFederation($federation);
-                            $newMembership->setJoinstate('1');
+                            $newMembership->createMembership($existingProvider, $federation, '1');
                             $this->em->persist($newMembership);
                             $importEntity .= ', ' . lang('rr_addedtofed');
                         } else {
