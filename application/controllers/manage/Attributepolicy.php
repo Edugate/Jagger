@@ -121,11 +121,24 @@ class Attributepolicy extends MY_Controller
 
         $policiesDefs = $this->arpgen->genPolicyDefs($ent);
 
+        $result = array(
+            'type'        => 'supported',
+            'definitions' => array(
+                'columns' => array(lang('attrname'), lang('dfltarpcolname'), lang('rr_action')),
+                'attrs'   => $this->arpgen->getAttrDefs(),
+                'policy'  => array(
+                    '0'    => lang('dropnever'),
+                    '1'    => lang('dropokreq'),
+                    '2'    => lang('dropokreqdes'),
+                    '100'  => lang('dropnotset'),
+                    '1000' => lang('notsupported'))
+            ),
+            'data'        => array(
+                'support' => $this->arpgen->getSupportAttributes($ent),
+                'global'  => $this->arpgen->genGlobal($ent)
+            ),
+        );
 
-        $result['type'] = 'supported';
-        $result['definitions']['columns'] = array(lang('attrname'), lang('dfltarpcolname'), lang('rr_action'));
-        $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
-        $result['data']['global'] = $this->arpgen->genGlobal($ent);
         if (array_key_exists('spPolicies', $policiesDefs)) {
             foreach (array_keys($policiesDefs['spPolicies']) as $ol) {
                 if (!array_key_exists($ol, $result['data']['global'])) {
@@ -133,11 +146,7 @@ class Attributepolicy extends MY_Controller
                 }
             }
         }
-        $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
-        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => lang('notsupported'));
-
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
-
     }
 
     public function getentcats($idpid = null) {
@@ -149,7 +158,7 @@ class Attributepolicy extends MY_Controller
         }
 
         /**
-         * @var $cocs models\Coc[]
+         * @var models\Coc[] $cocs
          */
         $cocs = $this->em->getRepository('models\Coc')->findBy(array('type' => 'entcat', 'subtype' => 'http://macedir.org/entity-category'), array('url' => 'ASC'));
         $entcats = array();

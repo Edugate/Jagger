@@ -357,6 +357,7 @@ class User
     {
         log_message('debug', 'setUserpref');
         $this->userpref = serialize($pref);
+        return $this;
     }
 
     public function delEntityFromBookmark($id)
@@ -368,6 +369,7 @@ class User
             unset($pref['board']['sp'][$id],$pref['board']['idp'][$id] );
         }
         $this->setUserpref($pref);
+        return $this;
     }
 
     public function delFedFromBookmark($id)
@@ -379,6 +381,7 @@ class User
             unset($pref['board']['fed'][$id]);
         }
         $this->setUserpref($pref);
+        return $this;
     }
 
     public function setShowHelp($b)
@@ -412,6 +415,7 @@ class User
             $pref['board']['sp'][$entid] = array('name' => $entname, 'entity' => $entityid);
         }
         $this->setUserpref($pref);
+        return $this;
     }
 
     public function addFedToBookmark($fedid, $fedname, $fedencoded)
@@ -460,11 +464,13 @@ class User
     public function setValid()
     {
         $this->validated = true;
+        return $this;
     }
 
     public function setInvalid()
     {
         $this->validated = false;
+        return $this;
     }
 
     /**
@@ -473,6 +479,7 @@ class User
     public function updated()
     {
         $this->lastlogin = new \DateTime('now', new \DateTimeZone('UTC'));
+        return $this;
     }
 
     public function getId()
