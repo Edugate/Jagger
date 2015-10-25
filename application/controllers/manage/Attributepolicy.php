@@ -81,6 +81,14 @@ class Attributepolicy extends MY_Controller
         $this->load->view('page', $data);
     }
 
+    private function initiateProviderForUpdate($idpid = null) {
+        $ent = $this->initiateProvider($idpid);
+        if($ent->getLocked()){
+            throw new Exception('Entity is locked');
+        }
+        return $ent;
+    }
+
     /**
      * @param null $idpid
      * @return \models\Provider
@@ -110,6 +118,10 @@ class Attributepolicy extends MY_Controller
 
     }
 
+    /**
+     * @param null $idpid
+     * @return CI_Output
+     */
     public function getsupported($idpid = null) {
 
         try {
@@ -294,13 +306,11 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->initiateAjaxAccess($idpid);
-            $ent = $this->initiateProvider($idpid);
+            $ent = $this->initiateProviderForUpdate($idpid);
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
-        if ($ent->getLocked()) {
-            return $this->output->set_status_header(403)->set_output('Entity is locked');
-        }
+
         if ($this->updateattrspValidate() !== true) {
             return $this->output->set_status_header(403)->set_output('Incorrect data input');
         }
@@ -385,7 +395,7 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->initiateAjaxAccess($idpid);
-            $ent = $this->initiateProvider($idpid);
+            $ent = $this->initiateProviderForUpdate($idpid);
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
@@ -504,14 +514,11 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->initiateAjaxAccess($idpid);
-            $ent = $this->initiateProvider($idpid);
+            $ent = $this->initiateProviderForUpdate($idpid);
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
-        $isLocked = $ent->getLocked();
-        if ($isLocked) {
-            return $this->output->set_status_header(403)->set_output('Entity is locked');
-        }
+
         $attrid = $this->input->post('attrid');
         if (!ctype_digit($attrid)) {
             return $this->output->set_status_header(403)->set_output('Posted invalid data');
@@ -537,15 +544,11 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->initiateAjaxAccess($idpid);
-            $ent = $this->initiateProvider($idpid);
+            $ent = $this->initiateProviderForUpdate($idpid);
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
-        $isLocked = $ent->getLocked();
-        if ($isLocked) {
-            return $this->output->set_status_header(403)->set_output('Entity is locked');
-        }
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
         $supportintput = trim($this->input->post('support'));
@@ -602,15 +605,12 @@ class Attributepolicy extends MY_Controller
     public function updateattrentcat($idpid = null) {
         try {
             $this->initiateAjaxAccess($idpid);
-            $ent = $this->initiateProvider($idpid);
+            $ent = $this->initiateProviderForUpdate($idpid);
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
-        $isLocked = $ent->getLocked();
-        if ($isLocked) {
-            return $this->output->set_status_header(403)->set_output('Entity is locked');
-        }
+
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
         $entcatid = trim($this->input->post('entcatid'));
@@ -663,14 +663,11 @@ class Attributepolicy extends MY_Controller
     public function updateattrfed($idpid = null) {
         try {
             $this->initiateAjaxAccess($idpid);
-            $ent = $this->initiateProvider($idpid);
+            $ent = $this->initiateProviderForUpdate($idpid);
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
-        if ($ent->getLocked()) {
-            return $this->output->set_status_header(403)->set_output('Entity is locked');
-        }
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
         $fedid = trim($this->input->post('fedid'));
@@ -735,14 +732,11 @@ class Attributepolicy extends MY_Controller
     public function updateattrsp($idpid = null) {
         try {
             $this->initiateAjaxAccess($idpid);
-            $ent = $this->initiateProvider($idpid);
+            $ent = $this->initiateProviderForUpdate($idpid);
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
-        $isLocked = $ent->getLocked();
-        if ($isLocked) {
-            return $this->output->set_status_header(403)->set_output('Entity is locked');
-        }
+
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
         $spid = trim($this->input->post('spid'));
