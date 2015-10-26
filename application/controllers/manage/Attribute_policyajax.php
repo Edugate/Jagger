@@ -325,8 +325,6 @@ class Attribute_policyajax extends MY_Controller
             if (empty($policy)) {
                 $statusPol = 100;
             } else {
-                $changes['before'] = $dropdown['' . $policy->getPolicy() . ''];
-                $changes['after'] = $dropdown[100];
                 $this->em->remove($policy);
                 $statusPol = 100;
             }
