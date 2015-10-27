@@ -189,7 +189,7 @@ class Ajax extends MY_Controller
             $lbs = array(
                 'pub' => makeLabel('notpublic', '', lang('rr_fed_notpublic')),
                 'act' => makeLabel('disabled', '', lang('rr_fed_inactive')),
-                'loc' => makeLabel('external', '', lang('rr_fed_external'))
+
             );
             if ($v->getPublic()) {
                 $lbs['pub'] = makeLabel('public', '', lang('rr_fed_public')) . ' ';
@@ -197,9 +197,7 @@ class Ajax extends MY_Controller
             if ($v->getActive()) {
                 $lbs['act'] = makeLabel('active', '', lang('rr_fed_active')) . ' ';
             }
-            if ($v->getLocal()) {
-                $lbs['loc'] = makeLabel('local', '', lang('rr_fed_local')) . ' ';
-            }
+         
             $members = ' <a href="' . base_url() . 'federations/manage/showmembers/' . $v->getId() . '" class="fmembers" id="' . $v->getId() . '">' . $imgtoggle . '</a>';
             $result[] = array(
                 'name' => anchor(base_url('federations/manage/show/' . base64url_encode($v->getName() . '')), $v->getName()),
