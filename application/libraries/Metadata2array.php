@@ -1,6 +1,7 @@
 <?php
-
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 /**
  * ResourceRegistry3
  *
@@ -159,18 +160,18 @@ class Metadata2array
         $isIdp = false;
         $isSp = false;
         $entity = array(
-            'metadata'   => null,
-            'entityid'   => $node->getAttribute('entityID'),
+            'metadata' => null,
+            'entityid' => $node->getAttribute('entityID'),
             'validuntil' => $node->getAttribute('validUntil'),
-            'rigistrar'  => null,
-            'regdate'    => null,
-            'coc'        => array(),
-            'regpol'     => array(),
-            'algs'       => array(),
-            'details'    => array(
-                'org'            => array('OrganizationName' => array(), 'OrganizationDisplayName' => array(), 'OrganizationURL' => array()),
-                'contacts'       => array(),
-                'reqattrs'       => array(),
+            'rigistrar' => null,
+            'regdate' => null,
+            'coc' => array(),
+            'regpol' => array(),
+            'algs' => array(),
+            'details' => array(
+                'org' => array('OrganizationName' => array(), 'OrganizationDisplayName' => array(), 'OrganizationURL' => array()),
+                'contacts' => array(),
+                'reqattrs' => array(),
                 'reqattrsinmeta' => false,
             ),
         );
@@ -194,7 +195,7 @@ class Metadata2array
                 foreach ($gnode->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:metadata', 'RequestedAttribute') as $reqattr) {
                     if (strcasecmp($reqattr->getAttribute('NameFormat'), 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri') == 0) {
                         $entity['details']['reqattrs'][] = array('name' => '' . $reqattr->getAttribute('Name') . '',
-                                                                 'req'  => $reqattr->getAttribute('isRequired'));
+                            'req' => $reqattr->getAttribute('isRequired'));
                     }
                     $entity['details']['reqattrsinmeta'] = true;
                 }
@@ -234,13 +235,13 @@ class Metadata2array
                             }
                         } elseif ($enode->nodeName === 'alg:DigestMethod') {
                             $entity['algs'][] = array(
-                                'name'      => 'DigestMethod',
+                                'name' => 'DigestMethod',
                                 'algorithm' => $enode->getAttribute('Algorithm'),
                             );
                         } elseif ($enode->nodeName === 'alg:SigningMethod') {
                             $tmlentry = array(
-                                'name'       => 'SigningMethod',
-                                'algorithm'  => $enode->getAttribute('Algorithm'),
+                                'name' => 'SigningMethod',
+                                'algorithm' => $enode->getAttribute('Algorithm'),
                                 'minkeysize' => $enode->getAttribute('MinKeySize'),
                                 'maxkeysize' => $enode->getAttribute('MaxKeySize'),
 
@@ -336,23 +337,23 @@ class Metadata2array
             }
             if ($child->localName === 'SingleSignOnService') {
                 $result['servicelocations']['singlesignonservice'][] = array(
-                    'binding'  => $child->getAttribute('Binding'),
+                    'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location')
                 );
                 continue;
             }
             if ($child->localName === 'SingleLogoutService') {
                 $result['servicelocations']['singlelogout'][] = array(
-                    'binding'  => $child->getAttribute('Binding'),
+                    'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location')
                 );
                 continue;
             }
             if ($child->localName === 'ArtifactResolutionService') {
                 $result['servicelocations']['artifactresolutionservice'][] = array(
-                    'binding'   => $child->getAttribute('Binding'),
-                    'location'  => $child->getAttribute('Location'),
-                    'order'     => $child->getAttribute('index'),
+                    'binding' => $child->getAttribute('Binding'),
+                    'location' => $child->getAttribute('Location'),
+                    'order' => $child->getAttribute('index'),
                     'isdefault' => $child->getAttribute('isDefault')
                 );
                 continue;
@@ -369,12 +370,12 @@ class Metadata2array
         $profilesTmp = $node->getAttribute('protocolSupportEnumeration');
         $profiles = explode(' ', $profilesTmp);
         $result = array(
-            'protocols'        => $profiles,
+            'protocols' => $profiles,
             'servicelocations' => array('assertionconsumerservice' => array(), 'singlelogout' => array()),
-            'extensions'       => array(
+            'extensions' => array(
                 'idpdisc' => array(),
-                'init'    => array(),
-                'desc'    => array()
+                'init' => array(),
+                'desc' => array()
             ),
         );
         $bindProts = array(
@@ -392,18 +393,18 @@ class Metadata2array
             }
             if ($child->localName === 'AssertionConsumerService') {
                 $result['servicelocations']['assertionconsumerservice'][] = array(
-                    'binding'   => $child->getAttribute('Binding'),
-                    'location'  => $child->getAttribute('Location'),
-                    'order'     => $child->getAttribute('index'),
+                    'binding' => $child->getAttribute('Binding'),
+                    'location' => $child->getAttribute('Location'),
+                    'order' => $child->getAttribute('index'),
                     'isdefault' => $child->getAttribute('isDefault')
                 );
                 continue;
             }
             if ($child->localName === 'ArtifactResolutionService') {
                 $result['servicelocations']['artifactresolutionservice'][] = array(
-                    'binding'   => $child->getAttribute('Binding'),
-                    'location'  => $child->getAttribute('Location'),
-                    'order'     => $child->getAttribute('index'),
+                    'binding' => $child->getAttribute('Binding'),
+                    'location' => $child->getAttribute('Location'),
+                    'order' => $child->getAttribute('index'),
                     'isdefault' => $child->getAttribute('isDefault')
                 );
                 continue;
@@ -412,7 +413,7 @@ class Metadata2array
                 $bindProto = trim($child->getAttribute('Binding'));
                 if (!in_array($bindProto, $bindProts['singlelogout'])) {
                     $result['servicelocations']['singlelogout'][] = array(
-                        'binding'  => $bindProto,
+                        'binding' => $bindProto,
                         'location' => trim($child->getAttribute('Location'))
                     );
                     $bindProts['singlelogout'][] = $bindProto;
@@ -421,7 +422,7 @@ class Metadata2array
             }
             if ($child->localName === 'ManageNameIDService') {
                 $result['servicelocations']['managenameidservice'][] = array(
-                    'binding'  => $child->getAttribute('Binding'),
+                    'binding' => $child->getAttribute('Binding'),
                     'location' => $child->getAttribute('Location')
                 );
                 continue;
@@ -491,11 +492,11 @@ class Metadata2array
             }
             if ($enode->nodeName === 'mdui:UIInfo' && $enode->hasChildNodes()) {
                 $tmpMapping = array(
-                    'mdui:Description'         => 'desc',
-                    'mdui:DisplayName'         => 'displayname',
+                    'mdui:Description' => 'desc',
+                    'mdui:DisplayName' => 'displayname',
                     'mdui:PrivacyStatementURL' => 'privacyurl',
-                    'mdui:InformationURL'      => 'informationurl',
-                    'mdui:Logo'                => 'logo'
+                    'mdui:InformationURL' => 'informationurl',
+                    'mdui:Logo' => 'logo'
                 );
                 foreach ($enode->childNodes as $gnode) {
                     if (in_array($gnode->nodeName, array('mdui:Description', 'mdui:DisplayName', 'mdui:PrivacyStatementURL', 'mdui:InformationURL'), true)) {
@@ -515,7 +516,7 @@ class Metadata2array
                 foreach ($enode->childNodes as $agnode) {
                     if ($agnode->nodeName === 'mdui:GeolocationHint') {
                         $geovalue = $this->convertGeoToArray($agnode->nodeValue);
-                        if(is_array($geovalue)){
+                        if (is_array($geovalue)) {
                             $ext['geo'][] = $geovalue;
                         }
                     } elseif ($agnode->nodeName === 'mdui:IPHint') {
@@ -534,7 +535,7 @@ class Metadata2array
      * @param $val
      * @return array|null
      */
-    private function convertGeoToArray($val){
+    private function convertGeoToArray($val) {
         $geovalue = explode(',', str_ireplace('geo:', '', $val));
         if (count($geovalue) == 2) {
             $numericvalues = true;
@@ -565,10 +566,10 @@ class Metadata2array
 
     private function contactPersonConvert(\DOMElement $node) {
         $cnt = array(
-            'type'      => $node->getAttribute('contactType'),
-            'surname'   => null,
+            'type' => $node->getAttribute('contactType'),
+            'surname' => null,
             'givenname' => null,
-            'email'     => null
+            'email' => null
         );
         foreach ($node->childNodes as $cnode) {
             if ($cnode->localName === 'SurName') {

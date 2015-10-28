@@ -532,13 +532,13 @@ class Manage extends MY_Controller
             $provider_id = $this->input->post('provider');
             $message = $this->input->post('message');
             /**
-             * @var $invitedProvider models\Provider
+             * @var  models\Provider $invitedProvider
              */
             $invitedProvider = $this->tmpProviders->getOneById($provider_id);
-            if (empty($invitedProvider)) {
+            if ($invitedProvider === null) {
                 $data['error_message'] = lang('rerror_providernotexist');
             } else {
-                if ($this->config->item('rr_rm_member_from_fed') !== TRUE) {
+                if ($this->config->item('rr_rm_member_from_fed') !== true) {
                     log_message('error', 'rr_rm_member_from_fed is not set in config');
                     show_error('missed some config setting, Please contact with admin.', 500);
                 }
@@ -546,13 +546,16 @@ class Manage extends MY_Controller
                 $p_tmp = new models\AttributeReleasePolicies;
                 $arp_fed = $p_tmp->getFedPolicyAttributesByFed($invitedProvider, $federation);
                 $rm_arp_msg = '';
-                if (!empty($arp_fed) && is_array($arp_fed) && count($arp_fed) > 0) {
+                if (is_array($arp_fed) && count($arp_fed) > 0) {
                     foreach ($arp_fed as $r) {
                         $this->em->remove($r);
                     }
                     $rm_arp_msg = "Also existing attribute release policy for this federation has been removed<br/>" .
                         "It means when in the future you join this federation you will need to set attribute release policy for it again<br />";
                 }
+                /**
+                 * @var models\FederationMembers[] $m2
+                 */
                 $doFilter = array('' . $federation->getId() . '');
                 $m2 = $invitedProvider->getMembership()->filter(
                     function (models\FederationMembers $entry) use ($doFilter) {
@@ -650,84 +653,82 @@ class Manage extends MY_Controller
     }
 
     private function genValidators(\models\Federation $federation, $hasWriteAccess = false) {
-        /**
-         * @var $fvalidators models\FederationValidator[]
-         */
+
         $fvalidators = $federation->getValidators();
-
-
-        if ($fvalidators->count() > 0) {
-
-            if ($hasWriteAccess) {
-                $fvdata = '<dl class="accordion" data-accordion>';
-                foreach ($fvalidators as $f) {
-                    $fvdata .= ' <dd class="accordion-navigation">' .
-                        '<a href="#fvdata' . $f->getId() . '" class="accordion-icon">' . $f->getName() . '</a>' .
-                        '<div id="fvdata' . $f->getId() . '" class="content">';
-                    $editbtn = '<a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '/' . $f->getId() . '" class="editbutton editicon right button small">' . lang('rr_edit') . '</a>';
-
-                    $fedstatusLabels = array(
-                        'en' => makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled')),
-                        'man' => makeLabel('active', lang('lbl_mandatory'), lang('lbl_mandatory')),
-                        'reg' => makeLabel('active', lang('lbl_fvalidonreg'), lang('lbl_fvalidonreg')),
-                    );
-                    if (!$f->getEnabled()) {
-                        $fedstatusLabels['en'] = makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
-                    }
-                    if (!$f->getMandatory()) {
-                        $fedstatusLabels['man'] = makeLabel('disabled', lang('lbl_optional'), lang('lbl_optional'));
-                    }
-                    if (!$f->isEnabledForRegistration()) {
-                        unset($fedstatusLabels['reg']);
-                    }
-                    $optargs1 = $f->getOptargs();
-                    $optargsStr = array();
-                    foreach ($optargs1 as $k => $v) {
-                        if ($v === null) {
-                            $optargsStr[] = $k;
-                        } else {
-                            $optargsStr[] = $k . '=' . $v;
-                        }
-                    }
-                    $retvalues = $f->getReturnCodeValues();
-                    $retvaluesToHtml = '';
-                    foreach ($retvalues as $k => $v) {
-                        $retvaluesToHtml .= '<div>' . $k . ': ';
-                        if (is_array($v)) {
-                            foreach ($v as $v1) {
-                                $retvaluesToHtml .= '' . $v1 . '; ';
-                            }
-                        }
-                        $retvaluesToHtml .= '</div>';
-                    }
-
-                    $tbl = array(
-                        array('data' => array('data' => ' ' . $editbtn, 'class' => '', 'colspan' => 2)),
-                        array('data' => lang('rr_status'), 'value' => implode(' ', $fedstatusLabels)),
-                        array('data' => lang('Description'), 'value' => html_escape($f->getDescription())),
-                        array('data' => lang('fvalid_doctype'), 'value' => $f->getDocutmentType()),
-                        array('data' => lang('fvalid_url'), 'value' => $f->getUrl()),
-                        array('data' => lang('rr_httpmethod'), 'value' => $f->getMethod()),
-                        array('data' => lang('fvalid_entparam'), 'value' => $f->getEntityParam()),
-                        array('data' => lang('fvalid_optargs'), 'value' => implode('<br />', $optargsStr)),
-                        'sep' => array('data' => lang('rr_argsep'), 'value' => $f->getSeparator()),
-                        array('data' => lang('fvalid_retelements'), 'value' => implode('<br />', $f->getReturnCodeElement())),
-                        array('data' => lang('fvalid_retelements'), 'value' => $retvaluesToHtml),
-                        array('data' => lang('fvalid_msgelements'), 'value' => implode('<br />', $f->getMessageCodeElements()))
-                    );
-                    if (strcmp($f->getMethod(), 'GET') != 0) {
-                        unset($tbl['sep']);
-                    }
-                    $fvdata .= $this->table->generate($tbl) . '</div></dd>';
-                    $this->table->clear();
-                }
-                $fvdata .= '</dl>';
-                return array(array('data' => array('data' => $fvdata, 'colspan' => 2, 'class' => '')));
-            }
-            return array(array('data' => array('data' => '<div class="alert">' . lang('rr_noperm') . '</div>', 'colspan' => 2)));
-
+        if ($fvalidators->count() === 0) {
+            return array();
         }
-        return array();
+        if ($hasWriteAccess !== true) {
+            return array(array('data' => array('data' => '<div class="alert">' . lang('rr_noperm') . '</div>', 'colspan' => 2)));
+        }
+
+
+        $fvdata = '<dl class="accordion" data-accordion>';
+        foreach ($fvalidators as $f) {
+            $fvdata .= ' <dd class="accordion-navigation">' .
+                '<a href="#fvdata' . $f->getId() . '" class="accordion-icon">' . $f->getName() . '</a>' .
+                '<div id="fvdata' . $f->getId() . '" class="content">';
+            $editbtn = '<a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '/' . $f->getId() . '" class="editbutton editicon right button small">' . lang('rr_edit') . '</a>';
+
+            $fedstatusLabels = array(
+                'en' => makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled')),
+                'man' => makeLabel('active', lang('lbl_mandatory'), lang('lbl_mandatory')),
+                'reg' => makeLabel('active', lang('lbl_fvalidonreg'), lang('lbl_fvalidonreg')),
+            );
+            if (!$f->getEnabled()) {
+                $fedstatusLabels['en'] = makeLabel('disabled', lang('lbl_disabled'), lang('lbl_disabled'));
+            }
+            if (!$f->getMandatory()) {
+                $fedstatusLabels['man'] = makeLabel('disabled', lang('lbl_optional'), lang('lbl_optional'));
+            }
+            if (!$f->isEnabledForRegistration()) {
+                unset($fedstatusLabels['reg']);
+            }
+            $optargs1 = $f->getOptargs();
+            $optargsStr = array();
+            foreach ($optargs1 as $k => $v) {
+                if ($v === null) {
+                    $optargsStr[] = $k;
+                } else {
+                    $optargsStr[] = $k . '=' . $v;
+                }
+            }
+            $retvalues = $f->getReturnCodeValues();
+            $retvaluesToHtml = '';
+            foreach ($retvalues as $k => $v) {
+                $retvaluesToHtml .= '<div>' . $k . ': ';
+                if (is_array($v)) {
+                    foreach ($v as $v1) {
+                        $retvaluesToHtml .= '' . $v1 . '; ';
+                    }
+                }
+                $retvaluesToHtml .= '</div>';
+            }
+
+            $tbl = array(
+                array('data' => array('data' => ' ' . $editbtn, 'class' => '', 'colspan' => 2)),
+                array('data' => lang('rr_status'), 'value' => implode(' ', $fedstatusLabels)),
+                array('data' => lang('Description'), 'value' => html_escape($f->getDescription())),
+                array('data' => lang('fvalid_doctype'), 'value' => $f->getDocutmentType()),
+                array('data' => lang('fvalid_url'), 'value' => $f->getUrl()),
+                array('data' => lang('rr_httpmethod'), 'value' => $f->getMethod()),
+                array('data' => lang('fvalid_entparam'), 'value' => $f->getEntityParam()),
+                array('data' => lang('fvalid_optargs'), 'value' => implode('<br />', $optargsStr)),
+                'sep' => array('data' => lang('rr_argsep'), 'value' => $f->getSeparator()),
+                array('data' => lang('fvalid_retelements'), 'value' => implode('<br />', $f->getReturnCodeElement())),
+                array('data' => lang('fvalid_retelements'), 'value' => $retvaluesToHtml),
+                array('data' => lang('fvalid_msgelements'), 'value' => implode('<br />', $f->getMessageCodeElements()))
+            );
+            if (strcmp($f->getMethod(), 'GET') != 0) {
+                unset($tbl['sep']);
+            }
+            $fvdata .= $this->table->generate($tbl) . '</div></dd>';
+            $this->table->clear();
+        }
+        $fvdata .= '</dl>';
+        return array(array('data' => array('data' => $fvdata, 'colspan' => 2, 'class' => '')));
+
+
     }
 
 }

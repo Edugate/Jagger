@@ -1,5 +1,7 @@
 <?php
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 /**
  * @property Arpgen $arpgen
@@ -32,6 +34,7 @@ class Attributepolicy extends MY_Controller
 
     private function getEntity($idpid) {
         $ent = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $idpid, 'type' => array('IDP', 'BOTH')));
+
         return $ent;
     }
 
@@ -61,18 +64,29 @@ class Attributepolicy extends MY_Controller
             show_error('Denied', 401);
         }
         $this->load->library('arpgen');
-        $data['breadcrumbs'] = array(
-            array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
-            array('url' => base_url('providers/detail/show/' . $idpid . ''), 'name' => '' . $providerNameInLang . ''),
-            array('url' => '#', 'name' => lang('rr_attributereleasepolicy'), 'type' => 'current'),
+        $data = array(
+            'breadcrumbs'   => array(
+                array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
+                array('url' => base_url('providers/detail/show/' . $idpid . ''), 'name' => '' . $providerNameInLang . ''),
+                array('url' => '#', 'name' => lang('rr_attributereleasepolicy'), 'type' => 'current'),
+            ),
+            'attrdefs'      => $this->arpgen->getAttrDefs(),
+            'arpglobal'     => $this->arpgen->genGlobal($ent),
+            'arpsupport'    => $this->arpgen->getSupportAttributes($ent),
+            'idpid'         => $ent->getId(),
+            'encodedentity' => base64url_encode($ent->getEntityId()),
+            'content_view'  => 'manage/attributepolicy2_view'
         );
-        $data['attrdefs'] = $this->arpgen->getAttrDefs();
-        $data['arpglobal'] = $this->arpgen->genGlobal($ent);
-        $data['arpsupport'] = $this->arpgen->getSupportAttributes($ent);
-        $data['idpid'] = $ent->getId();
-        $data['encodedentity'] = base64url_encode($ent->getEntityId());
-        $data['content_view'] = 'manage/attributepolicy2_view';
+
         $this->load->view('page', $data);
+    }
+
+    private function initiateProviderForUpdate($idpid = null) {
+        $ent = $this->initiateProvider($idpid);
+        if($ent->getLocked()){
+            throw new Exception('Entity is locked');
+        }
+        return $ent;
     }
 
     /**
@@ -98,11 +112,16 @@ class Attributepolicy extends MY_Controller
             throw new Exception('Access denied');
         }
         $this->load->library('arpgen');
+
         return $ent;
 
 
     }
 
+    /**
+     * @param null $idpid
+     * @return CI_Output
+     */
     public function getsupported($idpid = null) {
 
         try {
@@ -114,11 +133,24 @@ class Attributepolicy extends MY_Controller
 
         $policiesDefs = $this->arpgen->genPolicyDefs($ent);
 
+        $result = array(
+            'type'        => 'supported',
+            'definitions' => array(
+                'columns' => array(lang('attrname'), lang('dfltarpcolname'), lang('rr_action')),
+                'attrs'   => $this->arpgen->getAttrDefs(),
+                'policy'  => array(
+                    '0'    => lang('dropnever'),
+                    '1'    => lang('dropokreq'),
+                    '2'    => lang('dropokreqdes'),
+                    '100'  => lang('dropnotset'),
+                    '1000' => lang('notsupported'))
+            ),
+            'data'        => array(
+                'support' => $this->arpgen->getSupportAttributes($ent),
+                'global'  => $this->arpgen->genGlobal($ent)
+            ),
+        );
 
-        $result['type'] = 'supported';
-        $result['definitions']['columns'] = array(lang('attrname'), lang('dfltarpcolname'), lang('rr_action'));
-        $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
-        $result['data']['global'] = $this->arpgen->genGlobal($ent);
         if (array_key_exists('spPolicies', $policiesDefs)) {
             foreach (array_keys($policiesDefs['spPolicies']) as $ol) {
                 if (!array_key_exists($ol, $result['data']['global'])) {
@@ -126,11 +158,8 @@ class Attributepolicy extends MY_Controller
                 }
             }
         }
-        $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
-        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => lang('notsupported'));
 
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
-
     }
 
     public function getentcats($idpid = null) {
@@ -142,7 +171,7 @@ class Attributepolicy extends MY_Controller
         }
 
         /**
-         * @var $cocs models\Coc[]
+         * @var models\Coc[] $cocs
          */
         $cocs = $this->em->getRepository('models\Coc')->findBy(array('type' => 'entcat', 'subtype' => 'http://macedir.org/entity-category'), array('url' => 'ASC'));
         $entcats = array();
@@ -155,6 +184,7 @@ class Attributepolicy extends MY_Controller
         $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
         $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
         $result['data']['entcats'] = $entcats;
+
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
     }
@@ -210,13 +240,14 @@ class Attributepolicy extends MY_Controller
         $result['definitions']['columns'] = array(lang('attrname'), lang('policy'), lang('reqstatus'), lang('rr_action'));
         $result['definitions']['sps'] = $sps;
         $result['definitions']['req'] = array(
-            '1' => lang('droprequired'),
-            '2' => lang('dropdesired'),
+            '1'   => lang('droprequired'),
+            '2'   => lang('dropdesired'),
             '100' => '',
 
         );
 
         $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => lang('notsupported'));
+
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
@@ -265,6 +296,7 @@ class Attributepolicy extends MY_Controller
 
 
         $this->em->flush();
+
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
     }
@@ -274,33 +306,33 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->initiateAjaxAccess($idpid);
-            $ent = $this->initiateProvider($idpid);
+            $ent = $this->initiateProviderForUpdate($idpid);
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
-        $isLocked = $ent->getLocked();
-        if ($isLocked) {
-            return $this->output->set_status_header(403)->set_output('Entity is locked');
-        }
         if ($this->updateattrspValidate() !== true) {
             return $this->output->set_status_header(403)->set_output('Incorrect data input');
         }
-        $attrid = trim($this->input->post('attrid'));
-        $policy = trim($this->input->post('policy'));
-        $spid = trim($this->input->post('spid'));
-        $customenable = trim($this->input->post('customenabled'));
-        $custompolicy = trim($this->input->post('custompolicy'));
-        $customvals = trim($this->input->post('customvals'));
+        $attrid = $this->input->post('attrid');
+        $policy = $this->input->post('policy');
+        $spid = $this->input->post('spid');
+        $customenable = $this->input->post('customenabled');
+        $custompolicy = $this->input->post('custompolicy');
+        $customvals = $this->input->post('customvals');
 
 
-        if (!ctype_digit($spid) || !ctype_digit($attrid) || !ctype_digit($policy) || !in_array($policy, array('0', '1', '2', '100'))) {
+        if (!in_array($policy, array('0', '1', '2', '100'))) {
             return $this->output->set_status_header(403)->set_output('Posted invalid data');
         }
         try {
+            /**
+             * @var models\AttributeReleasePolicy $controlCheck
+             */
             $controlCheck = $this->em->getRepository('models\AttributeReleasePolicy')->findOneBy(array('idp' => $ent->getId(), 'attribute' => $attrid, 'requester' => $spid, 'type' => array('sp', 'customsp')));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
+
             return $this->output->set_status_header(500)->set_output('Internal Server Error');
         }
         if ($controlCheck !== null) {
@@ -313,14 +345,10 @@ class Attributepolicy extends MY_Controller
          * @var $sp models\Provider
          */
         $attribute = $this->em->getRepository('models\Attribute')->findOneBy(array('id' => $attrid));
-        $sp = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $spid));
+        $sp = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $spid, 'type' => array('SP', 'BOTH')));
 
-        if ($attribute === null) {
-            return $this->output->set_status_header(403)->set_output('Attribute passed in post does not exist');
-        }
-        $entype = $sp->getType();
-        if ($sp === null || !in_array($entype, array('SP', 'BOTH'))) {
-            return $this->output->set_status_header(403)->set_output('SP passed in post does not exist or not valid entity type');
+        if ($attribute === null || $sp === null) {
+            return $this->output->set_status_header(403)->set_output('Attribute or SP passed in post does not exist');
         }
 
         if ($policy !== '100') {
@@ -328,7 +356,7 @@ class Attributepolicy extends MY_Controller
             $attrPolicy->setSpecificPolicy($ent, $attribute, $spid, $policy);
             $this->em->persist($attrPolicy);
         }
-        if (!empty($customenable) && $customenable === 'yes' && !empty($custompolicy) && in_array($custompolicy, array('permit', 'deny')) && !empty($customvals)) {
+        if ($customenable === 'yes' && !empty($custompolicy) && in_array($custompolicy, array('permit', 'deny'), true) && !empty($customvals)) {
             $customRawDataArray = array();
             $explcustomvals = explode(',', $customvals);
             foreach ($explcustomvals as $r) {
@@ -352,13 +380,13 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->em->flush();
-            return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
-
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
+
             return $this->output->set_status_header(500)->set_output('Internal Server Error');
         }
 
+        return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
 
     }
 
@@ -367,7 +395,7 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->initiateAjaxAccess($idpid);
-            $ent = $this->initiateProvider($idpid);
+            $ent = $this->initiateProviderForUpdate($idpid);
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
@@ -402,9 +430,11 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->em->flush();
+
             return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
+
             return $this->output->set_status_header(500)->set_output('Internal Server Error');
         }
 
@@ -419,9 +449,8 @@ class Attributepolicy extends MY_Controller
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
+
         $result['type'] = 'federation';
-
-
         $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => lang('notsupported'));
         $result['definitions']['columns'] = array(lang('attrname'), lang('policy'), lang('reqstatus'), lang('rr_action'));
         $result['definitions']['lang']['federation'] = lang('rr_federation');
@@ -443,7 +472,7 @@ class Attributepolicy extends MY_Controller
          */
         $fedpolicies = $this->em->getRepository('models\AttributeReleasePolicy')->findBy(
             array(
-                'idp' => $ent,
+                'idp'  => $ent,
                 'type' => array('fed')
             )
         );
@@ -475,6 +504,7 @@ class Attributepolicy extends MY_Controller
         $result['definitions']['statusstr']['inactive'] = 'inactive';
 
         $this->em->flush();
+
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
@@ -484,14 +514,11 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->initiateAjaxAccess($idpid);
-            $ent = $this->initiateProvider($idpid);
+            $ent = $this->initiateProviderForUpdate($idpid);
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
-        $isLocked = $ent->getLocked();
-        if ($isLocked) {
-            return $this->output->set_status_header(403)->set_output('Entity is locked');
-        }
+
         $attrid = $this->input->post('attrid');
         if (!ctype_digit($attrid)) {
             return $this->output->set_status_header(403)->set_output('Posted invalid data');
@@ -502,9 +529,11 @@ class Attributepolicy extends MY_Controller
         }
         try {
             $this->em->flush();
+
             return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
+
             return $this->output->set_status_header(500)->set_output('Internal server error');
         }
 
@@ -515,15 +544,11 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->initiateAjaxAccess($idpid);
-            $ent = $this->initiateProvider($idpid);
+            $ent = $this->initiateProviderForUpdate($idpid);
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
-        $isLocked = $ent->getLocked();
-        if ($isLocked) {
-            return $this->output->set_status_header(403)->set_output('Entity is locked');
-        }
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
         $supportintput = trim($this->input->post('support'));
@@ -567,9 +592,11 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->em->flush();
+
             return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
+
             return $this->output->set_status_header(500)->set_output('Internal server error');
         }
 
@@ -578,15 +605,12 @@ class Attributepolicy extends MY_Controller
     public function updateattrentcat($idpid = null) {
         try {
             $this->initiateAjaxAccess($idpid);
-            $ent = $this->initiateProvider($idpid);
+            $ent = $this->initiateProviderForUpdate($idpid);
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
-        $isLocked = $ent->getLocked();
-        if ($isLocked) {
-            return $this->output->set_status_header(403)->set_output('Entity is locked');
-        }
+
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
         $entcatid = trim($this->input->post('entcatid'));
@@ -627,9 +651,11 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->em->flush();
+
             return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
+
             return $this->output->set_status_header(500)->set_output('Internal Server Error');
         }
     }
@@ -637,15 +663,11 @@ class Attributepolicy extends MY_Controller
     public function updateattrfed($idpid = null) {
         try {
             $this->initiateAjaxAccess($idpid);
-            $ent = $this->initiateProvider($idpid);
+            $ent = $this->initiateProviderForUpdate($idpid);
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
-        $isLocked = $ent->getLocked();
-        if ($isLocked) {
-            return $this->output->set_status_header(403)->set_output('Entity is locked');
-        }
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
         $fedid = trim($this->input->post('fedid'));
@@ -668,10 +690,8 @@ class Attributepolicy extends MY_Controller
          * @var $attrPolicy models\AttributeReleasePolicy
          */
         $attrPolicy = $this->em->getRepository('models\AttributeReleasePolicy')->findOneBy(array('attribute' => $attrid, 'idp' => $ent->getId(), 'type' => 'fed', 'requester' => $fedid));
-        if ($policy === '100') {
-            if ($attrPolicy !== null) {
-                $this->em->remove($attrPolicy);
-            }
+        if ($policy === '100' && $attrPolicy !== null) {
+            $this->em->remove($attrPolicy);
         } elseif ($attrPolicy === null) {
             $attrPolicy = new models\AttributeReleasePolicy();
             if ($federation === null) {
@@ -684,14 +704,15 @@ class Attributepolicy extends MY_Controller
             $this->em->persist($attrPolicy);
         }
 
-
         try {
             $this->em->flush();
-            return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
+
             return $this->output->set_status_header(500)->set_output('Internal Server Error');
         }
+
+        return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
 
     }
 
@@ -700,22 +721,22 @@ class Attributepolicy extends MY_Controller
         $this->form_validation->set_rules('customvals', '' . lang('permdenvalue') . '', 'trim|alpha_dash_comma');
         $this->form_validation->set_rules('custompolicy', 'Custom Policy', 'trim');
         $this->form_validation->set_rules('customenabled', 'Custom enabled', 'trim');
-        $this->form_validation->set_rules('attrid', 'Attribute', 'trim|required|numeric');
-        $this->form_validation->set_rules('spid', 'Service Provider ID', 'trim|required|numeric');
+        $this->form_validation->set_rules('attrid', 'Attribute', 'trim|required|is_natural_no_zero');
+        $this->form_validation->set_rules('spid', 'Service Provider ID', 'trim|required|is_natural_no_zero');
+        $this->form_validation->set_rules('policy', 'Policy', 'trim|is_natural');
+
+
         return $this->form_validation->run();
     }
 
     public function updateattrsp($idpid = null) {
         try {
             $this->initiateAjaxAccess($idpid);
-            $ent = $this->initiateProvider($idpid);
+            $ent = $this->initiateProviderForUpdate($idpid);
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
-        $isLocked = $ent->getLocked();
-        if ($isLocked) {
-            return $this->output->set_status_header(403)->set_output('Entity is locked');
-        }
+
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
         $spid = trim($this->input->post('spid'));
@@ -763,10 +784,8 @@ class Attributepolicy extends MY_Controller
             $this->em->persist($attrPolicy);
         }
 
-        if (empty($customenabled) || $customenabled !== 'yes' || empty($customvals)) {
-            if ($customattrPolicy !== null) {
-                $this->em->remove($customattrPolicy);
-            }
+        if (($customattrPolicy !== null) && (empty($customenabled) || $customenabled !== 'yes' || empty($customvals))) {
+            $this->em->remove($customattrPolicy);
         } else {
             $valsarray = array();
             $cvalsExploded = explode(',', $customvals);
@@ -795,9 +814,11 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->em->flush();
+
             return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
+
             return $this->output->set_status_header(500)->set_output('Internal Server Error');
         }
 
@@ -865,6 +886,7 @@ class Attributepolicy extends MY_Controller
 
             $result['members'][] = array('entityid' => $m->getEntityId(), 'pid' => $m->getId(), 'name' => $name, 'url' => $preurl . $m->getId(), 'feds' => $feds);
         }
+
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 

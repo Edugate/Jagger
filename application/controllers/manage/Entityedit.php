@@ -430,7 +430,7 @@ class Entityedit extends MY_Controller
                             }
                         }
                     }
-                    if ($this->type != 'IDP') {
+                    if ($this->type !== 'IDP') {
                         if (count($acsindexes) != count(array_unique($acsindexes))) {
 
                             $this->tmpError = 'Not unique indexes found for ACS';
@@ -727,7 +727,7 @@ class Entityedit extends MY_Controller
          * @var $ent models\Provider
          */
         $ent = $this->tmpProviders->getOneById($id);
-        if (empty($ent)) {
+        if ($ent === null) {
             show_error('Provider not found', '404');
         }
         $isLocked = $ent->getLocked();

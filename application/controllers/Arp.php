@@ -23,8 +23,7 @@ class Arp extends MY_Controller
     protected $resourcetype;
     protected $subtype;
 
-    function __construct()
-    {
+    function __construct() {
         parent::__construct();
         $this->load->library('arp_generator');
         $this->resourcetype = 'idp';
@@ -37,8 +36,7 @@ class Arp extends MY_Controller
      * @param models\Provider $idp
      * @return string|null
      */
-    private function generateXml($idp)
-    {
+    private function generateXml($idp) {
         $returnArray = FALSE;
         $result1 = $this->arp_generator->arpToXML($idp, $returnArray);
         $result = null;
@@ -49,8 +47,7 @@ class Arp extends MY_Controller
     }
 
 
-    private function arpexperimental($encodedEntity, $version, $filename = null)
-    {
+    private function arpexperimental($encodedEntity, $version, $filename = null) {
         if ($filename !== 'arp.xml') {
             return $this->output->set_content_type('text/html')->set_status_header(403)->set_output('Request not allowed');
         }
@@ -74,20 +71,18 @@ class Arp extends MY_Controller
             log_message('error', $e);
             return $this->output->set_content_type('text/html')->set_status_header(500)->set_output('Internal server error');
         }
-        $xml = $this->arpgen->genXML($ent,$version);
+        $xml = $this->arpgen->genXML($ent, $version);
         $result = $xml->outputMemory();
         return $this->output->set_content_type('text/xml')->set_output($result);
 
     }
 
-    public function format2exp($encodedEntity, $filename = null)
-    {
+    public function format2exp($encodedEntity, $filename = null) {
         $this->arpexperimental($encodedEntity, 2, $filename);
     }
 
 
-    public function format3exp($encodedEntity, $filename = null)
-    {
+    public function format3exp($encodedEntity, $filename = null) {
 
         $this->arpexperimental($encodedEntity, 3, $filename);
     }
@@ -99,8 +94,7 @@ class Arp extends MY_Controller
      * @param string $filename
      * @return string
      */
-    public function format2($idpEntityID, $filename = null)
-    {
+    public function format2($idpEntityID, $filename = null) {
         if ($filename !== 'arp.xml') {
             show_error('Request not allowed', 403);
         }
@@ -150,12 +144,11 @@ class Arp extends MY_Controller
     }
 
 
-    private function trackRequest($resourcename)
-    {
+    private function trackRequest($resourcename) {
         $ref = $this->input->server('HTTP_REFERER');
         $reqtype = $this->input->server('REQUEST_METHOD');
         $reftomatch = base_url('reports/sp_matrix/show');
-        if($ref !== null) {
+        if ($ref !== null) {
             log_message('debug', 'REFERER: ' . $ref);
 
         }
@@ -164,7 +157,11 @@ class Arp extends MY_Controller
         if (($reqtype == 'GET') && ((!empty($ref) && stristr($ref, $reftomatch) === FALSE) || (empty($ref)))) {
             $syncWithDB = true;
             $details = null;
-            $this->tracker->save_track($this->resourcetype, $this->subtype, $resourcename, $details, $syncWithDB);
+            try {
+                $this->tracker->save_track($this->resourcetype, $this->subtype, $resourcename, $details, $syncWithDB);
+            } catch (Exception $e) {
+                log_message('error', __METHOD__ . ' ' . $e);
+            }
         }
     }
 }

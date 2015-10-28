@@ -81,7 +81,7 @@ class Federation_registration extends MY_Controller
         $federation->setSysname($fedsysname);
         $federation->setUrn($this->input->post('fedurn'));
         $ispub = $this->input->post('ispublic');
-        if (!empty($ispub) && $ispub == 'public') {
+        if (!empty($ispub) && $ispub === 'public') {
             $federation->publish();
         } else {
             $federation->unPublish();

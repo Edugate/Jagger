@@ -1,22 +1,15 @@
 <?php
-
-if (!defined('BASEPATH')) exit('No direct script access allowed');
-/**
- * Jagger
- *
- * @package     Jagger
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 /**
- * ProviderUpdater Class
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
- * @package     Jagger
- * @subpackage  Libraries
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 class Providerupdater
 {
@@ -33,8 +26,7 @@ class Providerupdater
     protected $entityTypes = array();
     protected $srvTypes = array();
 
-    function __construct()
-    {
+    function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->library('tracker');
@@ -48,7 +40,7 @@ class Providerupdater
                 'IDPAttributeService',
                 'IDPArtifactResolutionService'
             ),
-            'sp' => array(
+            'sp'  => array(
                 'AssertionConsumerService',
                 'SPArtifactResolutionService',
                 'DiscoveryResponse',
@@ -62,11 +54,11 @@ class Providerupdater
      * @param array $changes
      * @return bool
      */
-    private function checkChangelog(array $changes)
-    {
+    private function checkChangelog(array $changes) {
         if (count(array_diff($changes['before'], $changes['after'])) > 0 || count(array_diff($changes['after'], $changes['before'])) > 0) {
             return true;
         }
+
         return false;
     }
 
@@ -75,15 +67,13 @@ class Providerupdater
      * @param $old
      * @param $new
      */
-    private function updateChanges($name, $old, $new)
-    {
+    private function updateChanges($name, $old, $new) {
 
         $this->logtracks['' . $name . ''] = array('before' => $old, 'after' => $new);
     }
 
 
-    private function cleanIncorrectServices(\models\Provider $ent)
-    {
+    private function cleanIncorrectServices(\models\Provider $ent) {
         $entityType = strtolower($ent->getType());
         if (strcmp($entityType, 'both') == 0) {
             return true;
@@ -106,8 +96,7 @@ class Providerupdater
     }
 
 
-    private function cleanIncorrectServicesInput(\models\Provider $ent, array $srvInput)
-    {
+    private function cleanIncorrectServicesInput(\models\Provider $ent, array $srvInput) {
         $allowed = array();
         $entityTypes = $ent->getTypesToArray();
         $inputKeys = array_keys($srvInput);
@@ -123,15 +112,15 @@ class Providerupdater
                 log_message('debug', __METHOD__ . ' unsetting: ' . $in . ' from form input');
             }
         }
+
         return $srvInput;
     }
 
-    private function updateRegistrationAuthor(\models\Provider $ent, array $ch)
-    {
-        if (array_key_exists('regauthority', $ch)) {
-            $ent->setRegistrationAuthority($ch['regauthority']);
+    private function updateRegistrationAuthor(\models\Provider $ent, array $cData) {
+        if (array_key_exists('regauthority', $cData)) {
+            $ent->setRegistrationAuthority($cData['regauthority']);
         }
-        if (array_key_exists('registrationdate', $ch)) {
+        if (array_key_exists('registrationdate', $cData)) {
             $prevregdate = '';
             $prevregtime = '';
             $prevregistrationdate = $ent->getRegistrationDate();
@@ -139,13 +128,13 @@ class Providerupdater
                 $prevregdate = date('Y-m-d', $prevregistrationdate->format('U') + jauth::$timeOffset);
                 $prevregtime = date('H:i', $prevregistrationdate->format('U') + jauth::$timeOffset);
             }
-            if (!array_key_exists('registrationtime', $ch) || empty($ch['registrationtime'])) {
+            if (!array_key_exists('registrationtime', $cData) || empty($cData['registrationtime'])) {
                 $tmpnow = new \DateTime('now');
-                $ch['registrationtime'] = $tmpnow->format('H:i');
+                $cData['registrationtime'] = $tmpnow->format('H:i');
             }
-            if ($prevregdate !== $ch['registrationdate'] || $prevregtime !== $ch['registrationtime']) {
-                if (!empty($ch['registrationdate'])) {
-                    $ent->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i', $ch['registrationdate'] . ' ' . $ch['registrationtime']));
+            if ($prevregdate !== $cData['registrationdate'] || $prevregtime !== $cData['registrationtime']) {
+                if (!empty($cData['registrationdate'])) {
+                    $ent->setRegistrationDate(\DateTime::createFromFormat('Y-m-d H:i', $cData['registrationdate'] . ' ' . $cData['registrationtime']));
                 } else {
                     $ent->setRegistrationDate(null);
                 }
@@ -153,15 +142,14 @@ class Providerupdater
         }
     }
 
-    private function updateServices(\models\Provider $ent, array $ch)
-    {
-        if (!array_key_exists('srv', $ch) || !is_array($ch['srv'])) {
+    private function updateServices(\models\Provider $ent, array $cData) {
+        if (!array_key_exists('srv', $cData) || !is_array($cData['srv'])) {
             throw new Exception('The form has not been passed properly');
         }
 
         $before = array();
         /**
-         * @var $srvsBefore \models\ServiceLocation[]
+         * @var \models\ServiceLocation[] $srvsBefore
          */
         $srvsBefore = $ent->getServiceLocations();
         foreach ($srvsBefore as $s) {
@@ -169,7 +157,7 @@ class Providerupdater
         }
         $this->cleanIncorrectServices($ent);
 
-        $ch['srv'] = $this->cleanIncorrectServicesInput($ent, $ch['srv']);
+        $cData['srv'] = $this->cleanIncorrectServicesInput($ent, $cData['srv']);
 
 
         /**
@@ -180,9 +168,9 @@ class Providerupdater
         /**
          * START update service locations
          */
-        $srvsInput = &$ch['srv'];
+        $srvsInput = &$cData['srv'];
         foreach ($services as $srv) {
-            if (!isset($ch['srv']['' . $srv->getType() . '']['' . $srv->getId() . ''])) {
+            if (!isset($cData['srv']['' . $srv->getType() . '']['' . $srv->getId() . ''])) {
                 $ent->removeServiceLocation($srv);
                 continue;
             }
@@ -190,13 +178,13 @@ class Providerupdater
 
         $validationBinds = array(
             'IDPArtifactResolutionService' => array('urn:oasis:names:tc:SAML:2.0:bindings:SOAP', 'urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding'),
-            'SPArtifactResolutionService' => array('urn:oasis:names:tc:SAML:2.0:bindings:SOAP', 'urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding'),
-            'DiscoveryResponse' => array('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'),
-            'SPSingleLogoutService' => array('urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact' => false),
-            'IDPSingleLogoutService' => array('urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact' => false),
-            'SingleSignOnService' => array('urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:mace:shibboleth:1.0:profiles:AuthnRequest' => false),
-            'IDPAttributeService' => array('urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding' => false),
-            'AssertionConsumerService' => array(
+            'SPArtifactResolutionService'  => array('urn:oasis:names:tc:SAML:2.0:bindings:SOAP', 'urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding'),
+            'DiscoveryResponse'            => array('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'),
+            'SPSingleLogoutService'        => array('urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact' => false),
+            'IDPSingleLogoutService'       => array('urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact' => false),
+            'SingleSignOnService'          => array('urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:mace:shibboleth:1.0:profiles:AuthnRequest' => false),
+            'IDPAttributeService'          => array('urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding' => false),
+            'AssertionConsumerService'     => array(
                 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
                 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact',
                 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign',
@@ -207,16 +195,16 @@ class Providerupdater
             ),
         );
         $servicesIndexes = array(
-            'AssertionConsumerService' => array(),
+            'AssertionConsumerService'     => array(),
             'IDPArtifactResolutionService' => array(),
-            'SPArtifactResolutionService' => array(),
-            'DiscoveryResponse' => array()
+            'SPArtifactResolutionService'  => array(),
+            'DiscoveryResponse'            => array()
         );
         $acsdefaultset = false;
         $c = 20;
         foreach ($services as $srv) {
             $srvType = $srv->getType();
-            $inputSrv = &$ch['srv']['' . $srvType . '']['' . $srv->getId() . ''];
+            $inputSrv = &$cData['srv']['' . $srvType . '']['' . $srv->getId() . ''];
             $inputBind = null;
             $inputUrl = null;
             $inputOrder = null;
@@ -235,18 +223,18 @@ class Providerupdater
                 $inputDefault = $inputSrv['default'];
             }
             if (empty($inputUrl) || (empty($inputBind) && $srvType !== 'RequestInitiator')) {
-                unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+                unset($cData['srv']['' . $srvType . '']['' . $srv->getId() . '']);
                 $ent->removeServiceLocation($srv);
                 continue;
             }
             if ($srvType === 'RequestInitiator') {
                 $srv->setUrl($inputUrl);
                 $this->em->persist($srv);
-                unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+                unset($cData['srv']['' . $srvType . '']['' . $srv->getId() . '']);
                 continue;
             }
 
-            if (in_array($srvType, array('IDPArtifactResolutionService', 'SPArtifactResolutionService', 'DiscoveryResponse'))) {
+            if (in_array($srvType, array('IDPArtifactResolutionService', 'SPArtifactResolutionService', 'DiscoveryResponse'), true)) {
                 if (in_array($inputBind, $validationBinds['' . $srvType . ''])) {
                     if (in_array($inputOrder, $servicesIndexes['' . $srvType . '']) || is_null($inputOrder)) {
                         $inputOrder = $c++;
@@ -256,10 +244,10 @@ class Providerupdater
                     $srv->setOrder($inputOrder);
                     $this->em->persist($srv);
                     $servicesIndexes['' . $srvType . ''][] = $inputOrder;
-                    unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+                    unset($cData['srv']['' . $srvType . '']['' . $srv->getId() . '']);
 
                 } else {
-                    unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+                    unset($cData['srv']['' . $srvType . '']['' . $srv->getId() . '']);
                     $ent->removeServiceLocation($srv);
                 }
 
@@ -268,7 +256,7 @@ class Providerupdater
             if (in_array($srvType, array('SPSingleLogoutService', 'IDPSingleLogoutService', 'SingleSignOnService', 'IDPAttributeService'))) {
                 if (array_key_exists($inputBind, $validationBinds['' . $srvType . ''])) {
                     if ($validationBinds['' . $srvType . '']['' . $inputBind . ''] === true) {
-                        unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+                        unset($cData['srv']['' . $srvType . '']['' . $srv->getId() . '']);
                         $ent->removeServiceLocation($srv);
                         continue;
                     }
@@ -276,10 +264,10 @@ class Providerupdater
                     $srv->setBindingName($inputBind);;
                     $this->em->persist($srv);
                     $validationBinds['' . $srvType . '']['' . $inputBind . ''] = true;
-                    unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+                    unset($cData['srv']['' . $srvType . '']['' . $srv->getId() . '']);
 
                 } else {
-                    unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+                    unset($cData['srv']['' . $srvType . '']['' . $srv->getId() . '']);
                     $ent->removeServiceLocation($srv);
                 }
                 continue;
@@ -300,9 +288,9 @@ class Providerupdater
                     }
                     $this->em->persist($srv);
                     $servicesIndexes['' . $srvType . ''][] = $inputOrder;
-                    unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+                    unset($cData['srv']['' . $srvType . '']['' . $srv->getId() . '']);
                 } else {
-                    unset($ch['srv']['' . $srvType . '']['' . $srv->getId() . '']);
+                    unset($cData['srv']['' . $srvType . '']['' . $srv->getId() . '']);
                     $ent->removeServiceLocation($srv);
                 }
                 continue;
@@ -312,39 +300,33 @@ class Providerupdater
         }
 
         foreach ($srvsInput as $srvType => $v) {
-            if (in_array($srvType, array('SPSingleLogoutService', 'IDPSingleLogoutService', 'SingleSignOnService', 'IDPAttributeService'))) {
+            if (in_array($srvType, array('SPSingleLogoutService', 'IDPSingleLogoutService', 'SingleSignOnService', 'IDPAttributeService'), true)) {
                 foreach ($v as $k1 => $v1) {
-                    if (!empty($v1['bind']) && !empty($v1['url'])) {
-                        if (array_key_exists($v1['bind'], $validationBinds['' . $srvType . '']) && $validationBinds['' . $srvType . '']['' . $v1['bind'] . ''] !== true) {
-                            $newservice = new models\ServiceLocation();
-                            $newservice->setInFull($srvType,$v1['bind'],$v1['url'],null);
-                            $newservice->setProvider($ent);
-                            $ent->setServiceLocation($newservice);
-                            $this->em->persist($newservice);
-                            $validationBinds['' . $srvType . '']['' . $v1['bind'] . ''] = true;
-                            continue;
-                        }
+                    if (!empty($v1['bind']) && !empty($v1['url']) && (array_key_exists($v1['bind'], $validationBinds['' . $srvType . '']) && $validationBinds['' . $srvType . '']['' . $v1['bind'] . ''] !== true)) {
+                        $newservice = new models\ServiceLocation();
+                        $newservice->setInFull($srvType, $v1['bind'], $v1['url'], null);
+                        $newservice->setProvider($ent);
+                        $ent->setServiceLocation($newservice);
+                        $this->em->persist($newservice);
+                        $validationBinds['' . $srvType . '']['' . $v1['bind'] . ''] = true;
                     }
                 }
-            } elseif (in_array($srvType, array('IDPArtifactResolutionService', 'SPArtifactResolutionService', 'DiscoveryResponse'))) {
+            } elseif (in_array($srvType, array('IDPArtifactResolutionService', 'SPArtifactResolutionService', 'DiscoveryResponse'), true)) {
                 foreach ($v as $k1 => $v1) {
-                    if (!empty($v1['bind']) && !empty($v1['url'])) {
-                        if (in_array($v1['bind'], $validationBinds['' . $srvType . ''])) {
-                            $newservice = new models\ServiceLocation();
-                            if (array_key_exists('order', $v1) && is_numeric($v1['order']) || !in_array($v1['order'], $servicesIndexes['' . $srvType . ''])) {
-                                $newservice->setOrder($v1['order']);
-                            } else {
-                                $newservice->setOrder($c++);
-                            }
-                            $newservice->setBindingName($v1['bind']);
-                            $newservice->setUrl($v1['url']);
-                            $newservice->setType($srvType);
-                            $newservice->setProvider($ent);
-                            $ent->setServiceLocation($newservice);
-                            $this->em->persist($newservice);
-                            $servicesIndexes['' . $srvType . ''][] = $newservice->getOrder();
-                            continue;
+                    if (!empty($v1['bind']) && !empty($v1['url']) && in_array($v1['bind'], $validationBinds['' . $srvType . ''])) {
+                        $newservice = new models\ServiceLocation();
+                        if (array_key_exists('order', $v1) && is_numeric($v1['order']) && !in_array($v1['order'], $servicesIndexes['' . $srvType . ''])) {
+                            $newservice->setOrder($v1['order']);
+                        } else {
+                            $newservice->setOrder($c++);
                         }
+                        $newservice->setBindingName($v1['bind']);
+                        $newservice->setUrl($v1['url']);
+                        $newservice->setType($srvType);
+                        $newservice->setProvider($ent);
+                        $ent->setServiceLocation($newservice);
+                        $this->em->persist($newservice);
+                        $servicesIndexes['' . $srvType . ''][] = $newservice->getOrder();
                     }
                 }
             } elseif ($srvType === 'RequestInitiator') {
@@ -355,39 +337,37 @@ class Providerupdater
                         $newservice->setUrl($v1['url']);
                         $newservice->setType($srvType);
                         $newservice->setProvider($ent);
-                        $newservice->setDefault(FALSE);
+                        $newservice->setDefault(false);
                         $newservice->setOrderNull();
                         $ent->setServiceLocation($newservice);
                         $this->em->persist($newservice);
-                        continue;
-
                     }
                 }
             } elseif ($srvType === 'AssertionConsumerService') {
                 foreach ($v as $k1 => $v1) {
-                    if (!empty($v1['bind']) && !empty($v1['url'])) {
-                        if (in_array($v1['bind'], $validationBinds['' . $srvType . ''])) {
-                            $newservice = new models\ServiceLocation();
-                            if (array_key_exists('order', $v1) && is_numeric($v1['order']) || !in_array($v1['order'], $servicesIndexes['' . $srvType . ''])) {
-                                $newservice->setOrder($v1['order']);
-                            } else {
-                                $newservice->setOrder($c++);
-                            }
-                            if (array_key_exists('default', $v1) && strcmp($v1['default'], '1') == 0 && $acsdefaultset !== true) {
-                                $newservice->setDefault(true);
-                                $acsdefaultset = true;
-                            }
-                            $newservice->setBindingName($v1['bind']);
-                            $newservice->setUrl($v1['url']);
-                            $newservice->setType($srvType);
-                            $newservice->setProvider($ent);
-                            $ent->setServiceLocation($newservice);
-                            $this->em->persist($newservice);
-                            $servicesIndexes['' . $srvType . ''][] = $newservice->getOrder();
-                            continue;
+                    if (!empty($v1['bind']) && !empty($v1['url']) && in_array($v1['bind'], $validationBinds['' . $srvType . ''])) {
+
+                        $newservice = new models\ServiceLocation();
+                        if (array_key_exists('order', $v1) && is_numeric($v1['order']) && !in_array($v1['order'], $servicesIndexes['' . $srvType . ''])) {
+                            $newservice->setOrder($v1['order']);
+                        } else {
+                            $newservice->setOrder($c++);
                         }
+                        if (array_key_exists('default', $v1) && strcmp($v1['default'], '1') == 0 && $acsdefaultset !== true) {
+                            $newservice->setDefault(true);
+                            $acsdefaultset = true;
+                        }
+                        $newservice->setBindingName($v1['bind']);
+                        $newservice->setUrl($v1['url']);
+                        $newservice->setType($srvType);
+                        $newservice->setProvider($ent);
+                        $ent->setServiceLocation($newservice);
+                        $this->em->persist($newservice);
+                        $servicesIndexes['' . $srvType . ''][] = $newservice->getOrder();
                     }
                 }
+            } else {
+                continue;
             }
         }
 
@@ -404,12 +384,12 @@ class Providerupdater
         if (count($diff1) > 0 || count($diff2) > 0) {
             $this->updateChanges('ServiceLocation', arrayWithKeysToHtml($before), arrayWithKeysToHtml($after));
         }
+
         return true;
     }
 
-    private function updateCerts(\models\Provider $ent, array $ch)
-    {
-        if (!array_key_exists('crt', $ch) || !is_array($ch['crt'])) {
+    private function updateCerts(\models\Provider $ent, array $cData) {
+        if (!array_key_exists('crt', $cData) || !is_array($cData['crt'])) {
             return false;
         }
         $changes = array('before' => array(), 'after' => array());
@@ -419,12 +399,12 @@ class Providerupdater
         $origCertificates = $ent->getCertificates();
         foreach ($origCertificates as $v) {
             $changes['before'][] = $v->getType() . ':' . $v->getCertUseInStr() . ':' . $v->getFingerprint();
-            if (!isset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . ''])) {
+            if (!isset($cData['crt']['' . $v->getType() . '']['' . $v->getId() . ''])) {
                 $ent->removeCertificate($v);
                 $this->em->remove($v);
                 continue;
             }
-            $curCrt = $ch['crt']['' . $v->getType() . '']['' . $v->getId() . ''];
+            $curCrt = $cData['crt']['' . $v->getType() . '']['' . $v->getId() . ''];
             $tkeyname = false;
             $tdata = false;
             if (isset($curCrt['usage'])) {
@@ -442,8 +422,8 @@ class Providerupdater
                 }
                 $v->setCertData($curCrt['certdata']);
             }
-            if (isset($curCrt['encmethods'])) {
-                if (!empty($curCrt['encmethods']) && is_array($curCrt['encmethods'])) {
+            if (array_key_exists('encmethods', $curCrt)) {
+                if (is_array($curCrt['encmethods'])) {
                     $v->setEncryptMethods(array_filter($curCrt['encmethods']));
                 } else {
                     $v->setEncryptMethods(null);
@@ -456,20 +436,20 @@ class Providerupdater
                 $this->em->persist($v);
                 $changes['after'][] = $v->getType() . ':' . $v->getCertUseInStr() . ':' . $v->getFingerprint();
             }
-            unset($ch['crt']['' . $v->getType() . '']['' . $v->getId() . '']);
+            unset($cData['crt']['' . $v->getType() . '']['' . $v->getId() . '']);
 
         }
         /**
          * setting new certs
          */
         if ($this->entityTypes['sp'] !== true) {
-            unset($ch['crt']['spsso']);
+            unset($cData['crt']['spsso']);
         }
         if ($this->entityTypes['idp'] !== true) {
-            unset($ch['crt']['idpsso']);
-            unset($ch['crt']['aa']);
+            unset($cData['crt']['idpsso']);
+            unset($cData['crt']['aa']);
         }
-        foreach ($ch['crt'] as $k1 => $v1) {
+        foreach ($cData['crt'] as $k1 => $v1) {
             if (!in_array($k1, array('spsso', 'idpsso', 'aa'))) {
                 continue;
             }
@@ -494,29 +474,28 @@ class Providerupdater
         if (count($diff1) > 0 || count($diff2) > 0) {
             $this->updateChanges('certs', arrayWithKeysToHtml($changes['before']), arrayWithKeysToHtml($changes['after']));
         }
+
         return true;
 
     }
 
     /**
      * @param \models\Provider $ent
-     * @param array $ch
+     * @param array $cData
      * @return bool
      */
-    private function updateReqAttrs(\models\Provider $ent, array $ch)
-    {
-        if (!isset($ch['reqattr'])) {
+    private function updateReqAttrs(\models\Provider $ent, array $cData) {
+        if (!isset($cData['reqattr'])) {
             return false;
         }
         $attrsTmp = new models\Attributes();
         /**
          * @var $attributes models\Attribute[]
-         * @var $attrsRequirement models\AttributeRequirement[]
          */
         $attributes = $attrsTmp->getAttributesToArrayById();
         $attrsRequirement = $ent->getAttributesRequirement();
         $convertedInput = array();
-        foreach ($ch['reqattr'] as $attr) {
+        foreach ($cData['reqattr'] as $attr) {
             if (isset($attr['attrid']) && array_key_exists($attr['attrid'], $attributes)) {
                 $convertedInput['' . $attr['attrid'] . ''] = $attr;
             }
@@ -553,20 +532,20 @@ class Providerupdater
         if (count($diff1) > 0 || count($diff2) > 0) {
             $this->updateChanges('Required Attributes', arrayWithKeysToHtml($changes['before']), arrayWithKeysToHtml($changes['after']));
         }
+
         return true;
     }
 
     /**
      * @param \models\Provider $ent
-     * @param array $ch
+     * @param array $cData
      * @return bool
      */
-    private function updateContacts(models\Provider $ent, array $ch)
-    {
-        if (!array_key_exists('contact', $ch) || !is_array($ch['contact'])) {
+    private function updateContacts(models\Provider $ent, array $cData) {
+        if (!array_key_exists('contact', $cData) || !is_array($cData['contact'])) {
             return false;
         }
-        $newContacts = $ch['contact'];
+        $newContacts = $cData['contact'];
         /**
          * @var $origContacts models\Contact[]
          */
@@ -612,28 +591,28 @@ class Providerupdater
         if (count($diff1) > 0 || count($diff2) > 0) {
             $this->updateChanges('Contacts', arrayWithKeysToHtml($origcntArray), arrayWithKeysToHtml($newcntArray));
         }
+
         return true;
     }
 
     /**
      * @param \models\Provider $ent
-     * @param array $ch
+     * @param array $cData
      * @param bool $isAdmin
      * @return \models\Provider
      */
-    public function updateRegPolicies(models\Provider $ent, array $ch, $isAdmin = false)
-    {
+    public function updateRegPolicies(models\Provider $ent, array $cData, $isAdmin = false) {
         $changes = array('before' => array(), 'after' => array());
         $entID = $ent->getId();
         $currentCocs = $ent->getCoc();
         $requestNew = true;
-        if (array_key_exists('regpol', $ch) && is_array($ch['regpol'])) {
+        if (array_key_exists('regpol', $cData) && is_array($cData['regpol'])) {
             foreach ($currentCocs as $k => $v) {
                 $cid = $v->getId();
                 $ctype = $v->getType();
                 if ($ctype === 'regpol') {
                     $changes['before'][] = $v->getUrl();
-                    $foundkey = array_search($cid, $ch['regpol']);
+                    $foundkey = array_search($cid, $cData['regpol']);
                     if ($foundkey === null || $foundkey === false) {
                         $ent->removeCoc($v);
                     } else {
@@ -645,7 +624,7 @@ class Providerupdater
             /**
              * @var $c models\Coc
              */
-            foreach ($ch['regpol'] as $k => $v) {
+            foreach ($cData['regpol'] as $k => $v) {
                 if (!empty($v) && ctype_digit($v)) {
                     $c = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $v, 'type' => 'regpol'));
                     if (!empty($c) && !$currentCocs->contains($c)) {
@@ -655,7 +634,7 @@ class Providerupdater
                             $ent->setCoc($c);
                         } else {
                             $this->ci->approval->applyForRegistrationPolicy($c, $ent);
-                            $this->ci->email_sender->applyForEntcatRegPol($c,$ent);
+                            $this->ci->email_sender->applyForEntcatRegPol($c, $ent);
                         }
                     }
                 }
@@ -667,11 +646,11 @@ class Providerupdater
         if ($this->checkChangelog($changes)) {
             $m['Registration Policies'] = array(
                 'before' => implode(', ', $changes['before']),
-                'after' => implode(', ', $changes['after']),
+                'after'  => implode(', ', $changes['after']),
             );
             $this->logtracks = array_merge($this->logtracks, $m);
             if (count($this->logtracks) > 0 && !empty($entID)) {
-                $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(), serialize($this->logtracks), FALSE);
+                $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(), serialize($this->logtracks), false);
             }
         }
 
@@ -679,8 +658,7 @@ class Providerupdater
 
     }
 
-    private function updateUiiHints(models\Provider $ent, array $ch)
-    {
+    private function updateUiiHints(models\Provider $ent, array $ch) {
         if (!isset($ch['uii']['idpsso']) || !is_array($ch['uii']['idpsso'])) {
             return false;
         }
@@ -724,23 +702,23 @@ class Providerupdater
                 foreach ($ch['uii']['idpsso']['' . $key . ''] as $v) {
                     if (!empty($v)) {
                         $newExtend = new models\ExtendMetadata;
-                        $newExtend->populateWithNoProvider($discohintsParent,'idp','mdui',$v,$value,array());
+                        $newExtend->populateWithNoProvider($discohintsParent, 'idp', 'mdui', $v, $value, array());
                         $ent->setExtendMetadata($newExtend);
                         $this->em->persist($newExtend);
                     }
                 }
             }
         }
+
         return true;
     }
 
     /**
      * @param \models\Provider $ent
-     * @param array $ch
+     * @param array $cData
      * @return \models\Provider
      */
-    private function updateProviderExtend(models\Provider $ent, array $ch)
-    {
+    private function updateProviderExtend(models\Provider $ent, array $cData) {
         $entityTypes = $ent->getTypesToArray();
         $filteredTypes = array_filter($entityTypes);
         $extypes = array_keys($filteredTypes);
@@ -763,20 +741,20 @@ class Providerupdater
 
         $algsMethods = array('digest' => 'DigestMethod', 'signing' => 'SigningMethod');
         foreach ($algsMethods as $algKey => $algValue) {
-            if (isset($ch['algs']['' . $algKey . '']) && is_array($ch['algs']['' . $algKey . ''])) {
+            if (isset($cData['algs']['' . $algKey . '']) && is_array($cData['algs']['' . $algKey . ''])) {
                 if (isset($extendsInArray['ent']['alg']['' . $algValue . ''])) {
                     foreach ($extendsInArray['ent']['alg']['' . $algValue . ''] as $k => $v) {
                         $dvalue = $v->getEvalue();
 
-                        if (in_array($dvalue, $ch['algs']['' . $algKey . ''])) {
-                            $ch['algs']['' . $algKey . ''] = array_diff($ch['algs']['' . $algKey . ''], array('' . $dvalue . ''));
+                        if (in_array($dvalue, $cData['algs']['' . $algKey . ''])) {
+                            $cData['algs']['' . $algKey . ''] = array_diff($cData['algs']['' . $algKey . ''], array('' . $dvalue . ''));
                         } else {
                             $ent->getExtendMetadata()->removeElement($v);
                             $this->em->remove($v);
                         }
                     }
                 }
-                foreach ($ch['algs']['' . $algKey . ''] as $v2) {
+                foreach ($cData['algs']['' . $algKey . ''] as $v2) {
                     $dig = new models\ExtendMetadata;
                     $dig->setAlgorithmMethod($v2, $algValue);
                     $ent->setExtendMetadata($dig);
@@ -795,7 +773,7 @@ class Providerupdater
                 $uiinfoParent['' . $v . ''] = $vparent;
             }
 
-            if (isset($ch['prvurl']) && is_array($ch['prvurl'])) {
+            if (isset($cData['prvurl']) && is_array($cData['prvurl'])) {
                 $origex = array();
                 if (isset($extendsInArray['' . $v . '']['mdui']['PrivacyStatementURL'])) {
                     foreach ($extendsInArray['' . $v . '']['mdui']['PrivacyStatementURL'] as $value) {
@@ -804,30 +782,30 @@ class Providerupdater
                     }
                 }
 
-                if (isset($ch['prvurl']['' . $v . 'sso'])) {
-                    $newex = $ch['prvurl']['' . $v . 'sso'];
+                if (isset($cData['prvurl']['' . $v . 'sso'])) {
+                    $newex = $cData['prvurl']['' . $v . 'sso'];
                     foreach ($origex as $key => $value) {
-                        if (array_key_exists($key, $ch['prvurl']['' . $v . 'sso'])) {
-                            if (empty($ch['prvurl']['' . $v . 'sso']['' . $key . ''])) {
-                                $value->setProvider(NULL);
+                        if (array_key_exists($key, $cData['prvurl']['' . $v . 'sso'])) {
+                            if (empty($cData['prvurl']['' . $v . 'sso']['' . $key . ''])) {
+                                $value->setProvider(null);
                                 $extendsCollection->removeElement($value);
                                 $this->em->remove($value);
                                 unset($newex['' . $key . '']);
                             } else {
-                                $value->setValue($ch['prvurl']['' . $v . 'sso']['' . $key . '']);
+                                $value->setValue($cData['prvurl']['' . $v . 'sso']['' . $key . '']);
                                 $this->em->persist($value);
                             }
 
                         } else {
-                            $value->setProvider(NULL);
+                            $value->setProvider(null);
                             $extendsCollection->removeElement($value);
                             $this->em->remove($value);
                             unset($newex['' . $key . '']);
                         }
-                        unset($ch['prvurl']['' . $v . 'sso']['' . $key . '']);
+                        unset($cData['prvurl']['' . $v . 'sso']['' . $key . '']);
                     }
 
-                    foreach ($ch['prvurl']['' . $v . 'sso'] as $key2 => $value2) {
+                    foreach ($cData['prvurl']['' . $v . 'sso'] as $key2 => $value2) {
                         if (!empty($value2)) {
                             $nprvurl = new models\ExtendMetadata();
                             $nprvurl->setType('' . $v . '');
@@ -845,7 +823,7 @@ class Providerupdater
             }
 
             // logos not updatting value - just remove entry or add new one
-            if (isset($ch['uii']['' . $v . 'sso']['logo']) && is_array($ch['uii']['' . $v . 'sso']['logo'])) {
+            if (isset($cData['uii']['' . $v . 'sso']['logo']) && is_array($cData['uii']['' . $v . 'sso']['logo'])) {
 
                 $collection = array();
                 if (isset($extendsInArray['' . $v . '']['mdui']['Logo'])) {
@@ -855,15 +833,15 @@ class Providerupdater
 
                 foreach ($collection as $c) {
                     $logoid = $c->getId();
-                    if (!isset($ch['uii']['' . $v . 'sso']['logo']['' . $logoid . ''])) {
+                    if (!isset($cData['uii']['' . $v . 'sso']['logo']['' . $logoid . ''])) {
                         log_message('debug', __METHOD__ . 'logo with id:' . $logoid . ' is removed');
                         $ent->getExtendMetadata()->removeElement($c);
                         $this->em->remove($c);
                     } else {
-                        unset($ch['uii']['' . $v . 'sso']['logo']['' . $logoid . '']);
+                        unset($cData['uii']['' . $v . 'sso']['logo']['' . $logoid . '']);
                     }
                 }
-                foreach ($ch['uii']['' . $v . 'sso']['logo'] as $ve) {
+                foreach ($cData['uii']['' . $v . 'sso']['logo'] as $ve) {
                     if (isset($ve['url']) && isset($ve['lang']) && isset($ve['size'])) {
                         $canAdd = true;
                         $attrs = array();
@@ -925,7 +903,7 @@ class Providerupdater
 
             $mduiel = array('displayname' => 'DisplayName', 'desc' => 'Description', 'helpdesk' => 'InformationURL');
             foreach ($mduiel as $elkey => $elvalue) {
-                if (isset($ch['uii']['idpsso']['' . $elkey . '']) && is_array($ch['uii']['idpsso']['' . $elkey . ''])) {
+                if (isset($cData['uii']['idpsso']['' . $elkey . '']) && is_array($cData['uii']['idpsso']['' . $elkey . ''])) {
                     $doFilter = array('' . $elvalue . '');
                     $collection = $ent->getExtendMetadata()->filter(
                         function (models\ExtendMetadata $entry) use ($doFilter) {
@@ -934,12 +912,12 @@ class Providerupdater
                     foreach ($collection as $c) {
                         $attrs = $c->getAttributes();
                         $lang = $attrs['xml:lang'];
-                        if (!isset($ch['uii']['idpsso']['' . $elkey . '']['' . $lang . ''])) {
+                        if (!isset($cData['uii']['idpsso']['' . $elkey . '']['' . $lang . ''])) {
                             $ent->getExtendMetadata()->removeElement($c);
                             $this->em->remove($c);
                         }
                     }
-                    foreach ($ch['uii']['idpsso']['' . $elkey . ''] as $key3 => $value3) {
+                    foreach ($cData['uii']['idpsso']['' . $elkey . ''] as $key3 => $value3) {
 
                         if (!isset($exarray['' . $elvalue . '']['' . $key3 . '']) && !empty($value3) && array_key_exists($key3, $this->langCodes)) {
                             $newelement = new models\ExtendMetadata;
@@ -948,7 +926,7 @@ class Providerupdater
                             $this->em->persist($newelement);
                         } elseif (isset($exarray['' . $elvalue . '']['' . $key3 . ''])) {
                             if (empty($value3)) {
-                                $exarray['' . $elvalue . '']['' . $key3 . '']->setProvider(NULL);
+                                $exarray['' . $elvalue . '']['' . $key3 . '']->setProvider(null);
                                 $ent->getExtendMetadata()->removeElement($exarray['' . $elvalue . '']['' . $key3 . '']);
                                 $this->em->remove($exarray['' . $elvalue . '']['' . $key3 . '']);
                             } else {
@@ -977,7 +955,7 @@ class Providerupdater
             }
             $mduiel = array('displayname' => 'DisplayName', 'desc' => 'Description', 'helpdesk' => 'InformationURL');
             foreach ($mduiel as $elkey => $elvalue) {
-                if (isset($ch['uii']['spsso']['' . $elkey . '']) && is_array($ch['uii']['spsso']['' . $elkey . ''])) {
+                if (isset($cData['uii']['spsso']['' . $elkey . '']) && is_array($cData['uii']['spsso']['' . $elkey . ''])) {
                     $doFilter = array('' . $elvalue . '');
                     $collection = $ent->getExtendMetadata()->filter(
                         function (models\ExtendMetadata $entry) use ($doFilter) {
@@ -986,12 +964,12 @@ class Providerupdater
                     foreach ($collection as $c) {
                         $attrs = $c->getAttributes();
                         $lang = $attrs['xml:lang'];
-                        if (!isset($ch['uii']['spsso']['' . $elkey . '']['' . $lang . ''])) {
+                        if (!isset($cData['uii']['spsso']['' . $elkey . '']['' . $lang . ''])) {
                             $ent->getExtendMetadata()->removeElement($c);
                             $this->em->remove($c);
                         }
                     }
-                    foreach ($ch['uii']['spsso']['' . $elkey . ''] as $key3 => $value3) {
+                    foreach ($cData['uii']['spsso']['' . $elkey . ''] as $key3 => $value3) {
 
                         if (!isset($exarray['' . $elvalue . '']['' . $key3 . '']) && !empty($value3) && array_key_exists($key3, $this->langCodes)) {
                             $newelement = new models\ExtendMetadata;
@@ -1000,7 +978,7 @@ class Providerupdater
                             $this->em->persist($newelement);
                         } elseif (isset($exarray['' . $elvalue . '']['' . $key3 . ''])) {
                             if (empty($value3)) {
-                                $exarray['' . $elvalue . '']['' . $key3 . '']->setProvider(NULL);
+                                $exarray['' . $elvalue . '']['' . $key3 . '']->setProvider(null);
                                 $ent->getExtendMetadata()->removeElement($exarray['' . $elvalue . '']['' . $key3 . '']);
                                 $this->em->remove($exarray['' . $elvalue . '']['' . $key3 . '']);
                             } else {
@@ -1020,14 +998,14 @@ class Providerupdater
                 $this->em->persist($v);
             }
         }
+
         return $ent;
     }
 
     /**
      * @return array
      */
-    private function getDisallowedParts()
-    {
+    private function getDisallowedParts() {
         $result = array();
         if (!$this->ci->jauth->isAdministrator()) {
             $result = $this->ci->config->item('entpartschangesdisallowed');
@@ -1035,11 +1013,11 @@ class Providerupdater
         if (empty($result) || !is_array($result)) {
             $result = array();
         }
+
         return $result;
     }
 
-    public function updateProvider(models\Provider $ent, array $ch)
-    {
+    public function updateProvider(models\Provider $ent, array $ch) {
         // $changeList - array for modifications
         $entid = $ent->getId();
         $entityTypes = $ent->getTypesToArray();
@@ -1059,7 +1037,7 @@ class Providerupdater
          */
         $tmpExtend = $ent->getExtendMetadata();
         foreach ($tmpExtend as $vext) {
-            $extendChanges[''.$vext->getNamespace().':'.$vext->getElement() . '']['before'][] = $vext->getValueAndLang();
+            $extendChanges['' . $vext->getNamespace() . ':' . $vext->getElement() . '']['before'][] = $vext->getValueAndLang();
         }
         $this->updateProviderExtend($ent, $ch);
         if ($entityTypes['sp'] === true) {
@@ -1107,9 +1085,9 @@ class Providerupdater
 
         $fields = array('lname', 'ldisplayname', 'lhelpdesk');
         $fieldsLongName = array(
-            'lname' => 'OrganizationName',
+            'lname'        => 'OrganizationName',
             'ldisplayname' => 'OrganizationDisplayName',
-            'lhelpdesk' => 'OrganizationURL'
+            'lhelpdesk'    => 'OrganizationURL'
         );
         foreach ($fields as $fieldName) {
             $trackorigs = array();
@@ -1214,7 +1192,7 @@ class Providerupdater
                         } else {
 
                             $this->ci->approval->applyForEntityCategory($c, $ent);
-                            $this->ci->email_sender->applyForEntcatRegPol($c,$ent);
+                            $this->ci->email_sender->applyForEntcatRegPol($c, $ent);
                         }
                     }
                 }
@@ -1325,15 +1303,13 @@ class Providerupdater
             $this->em->persist($exmeta);
 
             $exmetaAfter = $ent->getStaticMetadata();
-            if (!empty($exmetaAfter)) {
-                if (array_key_exists('usestatic', $ch) && ($ch['usestatic'] === 'accept')) {
-                    $ent->setStatic(true);
-                }
+            if (!empty($exmetaAfter) && array_key_exists('usestatic', $ch) && ($ch['usestatic'] === 'accept')) {
+                $ent->setStatic(true);
             }
         }
         $tmpExtend = $ent->getExtendMetadata();
         foreach ($tmpExtend as $vext) {
-            $extendChanges[''.$vext->getNamespace().':'. $vext->getElement() . '']['after'][] = $vext->getValueAndLang();
+            $extendChanges['' . $vext->getNamespace() . ':' . $vext->getElement() . '']['after'][] = $vext->getValueAndLang();
         }
         foreach ($extendChanges as $k => $v) {
             if (!array_key_exists('before', $v)) {
@@ -1345,16 +1321,17 @@ class Providerupdater
             $diff1 = array_diff_assoc($v['before'], $v['after']);
             $diff2 = array_diff_assoc($v['after'], $v['before']);
             if (count($diff1) > 0 || count($diff2) > 0) {
-                $this->updateChanges(''.$k.'', arrayWithKeysToHtml($v['before']), arrayWithKeysToHtml($v['after']));
+                $this->updateChanges('' . $k . '', arrayWithKeysToHtml($v['before']), arrayWithKeysToHtml($v['after']));
             }
         }
 
 
         $this->logtracks = array_merge($this->logtracks, $changeList);
         if (count($this->logtracks) > 0 && !empty($entid)) {
-            $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(), serialize($this->logtracks), FALSE);
+            $this->ci->tracker->save_track('ent', 'modification', $ent->getEntityId(), serialize($this->logtracks), false);
         }
         $this->logtracks = array();
+
         return $ent;
     }
 

@@ -124,7 +124,12 @@ class Jauth
             $this->ci->tracker->save_track('user', 'authn', $user->getUsername(), $trackDetails, false);
 
             $userSessionData = $user->getBasic();
-            $this->em->flush();
+            try {
+                $this->em->flush();
+            }
+            catch (Exception $e){
+                log_message('error',__METHOD__.' '.$e);
+            }
             $this->ci->session->set_userdata(array(
                 'logged' => 1,
                 'username' => '' . $userSessionData['username'] . '',

@@ -219,7 +219,7 @@ class J_ncache
     public function saveCircleDisco($providerId, $data)
     {
         $cacheid = 'disco_' . $providerId;
-        $this->ci->cache->save($cacheid, $data, 600);
+        $this->ci->cache->save($cacheid, $data, 3600);
         return true;
     }
 
@@ -239,7 +239,7 @@ class J_ncache
     public function saveFullDisco($data)
     {
         $cacheid = 'discof';
-        $this->ci->cache->save($cacheid, $data, 6000);
+        $this->ci->cache->save($cacheid, $data, 12000);
         return true;
     }
 

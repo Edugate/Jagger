@@ -1,21 +1,14 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 /**
- * ResourceRegistry3
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2014 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
-
-/**
- * Attribute_policyajax Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 class Attribute_policyajax extends MY_Controller
 {
@@ -31,18 +24,14 @@ class Attribute_policyajax extends MY_Controller
     public function getglobalattrpolicy($idpid, $attrid) {
         $isValidRequest = (ctype_digit($idpid) && ctype_digit($attrid) && $this->input->is_ajax_request() && $this->jauth->isLoggedIn());
         if (!$isValidRequest) {
-            set_status_header(403);
-            echo 'Access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         /**
          * @var $policy models\AttributeReleasePolicy
          */
         $policy = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute' => $attrid, 'idp' => $idpid, 'type' => 'global'));
         if (empty($policy)) {
-            set_status_header(403);
-            echo 'no found';
-            return;
+            return $this->output->set_status_header(404)->set_output('Policy not found');
         }
         echo $policy->getPolicy();
     }
@@ -50,17 +39,14 @@ class Attribute_policyajax extends MY_Controller
     public function getfedattrpolicy($idpid, $fedid, $attrid) {
         $isValidRequest = (ctype_digit($idpid) && ctype_digit($attrid) && ctype_digit($fedid) && $this->input->is_ajax_request() && $this->jauth->isLoggedIn());
         if (!$isValidRequest) {
-            set_status_header(403);
-            echo 'Access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         /**
          * @var $policy models\AttributeReleasePolicy
          */
         $policy = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute' => $attrid, 'idp' => $idpid, 'requester' => $fedid, 'type' => 'fed'));
-        if (empty($policy)) {
-            $resultPolicy = 100;
-        } else {
+        $resultPolicy = 100;
+        if ($policy !== null) {
             $resultPolicy = $policy->getPolicy();
         }
 
@@ -125,7 +111,7 @@ class Attribute_policyajax extends MY_Controller
          * @var models\AttributeReleasePolicy[] $globalPolicy
          */
         $globalPolicy = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute' => $attribute, 'idp' => $idp, 'type' => 'global'));
-        if (empty($globalPolicy)) {
+        if ($globalPolicy === null) {
             $result['global'] = null;
             $val = '' . $dropdownInLang['100'] . ' => deny';
             $result['details'][] = array('name' => lang('rr_defaultarp'), 'value' => $val);
@@ -182,10 +168,7 @@ class Attribute_policyajax extends MY_Controller
                 $result['details'][] = array('name' => lang('custompolicy'), 'value' => '<small>' . lang('customappliedifpermited') . '</small>' . $suffix);
             }
         }
-        $this->output->set_content_type('application/json');
-        echo json_encode($result);
-
-
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
     /**
@@ -202,67 +185,49 @@ class Attribute_policyajax extends MY_Controller
     public function submit_sp($idpID) {
 
         if (!ctype_digit($idpID) || !$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
-            set_status_header(403);
-            echo 'Access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         /**
          * @var models\Provider $idp
          */
         $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idpID, 'type' => array('IDP', 'BOTH')));
         if ($idp === null) {
-            set_status_header(404);
-            echo lang('rerror_providernotexist');
-            return;
+            return $this->output->set_status_header(404)->set_output(lang('rerror_providernotexist'));
         }
         if (!$this->checkAccess($idp)) {
-            set_status_header(403);
-            echo 'Access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         $this->load->library('zacl');
         $tmpAt = $this->config->item('policy_dropdown');
         $idpid = $this->input->post('idpid');
         if (empty($idpid) || !ctype_digit($idpid)) {
-            set_status_header(403);
             log_message('warning', 'idpid in post not provided or not numeric');
-            echo lang('missedinfoinpost');
-            return;
+            return $this->output->set_status_header(403)->set_output(lang('missedinfoinpost'));
         }
         if ($idpID != $idpid) {
             log_message('error', 'idp id from post is not equal with idp in url, idp in post:' . $idpid . ', idp in url:' . $idpID);
-            set_status_header(403);
-            echo lang('unknownerror');
-            return;
+            return $this->output->set_status_header(500)->set_output(lang('unknownerror'));
         }
         $policy = trim($this->input->post('policy'));
         if (!isset($policy) || !is_numeric($policy)) {
             log_message('error', 'policy in post not provided or not numeric:' . $policy);
-            set_status_header(403);
-            echo lang('wrongpolicyval');
-            return;
+            return $this->output->set_status_header(403)->set_output(lang('wrongpolicyval'));
         }
 
         $requester = trim($this->input->post('requester'));
         $sp = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $requester, 'type' => array('SP', 'BOTH')));
-        if (empty($sp)) {
-            set_status_header(403);
-            echo 'Requester not found';
-            return;
+        if ($sp === null) {
+            return $this->output->set_status_header(403)->set_output('Requester not found');
         }
         $attributename = trim($this->input->post('attribute'));
         $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('name' => $attributename));
         if (empty($attribute)) {
-            set_status_header(403);
-            echo 'Attribute not found';
-            return;
+            return $this->output->set_status_header(403)->set_output('Attribute not found');
         }
 
         if (!in_array($policy, array('1', '2', '0', '100'))) {
             log_message('error', 'wrong policy in post: ' . $policy);
-            set_status_header(403);
-            echo lang('wrongpolicyval');
-            return;
+            return $this->output->set_status_header(403)->set_output(lang('wrongpolicyval'));
         }
 
         $changes = array();
@@ -318,8 +283,6 @@ class Attribute_policyajax extends MY_Controller
         } else {
             echo $policy;
         }
-        return;
-
 
     }
 
@@ -335,9 +298,7 @@ class Attribute_policyajax extends MY_Controller
         $postFedID = trim($this->input->post('fedid'));
         $allowedPols = array(0, 1, 2, 100);
         if (!ctype_digit($postFedID) || !ctype_digit($postAttrID) || !ctype_digit($postIdpID) || !ctype_digit($postPolicy) || strcasecmp($postIdpID, $idpID) != 0 || !in_array($postPolicy, $allowedPols)) {
-            set_status_header(403);
-            echo 'access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denie');
         }
         /**
          * @var models\Provider $idp
@@ -349,14 +310,10 @@ class Attribute_policyajax extends MY_Controller
         $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $postAttrID));
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $postFedID));
         if ($idp === null || $attribute === null || $federation === null) {
-            set_status_header(404);
-            echo 'Not found 2';
-            return;
+            return $this->output->set_status_header(404)->set_output('Not found');
         }
         if (!$this->checkAccess($idp)) {
-            set_status_header(403);
-            echo 'access denied 2';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denie');
         }
         $dropdown = $this->config->item('policy_dropdown');
         $dropdown[100] = lang('dropnotset');
@@ -368,8 +325,6 @@ class Attribute_policyajax extends MY_Controller
             if (empty($policy)) {
                 $statusPol = 100;
             } else {
-                $changes['before'] = $dropdown['' . $policy->getPolicy() . ''];
-                $changes['after'] = $dropdown[100];
                 $this->em->remove($policy);
                 $statusPol = 100;
             }
@@ -388,38 +343,31 @@ class Attribute_policyajax extends MY_Controller
         }
         try {
             $this->em->flush();
-
-            $policyStr = '';
-            if (array_key_exists($statusPol, $dropdown)) {
-                $policyStr = $dropdown[$statusPol];
-            }
-            $result = array('status' => 1, 'policy' => $statusPol, 'attrid' => $postAttrID, 'policystr' => $policyStr);
-            $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idpID), -1);
-            return $this->output->set_content_type('application/json')->set_output(json_encode($result));
-
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
-            set_status_header(500);
-            echo 'internal server error';
-
+            return $this->output->set_status_header(500)->set_output('Internal server error');
         }
+
+        $policyStr = '';
+        if (array_key_exists($statusPol, $dropdown)) {
+            $policyStr = $dropdown[$statusPol];
+        }
+        $result = array('status' => 1, 'policy' => $statusPol, 'attrid' => $postAttrID, 'policystr' => $policyStr);
+        $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idpID), -1);
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
     }
 
     public function updatedefault($idpID) {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
-            set_status_header(401);
-            echo 'access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         $postIdpID = trim($this->input->post('idpid'));
         $postAttrID = trim($this->input->post('attribute'));
         $postPolicy = trim($this->input->post('policy'));
         $allowedPols = array(0, 1, 2, 100);
         if (!ctype_digit($postAttrID) || !ctype_digit($postIdpID) || !ctype_digit($postPolicy) || strcasecmp($postIdpID, $idpID) != 0 || !in_array($postPolicy, $allowedPols)) {
-            set_status_header(403);
-            echo 'access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
 
         /**
@@ -428,18 +376,13 @@ class Attribute_policyajax extends MY_Controller
         $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idpID));
         $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $postAttrID));
         if (empty($idp) || empty($attribute)) {
-            set_status_header(404);
-            echo 'Not found 2';
-            return;
+            return $this->output->set_status_header(404)->set_output('Not found');
         }
 
         if (!$this->checkAccess($idp)) {
-            set_status_header(403);
-            echo 'access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
 
-        $changes = array();
         $statusPol = null;
         $dropdown = $this->config->item('policy_dropdown');
         $dropdown[100] = lang('dropnotset');
@@ -451,8 +394,6 @@ class Attribute_policyajax extends MY_Controller
             if (empty($globalPolicy)) {
                 $statusPol = 100;
             } else {
-                $changes['before'] = $dropdown['' . $globalPolicy->getPolicy() . ''];
-                $changes['after'] = $dropdown[100];
                 $this->em->remove($globalPolicy);
                 $statusPol = 100;
             }
@@ -482,9 +423,7 @@ class Attribute_policyajax extends MY_Controller
 
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
-            set_status_header(500);
-            echo 'internal server error';
-
+            return $this->output->set_status_header(500)->set_output('Internal server error');
         }
 
     }

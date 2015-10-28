@@ -13,8 +13,7 @@ if (!defined('BASEPATH')) {
 class Attributes extends MY_Controller
 {
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $loggedin = $this->jauth->isLoggedIn();
         $this->current_site = current_url();
@@ -31,18 +30,17 @@ class Attributes extends MY_Controller
         MY_Controller::$menuactive = 'admins';
     }
 
-    private function addSubmitValidate()
-    {
+    private function addSubmitValidate() {
         $this->form_validation->set_rules('attrname', lang('attrname'), 'trim|required|min_length[1]|max_length[128]|xss_clean|no_white_spaces|attribute_unique[name]');
         $this->form_validation->set_rules('attroidname', lang('attrsaml2'), 'trim|required|min_length[1]|max_length[128]|xss_clean|no_white_spaces|attribute_unique[oid]');
         $this->form_validation->set_rules('attrurnname', lang('attrsaml1'), 'trim|required|min_length[3]|max_length[128]|xss_clean|no_white_spaces|attribute_unique[urn]');
         $this->form_validation->set_rules('attrfullname', lang('attrfullname'), 'trim|required|min_length[3]|max_length[128]|xss_clean|attribute_unique[fullname]');
         $this->form_validation->set_rules('description', lang('rr_description'), 'trim|required|min_length[3]|max_length[128]|xss_clean');
+
         return $this->form_validation->run();
     }
 
-    public function add()
-    {
+    public function add() {
         $this->title = lang('rr_newattr_title');
         $isAdmin = $this->jauth->isAdministrator();
         $data['titlepage'] = lang('rr_newattr_title');
@@ -74,19 +72,18 @@ class Attributes extends MY_Controller
             $data['success'] = lang('attraddsuccess');
             try {
                 $this->em->flush();
-                $this->load->view('page', $data);
             } catch (Exception $e) {
                 log_message('error', __METHOD__ . ' ' . $e);
                 show_error('Couldnt store new attr in db', 500);
             }
         } else {
             $data['content_view'] = 'attribute_add_view';
-            $this->load->view('page', $data);
+
         }
+        $this->load->view('page', $data);
     }
 
-    public function show()
-    {
+    public function show() {
         $this->title = lang('attrsdeflist');
         /**
          * @var $attributes models\Attribute[]
@@ -106,12 +103,7 @@ class Attributes extends MY_Controller
             }
             $dataRows[] = array(showBubbleHelp($a->getDescription()) . ' ' . $a->getName() . $notice, $a->getFullname(), $a->getOid(), $a->getUrn());
         }
-        $isAdmin = $this->jauth->isAdministrator();
-        if ($isAdmin) {
-            $data['isadmin'] = true;
-        } else {
-            $data['isadmin'] = false;
-        }
+        $data['isadmin'] = $this->jauth->isAdministrator();
         $data['breadcrumbs'] = array(
             array('url' => '#', 'name' => lang('attrsdeflist'), 'type' => 'current'),
 
