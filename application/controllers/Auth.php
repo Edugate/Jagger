@@ -498,7 +498,6 @@ class Auth extends MY_Controller
             if (empty($emailVarName)) {
                 log_message('warning', __METHOD__ . ' User hasnt provided email attr during federated access');
                 show_error(lang('error_noemail'), 403);
-                return;
             }
 
             if (!$canAutoRegister) {
@@ -507,8 +506,7 @@ class Auth extends MY_Controller
                 $fedidentity = array('fedusername' => $userValue, 'fedfname' => $this->getShibFname(), 'fedsname' => $this->getShibSname(), 'fedemail' => $this->getShibMail());
                 $this->session->set_userdata(array('fedidentity' => $fedidentity));
                 $data['content_view'] = 'feduserregister_view';
-                $this->load->view('page', $data);
-                return;
+                return $this->load->view('page', $data);
             } else {
 
                 $attrs = array('username' => $userValue, 'mail' => $emailVarName, 'fname' => $fnameVarName, 'sname' => $snameVarName);

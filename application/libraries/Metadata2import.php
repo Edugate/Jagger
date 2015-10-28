@@ -156,6 +156,7 @@ class Metadata2import
                 $this->regpollistarray['' . $cocreg->getId() . ''] = $cocreg->getUrl();
             }
         }
+
     }
 
     public function import($metadata, $type, $full, array $defaults, $other = null) {
@@ -652,7 +653,6 @@ class Metadata2import
                 $y = array_search($c->getUrl(), $ent['coc']['' . $cSubtype . '']);
                 if ($y !== null && $y !== false) {
                     unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
-
                 } else {
                     $provider->removeCoc($c);
 
@@ -678,6 +678,7 @@ class Metadata2import
             foreach ($ent['regpol'] as $k => $v) {
                 if (strcmp($c->getUrl(), $v['url']) == 0 && strcasecmp($c->getLang(), $v['lang']) == 0) {
                     $cExist = true;
+                    unset($ent['regpol'][''.$k.'']);
                     break;
                 }
             }
