@@ -306,7 +306,11 @@ $jsToLoad1 = array(
     'fastclick.js',
     'foundation.min.js',
     'Chart.min.js',
-    'select2.min.js');
+    'select2.min.js',
+    'datatables.min.js',
+    'dataTables.foundation.min.js',
+    'buttons.foundation.js',
+    'buttons.print.js');
 foreach ($jsToLoad1 as $jsFile) {
     echo '<script type="text/javascript" src="' . $base_url . 'js/' . $jsFile . '"></script>' . PHP_EOL;
 }
@@ -345,7 +349,7 @@ if (!$loggedin) {
 </script>
 <?php
 // load local final js
-echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v7.min.js"></script>' . PHP_EOL;
+echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v7.js"></script>' . PHP_EOL;
 
 // raw js from array
 if (!empty($rawJs) && is_array($rawJs)) {

@@ -1514,16 +1514,16 @@ $(document).ready(function () {
                             tbl.push('<td>' + dictHasAccess + '</td>');
                         }
                         else {
-                            if(action === 'approve' && administrator !== true){
+                            if (action === 'approve' && administrator !== true) {
                                 disableBtn = ' disabled="disabled" ';
                                 disableBtnClass = 'secondary';
 
                             }
                             if (d.perms[action] === true) {
-                                tbl.push('<td>' + dictHasAccess + ' <div><button ' + disableBtn + ' class="tiny alert '+disableBtnClass+'" value="' + k + '$|$' + action + '$|$deny" name="changeaccess" type="submit" >' + dictDeny + '</button></div></td>');
+                                tbl.push('<td>' + dictHasAccess + ' <div><button ' + disableBtn + ' class="tiny alert ' + disableBtnClass + '" value="' + k + '$|$' + action + '$|$deny" name="changeaccess" type="submit" >' + dictDeny + '</button></div></td>');
                             }
                             else {
-                                tbl.push('<td>' + dictHasNoAccess + ' <div><button ' + disableBtn + ' class="tiny '+disableBtnClass+'" value="' + k + '$|$' + action + '$|$allow" name="changeaccess" type="submit">' + dictAllow + '</button></div></td>');
+                                tbl.push('<td>' + dictHasNoAccess + ' <div><button ' + disableBtn + ' class="tiny ' + disableBtnClass + '" value="' + k + '$|$' + action + '$|$allow" name="changeaccess" type="submit">' + dictAllow + '</button></div></td>');
                             }
                         }
                     });
@@ -3852,6 +3852,14 @@ $(document).ready(function () {
         $(".nav").toggle();
     });
 //    adjustMenu();
+
+
+// $('#example').dataTable();
+    $('#example').DataTable({
+        stateSave: true,
+
+    });
+
 });
 
 $(document).on('click', 'a.refreshurl', function (e) {
@@ -4516,7 +4524,107 @@ $("button.advancedmode").click(function () {
     $(this).closest("form").attr("action", postUrl);
 
 });
+//////////////// start test new table jnlexample
+if (('#jnlexample').length) {
+    var jnl = $('#jnlexample').first();
+    var url = jnl.attr("data-jagger-src");
+    var filter;
+    if ($(this).hasClass('filterext')) {
+        filter = 1;
+    }
+    else if ($(this).hasClass('filterlocal')) {
+        filter = 2;
+    }
+    else {
+        filter = 0;
+    }
+    $.ajax({
+        type: "GET",
+        url: url,
+        timeout: 9500,
+        cache: true,
+        dataType: "json",
+        success: function (result) {
+             $('#spinner').hide();
+            var table = $('<table/>');
+            var thead = $('<thead/>');
+            var tfoot = $('<tfoot/>');
+            table.append(thead);
+            table.append(tfoot);
+            var theadtr = $('<tr/>');
+             var tfoottr = $('<tr/>');
+            thead.append(theadtr);
+            tfoot.append(tfoottr);
 
+            var Columns = [];
+            var tmpcolumns = result.columns;
+            var colstatus;
+            var counter = 0;
+            $.each(tmpcolumns, function (i, v) {
+                colstatus = v.status;
+                if (colstatus) {
+                    var nar = [];
+                    $.each(v.cols, function (l, n) {
+                        nar.push(n);
+                    });
+                    Columns.push(nar);
+                    theadtr.append('<th>' + v.colname + '</th>');
+                    tfoottr.append('<th>' + v.colname + '</th>');
+                }
+            });
+
+            var data = result.data;
+            var dataSet = [];
+            var rowSet;
+            $.each(data, function (j, w) {
+                rowSet = [];
+                if ((w.plocal === 1 && (filter === 2 || filter === 0)) || (w.plocal === 0 && filter < 2)) {
+                    $.each(Columns, function (p, z) {
+
+                        var cell = '';
+                        $.each(z, function (r, s) {
+                            if (w[s] !== null) {
+                                if (s === 'pname') {
+                                    cell = cell + '<a href="' + result.baseurl + 'providers/detail/show/' + w.pid + '">' + w[s] + '</a><br />';
+
+                                }
+                                else if (s === 'phelpurl') {
+                                    cell = cell + '<a href="' + w.phelpurl + '">' + w.phelpurl + '</a>';
+                                }
+                                else if (s === 'plocked' || s === 'pactive' || s === 'plocal' || s === 'pstatic' || s === 'pvisible' || s === 'pavailable') {
+                                    if (result['statedefs'][s][w[s]] !== undefined) {
+                                        cell = cell + ' <span class="lbl lbl-' + s + '-' + w[s] + '">' + result['statedefs'][s][w[s]] + '</span>';
+                                    }
+                                }
+                                else {
+                                    cell = cell + '  ' + w[s];
+                                }
+                            }
+                        });
+                        rowSet.push(cell);
+
+                    });
+                }
+                dataSet.push(rowSet);
+            });
+
+
+
+            jnl.append(table);
+            table.DataTable( {
+                stateSave: true,
+                "lengthMenu": [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "All"] ],
+                data: dataSet,
+                "deferRender": true
+
+            } );
+        },
+        beforeSend: function () {
+            $('#spinner').show();
+        },
+    });
+}
+//////////////// end test new table jnlexample
 
 // get list providers with dynamic list columns: in progress
 $(".afilter").click(function () {

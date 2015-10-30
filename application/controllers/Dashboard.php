@@ -4,12 +4,10 @@ if (!defined('BASEPATH')) {
 }
 
 /**
- * ResourceRegistry3
- *
- * @package   RR3
+ * @package   Jagger
  * @author    Middleware Team HEAnet <middleware-noc@heanet.ie>
  * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- * @copyright 2012 HEAnet Limited (http://www.heanet.ie)
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 class Dashboard extends MY_Controller
@@ -21,6 +19,9 @@ class Dashboard extends MY_Controller
     }
 
 
+    /**
+     * @return bool
+     */
     private function isMigrationUptodate() {
         $this->load->config('migration');
         $targetVersion = config_item('migration_version');
@@ -39,9 +40,12 @@ class Dashboard extends MY_Controller
         }
     }
 
+    /**
+     * @return object|string
+     */
     private function showFrontPage() {
         /**
-         * @var $frontpage models\Staticpage
+         * @var models\Staticpage $frontpage
          */
         try {
             $frontpage = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode' => 'front_page', 'enabled' => true, 'ispublic' => true));
@@ -80,6 +84,7 @@ class Dashboard extends MY_Controller
         $queues = $this->em->getRepository("models\Queue")->findAll();
         $this->inqueue = count($queues);
         $acc = $this->zacl->check_acl('dashboard', 'read', 'default', '');
+
         $data['inqueue'] = $this->inqueue;
         if ($acc !== true) {
             $this->title = lang('title_accessdenied');
@@ -103,20 +108,11 @@ class Dashboard extends MY_Controller
             }
         }
 
-        $board = $this->session->userdata('board');
-        if (!is_array($board)) {
-            $curUser = $this->jauth->getLoggedinUsername();
-            /**
-             * @var models\User $userObj
-             */
-            $userObj = $this->em->getRepository("models\User")->findOneBy(array('username' => $curUser));
-            $board = $userObj->getBookmarks();
-        }
 
-        $bookmarList = $this->genBookmarkList($board);
+        $bookmarList = $this->genBookmarkList();
         $data2 = array(
-            'idps' => $bookmarList['idps'],
-            'sps' => $bookmarList['sps'],
+            'idp' => $bookmarList['idp'],
+            'sp' => $bookmarList['sp'],
             'feds' => $bookmarList['feds'],
             'titlepage' => lang('quick_access'),
             'content_view' => 'default_body'
@@ -127,32 +123,35 @@ class Dashboard extends MY_Controller
 
     }
 
-    private function genBookmarkList($board) {
-        $idps = array();
-        $sps = array();
+    private function genBookmarkList() {
+        $board = $this->session->userdata('board');
+        if (!is_array($board)) {
+            $curUser = $this->jauth->getLoggedinUsername();
+            /**
+             * @var models\User $userObj
+             */
+            $userObj = $this->em->getRepository("models\User")->findOneBy(array('username' => $curUser));
+            $board = $userObj->getBookmarks();
+        }
+        $result = array('idp'=>array(),'sp'=>array(),'feds'=>array());
         $feds = array();
         $baseurl = base_url();
-        if (array_key_exists('idp', $board) && is_array($board['idp'])) {
-            foreach ($board['idp'] as $key => $value) {
-                $idps[$key] = '<a href="' . $baseurl . 'providers/detail/show/' . $key . '">' . $value['name'] . '</a><br /> <small>' . $value['entity'] . '</small>';
+        foreach(array('idp','sp') as $part){
+            if (array_key_exists($part, $board) && is_array($board[$part])) {
+                foreach ($board[''.$part.''] as $key => $value) {
+                    $result[$part][$key] = '<a href="' . $baseurl . 'providers/detail/show/' . $key . '">' . $value['name'] . '</a><br /> <small>' . $value['entity'] . '</small>';
+                }
             }
         }
-        if (array_key_exists('sp', $board) && is_array($board['sp'])) {
-            foreach ($board['sp'] as $key => $value) {
-                $sps[$key] = '<a href="' . $baseurl . 'providers/detail/show/' . $key . '">' . $value['name'] . '</a><br /><small>' . $value['entity'] . '</small>';
-            }
-        }
+
         if (array_key_exists('fed', $board) && is_array($board['fed'])) {
             foreach ($board['fed'] as $key => $value) {
                 $feds[$key] = '<a href="' . $baseurl . 'federations/manage/show/' . $value['url'] . '">' . $value['name'] . '</a>';
             }
         }
 
-        $result = array(
-            'idps' => $idps,
-            'sps' => $sps,
-            'feds' => $feds
-        );
+        $result['feds'] = $feds;
+
         return $result;
     }
 

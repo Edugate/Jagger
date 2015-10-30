@@ -43,18 +43,20 @@ class Metadatalocations extends MY_Controller {
         foreach($feds as $fed)
         {
             $farray[] = array('<a href="'.$federationPrefixUrl.'/'. $fed->getSysname().'/metadata.xml">signed metadata</a>',
-                              '<span title="'.$fed->getName().'">'.$fed->getName().'</span>',$fed->getUrn());
+                              '<span title="'.$fed->getName().'">'.html_escape($fed->getName()).'</span>',$fed->getUrn());
         }
         $tarray = array();
         foreach($idps as $idp)
         {
-            $tarray[] = array('<a href="'.$providerPrefixUrl.'/'. base64url_encode($idp->getEntityId()).'/metadata.xml">signed metadata</a>', '<span title="'.$idp->getNameToWebInLang($myLang,'idp').'">'.$idp->getDisplayName(40).'</span>',$idp->getEntityId());
+            $nameInLang = $idp->getNameToWebInLang($myLang,'sp');
+            $tarray[] = array('<a href="'.$providerPrefixUrl.'/'. base64url_encode($idp->getEntityId()).'/metadata.xml">signed metadata</a>', '<span title="'.$nameInLang.'">'.$nameInLang.'</span>',$idp->getEntityId());
         }
 
         $sarray = array();
         foreach($sps as $sp)
         {
-            $sarray[] = array('<a href="'.$providerPrefixUrl.'/'. base64url_encode($sp->getEntityId()).'/metadata.xml">signed metadata</a>', '<span title="'.$sp->getNameToWebInLang($myLang,'sp').'">'.$sp->getDisplayName(40).'<span>',$sp->getEntityId());
+            $nameInLang = $sp->getNameToWebInLang($myLang,'sp');
+            $sarray[] = array('<a href="'.$providerPrefixUrl.'/'. base64url_encode($sp->getEntityId()).'/metadata.xml">signed metadata</a>', '<span title="'.$nameInLang.'">'.$nameInLang.'<span>',$sp->getEntityId());
         }
         $data['farray'] = &$farray;
         $data['tarray'] = &$tarray;
