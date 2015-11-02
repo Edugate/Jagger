@@ -30,9 +30,4 @@ echo '</div>';
 echo '<button type="submit" name="next" class="advancedmode button" value="' . base_url() . 'providers/idpsp_registration/advanced">' . lang('nextstep') . '</button>';
 echo '<span class="modalnotice hidden">'.lang('nometainsertnotice').'</span>';
 echo form_close();
-?>
-
-
-
-
 
