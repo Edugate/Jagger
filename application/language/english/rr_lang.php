@@ -298,6 +298,8 @@ $lang['serviceprovider']            = 'Service Provider';
 $lang['serviceprovidersmembers']    = 'Service Providers members';
 $lang['identityprovider']           = 'Identity Provider';
 $lang['identityproviders']          = 'Identity Providers';
+$lang['idpspprovider']           = 'Identity/Service Provider';
+
 $lang['identityproviderdetails']    = 'Identity Provider\'s details';
 $lang['identityserviceproviders']   = 'Identity/Service Providers';
 $lang['provcreated']                = 'Entity created';
@@ -440,6 +442,7 @@ $lang['rr_status_mngmt']            = 'Status management';
 $lang['rr_status']                  = 'Status';
 $lang['rr_sp_register_title']       = 'Service Provider registration form';
 $lang['rr_idp_register_title']      = 'Identity Provider registration form';
+$lang['rr_idpsp_register_title']      = 'Identity/Service Provider registration form';
 $lang['rr_feduser_register_title']      = 'Federated user registration';
 $lang['rr_generalinformation']      = 'General Information';
 $lang['rr_ds_white']                = 'White list';

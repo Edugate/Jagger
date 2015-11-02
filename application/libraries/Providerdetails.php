@@ -1151,11 +1151,11 @@ class Providerdetails
             $uiiarray = array();
             $d[++$i]['msection'] = lang('identityprovider');
             foreach ($extend as $e) {
-                if ($e->getNamespace() == 'mdui' && $e->getType() == 'idp') {
+                if ($e->getNamespace() === 'mdui' && $e->getType() === 'idp') {
                     $uiiarray[$e->getElement()][] = $e;
                 }
             }
-            $discohintsarray = &$uiiarray;
+            $discohintsarray = $uiiarray;
             $d[++$i]['name'] = lang('e_idpservicename');
             $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'DisplayName');
             $d[++$i]['name'] = lang('e_idpservicedesc');
@@ -1190,7 +1190,7 @@ class Providerdetails
             $uiiarray = array();
             $d[++$i]['msection'] = lang('serviceprovider');
             foreach ($extend as $e) {
-                if ($e->getNamespace() == 'mdui' && $e->getType() == 'sp') {
+                if ($e->getNamespace() === 'mdui' && $e->getType() === 'sp') {
                     $uiiarray[$e->getElement()][] = $e;
                 }
             }

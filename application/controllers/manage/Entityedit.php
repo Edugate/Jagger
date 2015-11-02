@@ -870,9 +870,9 @@ class Entityedit extends MY_Controller
         }
         else {
             $ent->setType('BOTH');
-            $data['titlepage'] = lang('rr_sp_register_title');
+            $data['titlepage'] = lang('rr_idpsp_register_title');
             $data['breadcrumbs'] = array(
-                array('url' => '#', 'name' => lang('rr_sp_register_title'), 'type' => 'current'),
+                array('url' => '#', 'name' => lang('rr_idpsp_register_title'), 'type' => 'current'),
 
             );
         }
@@ -993,7 +993,11 @@ class Entityedit extends MY_Controller
             }
         } elseif ($this->input->post('discard')) {
             $this->discardDraft($t);
-            redirect(base_url() . 'providers/' . strtolower($t) . '_registration', 'location');
+            $redirtype = strtolower($t);
+            if($redirtype === 'both'){
+                $redirtype = 'idpsp';
+            }
+            redirect(base_url() . 'providers/' . $redirtype . '_registration', 'location');
         } elseif ($this->submitValidate($t) === true) {
             $y = $this->input->post('f');
             $submittype = $this->input->post('modify');

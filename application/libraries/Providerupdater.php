@@ -26,7 +26,7 @@ class Providerupdater
     protected $entityTypes = array();
     protected $srvTypes = array();
 
-    function __construct() {
+    public function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->library('tracker');
@@ -883,7 +883,8 @@ class Providerupdater
         /**
          * start update UII
          */
-        if ($entityTypes['sp'] !== true) {
+        if ($entityTypes['idp'] === true) {
+
             $doFilter = array('t' => array('idp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL'));
             $e = $ent->getExtendMetadata()->filter(
                 function (models\ExtendMetadata $entry) use ($doFilter) {
@@ -943,7 +944,7 @@ class Providerupdater
                 }
             }
         }
-        if ($entityTypes['idp'] !== true) {
+        if ($entityTypes['sp'] === true) {
             $doFilter = array('t' => array('sp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL'));
             $e = $ent->getExtendMetadata()->filter(
                 function (models\ExtendMetadata $entry) use ($doFilter) {

@@ -133,6 +133,7 @@
                         <ul class="dropdown">
                             <li><a href="<?php echo $base_url; ?>providers/idp_registration"><?php echo lang('identityprovider'); ?></a></li>
                             <li><a href="<?php echo $base_url; ?>providers/sp_registration"><?php echo lang('serviceprovider'); ?></a></li>
+                            <li><a href="<?php echo $base_url; ?>providers/idpsp_registration"><?php echo lang('idpspprovider'); ?></a></li>
                             <?php
                     if ($loggedin) {
                         ?>
