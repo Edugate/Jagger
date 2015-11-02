@@ -1,4 +1,5 @@
 ////////////////////////////////////
+////////////////////////////////////
 /////// plugins ///////////////////
 $.fn.dataTable.ext.search.push(
     function (settings, data, dataIndex) {
@@ -4598,6 +4599,9 @@ if ($('#providerslistresultv2').length) {
                                     cell = cell + ' <span class="lbl lbl-' + s + '-' + w[s] + '">' + result['statedefs'][s][w[s]] + '</span>';
                                 }
                             }
+                            else if( s ==='contacts'){
+                                cell = cell + w.contacts.join("<br />");
+                            }
                             else {
                                 cell = cell + '  ' + w[s];
                             }
@@ -4624,7 +4628,7 @@ if ($('#providerslistresultv2').length) {
                     },
                     {
                         className: 'tiny',
-                        extend: 'colvis', postfixButtons: ['colvisRestore'], columns: ':gt(0)'
+                        extend: 'colvis', postfixButtons: ['colvisRestore'], columns: ':gt(1)'
                     }
 
                 ],
@@ -4633,6 +4637,10 @@ if ($('#providerslistresultv2').length) {
                         "targets": [0],
                         "visible": false,
                         "searchable": true
+                    },
+                    {
+                        "targets": [4],
+                        "visible": false
                     }
                 ],
                 "order": [[1, "asc"]],
