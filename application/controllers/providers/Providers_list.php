@@ -136,6 +136,12 @@ class Providers_list extends MY_Controller {
             'pvisible' => array('0' => '' . lang('lbl_publichidden') . ''),
             'pavailable' => array('0' => 'unavailable'),
         );
+        $result['definitions']['lang'] = array(
+            'next'=>lang('nextpage'),
+            'previous'=>lang('prevpage'),
+            'search' => 'Search',
+            'display' => lang('displperpage').'fff',
+        );
 
         if (strcmp($type, 'idp') == 0)
         {

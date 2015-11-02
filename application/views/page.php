@@ -59,6 +59,7 @@ $foundation = $base_url . 'foundation/';
         '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery.jqplot.min.css" />' . PHP_EOL .
         '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/idpselect.css" />' . PHP_EOL .
         '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/foundation-icons.css" />' . PHP_EOL .
+        '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/dataTables.foundation.css" />' . PHP_EOL .
         '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/' . $colorTheme . '.css" />' . PHP_EOL .
         '<script src="' . $base_url . 'js/modernizr.min.js"></script>';
     ?>
@@ -308,6 +309,7 @@ $jsToLoad1 = array(
     'Chart.min.js',
     'select2.min.js',
     'datatables.min.js',
+    'dataTables.select.min.js','buttons.colVis.min.js',
     'dataTables.foundation.min.js',
     'buttons.foundation.js',
     'buttons.print.js');
