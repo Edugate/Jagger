@@ -139,8 +139,10 @@ class Providers_list extends MY_Controller {
         $result['definitions']['lang'] = array(
             'next'=>lang('nextpage'),
             'previous'=>lang('prevpage'),
-            'search' => 'Search',
-            'display' => lang('displperpage').'fff',
+            'search' => lang('rr_search'),
+            'display' => lang('displperpage'),
+            'btnexternal' => lang('extprov'),
+            'btnlocal' => lang('localprov'),
         );
 
         if (strcmp($type, 'idp') == 0)

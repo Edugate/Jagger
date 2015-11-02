@@ -1,11 +1,11 @@
 ////////////////////////////////////
 /////// plugins ///////////////////
 $.fn.dataTable.ext.search.push(
-    function( settings, data, dataIndex ) {
+    function (settings, data, dataIndex) {
         var category = $('#entityc option:selected').val();
-        var stype =parseInt(data[0]);
+        var stype = data[0];
 
-        if( category ==='' || (stype === 1 && category ==='local') || (stype === 0 && category ==='external')){
+        if (category === undefined || category === '' || (stype === '1' && category === 'local') || (stype === '0' && category === 'external')) {
             return true;
         }
         return false;
@@ -4529,24 +4529,15 @@ $("button.advancedmode").click(function () {
 
 });
 //////////////// start test new table jnlexample
-if ($('#jnlexample').length) {
+if ($('#providerslistresultv2').length) {
 
-    var jnl = $('#jnlexample').first();
+    var jnl = $('#providerslistresultv2').first();
     var url = jnl.attr("data-jagger-src");
-    var filter;
-    if ($(this).hasClass('filterext')) {
-        filter = 1;
-    }
-    else if ($(this).hasClass('filterlocal')) {
-        filter = 2;
-    }
-    else {
-        filter = 0;
-    }
+
     $.ajax({
         type: "GET",
         url: url,
-        timeout: 9500,
+        timeout: 19500,
         cache: true,
         dataType: "json",
         success: function (result) {
@@ -4567,8 +4558,8 @@ if ($('#jnlexample').length) {
             var tmpcolumns = result.columns;
             var colstatus;
             var counter = 0;
-            theadtr.append('<th>s</th>');
-            tfoottr.append('<th>s</th>');
+            theadtr.append('<th class="header">s</th>');
+            tfoottr.append('<th class="header">s</th>');
             $.each(tmpcolumns, function (i, v) {
                 colstatus = v.status;
                 if (colstatus) {
@@ -4577,8 +4568,8 @@ if ($('#jnlexample').length) {
                         nar.push(n);
                     });
                     Columns.push(nar);
-                    theadtr.append('<th>' + v.colname + '</th>');
-                    tfoottr.append('<th>' + v.colname + '</th>');
+                    theadtr.append('<th class="header">' + v.colname + '</th>');
+                    tfoottr.append('<th class="header">' + v.colname + '</th>');
 
                     counter = counter + 1;
                 }
@@ -4591,51 +4582,45 @@ if ($('#jnlexample').length) {
             $.each(data, function (j, w) {
                 rowSet = [];
                 rowSet.push(w.plocal);
-                if ((w.plocal === 1 && (filter === 2 || filter === 0)) || (w.plocal === 0 && filter < 2)) {
-                    $.each(Columns, function (p, z) {
+                $.each(Columns, function (p, z) {
+                    var cell = '';
+                    $.each(z, function (r, s) {
+                        if (w[s] !== null) {
+                            if (s === 'pname') {
+                                cell = cell + '<a href="' + result.baseurl + 'providers/detail/show/' + w.pid + '">' + w[s] + '</a><br />';
 
-                        var cell = '';
-                        $.each(z, function (r, s) {
-                            if (w[s] !== null) {
-                                if (s === 'pname') {
-                                    cell = cell + '<a href="' + result.baseurl + 'providers/detail/show/' + w.pid + '">' + w[s] + '</a><br />';
-
-                                }
-                                else if (s === 'phelpurl') {
-                                    cell = cell + '<a href="' + w.phelpurl + '">' + w.phelpurl + '</a>';
-                                }
-                                else if (s === 'plocked' || s === 'pactive' || s === 'plocal' || s === 'pstatic' || s === 'pvisible' || s === 'pavailable') {
-                                    if (result['statedefs'][s][w[s]] !== undefined) {
-                                        cell = cell + ' <span class="lbl lbl-' + s + '-' + w[s] + '">' + result['statedefs'][s][w[s]] + '</span>';
-                                    }
-                                }
-                                else {
-                                    cell = cell + '  ' + w[s];
+                            }
+                            else if (s === 'phelpurl') {
+                                cell = cell + '<a href="' + w.phelpurl + '">' + w.phelpurl + '</a>';
+                            }
+                            else if (s === 'plocked' || s === 'pactive' || s === 'plocal' || s === 'pstatic' || s === 'pvisible' || s === 'pavailable') {
+                                if (result['statedefs'][s][w[s]] !== undefined) {
+                                    cell = cell + ' <span class="lbl lbl-' + s + '-' + w[s] + '">' + result['statedefs'][s][w[s]] + '</span>';
                                 }
                             }
-                        });
-
-                        rowSet.push(cell.trim());
-
+                            else {
+                                cell = cell + '  ' + w[s];
+                            }
+                        }
                     });
+                    rowSet.push(cell.trim());
 
-                }
+                });
                 dataSet.push(rowSet);
             });
 
 
             jnl.append(table);
             var table2 = table.DataTable({
-                dom: '<"text-right"B>lfrtip',
+                dom: '<"text-right"lB><"text-left"i>frtip',
                 buttons: [
                     {
-                        text: 'Button 1',
+                        text: langdefs.btnexternal,
                         className: 'tiny',
-                        action: function (e, dt, node, config) {
-                            $('#entityc').val('external').trigger('change');
-                            console.log(dt)
-
-                        }
+                    },
+                    {
+                        text: langdefs.btnlocal,
+                        className: 'tiny',
                     },
                     {
                         className: 'tiny',
@@ -4650,15 +4635,15 @@ if ($('#jnlexample').length) {
                         "searchable": true
                     }
                 ],
-                 "order": [[ 1, "asc" ]],
+                "order": [[1, "asc"]],
                 "paging": true,
-                stateSave: false,
+                stateSave: true,
                 "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
                 data: dataSet,
                 "language": {
                     "lengthMenu": "Display _MENU_ records per page",
                     "zeroRecords": "Nothing found - sorry",
-                    "info": "Showing page _PAGE_ of _PAGES_",
+                    // "info": "Showing page _PAGE_ of _PAGES_",
                     "infoEmpty": "No records available",
                     "infoFiltered": "(filtered from _MAX_ total records)",
                     "paginate": {
@@ -4666,25 +4651,49 @@ if ($('#jnlexample').length) {
                         "previous": langdefs.previous,
                     }
                 },
-                "defereRender": true,
-                "createdRow": function ( row, data, index ) {
-                    if ( data[0] === 1 ) {
-                        $(row).addClass( 'plocal' );
-                    }
-                    else{
-                        $(row).addClass( 'pext' );
-                    }
+                "defereRender": true
+
+            });
+            table2.button(0).action(function (e, dt, button, config) {
+
+                if (button.hasClass('active')) {
+                    this.active(false);
+                    $('#entityc').val('').trigger('change');
+                }
+                else {
+                    this.active(true);
+                    table2.button(1).active(false);
+                    $('#entityc').val('external').trigger('change');
                 }
             });
 
-            $('#entityc').on('change', function(){
+            table2.button(1).action(function (e, dt, button, config) {
+                if (button.hasClass('active')) {
+                    this.active(false);
+                    $('#entityc').val('').trigger('change');
+                }
+                else {
+                    this.active(true);
+                    table2.button(0).active(false);
+                    $('#entityc').val('local').trigger('change');
+                }
+            });
+
+            $('#entityc').on('change', function () {
+
+                console.log('chanmge triggered');
                 table2.draw();
             });
 
         },
         beforeSend: function () {
-            //  $('#spinner').show();
+            $('#spinner').show();
         },
+        error: function (xhr, status, error) {
+            $('#spinner').hide();
+            window.alert(error);
+
+        }
     });
 }
 
