@@ -308,7 +308,7 @@ class Providers
     }
 
     public function getProvidersListPartialInfo($type) {
-        $dql = "SELECT partial p.{id,entityid,name,lname,displayname,ldisplayname,type,helpdeskurl,lhelpdeskurl,registerdate,validfrom,validto,is_approved,is_active,is_locked,is_local,hidepublic},a FROM models\Provider p LEFT OUTER JOIN p.extend a  WHERE p.type IN (?1,?2)";
+        $dql = "SELECT partial p.{id,entityid,name,lname,displayname,ldisplayname,type,helpdeskurl,lhelpdeskurl,registerdate,validfrom,validto,is_approved,is_active,is_locked,is_local,hidepublic},c, a FROM models\Provider p LEFT OUTER JOIN p.contacts c LEFT OUTER JOIN p.extend a  WHERE p.type IN (?1,?2)";
         $query = $this->em->createQuery($dql);
         $query->setParameter(1, '' . $type . '');
         $query->setParameter(2, 'BOTH');

@@ -158,6 +158,7 @@ class Providers_list extends MY_Controller {
             'nameandentityid' => array('colname' => '' . $lnamcol . '', 'status' => 1, 'cols' => array('pname', 'pentityid')),
             'url' => array('colname' => '' . lang('e_orgurl') . '', 'status' => 1, 'cols' => array('phelpurl')),
             'pregdate' => array('colname' => '' . lang('tbl_title_regdate') . '', 'status' => 1, 'cols' => array('pregdate')),
+            'contacts' => array('colname' => 'Contacts', 'status' => 1, 'cols' => array('contacts')),
             'entstatus' => array('colname' => 'status', 'status' => 1, 'cols' => array('plocked', 'pactive', 'pvisible', 'pstatic', 'plocal'))
         );
 
@@ -175,6 +176,10 @@ class Providers_list extends MY_Controller {
             $data = array();
             foreach ($list as $v)
             {
+                $cnts = array();
+                foreach($v->getContacts() as $c){
+                    $cnts[] = html_escape($c->getType().': '.$c->getFullName(). ' <'.$c->getEmail().'>');
+                }
                 $data['"' . $counter++ . '"'] = array(
                     'pid' => $v->getId(),
                     'plocked' => (int) $v->getLocked(),
@@ -187,6 +192,7 @@ class Providers_list extends MY_Controller {
                     'pname' => $v->getNameToWebInLang($lang, $type),
                     'pregdate' => $v->getRegistrationDateInFormat('Y-m-d', jauth::$timeOffset),
                     'phelpurl' => $v->getHelpdeskUrl(),
+                    'contacts' => $cnts,
                 );
             }
             if (count($data) > 0)
