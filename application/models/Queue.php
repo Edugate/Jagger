@@ -154,6 +154,13 @@ class Queue {
         $this->objdata = serialize($obj);
         $this->type = "SP";
         $this->objtype = "Provider";
+        return $this;
+    }
+    public function addBOTH($obj){
+        $this->objdata = serialize($obj);
+        $this->type = "BOTH";
+        $this->objtype = "Provider";
+        return $this;
     }
 
     public function addUser($obj)

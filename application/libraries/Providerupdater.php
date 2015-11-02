@@ -46,6 +46,7 @@ class Providerupdater
                 'DiscoveryResponse',
                 'RequestInitiator',
                 'SPSingleLogoutService',
+                'AssertionConsumerService'
 
             ));
     }
@@ -97,8 +98,10 @@ class Providerupdater
 
 
     private function cleanIncorrectServicesInput(\models\Provider $ent, array $srvInput) {
+
         $allowed = array();
         $entityTypes = $ent->getTypesToArray();
+
         $inputKeys = array_keys($srvInput);
         foreach ($entityTypes as $k => $v) {
             if ($v === true) {
@@ -158,6 +161,7 @@ class Providerupdater
         $this->cleanIncorrectServices($ent);
 
         $cData['srv'] = $this->cleanIncorrectServicesInput($ent, $cData['srv']);
+
 
 
         /**
@@ -273,6 +277,7 @@ class Providerupdater
                 continue;
             }
             if ($srvType === 'AssertionConsumerService') {
+
                 if (in_array($inputBind, $validationBinds['' . $srvType . ''])) {
                     if (in_array($inputOrder, $servicesIndexes['' . $srvType . '']) || is_null($inputOrder)) {
                         $inputOrder = $c++;
@@ -1024,7 +1029,6 @@ class Providerupdater
         $this->entityTypes = $entityTypes;
         $changeList = array();
         $type = $ent->getType();
-
         $isAdmin = $this->ci->jauth->isAdministrator();
 
         $dissalowedparts = $this->getDisallowedParts();

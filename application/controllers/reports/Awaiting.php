@@ -653,7 +653,7 @@ class Awaiting extends MY_Controller
 
                 return;
             }
-        } elseif (strcasecmp($queueAction, 'Create') == 0 && (strcasecmp($queueObjType, 'IDP') == 0 || strcasecmp($queueObjType, 'SP') == 0)) {
+        } elseif (strcasecmp($queueAction, 'Create') == 0 && (strcasecmp($queueObjType, 'IDP') == 0 || strcasecmp($queueObjType, 'SP') == 0) || strcasecmp($queueObjType, 'BOTH') == 0) {
             $approve_allowed = $this->zacl->check_acl(strtolower($queueObjType), 'create', 'entity', '') || $this->hasApproveByFedadmin($queueObj);
             if ($approve_allowed) {
                 $storedEntity = $this->createProvider($queueObj);

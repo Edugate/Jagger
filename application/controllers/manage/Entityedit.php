@@ -190,7 +190,7 @@ class Entityedit extends MY_Controller
     private function submitValidate($id)
     {
         $register = false;
-        if (strcmp($id, 'idp') == 0 || strcmp($id, 'sp') == 0) {
+        if (strcmp($id, 'idp') == 0 || strcmp($id, 'sp') == 0 || strcmp($id, 'both') == 0) {
             $register = true;
             $this->type = strtoupper($id);
         }
@@ -848,7 +848,7 @@ class Entityedit extends MY_Controller
         $data['jsAddittionalFiles'][] = 'https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places';
 
         $t = trim($t);
-        if (empty($t) || !(strcmp($t, 'idp') == 0 || strcmp($t, 'sp') == 0)) {
+        if (empty($t) || !(strcmp($t, 'idp') == 0 || strcmp($t, 'sp') == 0 || strcmp($t, 'both') == 0)) {
             show_error('Not found', 404);
         }
         $ent = new models\Provider;
@@ -860,7 +860,7 @@ class Entityedit extends MY_Controller
                 array('url' => '#', 'name' => lang('rr_idp_register_title'), 'type' => 'current'),
 
             );
-        } else {
+        } elseif (strcmp($t, 'sp') == 0){
             $ent->setType('SP');
             $data['titlepage'] = lang('rr_sp_register_title');
             $data['breadcrumbs'] = array(
@@ -868,6 +868,15 @@ class Entityedit extends MY_Controller
 
             );
         }
+        else {
+            $ent->setType('BOTH');
+            $data['titlepage'] = lang('rr_sp_register_title');
+            $data['breadcrumbs'] = array(
+                array('url' => '#', 'name' => lang('rr_sp_register_title'), 'type' => 'current'),
+
+            );
+        }
+
         /**
          * @var $u models\User
          */
@@ -993,8 +1002,7 @@ class Entityedit extends MY_Controller
                 $this->load->library('providerupdater');
                 $c = $this->getFromDraft($t);
                 if (is_array($c)) {
-
-                    \log_message('debug', __METHOD__ . ' GKS data from draft: ' . serialize($c));
+                    \log_message('debug', __METHOD__ . 'data from draft: ' . serialize($c));
                     $ent = $this->providerupdater->updateProvider($ent, $c);
 
                     if ($ent) {
@@ -1030,7 +1038,6 @@ class Entityedit extends MY_Controller
                             } catch (Exception $e) {
                                 log_message('error', __METHOD__ . ' ' . $e);
                                 show_error('Internal Server Error', 500);
-                                return;
                             }
                         }
                         $fvalidator = null;
@@ -1088,10 +1095,18 @@ class Entityedit extends MY_Controller
                                 $q->addIDP($convertedToArray);
                                 $mailTemplateGroup = 'idpregresquest';
                                 $notificationGroup = 'gidpregisterreq';
-                            } else {
+                            } elseif (strcmp($ttype, 'SP') == 0) {
                                 $q->addSP($convertedToArray);
                                 $mailTemplateGroup = 'spregresquest';
                                 $notificationGroup = 'gspregisterreq';
+                            }
+                            else{
+                                $q->addBOTH($convertedToArray);
+                                /**
+                                 * @todo add templeate for IDP/SP registration
+                                 */
+                                $mailTemplateGroup = 'spregresquest';
+                                $notificationGroup = array('gspregisterreq','gidpregisterreq');
                             }
                             if (empty($contactMail)) {
                                 $contactMail = $this->input->post('f[primarycnt][mail]');
@@ -1134,7 +1149,9 @@ class Entityedit extends MY_Controller
                                 $messageTemplate = $this->email_sender->providerRegRequest($ttype, $messageTemplateParams);
                             }
                             if (!empty($messageTemplate)) {
-                                $this->email_sender->addToMailQueue(array('greqisterreq', $notificationGroup), null, $messageTemplate['subject'], $messageTemplate['body'], array(), FALSE);
+                                $notifGroups = (array) $notificationGroup;
+                                array_push($notifGroups, 'greqisterreq');
+                                $this->email_sender->addToMailQueue($notifGroups, null, $messageTemplate['subject'], $messageTemplate['body'], array(), FALSE);
                             }
 
 

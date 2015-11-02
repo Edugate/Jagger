@@ -1988,7 +1988,7 @@ class Provider
                 $c->setProvider($this);
             }
         }
-        if (count($r['federations']) > 0) {
+        if (array_key_exists('federations', $r) && count($r['federations']) > 0) {
             foreach ($r['federations'] as $f) {
                 $c = new Federation;
                 $c->importFromArray($f);
