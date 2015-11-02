@@ -1,33 +1,23 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('Ni direct script access allowed');
+}
 /**
- * ResourceRegistry3
- * 
- * @package     RR3
- * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
-
-/**
- * Idp_list Class
- * 
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
-class Idp_list extends MY_Controller {
+class Idp_list extends MY_Controller
+{
 
     //put your code here
-    function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $loggedin = $this->jauth->isLoggedIn();
         $this->current_site = current_url();
-        if (!$loggedin)
-        {
+        if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
         }
@@ -40,8 +30,8 @@ class Idp_list extends MY_Controller {
         $this->load->library('zacl');
     }
 
-    function showlist()
-    {
+
+    public function showlist() {
 
         MY_Controller::$menuactive = 'idps';
         $this->title = lang('title_idplist');
@@ -50,8 +40,7 @@ class Idp_list extends MY_Controller {
         $action = 'read';
         $group = 'default';
         $hasReadAccess = $this->zacl->check_acl($resource, $action, $group, '');
-        if (!$hasReadAccess)
-        {
+        if (!$hasReadAccess) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rerror_nopermtolistidps');
             return $this->load->view('page', $data);
@@ -61,13 +50,10 @@ class Idp_list extends MY_Controller {
         $data['titlepage'] = lang('rr_tbltitle_listidps');
         $data['subtitlepage'] = ' ';
         $data['breadcrumbs'] = array(
-            array('url' => '#', 'name' => lang('identityproviders'),'type'=>'current'),
-
-
+            array('url' => '#', 'name' => lang('identityproviders'), 'type' => 'current'),
         );
-
-        $data['content_view'] = 'providers/providers_list_view';
-        $this->load->view('page',$data);
+        $data['content_view'] = 'providers/idpListV2';
+        $this->load->view('page', $data);
 
     }
 

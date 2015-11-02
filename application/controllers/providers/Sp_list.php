@@ -1,28 +1,21 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 /**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
  */
 
-/**
- * Sp_list Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
 class Sp_list extends MY_Controller
 {
 
-    function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $loggedin = $this->jauth->isLoggedIn();
         $this->current_site = current_url();
@@ -39,8 +32,7 @@ class Sp_list extends MY_Controller
         $this->load->library('zacl');
     }
 
-    function showlist()
-    {
+    public function showlist() {
 
         MY_Controller::$menuactive = 'sps';
         $this->title = lang('title_splist');
@@ -60,11 +52,11 @@ class Sp_list extends MY_Controller
         $data['titlepage'] = lang('rr_tbltitle_listsps');
         $data['subtitlepage'] = ' ';
         $data['breadcrumbs'] = array(
-            array('url' => '#', 'name' => lang('serviceproviders'),'type'=>'current'),
+            array('url' => '#', 'name' => lang('serviceproviders'), 'type' => 'current'),
 
         );
 
-        $data['content_view'] = 'providers/providers_list_view';
+        $data['content_view'] = 'providers/spListV2';
         $this->load->view('page', $data);
 
     }

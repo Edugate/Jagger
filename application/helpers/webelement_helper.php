@@ -32,6 +32,7 @@ function jaggerTagsReplacer($str)
         }
 
 
+
         if (isset($varray['graph']) && $varray['graph'] === 'pie') {
             if (isset($varray['federation']) && ctype_digit($varray['federation'])) {
                 $src = base_url('federations/manage/fedmemberscount/' . $varray['federation'] . '');
@@ -47,6 +48,7 @@ function jaggerTagsReplacer($str)
                 $finalreplace['dst'][$k] = $r;
             }
         }
+
     }
     $result = str_replace($finalreplace['pattern'], $finalreplace['dst'], $str);
 
@@ -56,12 +58,12 @@ function jaggerTagsReplacer($str)
 
 function confirmDialog($title, $msg, $yes, $no)
 {
-    $r = '<div id="sconfirm" class="reveal-modal small" data-reveal><div class="title-header small-12 columns text-center">' . htmlentities($title) . '</div>
+    $r = '<div id="sconfirm" class="reveal-modal small" data-reveal><div class="title-header small-12 columns text-center">' . html_escape($title) . '</div>
   <p class="message">' . html_escape($msg) . '</p>';
 
     $btns = array(
         '<div class="no button small alert reveal-close">' . htmlentities($no) . '</div>',
-        '<div class="yes button small">' . htmlentities($yes) . '</div>'
+        '<div class="yes button small">' . html_escape($yes) . '</div>'
 
     );
 
@@ -75,10 +77,10 @@ function confirmDialog($title, $msg, $yes, $no)
 
 function resultDialog($title, $msg, $close)
 {
-    $r = '<div id="resultdialog" class="hidden"><div class="header"><span>' . htmlentities($title) . '</span></div>
+    $r = '<div id="resultdialog" class="hidden"><div class="header"><span>' . html_escape($title) . '</span></div>
   <p class="message">' . html_escape($msg) . '</p>
   <div class="buttons">
-  <div class="no simplemodal-close">' . htmlentities($close) . '</div>
+  <div class="no simplemodal-close">' . html_escape($close) . '</div>
   </div>
   </div>';
     return $r;

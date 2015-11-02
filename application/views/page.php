@@ -59,6 +59,7 @@ $foundation = $base_url . 'foundation/';
         '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery.jqplot.min.css" />' . PHP_EOL .
         '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/idpselect.css" />' . PHP_EOL .
         '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/foundation-icons.css" />' . PHP_EOL .
+        '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/dataTables.foundation.css" />' . PHP_EOL .
         '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/' . $colorTheme . '.css" />' . PHP_EOL .
         '<script src="' . $base_url . 'js/modernizr.min.js"></script>';
     ?>
@@ -306,7 +307,12 @@ $jsToLoad1 = array(
     'fastclick.js',
     'foundation.min.js',
     'Chart.min.js',
-    'select2.min.js');
+    'select2.min.js',
+    'datatables.min.js',
+    'dataTables.select.min.js','buttons.colVis.min.js',
+    'dataTables.foundation.min.js',
+    'buttons.foundation.js',
+    'buttons.print.js');
 foreach ($jsToLoad1 as $jsFile) {
     echo '<script type="text/javascript" src="' . $base_url . 'js/' . $jsFile . '"></script>' . PHP_EOL;
 }
@@ -345,7 +351,7 @@ if (!$loggedin) {
 </script>
 <?php
 // load local final js
-echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v7.min.js"></script>' . PHP_EOL;
+echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v8.min.js"></script>' . PHP_EOL;
 
 // raw js from array
 if (!empty($rawJs) && is_array($rawJs)) {

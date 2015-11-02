@@ -250,6 +250,10 @@ $lang['attraddsuccess']             = 'An attribute has been added';
 $lang['perattr']                    = 'per attribute';
 $lang['nextstep']                   = 'Next';
 $lang['prevstep']                   = 'Previous';
+$lang['nextpage']                   = 'Next';
+$lang['prevpage']                   = 'Previous';
+$lang['displperpage']              = 'Display';
+
 $lang['attrfullname']               = 'Full name';
 $lang['attroid']                    = 'OID';
 $lang['attrurn']                    = 'URN';

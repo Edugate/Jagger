@@ -733,3 +733,14 @@ $icon-size: 2rem;
     }
   }
 }
+.button.active  {
+   background: darken($fedlogin-color, 20% );
+
+}
+.buttons-columnVisibility.active {
+    &:before{
+      font-family: "foundation-icons";
+      content: "\f00c\ ";
+   }
+
+}

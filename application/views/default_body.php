@@ -16,7 +16,7 @@
             <div class="box-content">
                 <?php
                 echo '<ul class="no-bullet">';
-                foreach ($idps as $k => $i) {
+                foreach ($idp as $k => $i) {
                     echo '<li data-jagger-onsuccess="hide">' . $i . '  <a href="' . $entdelurl . $k . '" class="updatebookmark" data-jagger-bookmark="del"><i class="fi-x-circle inline right"></i></a></li>';
                 }
                 echo '</ul>';
@@ -31,7 +31,7 @@
             <div class="box-content">
                 <?php
                 echo '<ul class="no-bullet">';
-                foreach ($sps as $k => $i) {
+                foreach ($sp as $k => $i) {
                     echo '<li data-jagger-onsuccess="hide">' . $i . '<a href="' . $entdelurl . $k . '" class="updatebookmark" data-jagger-bookmark="del"><i class="fi-x-circle iniline right"></i></a></li>';
                 }
                 echo '</ul>';
