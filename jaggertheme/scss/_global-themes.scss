@@ -1,36 +1,31 @@
+@import "jquery-ui";
+@import "jquery.jqplot.min";
+@import "_foundation-icons";
+
+
 @if variable-exists(j-side-icon-bg) {
   $final-side-icon-bg: $j-side-icon-bg;
-}
-@else {
+} @else {
   $final-side-icon-bg-final: $primary-color;
 }
 
 @if variable-exists(j-side-icon-font-color) {
   $final-side-icon-font-color: $j-side-icon-font-color;
-}
-@else {
+} @else {
   $final-side-icon-font-color: white;
 }
 
-
-@if variable-exists(jagger-selected-bgcolor)
-{
-    $final-jagger-selected-bgcolor: $jagger-selected-bgcolor;
-}
-@else
-{
-    $final-jagger-selected-bgcolor: #5897fb;
+@if variable-exists(jagger-selected-bgcolor) {
+  $final-jagger-selected-bgcolor: $jagger-selected-bgcolor;
+} @else {
+  $final-jagger-selected-bgcolor: #5897fb;
 }
 
-@if variable-exists(jagger-selected-color)
-{
-    $final-jagger-selected-color: $jagger-selected-color;
+@if variable-exists(jagger-selected-color) {
+  $final-jagger-selected-color: $jagger-selected-color;
+} @else {
+  $final-jagger-selected-color: #fff;
 }
-@else
-{
-    $final-jagger-selected-color: #fff;
-}
-
 
 // SELECT2 PART
 
@@ -62,7 +57,6 @@
   }
 }
 
-
 .select2-selection--multiple {
   box-sizing: border-box;
 
@@ -98,8 +92,6 @@
   }
 }
 
-
-
 .select2-selection--multiple {
   box-sizing: border-box;
 
@@ -134,9 +126,6 @@
     }
   }
 }
-
-
-
 
 .select2-dropdown {
   background-color: white;
@@ -221,7 +210,6 @@
   vertical-align: middle;
 
 }
-
 
 .select2-close-mask {
   border: 0;
@@ -341,7 +329,6 @@
   }
 }
 
-
 /// multiple
 
 .select2-selection--multiple {
@@ -439,7 +426,6 @@
   }
 }
 
-
 // layout
 
 .select2-container--default {
@@ -536,159 +522,143 @@
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
 ////////////////////////////
-
-
-
-
 
 #sideicons {
   position: fixed;
   z-index: 9999;
   right: 0px;
   top: 120px;
-  a,button {
+  a, button {
     @include button(
-      // $padding - Used to build padding for buttons Default: $button-med or rem-calc(12)
-     rem-calc(4),
-      // Background color. We can set $bg:false for a transparent background. Default: $primary-color.
-     $final-side-icon-bg-final,
-      // If true, set to button radius which is $global-radius or explicitly set radius amount in px (ex. $radius:10px). Default:false.
-     $radius:1px,
-      // We can set $full-width:true to remove side padding extend width. Default:false
-    $full-width:false,
-      // We can set $disabled:true to create a disabled transparent button. Default:false
-    $disabled:false
-      // $is-input - <input>s and <button>s take on strange padding. We added this to help fix that. Default:false
-
+      // $padding - Used to build padding for buttons Default: $button-med or rem-calc(12) rem-calc(4),
+      // Background color. We can set $bg:false for a transparent background. Default: $primary-color. $final-side-icon-bg-final,
+      // If true, set to button radius which is $global-radius or explicitly set radius amount in px (ex. $radius:10px). Default:false. $radius: 1px,
+      // We can set $full-width:true to remove side padding extend width. Default:false $full-width: false,
+      // We can set $disabled:true to create a disabled transparent button. Default:false $disabled: false // $is-input - <input>s and <button>s take on strange padding. We added this to help fix that. Default:false
     );
     color: $final-side-icon-font-color;
     display: block;
     margin: rem-calc(1);
+    padding: rem-calc(4);
   }
   a.nobg {
     background-color: transparent !important;
   }
   a.active {
 
-    background-color: darken($final-side-icon-bg-final,20);
+    background-color: darken($final-side-icon-bg-final, 20);
   }
 }
-#map-search {
-        background-color: #fff;
-        padding: 0 11px 0 13px;
-        width: 400px;
-        font-family: Roboto;
-        font-size: 15px;
-        font-weight: 300;
-        text-overflow: ellipsis;
-      }
-#map-search:focus {
-        border-color: #4d90fe;
-        margin-left: -1px;
-        padding-left: 14px;  /* Regular padding-left + 1. */
-        width: 401px;
-      }
 
+#map-search {
+  background-color: #fff;
+  padding: 0 11px 0 13px;
+  width: 400px;
+  font-family: Roboto;
+  font-size: 15px;
+  font-weight: 300;
+  text-overflow: ellipsis;
+}
+
+#map-search:focus {
+  border-color: #4d90fe;
+  margin-left: -1px;
+  padding-left: 14px; /* Regular padding-left + 1. */
+  width: 401px;
+}
 
 .tabs-content {
   min-height: 300px;
 }
 
-
-
 table#details th.header.headerSortDown:before {
-content: "\25BE\00a0\00a0";
+  content: "\25BE\00a0\00a0";
 }
+
 table#details th.header.headerSortUp:before {
-content: "\25B4\00a0\00a0";
+  content: "\25B4\00a0\00a0";
 }
 
 table#details th.header:before {
-//content: "\25B4\25BE\00a0\00a0";
+  //content: "\25B4\25BE\00a0\00a0";
 }
+
 table#details th {
-white-space: nowrap;
+  white-space: nowrap;
 
 }
 
+.section, .groupradiosection {
 
-.section , .groupradiosection{
-
-   font-size: bigger;
-   font-weight: bold;
-   padding: 1px;
-   margin-top: 2px;
-   margin-bottom: 2px;
+  font-size: bigger;
+  font-weight: bold;
+  padding: 1px;
+  margin-top: 2px;
+  margin-bottom: 2px;
 
 }
+
 .certdata {
 
-  font-size: smaller; 
+  font-size: smaller;
 }
 
 .policymembers, .ecmembers {
 
-  cursor:pointer;
+  cursor: pointer;
 }
+
 i.largeicon {
   font-size: 1.5rem;
 }
-#return-to-top{
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    background: rgb(0, 0, 0);
-    background: rgba(0, 0, 0, 0.6);
-    width: 2rem;
-    height: 2rem;
-    display: block;
-    text-decoration: none;
-    text-align: center;
-    vertical-align: middle;
-    -webkit-border-radius: 30px;
-    -moz-border-radius: 30px;
-    border-radius: 30px;
-    display: none;
-    -webkit-transition: all 0.3s linear;
-    -moz-transition: all 0.3s ease;
-    -ms-transition: all 0.3s ease;
-    -o-transition: all 0.3s ease;
-    transition: all 0.3s ease;
+
+#return-to-top {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background: rgb(0, 0, 0);
+  background: rgba(0, 0, 0, 0.6);
+  width: 2rem;
+  height: 2rem;
+  display: block;
+  text-decoration: none;
+  text-align: center;
+  vertical-align: middle;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  border-radius: 30px;
+  display: none;
+  -webkit-transition: all 0.3s linear;
+  -moz-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
 }
+
 #return-to-top i {
-    color: #fff;
-    margin: 0;
-    position: relative;
-    -webkit-transition: all 0.3s ease;
-    -moz-transition: all 0.3s ease;
-    -ms-transition: all 0.3s ease;
-    -o-transition: all 0.3s ease;
-    transition: all 0.3s ease;
+  color: #fff;
+  margin: 0;
+  position: relative;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
 }
+
 #return-to-top:hover {
-    background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.6);
 }
+
 #return-to-top:hover i {
-    color: #fff;
-    top: 5px;
+  color: #fff;
+  top: 5px;
 }
 
-[data-jagger-entidlink]{
-  cursor:pointer;
+[data-jagger-entidlink] {
+  cursor: pointer;
 }
-
 
 $facebook-color: #3b5998;
 $twitter-color: #55acee;
@@ -696,13 +666,12 @@ $google-color: #d50f25;
 $fedlogin-color: $primary-color;
 $icon-size: 2rem;
 
-
 .split.button {
   &.fedlogin {
     background: $fedlogin-color;
     span {
-      background: darken($fedlogin-color, 10% );
-      &:after { 
+      background: darken($fedlogin-color, 10%);
+      &:after {
         border: none;
         font-family: "foundation-icons";
         content: "";
@@ -715,8 +684,8 @@ $icon-size: 2rem;
   &.google {
     background: $google-color;
     span {
-      background: darken($google-color, 10% );
-      &:after { 
+      background: darken($google-color, 10%);
+      &:after {
         border: none;
         font-family: "foundation-icons";
         content: "\f1ca";
@@ -733,14 +702,218 @@ $icon-size: 2rem;
     }
   }
 }
-.button.active  {
-   background: darken($fedlogin-color, 20% );
+
+.button.active {
+  background: darken($fedlogin-color, 20%);
 
 }
+
 .buttons-columnVisibility.active {
-    &:before{
-      font-family: "foundation-icons";
-      content: "\f126";
-   }
+  &:before {
+    font-family: "foundation-icons";
+    content: "\f126";
+  }
 
 }
+
+//// IDPSELECT
+#idpSelectIdPSelector {
+  width: auto;
+  margin: rem-calc(5px);
+  text-align: left;
+  padding: rem-calc(10px);
+  z-index: 10000;
+}
+
+#idpSelectPreferredIdPTile {
+  height: rem-calc(138px);
+  /* Force the height so that the  selector box
+                    * goes below when there is only one preslect
+                    */
+  z-index: 10000;
+
+}
+
+div.IdPSelectPreferredIdPButton {
+  z-index: 10000;
+  margin: rem-calc(3px);
+  width: rem-calc(120px);
+  /* Make absolute because 3 of these must fit inside
+                      div.IdPSelect{width} with not much each side. */
+  float: left;
+}
+
+div.IdPSelectPreferredIdPButton a {
+  z-index: 10000;
+  float: left;
+  width: 99%;
+  /* Need a specified width otherwise we'll fit
+                    the contents which we don't want because
+                    they have auto margins */
+  margin-bottom: rem-calc(40px);
+
+}
+
+div.IdPSelectTextDiv {
+  height: rem-calc(3.5ex); /* Add some height to separate the text from the boxes */
+  font-size: rem-calc(15px);
+  z-index: 10000;
+  clear: both;
+}
+
+div#idpSelect select {
+
+  z-index: 10000;
+}
+
+div.IdPSelectPreferredIdPImg {
+  /*  max-width: 95%; */
+  height: rem-calc(69px); /* We need the absolute height to force all buttons to the same size */
+  margin: rem-calc(2px);
+  z-index: 10000;
+}
+
+div.IdPSelectPreferredIdPButton img {
+  display: block; /* Block display to allow auto centring */
+  max-width: rem-calc(114px); /* Specify max to allow scaling, percent does work */
+  max-height: rem-calc(64px); /* Specify max to allow scaling, percent doesn't work */
+  margin-top: rem-calc(3px);
+  margin-bottom: rem-calc(30px);
+  border: solid 0px #000000; /* Strip any embellishments the brower may give us */
+  margin-left: auto; /* Auto centring */
+  margin-right: auto; /* Auto centring */
+  z-index: 10000;
+
+}
+
+div.IdPSelectPreferredIdPButton div.IdPSelectTextDiv {
+  z-index: 10000;
+  text-align: center;
+  font-size: 12px;
+  font-weight: normal;
+  max-width: 95%;
+  height: rem-calc(30px);
+  /* Specify max height to allow two lines.  The
+                    * Javascript controlls the max length of the
+                    * strings
+                    */
+  clear: both;
+}
+
+#idpSelectInput, #idpSelectSelector {
+  width: 80%;
+  z-index: 10000;
+}
+
+#idpSelectSelector {
+  margin-left: rem-calc(2px);
+  margin-right: rem-calc(2px);
+  z-index: 10000;
+
+}
+
+#idpSelectSelectButton, #idpSelectListButton {
+  margin-left: rem-calc(2px);
+  width: 16%;
+  z-index: 10000;
+  background-color: black;
+  background: -moz-linear-gradient(center top, #080808 5%, #1C121C 100%) repeat scroll 0 0 #080808;
+  background: -moz-linear-gradient(center top, #080808 5%, #1C121C 100%) repeat scroll 0 0 #080808;
+  background: -webkit-gradient(linear, center top, center bottom, from(#080808), to(#080808));
+  background-repeat: repeat-x;
+  border: 0 solid #F7F7F7;
+  border-radius: rem-calc(1px 1px 1px 1px);
+  box-shadow: 0 1px 0 0 #614761 inset;
+  color: #EDEDED;
+}
+
+#idpSelectSelectButton {
+  padding-left: 2px;
+  padding-right: 2px;
+  z-index: 10000;
+  background-color: black;
+  background: -moz-linear-gradient(center top, #080808 5%, #1C121C 100%) repeat scroll 0 0 #080808;
+  background: -moz-linear-gradient(center top, #080808 5%, #1C121C 100%) repeat scroll 0 0 #080808;
+  background: -webkit-gradient(linear, center top, center bottom, from(#080808), to(#080808));
+  background-repeat: repeat-x;
+  border: 0 solid #F7F7F7;
+  border-radius: 1px 1px 1px 1px;
+  box-shadow: 0 1px 0 0 #614761 inset;
+  color: #ededed;
+  display: inline-block;
+  font-family: arial;
+  font-size: rem-calc(13px);
+  font-weight: bold;
+  padding: 6px 24px;
+  text-decoration: none;
+}
+
+#idpSelectIdPSelector a:link {
+  text-decoration: none;
+  z-index: 10000;
+}
+
+#idpSelectIdPSelector a:visited {
+  text-decoration: none;
+  z-index: 10000;
+}
+
+#idpSelectIdPSelector a:hover {
+  text-decoration: underline;
+  z-index: 10000;
+}
+
+a.IdPSelectDropDownToggle {
+  display: inline-block;
+  width: 80%;
+  z-index: 10000;
+}
+
+a.IdPSelectHelpButton {
+  display: inline-block;
+  text-align: right;
+  width: 20%;
+  z-index: 10000;
+}
+
+div.IdPSelectDropDown {
+  -moz-box-sizing: border-box;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: small;
+  box-sizing: border-box;
+  border: 1px solid black;
+  z-index: 10000;
+  position: absolute;
+  width: rem-calc(300px);
+  width: auto;
+}
+
+div.IdPSelectDropDown > div {
+
+  z-index: 20000;
+  background-color: green;
+  min-width: rem-calc(200px);
+  width: auto;
+}
+
+div.IdPSelectDropDown div {
+  background-color: white;
+  cursor: default;
+  padding: rem-calc(0px 3px);
+  z-index: 10000;
+}
+
+div.IdPSelectDropDown div.IdPSelectCurrent {
+  background-color: #3366cc;
+  z-index: 10000;
+}
+
+/* END */
+select {
+  z-index: 10000;
+
+}
+
+/// import dataTable
+
+@import "_dataTables.foundation";

@@ -23,7 +23,6 @@ class Providerregistration extends MY_Controller
         $data['titlepage'] = lang('rr_idp_register_title');
         $data['breadcrumbs'] = array(
             array('url' => '#', 'name' => lang('rr_idp_register_title'), 'type' => 'current'),
-
         );
         $data['content_view'] = 'providerregisterform_view';
         $data['formtype'] = 'idp_registration';
@@ -44,7 +43,7 @@ class Providerregistration extends MY_Controller
         $this->load->view('page', $data);
     }
     public function idpsp(){
-        $this->title = lang('title_spreg');
+        $this->title = lang('rr_idpsp_register_title');
         $data['formtype'] = 'idpsp_registration';
         $data['titlepage'] = lang('rr_idpsp_register_title');
         $data['content_view'] = 'providerregisterform_view';

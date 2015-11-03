@@ -55,11 +55,6 @@ $foundation = $base_url . 'foundation/';
         '<meta content=\'rr\' name=\'description\'>' . PHP_EOL .
         '<meta content=\'\' name=\'author\'>' . PHP_EOL .
         '<meta content=\'width=device-width, initial-scale=1.0, user-scalable=0\' name=\'viewport\'>' . PHP_EOL .
-        '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery-ui.css"/>' . PHP_EOL .
-        '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/jquery.jqplot.min.css" />' . PHP_EOL .
-        '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/idpselect.css" />' . PHP_EOL .
-        '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/foundation-icons.css" />' . PHP_EOL .
-        '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/dataTables.foundation.css" />' . PHP_EOL .
         '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/' . $colorTheme . '.css" />' . PHP_EOL .
         '<script src="' . $base_url . 'js/modernizr.min.js"></script>';
     ?>
