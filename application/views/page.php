@@ -311,9 +311,7 @@ $jsToLoad1 = array(
 foreach ($jsToLoad1 as $jsFile) {
     echo '<script type="text/javascript" src="' . $base_url . 'js/' . $jsFile . '"></script>' . PHP_EOL;
 }
-?>
 
-<?php
 if (!empty($load_matrix_js)) {
     echo '<script type="text/javascript">';
     $this->load->view('reports/matrixsp_js_view');
