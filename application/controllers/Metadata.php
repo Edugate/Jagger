@@ -88,6 +88,9 @@ class Metadata extends MY_Controller
         // EntitiesDescriptor
         $xmlOut->startComment();
         $xmlOut->text('Metadata was generated on: ' . $now->format('Y-m-d H:i') . ' UTC' . PHP_EOL . 'TERMS OF USE' . PHP_EOL . $federation->getTou() . PHP_EOL);
+        if($excludeType !== null){
+            $xmlOut->text('Note: '.$excludeType.' type of entities have been exluded from the generated metadata'.PHP_EOL);
+        }
         $xmlOut->endComment();
         $xmlOut->startElementNs('md', 'EntitiesDescriptor', null);
         $xmlOut->writeAttribute('ID', '' . $entitiesDescriptorId . '');
