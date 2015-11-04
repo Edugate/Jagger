@@ -199,6 +199,9 @@ class Sync_metadata extends CI_Controller
         $other = null;
         $time_start = microtime(true);
         $this->metadata2import->import($metadata_body, $typeOfEntities, $full, $defaults, $other);
+        $this->j_ncache->cleanProvidersList('idp');
+        $this->j_ncache->cleanProvidersList('sp');
+        $this->j_ncache->cleanFederationMembers($fed->getId());
         $time_end = microtime(true);
         $exectime = $time_end - $time_start;
         log_message('debug', __METHOD__ . ' total time execution of running import metadata  :: ' . $exectime . ' seconds');
