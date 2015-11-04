@@ -40,9 +40,7 @@ class Dashboard extends MY_Controller
         }
     }
 
-    /**
-     * @return object|string
-     */
+
     private function showFrontPage() {
         /**
          * @var models\Staticpage $frontpage

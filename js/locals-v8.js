@@ -1,11 +1,12 @@
+/* jshint strict: false */
+/*jslint browser: true*/
+/*global $, jQuery, alert*/
 ////////////////////////////////////
 ////////////////////////////////////
 /////// plugins ///////////////////
 $.fn.dataTable.ext.search.push(
     function (settings, data, dataIndex) {
-        var category = $('#entityc option:selected').val();
-        var stype = data[0];
-
+        var category = $('#entityc').val(), stype = data[0];
         if (category === undefined || category === '' || (stype === '1' && category === 'local') || (stype === '0' && category === 'external')) {
             return true;
         }
@@ -145,7 +146,7 @@ function revealAlert(str, btnval) {
  *     ifHidden - callback to execute if one or more elements was hidden
  */
 jQuery.uiTableFilter = function (jq, phrase, column, ifHidden) {
-    var new_hidden = false;
+    var new_hidden = false, elems;
     if (this.last_phrase === phrase) {
         return false;
     }
@@ -173,12 +174,15 @@ jQuery.uiTableFilter = function (jq, phrase, column, ifHidden) {
                 return false;
             }
         });
-        if (index === null) throw("given column: " + column + " not found");
+        if (index === null) {
+            throw("given column: " + column + " not found");
+        }
+
 
         getText = function (elem) {
             return jQuery(elem.find(
-                ("td:eq(" + index + ")"))).text()
-        }
+                ("td:eq(" + index + ")"))).text();
+        };
     }
 
     // if added one letter to last time,
@@ -197,11 +201,11 @@ jQuery.uiTableFilter = function (jq, phrase, column, ifHidden) {
         matches = function (elem) {
 
         };
-        var elems = jq.find("tbody > tr:visible")
+        elems = jq.find("tbody > tr:visible");
     }
     else {
         new_hidden = true;
-        var elems = jq.find("tbody > tr")
+        elems = jq.find("tbody > tr");
     }
 
     elems.each(function () {
@@ -210,7 +214,7 @@ jQuery.uiTableFilter = function (jq, phrase, column, ifHidden) {
             matches(elem) : noMatch(elem);
     });
 
-    last_phrase = phrase;
+    var last_phrase = phrase;
     if (ifHidden && new_hidden) ifHidden();
     return jq;
 };
@@ -272,7 +276,7 @@ function mapInitialize() {
         }
         markers = [];
         var bounds = new google.maps.LatLngBounds();
-        for (var i = 0, place; place = places[i]; i++) {
+        for (var j = 0, place; place = places[j]; j++) {
             var image = {
                 url: place.icon,
                 size: new google.maps.Size(71, 71),
@@ -282,7 +286,7 @@ function mapInitialize() {
             };
 
             // Create a marker for each place.
-            var marker = new google.maps.Marker({
+            marker = new google.maps.Marker({
                 map: map,
                 icon: image,
                 title: place.name,
@@ -453,9 +457,9 @@ var GINIT = {
             var entgroups = ['idp', 'sp', 'both'];
             var entgroupkey;
             var countGroups = [];
-            countGroups['idp'] = 0;
-            countGroups['sp'] = 0;
-            countGroups['both'] = 0;
+            countGroups.idp = 0;
+            countGroups.sp = 0;
+            countGroups.both = 0;
             $.ajax({
                 url: link,
                 type: 'GET',
@@ -852,7 +856,7 @@ var GINIT = {
         });
 
 
-        $("#removeusermodal form").on('submit', function (e) {
+        $("#removeusermodal").on('submit', function (e) {
             e.preventDefault();
             var msgdiv = $(this).find("#removeusermodalmsg").first();
             var inputencusr = $(this).find('#encodedusr').first();
@@ -1044,9 +1048,10 @@ var GINIT = {
                         url: gridUrl2,
                         cache: false,
                         success: function (data3) {
-                            $("form#assignedlogos").replaceWith(data3);
+                            var assignedLogos =  $("form#assignedlogos");
+                            assignedLogos.replaceWith(data3);
                             $('#availablelogos').unbind();
-                            $('form#assignedlogos').unbind();
+                            assignedLogos.unbind();
                             $('#uploadlogo').unbind();
                             $("table#details").unbind();
                             $("form#availablelogos input[name='filename']").unbind("click");
@@ -1506,7 +1511,7 @@ $(document).ready(function () {
                     tbl.push('<tr><td>');
 
                     var addLabel = '';
-                    var disableBtn = ''
+                    var disableBtn = '';
                     var disableBtnClass = '';
                     if (d.isyou === true) {
                         addLabel = addLabel + ' <span class="label warning">' + dictIsYou + '</span>';
@@ -2260,10 +2265,10 @@ $(document).ready(function () {
                             requiredAttr = a['data']['attributes']['' + k + ''];
                             cell = v[0].toUpperCase();
                             if (requiredAttr === undefined) {
-                                cl = 'dis'
+                                cl = 'dis';
                             }
                             else if (requiredAttr === 0) {
-                                cl = 'den'
+                                cl = 'den';
                             }
                             else if (requiredAttr === 1) {
                                 if (cell === 'R') {
@@ -2289,7 +2294,7 @@ $(document).ready(function () {
             error: function () {
                 spinner.hide();
             }
-        })
+        });
     });
     var providerdetailurl;
 
@@ -2325,14 +2330,8 @@ $(document).ready(function () {
                 success: function (data) {
                     spinner.hide();
                     meter.css('width', '100%');
-                    var idf;
-                    var supplbl;
-                    var policy;
-                    var datajaggersup;
+                    var idf, supplbl, policy, datajaggersupm, support = [];
                     if (data.type === 'supported') {
-
-
-                        var support = [];
                         $.each(data.data.support, function (k, v) {
                             support.push(v);
                         });
@@ -2360,12 +2359,10 @@ $(document).ready(function () {
                             }
 
                             idf = support.indexOf(parseInt(i));
+                            var datajaggersup = '1';
                             if (idf === -1) {
                                 supplbl = '&nbsp;<span class="label alert">' + data.definitions.policy[1000] + '</span>';
                                 datajaggersup = '0';
-                            }
-                            else {
-                                datajaggersup = '1';
                             }
                             tbl += supplbl;
                             tbl += '</td><td>';
@@ -2387,7 +2384,6 @@ $(document).ready(function () {
 
                     }
                     else if (data.type === 'federation') {
-                        var support = [];
                         $.each(data.data.support, function (k, v) {
                             support.push(v);
                         });
@@ -2454,7 +2450,6 @@ $(document).ready(function () {
                         target.html(tbl);
                     }
                     else if (data.type === 'entcat') {
-                        support = [];
                         nrcols = 0;
                         var labelclass = '';
                         var entpolicy;
@@ -2515,7 +2510,6 @@ $(document).ready(function () {
                         });
                         tbl += '</tr></thead>';
 ////////////////////////////////////////////////////////
-                        support = [];
                         $.each(data.data.supported, function (ks, vs) {
                             support.push(vs);
                         });
@@ -3134,7 +3128,7 @@ $(document).ready(function () {
                         var tbody_data = $('<tbody></tbody>');
                         var thdata = '<thead><tr><th colspan="2">Current attribute flow</th></tr></thead>';
                         $.each(json.details, function (i, v) {
-                            var trdata = '<tr><td>' + v.name + '</td><td>' + v.value + '</td/></tr>';
+                            var trdata = '<tr><td>' + v.name + '</td><td>' + v.value + '</td></tr>';
                             tbody_data.append(trdata);
                         });
                         var tbl = $('<table/>').css({'font-size': 'smaller'}).addClass('detailsnosort').addClass('small-12').addClass('columns');
@@ -3505,16 +3499,18 @@ $(document).ready(function () {
 $(function () {
 
 
+    var filterElement = $("#filter");
+    var filterForm = $('#filter-form');
     $('div.floating-menu').addClass('mobilehidden');
     $('table.idplist tr td:first-child').addClass('homeorg');
     $('table.idplist tr td:first-child span.alert').removeClass('alert').parent().addClass('alert');
     var theTable1 = $('table.filterlist');
     theTable1.find("tbody > tr").find("td:eq(1)").mousedown(function () {
     });
-    $("#filter").keyup(function () {
+    filterElement.keyup(function () {
         $.uiTableFilter(theTable1, this.value);
     });
-    $('#filter-form').submit(function () {
+    filterForm.submit(function () {
         theTable1.find("tbody > tr:visible > td:eq(1)").mousedown();
         return false;
     }).focus();
@@ -3523,10 +3519,10 @@ $(function () {
     var theTable2 = $('table.splist');
     theTable2.find("tbody > tr").find("td:eq(1)").mousedown(function () {
     });
-    $("#filter").keyup(function () {
+    filterElement.keyup(function () {
         $.uiTableFilter(theTable2, this.value);
     });
-    $('#filter-form').submit(function () {
+    filterForm.submit(function () {
         theTable2.find("tbody > tr:visible > td:eq(1)").mousedown();
         return false;
     }).focus();
@@ -3737,47 +3733,6 @@ $(function () {
         return false;
     });
 
-
-    $("a#synchsettings").click(function () {
-        var link = $(this), url = link.attr("href");
-        var value = $('<ul/>');
-        $.ajax({
-            url: url,
-            timeout: 2500,
-            cache: false,
-            success: function (json) {
-                $('#spinner').hide();
-                var data = $.parseJSON(json);
-                if (!data) {
-                    window.alert('no data');
-                }
-                else {
-                    var nlist = $('<ul/>');
-                    $.each(data, function (i, v) {
-                        var div_data = '<li>' + v.result + '</li>';
-                        nlist.append(div_data);
-                    });
-                    value.append(nlist);
-
-                }
-            },
-            beforeSend: function () {
-                $('#spinner').show();
-            },
-            error: function () {
-                $('#spinner').hide();
-                window.alert('problem with loading data');
-            }
-
-        }).done(function () {
-            var nextrow = value.html();
-            //$(nextrow).insertAfter(row);
-            $("div#syncresult").replaceWith(nextrow);
-
-        });
-        return false;
-    });
-
     $('table.reqattraddform').addClass('hidden');
     $('button.hideform').addClass('hidden');
     $('form.reqattraddform').addClass('hidden');
@@ -3798,53 +3753,6 @@ $(function () {
     $("div.nsortable").sortable();
     $("#sortable").disableSelection();
 
-
-    //  var icons = $( ".accordionButton" ).accordion( "option", "icons" );
-    //   $( ".accordionButton" ).accordion( "option", "icons", { "header": "ui-icon-plus", "headerSelected": "ui-icon-minus" } );
-    //ACCORDION BUTTON ACTION (ON CLICK DO THE FOLLOWING)
-    $('.accordionButton1').click(function () {
-
-
-        //REMOVE THE ON CLASS FROM ALL BUTTONS
-        $('.accordionButton1').removeClass('on');
-        $('.accordionButton1').addClass('off');
-        //NO MATTER WHAT WE CLOSE ALL OPEN SLIDES
-        $('.accordionContent1').slideUp('fast');
-
-        //IF THE NEXT SLIDE WASN'T OPEN THEN OPEN IT
-        if ($(this).next().is(':hidden') === true) {
-
-            //ADD THE ON CLASS TO THE BUTTON
-            $(this).addClass('on');
-            $(this).removeClass('off');
-
-
-            //OPEN THE SLIDE
-            $(this).next().slideDown('fast');
-        }
-
-    });
-
-
-    /*** REMOVE IF MOUSEOVER IS NOT REQUIRED ***/
-
-        //ADDS THE .OVER CLASS FROM THE STYLESHEET ON MOUSEOVER
-
-    $('.accordionButton1').mouseover(function () {
-        $(this).addClass('over');
-
-        //ON MOUSEOUT REMOVE THE OVER CLASS
-    }).mouseout(function () {
-        $(this).removeClass('over');
-    });
-
-    /*** END REMOVE IF MOUSEOVER IS NOT REQUIRED ***/
-
-
-    /********************************************************************************************************************
-     CLOSES ALL S ON PAGE LOAD
-     ********************************************************************************************************************/
-//	$('.accordionContent1').toggle();
 
 });
 
@@ -4599,7 +4507,7 @@ if ($('#providerslistresultv2').length) {
                                     cell = cell + ' <span class="lbl lbl-' + s + '-' + w[s] + '">' + result['statedefs'][s][w[s]] + '</span>';
                                 }
                             }
-                            else if( s ==='contacts'){
+                            else if (s === 'contacts') {
                                 cell = cell + w.contacts.join("<br />");
                             }
                             else {
@@ -4909,12 +4817,9 @@ $('button[name="update2f"]').click(function (e) {
 });
 
 var checkRegpol;
-
-$('input[type="radio"].withuncheck').hover(function () {
+$('input[type="radio"].withuncheck').on('hover',function(){
     checkRegpol = $(this).is(':checked');
-});
-
-$('input[type="radio"].withuncheck').click(function () {
+}).on('click',function(){
     checkRegpol = !checkRegpol;
     $(this).attr('checked', checkRegpol);
 });
