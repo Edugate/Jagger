@@ -11,6 +11,7 @@ $lang['for']                        = 'for';
 $lang['from']                       = 'from';
 $lang['if']                         = 'if';
 $lang['write']                      = 'write';
+$lang['rr_only']                    = 'only';
 $lang['rrmatrix']                   = 'Matrix';
 $lang['rrshowmatrix']               = 'Show matrix';
 $lang['menu']                       = 'Menu';

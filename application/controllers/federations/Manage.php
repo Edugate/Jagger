@@ -34,12 +34,13 @@ class Manage extends MY_Controller
          */
         $federationCategories = $this->em->getRepository("models\FederationCategory")->findAll();
         foreach ($federationCategories as $v) {
-            $result[] = array('catid' => '' . $v->getId() . '',
-                'name' => '' . $v->getName() . '',
-                'title' => '' . $v->getFullName() . '',
-                'desc' => '' . $v->getDescription() . '',
-                'default' => '' . $v->isDefault() . '');
+            $result[] = array('catid'   => '' . $v->getId() . '',
+                              'name'    => '' . $v->getName() . '',
+                              'title'   => '' . $v->getFullName() . '',
+                              'desc'    => '' . $v->getDescription() . '',
+                              'default' => '' . $v->isDefault() . '');
         }
+
         return $result;
     }
 
@@ -51,10 +52,10 @@ class Manage extends MY_Controller
         $this->title = lang('title_fedlist');
 
         $data = array(
-            'categories' => $this->getFedcatsToArray(),
-            'titlepage' => lang('rr_federation_list'),
+            'categories'   => $this->getFedcatsToArray(),
+            'titlepage'    => lang('rr_federation_list'),
             'content_view' => 'federation/list_view.php',
-            'breadcrumbs' => array(
+            'breadcrumbs'  => array(
                 array('url' => base_url('federations/manage'), 'name' => lang('rr_federations'), 'type' => 'current')
             ),
         );
@@ -65,6 +66,7 @@ class Manage extends MY_Controller
         $cachedResult = $this->j_ncache->getFederationMembers($federation->getId(), $lang);
         if (!empty($cachedResult)) {
             log_message('debug', __METHOD__ . ' retrieved fedmembers (lang:' . $lang . ') from cache');
+
             return $cachedResult;
         } else {
             log_message('debug', __METHOD__ . ' no data in cache');
@@ -78,10 +80,10 @@ class Manage extends MY_Controller
         $membership = $tmpProviders->getFederationMembersInLight($federation);
 
         $membersInArray = array('idp' => array(), 'sp' => array(), 'both' => array(), 'definitions' => array(
-            'idp' => lang('identityproviders'),
-            'sp' => lang('serviceproviders'),
-            'both' => lang('identityserviceproviders'),
-            'preurl' => base_url() . 'providers/detail/show/',
+            'idp'       => lang('identityproviders'),
+            'sp'        => lang('serviceproviders'),
+            'both'      => lang('identityserviceproviders'),
+            'preurl'    => base_url() . 'providers/detail/show/',
             'nomembers' => lang('rr_nomembers'),
 
         ));
@@ -94,13 +96,13 @@ class Manage extends MY_Controller
                 $name = $p->getNameToWebInLang($lang, 'sp');
             }
             $membersInArray['' . $ptype . ''][] = array(
-                'pid' => $p->getId(),
+                'pid'       => $p->getId(),
                 'mdisabled' => (int)$m->isDisabled(),
-                'mbanned' => (int)$m->isBanned(),
-                'entityid' => $p->getEntityId(),
-                'pname' => html_escape($name),
-                'penabled' => $p->getAvailable(),
-                'regdate' => $p->getRegistrationDateInFormat('Y-m')
+                'mbanned'   => (int)$m->isBanned(),
+                'entityid'  => $p->getEntityId(),
+                'pname'     => html_escape($name),
+                'penabled'  => $p->getAvailable(),
+                'regdate'   => $p->getRegistrationDateInFormat('Y-m')
             );
         }
 
@@ -140,6 +142,7 @@ class Manage extends MY_Controller
         }
         $preresult = $this->getMembers($federation, MY_Controller::getLang());
         $result = array('idp' => count($preresult['idp']), 'sp' => count($preresult['sp']), 'both' => count($preresult['both']), 'definitions' => $preresult['definitions']);
+
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
@@ -199,10 +202,11 @@ class Manage extends MY_Controller
         $d = array();
         $altMetaUrlEnabled = $federation->getAltMetaUrlEnabled();
 
-        if ($altMetaUrlEnabled === TRUE) {
+        if ($altMetaUrlEnabled === true) {
             $altMetaUrl = $federation->getAltMetaUrl();
             $lbl = lang('metapublicationurl');
             $d[] = array($lbl, anchor($altMetaUrl));
+
             return $d;
         }
 
@@ -218,7 +222,7 @@ class Manage extends MY_Controller
         if (empty($digestExport)) {
             $digestExport = $defaultDigest;
         }
-        $metaLink = base_url() . 'metadata/federation/' . $federation->getSysname() . '/metadata.xml';
+        $metaLinkPrefix = base_url() . 'metadata/federation/' . $federation->getSysname() . '';
         $metaLinkSigned = base_url() . 'signedmetadata/federation/' . $federation->getSysname() . '/metadata.xml';
         $metaExportLink = base_url() . 'metadata/federationexport/' . $federation->getSysname() . '/metadata.xml';
         $metaExportLinkSigned = base_url() . 'signedmetadata/federationexport/' . $federation->getSysname() . '/metadata.xml';
@@ -226,15 +230,26 @@ class Manage extends MY_Controller
             $d[] = array(lang('rr_fedmetaunsingedlink'), '<span class="lbl lbl-disabled fedstatusinactive">' . lang('rr_fed_inactive') . '</span> ' . $metaLink);
             $d[] = array(lang('rr_fedmetasingedlink'), '<span class="lbl lbl-disabled fedstatusinactive">' . lang('rr_fed_inactive') . '</span> ' . $metaLinkSigned);
         } else {
-            $d[] = array(
-                lang('rr_fedmetaunsingedlink'),
-                $metaLink . ' ' . anchor($metaLink, '<i class="fi-arrow-right"></i>', 'class=""')
+            array_push($d,
+                array(
+                    lang('rr_fedmetaunsingedlink'),
+                    $metaLinkPrefix.'/metadata.xml' . ' ' . anchor($metaLinkPrefix.'/metadata.xml', '<i class="fi-arrow-right"></i>', 'class=""')
+                ),
+                array(
+                    lang('rr_fedmetaunsingedlink').' <span class="label">'.lang('rr_only').' '.lang('identityproviders').'</span>',
+                    $metaLinkPrefix.'/IDP/metadata.xml' . ' ' . anchor($metaLinkPrefix.'/IDP/metadata.xml', '<i class="fi-arrow-right"></i>', 'class=""')
+                ),
+                array(
+                    lang('rr_fedmetaunsingedlink').' <span class="label">'.lang('rr_only').' '.lang('serviceproviders').'</span>',
+                    $metaLinkPrefix.'/SP/metadata.xml' . ' ' . anchor($metaLinkPrefix.'/SP/metadata.xml', '<i class="fi-arrow-right"></i>', 'class=""')
+                ),
+                array(
+                    lang('rr_fedmetasingedlink') . ' <span class="label">' . $digest . '</span>', $metaLinkSigned . " " . anchor_popup($metaLinkSigned, '<i class="fi-arrow-right"></i>'))
             );
-            $d[] = array(
-                lang('rr_fedmetasingedlink') . ' <span class="label">' . $digest . '</span>', $metaLinkSigned . " " . anchor_popup($metaLinkSigned, '<i class="fi-arrow-right"></i>'));
+
         }
         $lexportenabled = $federation->getLocalExport();
-        if ($lexportenabled === TRUE) {
+        if ($lexportenabled === true) {
             $d[] = array(lang('rr_fedmetaexportunsingedlink'), $metaExportLink . " " . anchor_popup($metaExportLink, '<i class="fi-arrow-right"></i>', 'class=""'));
             $d[] = array(lang('rr_fedmetaexportsingedlink') . ' <span class="label">' . $digestExport . '</span>', $metaExportLinkSigned . " " . anchor_popup($metaExportLinkSigned, '<i class="fi-arrow-right"></i>'));
         }
@@ -268,10 +283,10 @@ class Manage extends MY_Controller
          * @var bool[] $access
          */
         $access = array(
-            'hasReadAccess' => $this->zacl->check_acl('f_' . $federationID, 'read', 'federation', ''),
-            'hasWriteAccess' => $this->zacl->check_acl('f_' . $federationID, 'write', 'federation', ''),
+            'hasReadAccess'    => $this->zacl->check_acl('f_' . $federationID, 'read', 'federation', ''),
+            'hasWriteAccess'   => $this->zacl->check_acl('f_' . $federationID, 'write', 'federation', ''),
             'hasAddbulkAccess' => $this->zacl->check_acl('f_' . $federationID, 'addbulk', 'federation', ''),
-            'hasManageAccess' => $this->zacl->check_acl('f_' . $federationID, 'manage', 'federation', '')
+            'hasManageAccess'  => $this->zacl->check_acl('f_' . $federationID, 'manage', 'federation', '')
         );
         $canEdit = (boolean)($access['hasManageAccess'] || $access['hasWriteAccess']);
         $editAttributesLink = '';
@@ -280,8 +295,8 @@ class Manage extends MY_Controller
         if (!$access['hasReadAccess'] && ($federation->getPublic() === false)) {
             return $this->load->view('page', array(
                 'content_view' => 'nopermission',
-                'error' => lang('rrerror_noperm_viewfed'),
-                'breadcrumbs' => array(
+                'error'        => lang('rrerror_noperm_viewfed'),
+                'breadcrumbs'  => array(
                     array(
                         'url' => base_url('federations/manage'), 'name' => lang('rr_federations')
                     ),
@@ -312,23 +327,23 @@ class Manage extends MY_Controller
 
 
         $data = array(
-            'federation_id' => $federation->getId(),
-            'bookmarked' => $bookmarked,
-            'federation_name' => html_escape($federation->getName()),
-            'federation_sysname' => html_escape($federation->getSysname()),
-            'federation_urn' => html_escape($federation->getUrn()),
-            'federation_desc' => html_escape($federation->getDescription()),
+            'federation_id'        => $federation->getId(),
+            'bookmarked'           => $bookmarked,
+            'federation_name'      => html_escape($federation->getName()),
+            'federation_sysname'   => html_escape($federation->getSysname()),
+            'federation_urn'       => html_escape($federation->getUrn()),
+            'federation_desc'      => html_escape($federation->getDescription()),
             'federation_is_active' => $federation->getActive(),
-            'titlepage' => lang('rr_feddetail') . ': ' . html_escape($federation->getName()),
-            'content_view' => 'federation/federation_show_view',
-            'breadcrumbs' => array(
+            'titlepage'            => lang('rr_feddetail') . ': ' . html_escape($federation->getName()),
+            'content_view'         => 'federation/federation_show_view',
+            'breadcrumbs'          => array(
                 array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
                 array('url' => '#', 'name' => '' . $federation->getName() . '', 'type' => 'current'),
 
             ),
-            'fedpiechart' => '<div class="row"><div><canvas id="fedpiechart" ></canvas></div><div id="fedpiechartlegend"></div></div>',
-            'sideicons' => &$sideicons,
-            'result' => array('fvalidators' => array()),
+            'fedpiechart'          => '<div class="row"><div><canvas id="fedpiechart" ></canvas></div><div id="fedpiechartlegend"></div></div>',
+            'sideicons'            => &$sideicons,
+            'result'               => array('fvalidators' => array()),
         );
         if ($access['hasWriteAccess']) {
             $data['fvalidator'] = true;
@@ -341,7 +356,7 @@ class Manage extends MY_Controller
         $requiredAttributes = $federation->getAttributesRequirement()->getValues();
         $contactLists = array(
             'idp' => anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/idp', lang('rr_fed_cntidps_list') . ' <i class="fi-download"></i>'),
-            'sp' => anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/sp', lang('rr_fed_cntisps_list') . ' <i class="fi-download"></i>'),
+            'sp'  => anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '/sp', lang('rr_fed_cntisps_list') . ' <i class="fi-download"></i>'),
             'all' => anchor(base_url() . 'federations/manage/showcontactlist/' . $encodedFedName . '', lang('rr_fed_cnt_list') . ' <i class="fi-download"></i>')
 
         );
@@ -422,6 +437,7 @@ class Manage extends MY_Controller
         $this->load->library('form_validation');
         $this->form_validation->set_rules('provider', lang('rr_provider'), 'required|numeric|xss_clean');
         $this->form_validation->set_rules('message', lang('rr_message'), 'required|xss_clean');
+
         return $this->form_validation->run();
     }
 
@@ -429,6 +445,7 @@ class Manage extends MY_Controller
         $this->load->library('form_validation');
         $this->form_validation->set_rules('provider', lang('rr_provider'), 'required|numeric|xss_clean');
         $this->form_validation->set_rules('message', lang('rr_message'), 'required|xss_clean');
+
         return $this->form_validation->run();
     }
 
@@ -450,7 +467,7 @@ class Manage extends MY_Controller
         if (!$hasWriteAccess) {
             show_error('no access', 403);
         }
-        if ($this->inviteSubmitValidate() === TRUE) {
+        if ($this->inviteSubmitValidate() === true) {
             $provider_id = $this->input->post('provider');
             $message = $this->input->post('message');
             /**
@@ -497,10 +514,10 @@ class Manage extends MY_Controller
         }
 
         $data2merge = array(
-            'fedname' => $federation->getName(),
-            'titlepage' => lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()) . '">' . $federation->getName() . '</a>',
-            'fedurl' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''),
-            'breadcrumbs' => array(
+            'fedname'      => $federation->getName(),
+            'titlepage'    => lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()) . '">' . $federation->getName() . '</a>',
+            'fedurl'       => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''),
+            'breadcrumbs'  => array(
                 array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
                 array('url' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''), 'name' => html_escape($federation->getName())),
                 array('url' => base_url('#'), 'name' => 'Invitation', 'type' => 'current'),
@@ -528,7 +545,7 @@ class Manage extends MY_Controller
         if (!$hasWriteAccess) {
             show_error('no access', 403);
         }
-        if ($this->removeSubmitValidate() === TRUE) {
+        if ($this->removeSubmitValidate() === true) {
             $provider_id = $this->input->post('provider');
             $message = $this->input->post('message');
             /**
@@ -600,16 +617,16 @@ class Manage extends MY_Controller
             }
         }
         $data2merge = array(
-            'titlepage' => lang('rr_federation') . ': ' . ' ' . anchor(base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()), $federation->getName()),
-            'subtitlepage' => lang('rmprovfromfed'),
-            'content_view' => 'federation/remove_provider_view',
+            'titlepage'      => lang('rr_federation') . ': ' . ' ' . anchor(base_url() . 'federations/manage/show/' . base64url_encode($federation->getName()), $federation->getName()),
+            'subtitlepage'   => lang('rmprovfromfed'),
+            'content_view'   => 'federation/remove_provider_view',
             'encodedfedname' => base64url_encode($federation->getName()),
-            'breadcrumbs' => array(
+            'breadcrumbs'    => array(
                 array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
                 array('url' => base_url('federations/manage/show/' . base64url_encode($federation->getName()) . ''), 'name' => '' . $federation->getName() . ''),
                 array('url' => '#', 'type' => 'current', 'name' => lang('rmprovfromfed'))
             ),
-            'fedname' => $federation->getName(),
+            'fedname'        => $federation->getName(),
         );
         $current_members = $federation->getMembers();
         if ($current_members->count() == 0) {
@@ -649,6 +666,7 @@ class Manage extends MY_Controller
         }
         $idsuffix = $validfor->format('YmdHis');
         $entitiesDescriptorId = $idprefix . $idsuffix;
+
         return array(lang('rr_fed_descid'), html_escape($entitiesDescriptorId) . ' <span class="label">' . lang('rr_entdesciddyn') . '</span>');
     }
 
@@ -671,7 +689,7 @@ class Manage extends MY_Controller
             $editbtn = '<a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '/' . $f->getId() . '" class="editbutton editicon right button small">' . lang('rr_edit') . '</a>';
 
             $fedstatusLabels = array(
-                'en' => makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled')),
+                'en'  => makeLabel('active', lang('lbl_enabled'), lang('lbl_enabled')),
                 'man' => makeLabel('active', lang('lbl_mandatory'), lang('lbl_mandatory')),
                 'reg' => makeLabel('active', lang('lbl_fvalidonreg'), lang('lbl_fvalidonreg')),
             );
@@ -726,6 +744,7 @@ class Manage extends MY_Controller
             $this->table->clear();
         }
         $fvdata .= '</dl>';
+
         return array(array('data' => array('data' => $fvdata, 'colspan' => 2, 'class' => '')));
 
 
