@@ -31,7 +31,7 @@ class J_ncache
      */
     public function cleanProvidersList($type)
     {
-        $guilangs = MY_Controller::guiLangs();
+        $guilangs = (array) MY_Controller::guiLangs();
         $langs = array_keys($guilangs);
         $cachePrefix = $type . '_l_';
         foreach ($langs as $v) {
@@ -46,7 +46,7 @@ class J_ncache
      */
     public function cleanFederationMembers($fedId)
     {
-        $guilangs = MY_Controller::guiLangs();
+        $guilangs = (array) MY_Controller::guiLangs();
         $langs = array_keys($guilangs);
         $cachePrefix = 'fedmbrs_' . $fedId . '_';
         foreach ($langs as $v) {
