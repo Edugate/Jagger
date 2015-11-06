@@ -1252,6 +1252,9 @@ class Provider
      */
     public function getRegistrationDateInFormat($format, $offset = 0) {
         if (!empty($this->registerdate)) {
+            if($offset < 0){
+                return \date($format, $this->registerdate->format('U') - abs($offset));
+            }
             return \date($format, $this->registerdate->format('U') + $offset);
         }
 

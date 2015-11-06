@@ -507,7 +507,7 @@ class Providerdetails
         $entStatus = $this->makeStatusLabels();
         $d[$i]['value'] = '<b>' . $entStatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
-        $d[$i]['value'] = '<b>' . date('Y-m-d H:i:s', $ent->getLastModified()->format('U') + jauth::$timeOffset) . '</b>';
+        $d[$i]['value'] ='<b>' .jaggerDisplayDateTimeByOffset($ent->getLastModified(),jauth::$timeOffset).'</b>';
         $entityIdRecord = array('name' => lang('rr_entityid'), 'value' => $ent->getEntityId());
         $d[++$i] = &$entityIdRecord;
 
@@ -565,7 +565,7 @@ class Providerdetails
         $d[++$i]['name'] = lang('rr_regdate');
         $regdate = $ent->getRegistrationDate();
         if ($regdate !== null) {
-            $d[$i]['value'] = '<span data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" class="has-tip" title="' . date('Y-m-d H:i', $regdate->format('U')) . ' UTC">' . date('Y-m-d H:i', $regdate->format('U') + jauth::$timeOffset) . '</span>';
+            $d[$i]['value'] = '<span data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" class="has-tip" title="' . date('Y-m-d H:i', $regdate->format('U')) . ' UTC">' .jaggerDisplayDateTimeByOffset($regdate,jauth::$timeOffset) . '</span>';
         } else {
             $d[$i]['value'] = null;
         }
@@ -621,15 +621,13 @@ class Providerdetails
         }
 
         $d[++$i]['name'] = lang('rr_validfromto') . ' <div class="dhelp">' . lang('d_validfromto') . '</div>';
+        $validfrom = lang('rr_unlimited');
         if ($ent->getValidFrom()) {
-            $validfrom = date('Y M d HH:MM', $ent->getValidFrom()->format('U') + jauth::$timeOffset);
-        } else {
-            $validfrom = lang('rr_unlimited');
+            $validfrom =  jaggerDisplayDateTimeByOffset($ent->getValidFrom(),jauth::$timeOffset);
         }
+        $validto = lang('rr_unlimited');
         if ($ent->getValidTo()) {
-            $validto = date('Y M d H:i', $ent->getValidTo()->format('U') + jauth::$timeOffset);
-        } else {
-            $validto = lang('rr_unlimited');
+            $validto = jaggerDisplayDateTimeByOffset($ent->getValidTo(),jauth::$timeOffset);
         }
         if ($isValidTime) {
             $d[$i]['value'] = $validfrom . ' <b>--</b> ' . $validto;

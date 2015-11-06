@@ -24,7 +24,7 @@ foreach($actionlogs as $ath)
 {
     $subtype = $ath->getSubType();
             if ($subtype === 'modification') {
-                $date = $ath->getCreated()->modify('+ ' . jauth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
+                $date = jaggerDisplayDateTimeByOffset($ath->getCreated(),jauth::$timeOffset);
                 $d = unserialize($ath->getDetail());
                 $dstr = '<br />';
                 if (is_array($d)) {
@@ -46,7 +46,7 @@ foreach($actionlogs as $ath)
                 $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . '  ' . $dstr;
                 $this->table->add_row($date, $detail);
             } elseif ($subtype === 'create' || $subtype == 'remove') {
-                $date = $ath->getCreated()->modify('+ ' . jauth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
+                $date = jaggerDisplayDateTimeByOffset($ath->getCreated(),jauth::$timeOffset);
                 $detail = 'Type: ' . $ath->getResourceType() . ', name:' . $ath->getResourceName() . ' -- ' . $ath->getDetail();
                 $this->table->add_row($date, $detail);
             }

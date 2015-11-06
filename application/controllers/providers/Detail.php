@@ -145,7 +145,7 @@ class Detail extends MY_Controller
             $arpLogs = $tmpLogs->getArpDownloaded($ent);
             $loggHtml = '<ul class="no-bullet">';
             foreach ($arpLogs as $l) {
-                $loggHtml .= '<li><b>' . date('Y-m-d H:i:s', $l->getCreated()->format('U') + jauth::$timeOffset) . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
+                $loggHtml .= '<li><b>' . jaggerDisplayDateTimeByOffset($l->getCreated(),jauth::$timeOffset) . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
             }
             $loggHtml .= '</ul>';
             $rows[] = array('name' => '' . lang('rr_recentarpdownload') . '', 'value' => '' . $loggHtml . '');

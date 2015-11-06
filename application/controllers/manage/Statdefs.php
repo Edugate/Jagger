@@ -329,7 +329,7 @@ class Statdefs extends MY_Controller
             $downurl = base_url('manage/statistics/show/');
             $dowinfo = lang('statfilegenerated');
             foreach ($statfiles as $st) {
-                $createdAt = date('Y-m-d H:i:s', $st->getCreatedAt()->format("U") + jauth::$timeOffset);
+                $createdAt = jaggerDisplayDateTimeByOffset($st->getCreatedAt(),jauth::$timeOffset);
                 $statv .= '<li><a href="' . $downurl . '/' . $st->getId() . '">' . $dowinfo . ': ' . $createdAt . '</a></li>';
             }
             $statv .= '</ul>';

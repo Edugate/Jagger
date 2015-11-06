@@ -128,8 +128,8 @@ class Providerupdater
             $prevregtime = '';
             $prevregistrationdate = $ent->getRegistrationDate();
             if (isset($prevregistrationdate)) {
-                $prevregdate = date('Y-m-d', $prevregistrationdate->format('U') + jauth::$timeOffset);
-                $prevregtime = date('H:i', $prevregistrationdate->format('U') + jauth::$timeOffset);
+                $prevregdate = jaggerDisplayDateTimeByOffset($prevregistrationdate,0,'Y-m-d');
+                $prevregtime = jaggerDisplayDateTimeByOffset($prevregistrationdate,0,'H:i');
             }
             if (!array_key_exists('registrationtime', $cData) || empty($cData['registrationtime'])) {
                 $tmpnow = new \DateTime('now');

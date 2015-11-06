@@ -263,7 +263,7 @@ class Entitystate extends MY_Controller
                 }
             }
             if (!empty($validuntildate) && !empty($validuntiltime)) {
-                $validuntil = new DateTime($validuntildate . 'T' . $validuntiltime);
+                $validuntil = new DateTime($validuntildate . 'T' . $validuntiltime, new \DateTimeZone('UTC'));
                 $this->entity->setValidTo($validuntil);
             } else {
                 $this->entity->setValidTo(null);
@@ -296,16 +296,16 @@ class Entitystate extends MY_Controller
         $data['type'] = strtolower($this->entity->getType());
         $validfrom = $this->entity->getValidFrom();
         if (!empty($validfrom)) {
-            $validfromdate = date('Y-m-d', $validfrom->format('U') + jauth::$timeOffset);
-            $validfromtime = date('H:i', $validfrom->format('U') + jauth::$timeOffset);
+            $validfromdate = jaggerDisplayDateTimeByOffset($validfrom,0,'Y-m-d');
+            $validfromtime = jaggerDisplayDateTimeByOffset($validfrom,0,'H:i');
         } else {
             $validfromdate = '';
             $validfromtime = '';
         }
         $validuntil = $this->entity->getValidTo();
         if (!empty($validuntil)) {
-            $validuntildate = date('Y-m-d', $validuntil->format('U'));
-            $validuntiltime = date('H:i', $validuntil->format('U'));
+            $validuntildate = jaggerDisplayDateTimeByOffset($validuntil,0,'Y-m-d');
+            $validuntiltime = jaggerDisplayDateTimeByOffset($validuntil,0,'H:i');
         } else {
             $validuntildate = '';
             $validuntiltime = '';

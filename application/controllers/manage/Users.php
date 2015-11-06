@@ -331,7 +331,7 @@ class Users extends MY_Controller
         $authnLogs = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $user->getUsername()), array('createdAt' => 'DESC'), $limitAuthnRows);
         foreach ($authnLogs as $ath) {
             $tab3[] = array(
-                'key' => $ath->getCreated()->modify('+ ' . jauth::$timeOffset . ' seconds')->format('Y-m-d H:i:s'),
+                'key' => jaggerDisplayDateTimeByOffset($ath->getCreated(),jauth::$timeOffset),
                 'val' => $ath->getDetail() . '<br /><small><i>' . $ath->getAgent() . '</i></small>'
             );
         }
@@ -406,7 +406,7 @@ class Users extends MY_Controller
             $last = $u->getLastlogin();
             $lastlogin = '';
             if (!empty($last)) {
-                $lastlogin = $last->modify('+ ' . jauth::$timeOffset . ' seconds')->format('Y-m-d H:i:s');
+                $lastlogin = jaggerDisplayDateTimeByOffset($last,jauth::$timeOffset);
             }
             $usersList[] = array('user' => anchor($showlink . '/' . $encodedUsername, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'ip' => implode(', ', $u->getSystemRoleNames()), 'last' => $lastlogin, $editLink . ' ' . $action);
         }

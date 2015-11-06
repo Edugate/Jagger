@@ -74,7 +74,7 @@ class Subscriber extends MY_Controller
                 'email' => '' . $subscription->getAltEmail() . '',
                 'enabled' => '' . $subscription->getEnabled() . '',
                 'approved' => '' . $subscription->getApproved() . '',
-                'updated' => '' . date('Y-m-d H:i:s', $subscription->getUpdatedAt()->format('U') + jauth::$timeOffset) . '',
+                'updated' => '' . jaggerDisplayDateTimeByOffset($subscription->getUpdatedAt(),jauth::$timeOffset),
                 'langstatus' => $status,
                 'langprovider' => lang('rr_provider'),
                 'langfederation' => lang('rr_federation'),

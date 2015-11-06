@@ -1,17 +1,26 @@
 <?php
 
 
-function revealBtnsRow($btns)
-{
+function jaggerDisplayDateTimeByOffset(\DateTime $dateTime, $timeOffset, $outFormat = 'Y-m-d H:i:s') {
+    if ($timeOffset >= 0) {
+        $result = date(''.$outFormat.'', $dateTime->format('U') + abs($timeOffset));
+    } else {
+        $result = date(''.$outFormat.'', $dateTime->format('U') - abs($timeOffset));
+    }
+
+    return $result;
+}
+
+function revealBtnsRow($btns) {
     $r = '<ul class="button-group text-right">';
     foreach ($btns as $btn) {
         $r .= '<li>' . $btn . '</li>';
     }
+
     return $r;
 }
 
-function jaggerTagsReplacer($str)
-{
+function jaggerTagsReplacer($str) {
     $pattern = '#\[\[jagger\:\:(.*?)\]\]#s';
     preg_match_all($pattern, $str, $match);
 
@@ -30,7 +39,6 @@ function jaggerTagsReplacer($str)
                 $varray[$e] = $exp[++$i];
             }
         }
-
 
 
         if (isset($varray['graph']) && $varray['graph'] === 'pie') {
@@ -56,8 +64,7 @@ function jaggerTagsReplacer($str)
 }
 
 
-function confirmDialog($title, $msg, $yes, $no)
-{
+function confirmDialog($title, $msg, $yes, $no) {
     $r = '<div id="sconfirm" class="reveal-modal small" data-reveal><div class="title-header small-12 columns text-center">' . html_escape($title) . '</div>
   <p class="message">' . html_escape($msg) . '</p>';
 
@@ -72,22 +79,22 @@ function confirmDialog($title, $msg, $yes, $no)
 
     $r .= '</div>
   </div>';
+
     return $r;
 }
 
-function resultDialog($title, $msg, $close)
-{
+function resultDialog($title, $msg, $close) {
     $r = '<div id="resultdialog" class="hidden"><div class="header"><span>' . html_escape($title) . '</span></div>
   <p class="message">' . html_escape($msg) . '</p>
   <div class="buttons">
   <div class="no simplemodal-close">' . html_escape($close) . '</div>
   </div>
   </div>';
+
     return $r;
 }
 
-function recurseTree($var)
-{
+function recurseTree($var) {
     $out = '<li>';
     foreach ($var as $v) {
         if (is_array($v)) {
@@ -96,11 +103,11 @@ function recurseTree($var)
             $out .= $v;
         }
     }
+
     return $out . '</li>';
 }
 
-function generateSelectInputCheckboxFields($label1, $name1, $select1, $selected1, $label2, $name2, $value2, $label3, $name3, $value3, $ifset3, $classes = null)
-{
+function generateSelectInputCheckboxFields($label1, $name1, $select1, $selected1, $label2, $name2, $value2, $label3, $name3, $value3, $ifset3, $classes = null) {
     $r = '';
     if (!empty($label1)) {
         $r .= '<div class="small-3 columns">';
@@ -117,12 +124,12 @@ function generateSelectInputCheckboxFields($label1, $name1, $select1, $selected1
     $r .= '<div class="small-6 columns">';
     $r .= form_input(
         array(
-            'name' => $name2,
-            'id' => $name2,
-            'size' => '3',
+            'name'       => $name2,
+            'id'         => $name2,
+            'size'       => '3',
             'max-length' => '3',
-            'class' => 'acsindex',
-            'value' => $value2,
+            'class'      => 'acsindex',
+            'value'      => $value2,
         )
     );
     $r .= '</div>';
@@ -131,10 +138,10 @@ function generateSelectInputCheckboxFields($label1, $name1, $select1, $selected1
         $r .= '<label for="' . $name3 . '">' . $label3 . '</label>';
     }
     $r .= form_radio(array(
-        'name' => $name3,
-        'id' => $name3,
-        'value' => $value3,
-        'class' => 'acsdefault',
+        'name'    => $name3,
+        'id'      => $name3,
+        'value'   => $value3,
+        'class'   => 'acsdefault',
         'checked' => $ifset3,
     ));
     $r .= '</div>';
@@ -144,8 +151,7 @@ function generateSelectInputCheckboxFields($label1, $name1, $select1, $selected1
     return $r;
 }
 
-function generateSelectInputFields($label1, $name1, $select1, $selected1, $label2, $name2, $value2, $classes = null)
-{
+function generateSelectInputFields($label1, $name1, $select1, $selected1, $label2, $name2, $value2, $classes = null) {
     $r = '';
     if (!empty($label1)) {
         $r .= '<div class="small-3 columns">';
@@ -161,12 +167,12 @@ function generateSelectInputFields($label1, $name1, $select1, $selected1, $label
     $r .= '<div class="small-2 large-1 columns end">'; // input+check
     $r .= form_input(
         array(
-            'name' => $name2,
-            'id' => $name2,
-            'size' => '3',
+            'name'       => $name2,
+            'id'         => $name2,
+            'size'       => '3',
             'max-length' => '3',
-            'class' => 'acsindex',
-            'value' => $value2,
+            'class'      => 'acsindex',
+            'value'      => $value2,
         )
     );
 
@@ -176,8 +182,7 @@ function generateSelectInputFields($label1, $name1, $select1, $selected1, $label
 }
 
 
-function jGenerateInput($label, $inputname, $value, $inputclass, $placeholder = null)
-{
+function jGenerateInput($label, $inputname, $value, $inputclass, $placeholder = null) {
     if (!empty($placeholder)) {
         $pl = ' placeholder="' . $placeholder . '" ';
     } else {
@@ -185,25 +190,25 @@ function jGenerateInput($label, $inputname, $value, $inputclass, $placeholder = 
     }
     $r = '<div class="medium-3 columns medium-text-right"><label for="' . $inputname . '" class="inline">' . $label . '</label></div>';
     $r .= '<div class="medium-8 large-7 columns end"><input type="text" id="' . $inputname . '" name="' . $inputname . '" value="' . $value . '" class="' . $inputclass . '" ' . $pl . '></div>';
+
     return $r;
 }
 
-function jGenerateTextarea($label, $inputname, $value, $inputclass)
-{
+function jGenerateTextarea($label, $inputname, $value, $inputclass) {
     $r = '<div class="medium-3 columns medium-text-right"><label for="' . $inputname . '" class="inline">' . $label . '</label></div>';
     $r .= '<div class="medium-8 large-7 columns end">' . form_textarea($inputname, $value) . '</div>';
+
     return $r;
 }
 
-function jGenerateInputReadonly($label, $inputname, $value, $inputclass)
-{
+function jGenerateInputReadonly($label, $inputname, $value, $inputclass) {
     $r = '<div class="medium-3 columns medium-text-right"><label for="' . $inputname . '" class="inline">' . $label . '</label></div>';
     $r .= '<div class="medium-8 large-7 columns end"><input type="text" id="' . $inputname . '" name="' . $inputname . '" value="' . $value . '" class="' . $inputclass . '" readonly="readonly"></div>';
+
     return $r;
 }
 
-function jGenerateDropdown($label, $inputname, $dropdowns, $value, $inputclass)
-{
+function jGenerateDropdown($label, $inputname, $dropdowns, $value, $inputclass) {
     $r = '<div class="medium-3 columns medium-text-right"><label for="' . $inputname . '" class="inline">' . $label . '</label></div>';
 
     $r .= '<div class="medium-8 large-7 columns end">' . form_dropdown($inputname, $dropdowns, $value) . '</div>';
@@ -212,8 +217,7 @@ function jGenerateDropdown($label, $inputname, $dropdowns, $value, $inputclass)
     return $r;
 }
 
-function jGenerateRadios($label, $inputname, $radios, $value, $inputclass)
-{
+function jGenerateRadios($label, $inputname, $radios, $value, $inputclass) {
     $r = '<div class="medium-3 columns medium-text-right"><label for="' . $inputname . '" class="inline">' . $label . '</label></div>';
     $r .= '<div class="medium-8 large-7 columns end">';
     foreach ($radios as $k => $p) {
@@ -225,16 +229,16 @@ function jGenerateRadios($label, $inputname, $radios, $value, $inputclass)
         $r .= '<div class="small-12 column"><div class="small-1 column"><input type="radio" name="' . $inputname . '" value="' . $p['value'] . '" id="' . $inputname . $k . '" ' . $checked . '></div><div class="small-11 column"><label for="' . $inputname . $k . '">' . $p['label'] . '</label></div></div>';
     }
     $r .= '</div>';
+
     return $r;
 }
 
 
-function generateInputWithRemove($label, $name, $buttonname, $buttonvalue, $value, $inputclasses, $buttonclasses)
-{
+function generateInputWithRemove($label, $name, $buttonname, $buttonvalue, $value, $inputclasses, $buttonclasses) {
     $result = '<div class="small-3 columns"><label for="' . $name . '" class="right inline ">' . $label . '</label></div><div class="small-6 large-7 columns">' . form_input(
             array(
-                'name' => '' . $name . '',
-                'id' => '' . $name . '',
+                'name'  => '' . $name . '',
+                'id'    => '' . $name . '',
                 'value' => '' . $value . '',
                 'class' => $inputclasses . ' right inline'
             )
@@ -243,7 +247,6 @@ function generateInputWithRemove($label, $name, $buttonname, $buttonvalue, $valu
     return $result;
 }
 
-function jform_label($a, $b)
-{
+function jform_label($a, $b) {
     return '<label form="' . $b . '" class="right inline">' . $a . '</label>';
 }

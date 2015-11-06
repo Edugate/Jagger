@@ -65,8 +65,8 @@ class Providerformelements
         $t_regtime = '';
         $tmpregdate = $ent->getRegistrationDate();
         if (!empty($tmpregdate)) {
-            $t_regdate = date('Y-m-d', $tmpregdate->format('U') + jauth::$timeOffset);
-            $t_regtime = date('H:i', $tmpregdate->format('U') + jauth::$timeOffset);
+            $t_regdate = jaggerDisplayDateTimeByOffset($tmpregdate,jauth::$timeOffset,'Y-m-d');
+            $t_regtime = jaggerDisplayDateTimeByOffset($tmpregdate,jauth::$timeOffset,'H:i');
         }
         if ($sessform) {
             if (array_key_exists('regauthority', $this->ses)) {

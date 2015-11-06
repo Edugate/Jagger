@@ -61,7 +61,7 @@ class Show_element
                 $user = lang('unknown');
             }
             $result .= '<dd class="accordion-navigation">';
-            $result .= '<a href="#rmod' . $mcounter . '">' . date('Y-m-d H:i:s', $t->getCreated()->format('U') + jauth::$timeOffset) . ' ' . lang('made_by') . ' <b>' . $user . '</b> ' . lang('from') . ' ' . $t->getIp() . '</a><div id="rmod' . $mcounter . '" class="content">' . $y . '</div>';
+            $result .= '<a href="#rmod' . $mcounter . '">' .jaggerDisplayDateTimeByOffset($t->getCreated(),jauth::$timeOffset). ' ' . lang('made_by') . ' <b>' . $user . '</b> ' . lang('from') . ' ' . $t->getIp() . '</a><div id="rmod' . $mcounter . '" class="content">' . $y . '</div>';
             $result .= '</dd>';
             $mcounter++;
             $this->ci->table->clear();
@@ -102,7 +102,7 @@ class Show_element
                 $user = lang('unknown');
             }
             $result .= '<dd class="accordion-navigation">';
-            $result .= '<a href="#mod' . $mcounter . '" class="accordion-icon">' . date('Y-m-d H:i:s', $t->getCreated()->format('U') + jauth::$timeOffset) . ' ' . lang('chng_made_by') . ' <b>' . $user . '</b> ' . lang('from') . ' ' . $t->getIp() . '</a><div id="mod' . $mcounter . '" class="content">' . $y . '</div>';
+            $result .= '<a href="#mod' . $mcounter . '" class="accordion-icon">' .jaggerDisplayDateTimeByOffset($t->getCreated(),jauth::$timeOffset).  ' ' . lang('chng_made_by') . ' <b>' . $user . '</b> ' . lang('from') . ' ' . $t->getIp() . '</a><div id="mod' . $mcounter . '" class="content">' . $y . '</div>';
             $result .= '</dd>';
             $mcounter++;
         }
