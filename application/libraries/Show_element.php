@@ -24,33 +24,37 @@ class Show_element
 
     protected $ci;
     protected $em;
-    protected $tmp_policies;
-    protected $tmp_providers;
+    protected $tmpPolicies;
+    protected $tmpProviders;
     protected $entitiesmaps;
 
     public function __construct()
     {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
-        $this->tmp_policies = new models\AttributeReleasePolicies;
-        $this->tmp_providers = new models\Providers;
+        $this->tmpPolicies = new models\AttributeReleasePolicies;
+        $this->tmpProviders = new models\Providers;
         $this->entitiesmaps = array();
     }
 
 
     public function generateRequestsList(models\Provider $idp, $count = null)
     {
-        if (empty($count) || !is_numeric($count) || $count < 1) {
-            $count = 5;
+        $incount = (int) $count;
+        if ($count < $incount) {
+            $incount = 5;
         }
 
-        $tmp_tracks = new models\Trackers;
-        $tracks = $tmp_tracks->getProviderRequests($idp, $count);
+        $tmpTracks = new models\Trackers;
+        /**
+         * @var models\Trackers[] $tracks
+         */
+        $tracks = $tmpTracks->getProviderRequests($idp, $incount);
         if (empty($tracks)) {
             return null;
         }
         $mcounter = 0;
-        $result = '<dl class="accordion" data-accordion="requestsList">';
+        $result[] = '<dl class="accordion" data-accordion="requestsList">';
         foreach ($tracks as $t) {
             $det = $t->getDetail();
             $this->ci->table->set_heading('Request');
@@ -60,14 +64,14 @@ class Show_element
             if (empty($user)) {
                 $user = lang('unknown');
             }
-            $result .= '<dd class="accordion-navigation">';
-            $result .= '<a href="#rmod' . $mcounter . '">' .jaggerDisplayDateTimeByOffset($t->getCreated(),jauth::$timeOffset). ' ' . lang('made_by') . ' <b>' . $user . '</b> ' . lang('from') . ' ' . $t->getIp() . '</a><div id="rmod' . $mcounter . '" class="content">' . $y . '</div>';
-            $result .= '</dd>';
+            $result[] = '<dd class="accordion-navigation">'.
+                '<a href="#rmod' . $mcounter . '">' .jaggerDisplayDateTimeByOffset($t->getCreated(),jauth::$timeOffset). ' ' . lang('made_by') . ' <b>' . $user . '</b> ' . lang('from') . ' ' . $t->getIp() . '</a><div id="rmod' . $mcounter . '" class="content">' . $y . '</div>'.
+                '</dd>';
             $mcounter++;
             $this->ci->table->clear();
         }
-        $result .= '</dl>';
-        return $result;
+        $result[] = '</dl>';
+        return implode('',$result);
     }
 
     public function generateModificationsList(models\Provider $idp, $count = null)
@@ -76,8 +80,8 @@ class Show_element
             $count = 5;
         }
 
-        $tmp_tracks = new models\Trackers;
-        $tracks = $tmp_tracks->getProviderModifications($idp, $count);
+        $tmpTracks = new models\Trackers;
+        $tracks = $tmpTracks->getProviderModifications($idp, $count);
         if (empty($tracks)) {
             return null;
         }

@@ -27,8 +27,7 @@ class Providertoxml
     private $logoPrefixUrl;
     private $srvMap;
 
-    function __construct()
-    {
+    function __construct() {
         $this->ci = &get_instance();
 
         $this->srvMap = array(
@@ -101,8 +100,7 @@ class Providertoxml
         $this->em->getRepository("models\Coc")->findAll();
     }
 
-    private function getRegistrar(\models\Provider $ent)
-    {
+    private function getRegistrar(\models\Provider $ent) {
         $registrar = $ent->getRegistrationAuthority();
         if (empty($registrar) && $ent->getLocal() && $this->useGlobalRegistrar) {
             $registrar = $this->globalRegistrar;
@@ -110,8 +108,7 @@ class Providertoxml
         return $registrar;
     }
 
-    private function createEntityExtensions(\XMLWriter $xml, \models\Provider $ent)
-    {
+    private function createEntityExtensions(\XMLWriter $xml, \models\Provider $ent) {
 
         $registrar = $this->getRegistrar($ent);
         /**
@@ -220,8 +217,7 @@ class Providertoxml
         return $xml;
     }
 
-    private function createContacts(\XMLWriter $xml, \models\Provider $ent)
-    {
+    private function createContacts(\XMLWriter $xml, \models\Provider $ent) {
         $contacts = $ent->getContacts();
         foreach ($contacts as $c) {
             $givenName = $c->getGivenname();
@@ -247,8 +243,7 @@ class Providertoxml
         return $xml;
     }
 
-    private function createUIIInfo(\XMLWriter $xml, \models\Provider $ent, $role)
-    {
+    private function createUIIInfo(\XMLWriter $xml, \models\Provider $ent, $role) {
         $extarray = array('DisplayName' => array(), 'Description' => array(), 'Logo' => array(), 'InformationURL' => array(), 'PrivacyStatementURL' => array());
         $doFilter = array(
             'elements' => array_keys($extarray),
@@ -304,8 +299,7 @@ class Providertoxml
         return $xml;
     }
 
-    private function createDiscoHints(\XMLWriter $xml, \models\Provider $ent, $role)
-    {
+    private function createDiscoHints(\XMLWriter $xml, \models\Provider $ent, $role) {
 
         // @todo filtering collection
         $extMetada = $ent->getExtendMetadata();
@@ -332,8 +326,7 @@ class Providertoxml
         return $xml;
     }
 
-    private function createServiceLocations(\XMLWriter $xml, $serviceCollection)
-    {
+    private function createServiceLocations(\XMLWriter $xml, $serviceCollection) {
         $discrespindex = array('-1');
         foreach ($serviceCollection as $srv) {
             $srvType = $srv->getType();
@@ -355,8 +348,7 @@ class Providertoxml
         return $xml;
     }
 
-    private function createCerts(\XMLWriter $xml, $certCollection)
-    {
+    private function createCerts(\XMLWriter $xml, $certCollection) {
         foreach ($certCollection as $cert) {
             $certBody = $cert->getCertDataNoHeaders();
             $keyName = $cert->getKeyname();
@@ -399,8 +391,7 @@ class Providertoxml
         return $xml;
     }
 
-    private function createAttributeConsumingService(\XMLWriter $xml, \models\Provider $ent, $options)
-    {
+    private function createAttributeConsumingService(\XMLWriter $xml, \models\Provider $ent, $options) {
 
         /**
          * @var $reqColl \models\AttributeRequirement[]
@@ -480,8 +471,7 @@ class Providertoxml
      * @param \models\Provider $ent
      * @return XMLWriter
      */
-    private function createIDPSSODescriptor(\XMLWriter $xml, \models\Provider $ent)
-    {
+    private function createIDPSSODescriptor(\XMLWriter $xml, \models\Provider $ent) {
         $protocol = $ent->getProtocolSupport('idpsso');
         $protocolEnum = implode(" ", $protocol);
         $doFilter = array('SingleSignOnService', 'IDPSingleLogoutService', 'IDPArtifactResolutionService');
@@ -558,8 +548,7 @@ class Providertoxml
      * @param \models\Provider $ent
      * @return XMLWriter
      */
-    private function createAttributeAuthorityDescriptor(\XMLWriter $xml, \models\Provider $ent)
-    {
+    private function createAttributeAuthorityDescriptor(\XMLWriter $xml, \models\Provider $ent) {
         $doFilter = array('IDPAttributeService');
         $services = $ent->getServiceLocations()->filter(
             function (models\ServiceLocation $entry) use ($doFilter) {
@@ -614,8 +603,7 @@ class Providertoxml
      * @param $options
      * @return XMLWriter
      */
-    private function createSPSSODescriptor(\XMLWriter $xml, \models\Provider $ent, $options)
-    {
+    private function createSPSSODescriptor(\XMLWriter $xml, \models\Provider $ent, $options) {
         $protocol = $ent->getProtocolSupport('spsso');
         $protocolEnum = implode(" ", $protocol);
         if (empty($protocolEnum)) {
@@ -683,8 +671,7 @@ class Providertoxml
         return $xml;
     }
 
-    private function createOrganization(\XMLWriter $xml, models\Provider $ent)
-    {
+    private function createOrganization(\XMLWriter $xml, models\Provider $ent) {
         $lorgnames = array_filter($ent->getMergedLocalName());
         $ldorgnames = array_filter($ent->getMergedLocalDisplayName());
         $lurls = array_filter($ent->getHelpdeskUrlLocalized());
@@ -714,8 +701,7 @@ class Providertoxml
         return $xml;
     }
 
-    private function verifySPSSO(models\Provider $ent)
-    {
+    private function verifySPSSO(models\Provider $ent) {
         $doFilter = array('AssertionConsumerService');
         $serviceLocations = $ent->getServiceLocations()->filter(
             function (models\ServiceLocation $entry) use ($doFilter) {
@@ -729,8 +715,7 @@ class Providertoxml
         return TRUE;
     }
 
-    private function verifyIDPSSO(\models\Provider $ent)
-    {
+    private function verifyIDPSSO(\models\Provider $ent) {
         $doFilter = array('SingleSignOnService');
         $serviceLocations = $ent->getServiceLocations()->filter(
             function (models\ServiceLocation $entry) use ($doFilter) {
@@ -756,8 +741,7 @@ class Providertoxml
     }
 
 
-    private function verifyAA(\models\Provider $ent)
-    {
+    private function verifyAA(\models\Provider $ent) {
         $doFilter = array('IDPAttributeService');
         $serviceLocations = $ent->getServiceLocations()->filter(
             function (models\ServiceLocation $entry) use ($doFilter) {
@@ -784,8 +768,7 @@ class Providertoxml
 
 
     // if $doCacheId is set it saves entiy in cache with key = ${systemprefix}.'mcircle_'.$doCacheId
-    public function entityConvert(\XMLWriter $xmlOut, \models\Provider $ent, $options, $doCacheId = null)
-    {
+    public function entityConvert(\XMLWriter $xmlOut, \models\Provider $ent, $options, $doCacheId = null) {
 
         if (empty($doCacheId)) {
             $xml = $xmlOut;
@@ -864,8 +847,7 @@ class Providertoxml
         }
     }
 
-    public function createXMLDocument()
-    {
+    public function createXMLDocument() {
         $xml = new XMLWriter();
         $xml->openMemory();
         $xml->setIndent(true);
@@ -880,8 +862,7 @@ class Providertoxml
      * @param bool $outputXML
      * @return string|XMLWriter
      */
-    public function entityConvertNewDocument(\models\Provider $ent, $options, $outputXML = false)
-    {
+    public function entityConvertNewDocument(\models\Provider $ent, $options, $outputXML = false) {
         $type = $ent->getType();
         $hasIdpRole = false;
         $hasSpRole = false;
@@ -959,8 +940,7 @@ class Providertoxml
         }
     }
 
-    public function entityStaticConvert(\XMLWriter $xml, \models\Provider $ent)
-    {
+    public function entityStaticConvert(\XMLWriter $xml, \models\Provider $ent) {
         /**
          * @var $staticMeta \models\StaticMetadata
          */
