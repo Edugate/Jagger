@@ -139,7 +139,7 @@ class Sync_metadata extends CI_Controller
         if (strlen($protectpass) < 10 || $protectpass !== $syncpass) {
             return $this->output->set_status_header(403)->set_output('ERROR: Access Denied - invalid token'.PHP_EOL);
         }
-        $conditions_default = array(
+        $defaultConditions = array(
             'type'           => 'all',
             'is_active'      => true,
             'is_local'       => false,
@@ -150,11 +150,11 @@ class Sync_metadata extends CI_Controller
             'mailreport'     => false,
             'email'          => null,
         );
-        $conditions_in_array = array();
+        $conditionsInArray = array();
         if ($conditions_to_set !== null) {
-            $conditions_in_array = unserialize(base64url_decode($conditions_to_set));
+            $conditionsInArray = unserialize(base64url_decode($conditions_to_set));
         }
-        $conditions = array_merge($conditions_default, $conditions_in_array);
+        $conditions = array_merge($defaultConditions, $conditionsInArray);
 
 
         $url = base64url_decode($encoded_url);
@@ -165,13 +165,13 @@ class Sync_metadata extends CI_Controller
             return $this->output->set_status_header(500)->set_output('Federation not found');
         }
         log_message('debug', __METHOD__ . ' downloading metadata from ' . $url);
-        $metadata_body = $this->curl->simple_get($url);
-        if (empty($metadata_body)) {
+        $metadataBody = $this->curl->simple_get($url);
+        if (empty($metadataBody)) {
             return $this->output->set_status_header(500)->set_output('could not retrieve data from');
         }
         $this->load->library(array('metadatavalidator', 'curl', 'metadata2import'));
         $time_start = microtime(true);
-        $is_valid_metadata = $this->metadatavalidator->validateWithSchema($metadata_body);
+        $is_valid_metadata = $this->metadatavalidator->validateWithSchema($metadataBody);
         $time_end = microtime(true);
         $exectime = $time_end - $time_start;
         log_message('debug', __METHOD__ . ' time execustion of validating metadata  :: ' . $exectime . ' seconds');
@@ -196,11 +196,9 @@ class Sync_metadata extends CI_Controller
             'email'          => $conditions['email'],
             'attrreqinherit' => true,
         );
-        $other = null;
         $time_start = microtime(true);
-        $this->metadata2import->import($metadata_body, $typeOfEntities, $full, $defaults, $other);
-        $this->j_ncache->cleanProvidersList('idp');
-        $this->j_ncache->cleanProvidersList('sp');
+        $this->metadata2import->import($metadataBody, $typeOfEntities, $full, $defaults, null);
+        $this->j_ncache->cleanProvidersList(array('idp','sp'));
         $this->j_ncache->cleanFederationMembers($fed->getId());
         $time_end = microtime(true);
         $exectime = $time_end - $time_start;

@@ -31,11 +31,14 @@ class J_ncache
      */
     public function cleanProvidersList($type)
     {
+        $types = (array) $type;
         $guilangs = (array) MY_Controller::guiLangs();
         $langs = array_keys($guilangs);
-        $cachePrefix = $type . '_l_';
-        foreach ($langs as $v) {
-            $this->ci->cache->delete($cachePrefix . $v);
+        foreach($types as $ptype) {
+            $cachePrefix = $ptype . '_l_';
+            foreach ($langs as $v) {
+                $this->ci->cache->delete($cachePrefix . $v);
+            }
         }
         return true;
     }
