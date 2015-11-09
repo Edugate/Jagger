@@ -2,7 +2,13 @@
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
-
+/**
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @copyright 2015, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
+ *
+ */
 
 /**
  * @property Curl $curl;
@@ -212,13 +218,12 @@ class Ajax extends MY_Controller
 
     public function showhelpstatus($str = null)
     {
-        if (!$this->jauth->loggedInAndAjax()) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
-        }
         if ($str === null) {
             return $this->output->set_status_header(403)->set_output('Empty param');
         }
-
+        if (!$this->jauth->loggedInAndAjax()) {
+            return $this->output->set_status_header(403)->set_output('Access Denied');
+        }
         $char = substr($str, 0, 1);
         if (!($char === 'y' || $char === 'n')) {
             return $this->output->set_status_header(403)->set_output('Incorrect param');

@@ -1,23 +1,17 @@
 <?php
 
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 /**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
  */
 
-/**
- * Authenticate Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
 class Authenticate extends MY_Controller
 {
 
@@ -27,17 +21,10 @@ class Authenticate extends MY_Controller
         $this->load->library('form_validation');
     }
 
-    public function loadloginform() {
-        if ($this->input->is_ajax_request()) {
-
-        }
-    }
 
     public function resetloginform() {
         if (!$this->input->is_ajax_request()) {
-            set_status_header(401);
-            echo 'no ajax request';
-            return;
+            return $this->output->set_status_header(401)->set_output('no ajax');
         }
         return $this->jauth->logout();
 
@@ -166,8 +153,7 @@ class Authenticate extends MY_Controller
             $auth_error = 'not ajax';
         }
         set_status_header(401);
-        echo $auth_error;
-        return;
+        return $this->output->set_output($auth_error);
     }
 
 }

@@ -85,14 +85,6 @@ $foundation = $base_url . 'foundation/';
             $this->load->view('cookiesconsent', $iscookieconsent);
         }
     }
-    if (!empty($headerjs)) {
-        echo $headerjs;
-    }
-    if (!empty($headermap)) {
-        echo $headermap;
-    }
-
-
     $args['breadcrumbsEnabled'] = $breadcrumbsEnabled;
     $this->load->view('toppanel', $args);
 
@@ -135,7 +127,7 @@ $foundation = $base_url . 'foundation/';
 </header>
 <?php
 
-if ($breadcrumbsEnabled === TRUE) {
+if ($breadcrumbsEnabled === true) {
     if ($loggedin) {
         $prefBreadcrumbs = array(array('url' => base_url(), 'name' => lang('dashboard')));
     } else {

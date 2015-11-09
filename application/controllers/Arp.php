@@ -1,21 +1,14 @@
 <?php
-
-if (!defined('BASEPATH')) exit('No direct script access allowed');
-/**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet Ltd.
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 /**
- * Arp Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   Jagger
+ * @author    Middleware Team HEAnet Ltd.
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 class Arp extends MY_Controller
 {
@@ -23,7 +16,7 @@ class Arp extends MY_Controller
     protected $resourcetype;
     protected $subtype;
 
-    function __construct() {
+    public function __construct() {
         parent::__construct();
         $this->load->library('arp_generator');
         $this->resourcetype = 'idp';

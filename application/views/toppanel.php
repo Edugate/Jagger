@@ -155,7 +155,7 @@
                         echo '<li><a href="' . $base_url . 'smanage/reports">' . lang('sys_menulink') . '</a></li>';
                         echo '<li><a href="' . $base_url . 'smanage/sysprefs/show">' . lang('globalconf_menulink') . '</a></li>';
                         $featenabled = $this->config->item('featenable');
-                        if ($featenabled && isset($featenabled['tasks']) && $featenabled['tasks'] === TRUE) {
+                        if (is_array($featenabled) && array_key_exists('tasks',$featenabled) && $featenabled['tasks'] === true) {
                             echo '<li><a href="' . $base_url . 'smanage/taskscheduler/tasklist">' . lang('tasks_menulink') . '</a></li>';
                         }
                     }
