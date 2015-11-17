@@ -34,6 +34,9 @@ class J_ncache
         $types = (array) $type;
         $guilangs = (array) MY_Controller::guiLangs();
         $langs = array_keys($guilangs);
+        if(count($langs) === 0){
+            $langs = array('en','cs','es','it','pl','pt');
+        }
         foreach($types as $ptype) {
             $cachePrefix = $ptype . '_l_';
             foreach ($langs as $v) {
