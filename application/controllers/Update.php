@@ -26,4 +26,3 @@ class Update extends MY_Controller {
        
 }
 
-?>
