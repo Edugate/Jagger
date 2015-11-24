@@ -60,9 +60,9 @@ class Providerdetails
         } else {
             $langcertusage = lang('certsign') . '/' . lang('certenc');
         }
-        $d = array();
-        $d[] = array('header' => lang('rr_certificate'));
-        $d[] = array('name' => lang('rr_certusage'), 'value' => $langcertusage);
+        $d = array(
+            array('header' => lang('rr_certificate')),
+            array('name' => lang('rr_certusage'), 'value' => $langcertusage));
         $keyname = $cert->getKeyname();
         if (!empty($keyname)) {
             $d[] = array('name' => lang('rr_keyname'), 'value' => $keyname);
@@ -74,14 +74,14 @@ class Providerdetails
                 $certValid = validateX509($certData);
                 if ($certValid) {
                     $pemdata = $cert->getPEM($cert->getCertData());
-
-                    $d[] = array('name' => lang('rr_keysize'), 'value' => '' . getKeysize($pemdata) . '');
-                    $d[] = array('name' => lang('rr_fingerprint') . ' (md5)', 'value' => '' . generateFingerprint($certData, 'md5') . '');
-                    $d[] = array('name' => lang('rr_fingerprint') . ' (sha1)', 'value' => '' . generateFingerprint($certData, 'sha1') . '');
-                    $d[] = array(
-                        'name'  => '',
-                        'value' => '<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c' . $cert->getId() . '" class="accordion-icon">' . lang('rr_certbody') . '</a><code id="c' . $cert->getId() . '" class="content">' . trim($certData) . '</code></dd></dl>'
-                    );
+                    array_push($d,
+                        array('name' => lang('rr_keysize'), 'value' => '' . getKeysize($pemdata) . ''),
+                        array('name' => lang('rr_fingerprint') . ' (md5)', 'value' => '' . generateFingerprint($certData, 'md5') . ''),
+                        array('name' => lang('rr_fingerprint') . ' (sha1)', 'value' => '' . generateFingerprint($certData, 'sha1') . ''),
+                        array(
+                            'name' => '',
+                            'value' => '<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c' . $cert->getId() . '" class="accordion-icon">' . lang('rr_certbody') . '</a><code id="c' . $cert->getId() . '" class="content">' . trim($certData) . '</code></dd></dl>'
+                        ));
                 }
             }
         }
@@ -383,11 +383,11 @@ class Providerdetails
         $result = array();
         $contacts = $this->ent->getContacts();
         $typesInLang = array(
-            'technical'      => lang('rr_cnt_type_tech'),
+            'technical' => lang('rr_cnt_type_tech'),
             'administrative' => lang('rr_cnt_type_admin'),
-            'support'        => lang('rr_cnt_type_support'),
-            'billing'        => lang('rr_cnt_type_bill'),
-            'other'          => lang('rr_cnt_type_other')
+            'support' => lang('rr_cnt_type_support'),
+            'billing' => lang('rr_cnt_type_bill'),
+            'other' => lang('rr_cnt_type_other')
         );
         if (count($contacts) > 0) {
             foreach ($contacts as $c) {
@@ -507,7 +507,7 @@ class Providerdetails
         $entStatus = $this->makeStatusLabels();
         $d[$i]['value'] = '<b>' . $entStatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
-        $d[$i]['value'] ='<b>' .jaggerDisplayDateTimeByOffset($ent->getLastModified(),jauth::$timeOffset).'</b>';
+        $d[$i]['value'] = '<b>' . jaggerDisplayDateTimeByOffset($ent->getLastModified(), jauth::$timeOffset) . '</b>';
         $entityIdRecord = array('name' => lang('rr_entityid'), 'value' => $ent->getEntityId());
         $d[++$i] = &$entityIdRecord;
 
@@ -515,14 +515,10 @@ class Providerdetails
         $d[++$i]['name'] = lang('e_orgname');
         $lname = $ent->getMergedLocalName();
         $lvalues = '';
-        if (count($lname) > 0) {
-            foreach ($lname as $k => $v) {
-                $lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
-            }
-            $d[$i]['value'] = $lvalues;
-        } else {
-            $d[$i]['value'] = '';
+        foreach ($lname as $k => $v) {
+            $lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
         }
+        $d[$i]['value'] = $lvalues;
         $d[++$i]['name'] = lang('e_orgdisplayname');
         $ldisplayname = $ent->getMergedLocalDisplayName();
         $lvalues = '';
@@ -530,21 +526,18 @@ class Providerdetails
             foreach ($ldisplayname as $k => $v) {
                 $lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
             }
-            $d[$i]['value'] = '<div id="selectme">' . $lvalues . '</div>';
-        } else {
-            $d[$i]['value'] = '<div id="selectme"></div>';
         }
+        $d[$i]['value'] = '<div id="selectme">' . $lvalues . '</div>';
         $d[++$i]['name'] = lang('e_orgurl');
         $localizedHelpdesk = $ent->getHelpdeskUrlLocalized();
+        $lvalues = '';
         if (is_array($localizedHelpdesk) && count($localizedHelpdesk) > 0) {
-            $lvalues = '';
             foreach ($localizedHelpdesk as $k => $v) {
                 $lvalues .= '<div><b>' . $k . ':</b> <a href="' . html_escape($v) . '"  target="_blank">' . html_escape($v) . '</a></div>';
             }
-            $d[$i]['value'] = $lvalues;
-        } else {
-            $d[$i]['value'] = '';
         }
+        $d[$i]['value'] = $lvalues;
+
         $d[++$i]['name'] = lang('rr_regauthority');
         $regauthority = $ent->getRegistrationAuthority();
         $confRegAuth = $this->CI->config->item('registrationAutority');
@@ -565,7 +558,7 @@ class Providerdetails
         $d[++$i]['name'] = lang('rr_regdate');
         $regdate = $ent->getRegistrationDate();
         if ($regdate !== null) {
-            $d[$i]['value'] = '<span data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" class="has-tip" title="' . date('Y-m-d H:i', $regdate->format('U')) . ' UTC">' .jaggerDisplayDateTimeByOffset($regdate,jauth::$timeOffset) . '</span>';
+            $d[$i]['value'] = '<span data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" class="has-tip" title="' . date('Y-m-d H:i', $regdate->format('U')) . ' UTC">' . jaggerDisplayDateTimeByOffset($regdate, jauth::$timeOffset) . '</span>';
         } else {
             $d[$i]['value'] = null;
         }
@@ -623,11 +616,11 @@ class Providerdetails
         $d[++$i]['name'] = lang('rr_validfromto') . ' <div class="dhelp">' . lang('d_validfromto') . '</div>';
         $validfrom = lang('rr_unlimited');
         if ($ent->getValidFrom()) {
-            $validfrom =  jaggerDisplayDateTimeByOffset($ent->getValidFrom(),jauth::$timeOffset);
+            $validfrom = jaggerDisplayDateTimeByOffset($ent->getValidFrom(), jauth::$timeOffset);
         }
         $validto = lang('rr_unlimited');
         if ($ent->getValidTo()) {
-            $validto = jaggerDisplayDateTimeByOffset($ent->getValidTo(),jauth::$timeOffset);
+            $validto = jaggerDisplayDateTimeByOffset($ent->getValidTo(), jauth::$timeOffset);
         }
         if ($isValidTime) {
             $d[$i]['value'] = $validfrom . ' <b>--</b> ' . $validto;

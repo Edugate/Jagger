@@ -44,12 +44,8 @@ class Detail extends MY_Controller
         if ($hasWriteAccess === true) {
             log_message('debug', 'TEST access ' . $hasWriteAccess);
             $providerID = trim($providerID);
-            $keyPrefix = getCachePrefix();
-            $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
-            $cache1 = 'mcircle_' . $providerID;
-            $this->cache->delete($cache1);
-            $cache2 = 'arp_' . $providerID;
-            $this->cache->delete($cache2);
+            $this->j_ncache->cleanMcirclceMeta($providerID);
+            $this->j_ncache->cleanProviderArp($providerID);
             $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($providerID), -1);
             return $this->output->set_status_header(200)->set_output('OK');
         }
