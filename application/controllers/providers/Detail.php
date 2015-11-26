@@ -19,8 +19,7 @@ class Detail extends MY_Controller
     public static $alerts;
     public $isGearman;
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $this->tmpAttributes = new models\Attributes;
         $this->tmpAttributes->getAttributes();
@@ -31,8 +30,7 @@ class Detail extends MY_Controller
         }
     }
 
-    public function refreshentity($providerID)
-    {
+    public function refreshentity($providerID) {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Denied - no session or invalid request');
         }
@@ -54,8 +52,7 @@ class Detail extends MY_Controller
 
     }
 
-    public function status($providerID = null, $refresh = null)
-    {
+    public function status($providerID = null, $refresh = null) {
         if (!$this->input->is_ajax_request() || !ctype_digit($providerID) || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Accss Denied');
         }
@@ -73,20 +70,22 @@ class Detail extends MY_Controller
         }
 
 
-        $this->load->library('providerdetails',array('ent'=>$provider));
+        $this->load->library('providerdetails', array('ent' => $provider));
+        $this->load->library('jalert');
         $keyPrefix = getCachePrefix();
         $this->load->driver('cache', array('adapter' => 'memcached', 'key_prefix' => $keyPrefix));
         $cacheId = 'mstatus_' . $providerID;
 
 
         if ($refresh === '1') {
-            $result = $this->providerdetails->generateAlertsDetails();
+
+            $result = $this->jalert->genProviderAlertsDetails($provider);
             $this->cache->save($cacheId, $result, 3600);
         } else {
             $resultCache = $this->cache->get($cacheId);
             if (!is_array($resultCache)) {
                 log_message('debug', __METHOD__ . ' cache empty refreshing');
-                $result = $this->providerdetails->generateAlertsDetails();
+                $result = $this->jalert->genProviderAlertsDetails($provider);
                 $this->cache->save($cacheId, $result, 3600);
             } else {
                 $result = $resultCache;
@@ -97,8 +96,7 @@ class Detail extends MY_Controller
 
     }
 
-    public function showlogs($providerID)
-    {
+    public function showlogs($providerID) {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Denied');
         }
@@ -141,7 +139,7 @@ class Detail extends MY_Controller
             $arpLogs = $tmpLogs->getArpDownloaded($ent);
             $loggHtml = '<ul class="no-bullet">';
             foreach ($arpLogs as $l) {
-                $loggHtml .= '<li><b>' . jaggerDisplayDateTimeByOffset($l->getCreated(),jauth::$timeOffset) . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
+                $loggHtml .= '<li><b>' . jaggerDisplayDateTimeByOffset($l->getCreated(), jauth::$timeOffset) . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
             }
             $loggHtml .= '</ul>';
             $rows[] = array('name' => '' . lang('rr_recentarpdownload') . '', 'value' => '' . $loggHtml . '');
@@ -150,8 +148,7 @@ class Detail extends MY_Controller
 
     }
 
-    public function show($providerID)
-    {
+    public function show($providerID) {
         if (!ctype_digit($providerID)) {
             show_error(lang('error404'), 404);
         }
@@ -168,13 +165,8 @@ class Detail extends MY_Controller
         if ($ent === null) {
             show_error(lang('error404'), 404);
         }
-        if($ent instanceof models\Provider) {
-            $this->load->library('providerdetails', array('ent'=>$ent));
-        }
-        else
-        {
-            show_error('ddddddddd',500);
-        }
+        $this->load->library('providerdetails', array('ent' => $ent));
+
         $hasReadAccess = $this->zacl->check_acl($providerID, 'read', 'entity', '');
         if (!$hasReadAccess) {
             $data['content_view'] = 'nopermission';
@@ -207,8 +199,7 @@ class Detail extends MY_Controller
         $this->load->view('page', $data);
     }
 
-    public function showmembers($providerid)
-    {
+    public function showmembers($providerid) {
         if (!$this->input->is_ajax_request() || !ctype_digit($providerid) || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
