@@ -63,9 +63,9 @@ class Doctrine {
         $config->setProxyNamespace('Proxies');
 
         if (ENVIRONMENT === 'development') {
-            $config->setAutoGenerateProxyClasses(TRUE);
+            $config->setAutoGenerateProxyClasses(true);
         } else {
-            $config->setAutoGenerateProxyClasses(FALSE);
+            $config->setAutoGenerateProxyClasses(false);
         }
 
         // SQL query logger

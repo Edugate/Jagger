@@ -241,14 +241,8 @@ class Providerdetails
     public function generateForControllerProvidersDetail() {
 
         $ent = $this->ent;
-        $feathide = $this->CI->config->item('feathide');
-        if (!is_array($feathide)) {
-            $feathide = array();
-        }
-        $featdisable = $this->CI->config->item('featdisable');
-        if (!is_array($featdisable)) {
-            $featdisable = array();
-        }
+        $feathide = (array) $this->CI->config->item('feathide');
+        $featdisable = (array) $this->CI->config->item('featdisable');
         $alerts = array();
 
         $lockicon = genIcon('locked');
@@ -260,9 +254,9 @@ class Providerdetails
         $sppart = $this->sppart;
         $idppart = $this->idppart;
         $type = strtolower($ent->getType());
-        $data['type'] = $type;
         $edit_attributes = '';
 
+        $data['type'] = $type;
         $data['presubtitle'] = $this->presubtitle;
 
         $id = $ent->getId();
