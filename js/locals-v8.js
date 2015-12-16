@@ -858,32 +858,34 @@ var GINIT = {
 
         $("#removeusermodal").on('submit', function (e) {
             e.preventDefault();
-            var msgdiv = $(this).find("#removeusermodalmsg").first();
-            var inputencusr = $(this).find('#encodedusr').first();
-            var link = $(this).attr('action');
-            var closebtn = $(this).find("button[name='close']");
-            var cancelbtn = $(this).find("button[name='cancel']");
-            var submitbtn = $(this).find("button[name='remove']");
+            var tmodal = $(this);
+            var tform = tmodal.find('form').first();
+            var tdata = tform.serializeArray()
+            var msgdiv = tmodal.find("#removeusermodalmsg").first();
+            var inputencusr = tmodal.find('#encodedusr').first();
+            var link = tform.attr('action');
+            var closebtn = tmodal.find("button[name='close']");
+            var cancelbtn = tmodal.find("button[name='cancel']");
+            var submitbtn = tmodal.find("button[name='remove']");
             $.ajax({
                     type: "POST",
                     url: link,
-                    data: $(this).serializeArray(),
+                    data: tdata,
                     beforeSend: function () {
                         msgdiv.html('').hide().removeClass('alert').removeClass('success');
                         submitbtn.show();
                         cancelbtn.show();
                         closebtn.hide();
                     },
-                    success: function (data) {
+                    success: function (d) {
                         var cell = $(document).find('a[data-jagger-encodeduser="' + inputencusr.val() + '"]');
-
                         if (cell) {
 
                             cell.closest('tr').hide();
 
                         }
 
-                        msgdiv.html(data).addClass('success').show();
+                        msgdiv.html(d).addClass('success').show();
                         submitbtn.hide();
                         cancelbtn.hide();
                         closebtn.show();
@@ -896,7 +898,6 @@ var GINIT = {
                     }
                 }
             );
-
         });
 
         $("#confirmremover").on('click', '.yes', function (e) {
