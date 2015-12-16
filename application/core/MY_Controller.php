@@ -40,6 +40,7 @@ if (!defined('BASEPATH')) {
  * @property Arp_generator $arp_generator
  * @property Arpgen $arpgen
  * @property Providerdetails $providerdetails
+ * @property Jalert $jalert
  * @property Rrpreference $rrpreference
  * @property Jusermanage $jusermanage
  * @property Formelement $formelement

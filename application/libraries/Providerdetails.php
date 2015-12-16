@@ -60,9 +60,9 @@ class Providerdetails
         } else {
             $langcertusage = lang('certsign') . '/' . lang('certenc');
         }
-        $d = array();
-        $d[] = array('header' => lang('rr_certificate'));
-        $d[] = array('name' => lang('rr_certusage'), 'value' => $langcertusage);
+        $d = array(
+            array('header' => lang('rr_certificate')),
+            array('name' => lang('rr_certusage'), 'value' => $langcertusage));
         $keyname = $cert->getKeyname();
         if (!empty($keyname)) {
             $d[] = array('name' => lang('rr_keyname'), 'value' => $keyname);
@@ -74,14 +74,14 @@ class Providerdetails
                 $certValid = validateX509($certData);
                 if ($certValid) {
                     $pemdata = $cert->getPEM($cert->getCertData());
-
-                    $d[] = array('name' => lang('rr_keysize'), 'value' => '' . getKeysize($pemdata) . '');
-                    $d[] = array('name' => lang('rr_fingerprint') . ' (md5)', 'value' => '' . generateFingerprint($certData, 'md5') . '');
-                    $d[] = array('name' => lang('rr_fingerprint') . ' (sha1)', 'value' => '' . generateFingerprint($certData, 'sha1') . '');
-                    $d[] = array(
-                        'name'  => '',
-                        'value' => '<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c' . $cert->getId() . '" class="accordion-icon">' . lang('rr_certbody') . '</a><code id="c' . $cert->getId() . '" class="content">' . trim($certData) . '</code></dd></dl>'
-                    );
+                    array_push($d,
+                        array('name' => lang('rr_keysize'), 'value' => '' . getKeysize($pemdata) . ''),
+                        array('name' => lang('rr_fingerprint') . ' (md5)', 'value' => '' . generateFingerprint($certData, 'md5') . ''),
+                        array('name' => lang('rr_fingerprint') . ' (sha1)', 'value' => '' . generateFingerprint($certData, 'sha1') . ''),
+                        array(
+                            'name' => '',
+                            'value' => '<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c' . $cert->getId() . '" class="accordion-icon">' . lang('rr_certbody') . '</a><code id="c' . $cert->getId() . '" class="content">' . trim($certData) . '</code></dd></dl>'
+                        ));
                 }
             }
         }
@@ -166,176 +166,6 @@ class Providerdetails
         return $entStatus;
     }
 
-    public function generateAlertsDetails($msgprefix = null) {
-        $provider = $this->ent;
-        $result = array();
-
-
-        $contacts = $provider->getContacts();
-        if (count($contacts) == 0) {
-            $result[] = array('msg' => 'No contacts are defined', 'level' => 'warning');
-        }
-
-        $certificates = $provider->getCertificates();
-        $this->CI->load->helper('cert');
-        $minkeysize = $this->CI->config->item('entkeysizemin');
-        foreach ($certificates as $certificate) {
-            $cert = $certificate->getCertData();
-            $i = explode("\n", $cert);
-            $c = count($i);
-            if ($c < 2) {
-                $pem = chunk_split($cert, 64, PHP_EOL);
-                $cert = $pem;
-            }
-
-            $ncert = getPEM($cert);
-            $res = @openssl_x509_parse($ncert);
-            if (is_array($res)) {
-                if (!empty($minkeysize)) {
-                    $minkeysize = (int)$minkeysize;
-                } else {
-                    $minkeysize = 2048;
-                }
-                $r = openssl_pkey_get_public($ncert);
-                $keysize = 0;
-                if (!empty($r)) {
-                    $data = openssl_pkey_get_details($r);
-                    if (isset($data['bits'])) {
-                        $keysize = $data['bits'];
-                    } else {
-                        $result[] = array('msg' => 'Could not compute keysize', 'level' => 'warning');
-                        continue;
-                    }
-                }
-
-                if ($minkeysize > $keysize) {
-
-                    $result[] = array('msg' => 'The keysize of one of the certificates is less than ' . $minkeysize, 'level' => 'warning');
-                    continue;
-                }
-
-                $dateTimeNow = new DateTime('now');
-                $nowInTimeStamp = $dateTimeNow->format('U');
-
-                if (isset($res['validTo_time_t']) && ($nowInTimeStamp > $res['validTo_time_t'])) {
-
-                    $validto = new DateTime();
-                    $validto->setTimestamp($res['validTo_time_t']);
-                    $cfingerprint = generateFingerprint($ncert, 'sha1');
-
-                    $result[] = array('msg' => 'Certificate (sha1: ' . $cfingerprint . ') expired on: ' . $validto->format('Y-m-d H:i:s'), 'level' => 'warning');
-                }
-            } else {
-                $result[] = array('msg' => 'One of certs is not valid', 'level' => 'warning');
-                continue;
-            }
-        }
-
-        /**
-         * @var models\ServiceLocation[] $serviceLocation
-         */
-        $serviceLocation = $provider->getServiceLocations();
-        $serviceUrls = array();
-        foreach ($serviceLocation as $aaa) {
-            $serviceUrls[] = $aaa->getUrl();
-        }
-        $serviceUrls = array_unique($serviceUrls);
-
-        $srvsTcpChecked = array();
-        foreach ($serviceUrls as $surl) {
-            $parsedUrl = parse_url($surl);
-            $urlPort = null;
-            $isHostOK = true;
-            $hostsByIP = array();
-            if (array_key_exists('port', $parsedUrl) && !empty($parsedUrl['port'])) {
-                $urlPort = $parsedUrl['port'];
-            } elseif (array_key_exists('scheme', $parsedUrl)) {
-                if ($parsedUrl['scheme'] === 'http') {
-                    $urlPort = 80;
-                } elseif ($parsedUrl['scheme'] === 'https') {
-                    $urlPort = 443;
-                } else {
-                    $result[] = array('msg' => 'Incorrect protocol in service url :' . html_escape($surl), 'level' => 'error');
-                }
-            }
-            if (array_key_exists('host', $parsedUrl)) {
-                $srvHost = $parsedUrl['host'];
-                if (!empty($srvHost) && filter_var($srvHost, FILTER_VALIDATE_IP)) {
-                    $result[] = array('msg' => 'Service URL: ' . html_escape($surl) . ' -  contains IP address', 'level' => 'warning');
-                    $isHostOK = false;
-                } else {
-                    $resolved = dns_get_record($srvHost, DNS_A + DNS_AAAA);
-                    if (!empty($resolved)) {
-                        foreach ($resolved as $r) {
-                            if (is_array($r) && array_key_exists('ip', $r)) {
-
-                                if (!(filter_var($r['ip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE) && filter_var($r['ip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE))) {
-                                    $result[] = array('msg' => 'Service URL: ' . html_escape($surl) . ' - Resolving host  result IP: ' . $r['ip'] . ' which is in private or reserved pool', 'level' => 'warning');
-                                    $isHostOK = false;
-                                } else {
-                                    $hostsByIP['ipv4'][] = $r['ip'];
-                                }
-                            }
-                            if (is_array($r) && array_key_exists('ipv6', $r)) {
-                                if (!filter_var($r['ipv6'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE)) {
-                                    $result[] = array('msg' => 'Service URL: ' . html_escape($surl) . ' - Resolving host  results : ' . $r['ipv6'] . ' which is in private or reserved pool', 'level' => 'warning');
-                                    $isHostOK = false;
-                                } else {
-                                    $hostsByIP['ipv6'][] = $r['ipv6'];
-                                }
-                            }
-                        }
-                    } else {
-                        $result[] = array('msg' => 'Service URL: ' . html_escape($surl) . ' - Could not resolve a domain from service URL: ', 'level' => 'warning');
-                        $isHostOK = false;
-                    }
-                }
-            } else {
-                $isHostOK = false;
-            }
-            if ($isHostOK === true && !empty($urlPort)) {
-                if (array_key_exists('ipv4', $hostsByIP)) {
-                    foreach ($hostsByIP['ipv4'] as $ip) {
-
-                        if (!in_array('' . $ip . '_' . $urlPort . '', $srvsTcpChecked, true)) {
-                            $fp = @fsockopen($ip, $urlPort, $errno, $errstr, 2);
-                            if (!$fp) {
-                                $result[] = array('msg' => 'Service URL: ' . html_escape($surl) . ' : ' . $ip . ' : ' . $errstr . ' (' . $errno . ')', 'level' => 'alert');
-                            }
-                            $srvsTcpChecked[] = '' . $ip . '_' . $urlPort;
-                        }
-                    }
-                }
-                if (array_key_exists('ipv6', $hostsByIP)) {
-
-
-                    foreach ($hostsByIP['ipv6'] as $ip) {
-                        if (!in_array('' . $ip . '_' . $urlPort, $srvsTcpChecked, true)) {
-                            $fp = @fsockopen('tcp://[' . $ip . ']', $urlPort, $errno, $errstr, 2);
-                            if (!$fp) {
-                                $result[] = array('msg' => 'Service URL: ' . html_escape($surl) . ' : ' . $ip . ' : ' . $errstr . ' (' . $errno . ')', 'level' => 'alert');
-                            }
-                            $srvsTcpChecked[] = '' . $ip . '_' . $urlPort;
-                        }
-                    }
-                }
-            }
-        }
-
-
-        if (count($result) == 0) {
-            $result = array();
-        }
-
-        if (!empty($msgprefix)) {
-            foreach ($result as $k => $v) {
-                $result['' . $k . '']['msg'] = '(' . $msgprefix . ') ' . $v['msg'];
-            }
-        }
-
-        return $result;
-    }
-
     private function genOrgTab() {
 
         $d = array();
@@ -383,11 +213,11 @@ class Providerdetails
         $result = array();
         $contacts = $this->ent->getContacts();
         $typesInLang = array(
-            'technical'      => lang('rr_cnt_type_tech'),
+            'technical' => lang('rr_cnt_type_tech'),
             'administrative' => lang('rr_cnt_type_admin'),
-            'support'        => lang('rr_cnt_type_support'),
-            'billing'        => lang('rr_cnt_type_bill'),
-            'other'          => lang('rr_cnt_type_other')
+            'support' => lang('rr_cnt_type_support'),
+            'billing' => lang('rr_cnt_type_bill'),
+            'other' => lang('rr_cnt_type_other')
         );
         if (count($contacts) > 0) {
             foreach ($contacts as $c) {
@@ -411,14 +241,8 @@ class Providerdetails
     public function generateForControllerProvidersDetail() {
 
         $ent = $this->ent;
-        $feathide = $this->CI->config->item('feathide');
-        if (!is_array($feathide)) {
-            $feathide = array();
-        }
-        $featdisable = $this->CI->config->item('featdisable');
-        if (!is_array($featdisable)) {
-            $featdisable = array();
-        }
+        $feathide = (array) $this->CI->config->item('feathide');
+        $featdisable = (array) $this->CI->config->item('featdisable');
         $alerts = array();
 
         $lockicon = genIcon('locked');
@@ -430,9 +254,9 @@ class Providerdetails
         $sppart = $this->sppart;
         $idppart = $this->idppart;
         $type = strtolower($ent->getType());
-        $data['type'] = $type;
         $edit_attributes = '';
 
+        $data['type'] = $type;
         $data['presubtitle'] = $this->presubtitle;
 
         $id = $ent->getId();
@@ -507,7 +331,7 @@ class Providerdetails
         $entStatus = $this->makeStatusLabels();
         $d[$i]['value'] = '<b>' . $entStatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');
-        $d[$i]['value'] ='<b>' .jaggerDisplayDateTimeByOffset($ent->getLastModified(),jauth::$timeOffset).'</b>';
+        $d[$i]['value'] = '<b>' . jaggerDisplayDateTimeByOffset($ent->getLastModified(), jauth::$timeOffset) . '</b>';
         $entityIdRecord = array('name' => lang('rr_entityid'), 'value' => $ent->getEntityId());
         $d[++$i] = &$entityIdRecord;
 
@@ -515,14 +339,10 @@ class Providerdetails
         $d[++$i]['name'] = lang('e_orgname');
         $lname = $ent->getMergedLocalName();
         $lvalues = '';
-        if (count($lname) > 0) {
-            foreach ($lname as $k => $v) {
-                $lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
-            }
-            $d[$i]['value'] = $lvalues;
-        } else {
-            $d[$i]['value'] = '';
+        foreach ($lname as $k => $v) {
+            $lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
         }
+        $d[$i]['value'] = $lvalues;
         $d[++$i]['name'] = lang('e_orgdisplayname');
         $ldisplayname = $ent->getMergedLocalDisplayName();
         $lvalues = '';
@@ -530,21 +350,18 @@ class Providerdetails
             foreach ($ldisplayname as $k => $v) {
                 $lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
             }
-            $d[$i]['value'] = '<div id="selectme">' . $lvalues . '</div>';
-        } else {
-            $d[$i]['value'] = '<div id="selectme"></div>';
         }
+        $d[$i]['value'] = '<div id="selectme">' . $lvalues . '</div>';
         $d[++$i]['name'] = lang('e_orgurl');
         $localizedHelpdesk = $ent->getHelpdeskUrlLocalized();
+        $lvalues = '';
         if (is_array($localizedHelpdesk) && count($localizedHelpdesk) > 0) {
-            $lvalues = '';
             foreach ($localizedHelpdesk as $k => $v) {
                 $lvalues .= '<div><b>' . $k . ':</b> <a href="' . html_escape($v) . '"  target="_blank">' . html_escape($v) . '</a></div>';
             }
-            $d[$i]['value'] = $lvalues;
-        } else {
-            $d[$i]['value'] = '';
         }
+        $d[$i]['value'] = $lvalues;
+
         $d[++$i]['name'] = lang('rr_regauthority');
         $regauthority = $ent->getRegistrationAuthority();
         $confRegAuth = $this->CI->config->item('registrationAutority');
@@ -565,7 +382,7 @@ class Providerdetails
         $d[++$i]['name'] = lang('rr_regdate');
         $regdate = $ent->getRegistrationDate();
         if ($regdate !== null) {
-            $d[$i]['value'] = '<span data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" class="has-tip" title="' . date('Y-m-d H:i', $regdate->format('U')) . ' UTC">' .jaggerDisplayDateTimeByOffset($regdate,jauth::$timeOffset) . '</span>';
+            $d[$i]['value'] = '<span data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" class="has-tip" title="' . date('Y-m-d H:i', $regdate->format('U')) . ' UTC">' . jaggerDisplayDateTimeByOffset($regdate, jauth::$timeOffset) . '</span>';
         } else {
             $d[$i]['value'] = null;
         }
@@ -623,11 +440,11 @@ class Providerdetails
         $d[++$i]['name'] = lang('rr_validfromto') . ' <div class="dhelp">' . lang('d_validfromto') . '</div>';
         $validfrom = lang('rr_unlimited');
         if ($ent->getValidFrom()) {
-            $validfrom =  jaggerDisplayDateTimeByOffset($ent->getValidFrom(),jauth::$timeOffset);
+            $validfrom = jaggerDisplayDateTimeByOffset($ent->getValidFrom(), jauth::$timeOffset);
         }
         $validto = lang('rr_unlimited');
         if ($ent->getValidTo()) {
-            $validto = jaggerDisplayDateTimeByOffset($ent->getValidTo(),jauth::$timeOffset);
+            $validto = jaggerDisplayDateTimeByOffset($ent->getValidTo(), jauth::$timeOffset);
         }
         if ($isValidTime) {
             $d[$i]['value'] = $validfrom . ' <b>--</b> ' . $validto;
