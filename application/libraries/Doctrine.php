@@ -78,8 +78,7 @@ class Doctrine {
          * keep compatibility with old configs
          */
         $dbriver = $db['default']['dbdriver'];
-        if($dbriver === 'mysql')
-        {
+        if($dbriver === 'mysql'){
            $dbriver = 'pdo_mysql';
         }
         // Database connection information
@@ -90,6 +89,9 @@ class Doctrine {
             'host' => $db['default']['hostname'],
             'dbname' => $db['default']['database']
         );
+        if(isset($db['default']['port'])) {
+	    $connectionOptions['port'] = $db['default']['port'];                                                                                                                                                  
+	}    
 
         // Create EntityManager
         $this->em = EntityManager::create($connectionOptions, $config);
