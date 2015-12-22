@@ -101,8 +101,8 @@ class Providers_list extends MY_Controller
         }
 
         $result = $this->getList($type);
+	$this->output->set_content_type('application/json')->set_output(json_encode($result));
 
-        echo json_encode($result);
     }
 
     private function getList($type, $fresh = null) {
