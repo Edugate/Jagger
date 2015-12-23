@@ -41,9 +41,9 @@ class Metadatavalidator
                     throw new RuntimeException($message);
                 }
             );
-            $schemaLocation = 'schemas/new/' . $this->rootSchemaFile;
+            $schemaLocation =  $schemasFolder . $this->rootSchemaFile;
         } else {
-            $schemaLocation = 'schemas/old/' . $this->rootSchemaFile;
+            $schemaLocation = dirname(APPPATH) . '/schemas/old/' . $this->rootSchemaFile;
         }
 
 
