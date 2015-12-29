@@ -66,8 +66,14 @@ class Jauth
             }
             $trackDetails = 'Authn from ' . $ipAddr . ' ::  ' . $authntype . ' Authn and 2F';
             $this->ci->tracker->save_track('user', 'authn', $user->getUsername(), $trackDetails, false);
+            log_message('info',__METHOD__.': '.$user->getUsername().' '.$trackDetails);
 
-            $this->em->flush();
+            try {
+                $this->em->flush();
+            }
+            catch(Exception $e){
+                log_message('error',__METHOD__. ': '.$e);
+            }
             $this->ci->session->set_userdata('logged', 1);
             $this->ci->session->unset_userdata('partiallogged');
 
