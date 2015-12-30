@@ -1,5 +1,4 @@
 <?php
-
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -15,7 +14,7 @@ if (!defined('BASEPATH')) {
 class Authenticate extends MY_Controller
 {
 
-    function __construct() {
+    public function __construct() {
         parent::__construct();
         log_message('debug', 'DoLogin');
         $this->load->library('form_validation');
@@ -131,16 +130,13 @@ class Authenticate extends MY_Controller
                 $validated = $this->form_validation->run();
                 if ($validated === TRUE) {
                     if ($this->jauth->login($this->input->post('username'), $this->input->post('password'))) {
-                        if (isset($_SESSION['partiallogged']) && $_SESSION['partiallogged'] === 1 && isset($_SESSION['logged']) && $_SESSION['logged'] === 0) {
-
-
+                        if($this->session->userdata('partiallogged') === 1 && $this->session->userdata('logged') === 0) {
                             $html = $this->genDuo();
                             $result = array('result' => 'secondfactor', 'html' => $html);
-                            return $this->output->set_content_type('application/json')->set_output(json_encode($result));
                         } else {
                             $result = array('success' => true, 'result' => 'OK');
-                            return $this->output->set_content_type('application/json')->set_output(json_encode($result));
                         }
+                        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
                     } else {
                         $auth_error = '' . lang('error_authn') . '';
                     }
