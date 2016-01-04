@@ -16,14 +16,17 @@ class Jaggerstatus extends MY_Controller
     }
 
     public function gstatus(){
-        try {
-            $this->em->getRepository('models\Provider')->findOneBy(array('id'=>'1'));
+        $isenabled = $this->config->item('statuscheck');
+        if($isenabled === true) {
+            try {
+                $this->em->getRepository('models\Provider')->findOneBy(array('id' => '1'));
+            } catch (Exception $e) {
+                log_message('error', __METHOD__ . ' ' . $e);
+                return $this->output->set_status_header(500)->_display('error');
+            }
+            return $this->output->set_status_header(200)->_display('OK');
         }
-        catch(Exception $e){
-            log_message('error',__METHOD__.' '.$e);
-            return $this->output->set_status_header(500)->_display('error');
-        }
-        return $this->output->set_status_header(200)->_display('OK');
+        return $this->output->set_status_header(404)->_display('functionality disabled');
     }
 
 }
