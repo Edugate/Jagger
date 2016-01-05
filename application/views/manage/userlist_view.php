@@ -5,14 +5,14 @@ $form = '<form id="filter-form"><input name="filter" id="filter" value="" maxlen
  * and open the template in the editor.
  */
 
-echo '<div class="medium-3 columns">' . $form . '</div>';
+echo '<div class="medium-3 column">' . $form . '</div>';
 echo '<div class="medium-3 medium-offset-6 column end text-right"><a href="' . base_url('manage/users/add') . '" class="button tiny" data-reveal-id="newusermodal">' . lang('btn_newuser') . '</a></div>';
 $tmpl = array('table_open' => '<table  id="details" class="userlist filterlist">');
 
 $this->table->set_template($tmpl);
 $this->table->set_empty("&nbsp;");
 $this->table->set_heading('' . lang('rr_username') . '', '' . lang('rr_userfullname') . '', '' . lang('rr_uemail') . '',lang('srole'), '' . lang('lastlogin') . '',  lang('rr_action'));
-echo '<div class="small-12 columns">';
+echo '<div class="small-12 column">';
 echo $this->table->generate($userlist);
 echo '</div>';
 $this->table->clear();
@@ -31,10 +31,10 @@ $form_attributes = array('id' => 'formver2', 'class' => 'register');
 $f = form_open(base_url('manage/users/remove'), $form_attributes);
 $f .= '<h4>'.lang('rr_rmuserconfirm').' : <span id="usernameval"></span></h4>';
 $f .= '<div id="removeusermodalmsg"  data-alert class="alert-box hidden"></div>';
-$f .= '<div class="small-12 columns"><div class="small-3 columns">';
+$f .= '<div class="small-12 column"><div class="small-3 column">';
 $f .= '<input type="hidden" style="display:none;" value="" name="encodedusr" id="encodedusr">';
 $f .= jform_label('' . lang('rr_username') . '', 'username') . '</div>';
-$f .= '<div class="small-6 large-7 end columns">' . form_input('username') . '</div></div>';
+$f .= '<div class="small-6 large-7 end column">' . form_input('username') . '</div></div>';
 $f .= '<div class="buttons small-12 columns">';
 $mbts = array(
     '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">'.lang('rr_cancel').'</button>',

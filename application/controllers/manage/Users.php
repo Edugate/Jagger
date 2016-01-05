@@ -386,7 +386,7 @@ class Users extends MY_Controller
         /**
          * @var $users models\User[]
          */
-        $users = $this->em->getRepository("models\User")->findAll();
+        $users = $this->em->getRepository('models\User')->findAll();
         $usersList = array();
         $showlink = base_url('manage/users/show');
 

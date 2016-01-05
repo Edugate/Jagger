@@ -3859,7 +3859,7 @@ var adjustMenu = function () {
 
 $(function () {
     $("#details").tablesorter({sortList: [[0, 0]], widgets: ['zebra']});
-    $(".userlist#details").tablesorter({sortList: [[3, 1], [0, 0]], widgets: ['zebra']});
+    $(".userlist#details").tablesorter({sortList: [[4, 1], [0, 0]], widgets: ['zebra']});
     $("#options").tablesorter({sortList: [[0, 0]], headers: {3: {sorter: false}, 4: {sorter: false}}});
 
     $("#logotabs").tabs({
