@@ -495,6 +495,9 @@ class Awaiting extends MY_Controller
                 $fe = $entity->getFederations();
                 if ($fe->count() == 0) {
                     foreach ($d['federations'] as $g) {
+                        /**
+                         * @var $gg models\Federation
+                         */
                         $gg = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $g['sysname']));
                         if (!empty($gg)) {
                             if ($gg->isJoinAllowedForNew()) {
@@ -503,6 +506,7 @@ class Awaiting extends MY_Controller
                                 $membership->setProvider($entity);
                                 $membership->setFederation($gg);
                                 $entity->getMembership()->add($membership);
+                                $this->j_ncache->cleanFederationMembers($gg->getId());
                             }
                         }
                     }
@@ -520,6 +524,7 @@ class Awaiting extends MY_Controller
         if (!empty($fed)) {
             $fed2 = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $fed->getName()));
             $entity->removeFederation($fed);
+            $this->j_ncache->cleanFederationMembers($fed->getId());
         }
         foreach ($entity->getCertificates() as $o) {
             $o->setCertdata(reformatPEM($o->getCertdata()));
