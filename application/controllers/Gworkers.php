@@ -21,14 +21,12 @@ class Gworkers extends MY_Controller
 {
 
 
-    function __construct()
-    {
+    function __construct() {
         parent::__construct();
         $this->load->library('gworkertemplates');
     }
 
-    function worker()
-    {
+    public function worker() {
         if (is_cli()) {
             $this->load->library('gearmanw');
             $this->gearmanw->worker();
@@ -37,10 +35,10 @@ class Gworkers extends MY_Controller
         }
     }
 
-    function mailqueuesender()
-    {
+    public function mailqueuesender() {
         if (!is_cli()) {
             show_error('denied', 403);
+
             return;
         }
         log_message('info', 'MAILQUEUE STARTED : daemon needs to be restarted after any changes in configs');
@@ -49,13 +47,13 @@ class Gworkers extends MY_Controller
         $this->load->library('rrpreference');
         $sendOptions = array(
             'sendenabled' => $this->config->item('mail_sending_active'),
-            'mailfrom' => $this->config->item('mail_from'),
-            'subjsuffix' => $this->config->item('mail_subject_suffix')
+            'mailfrom'    => $this->config->item('mail_from'),
+            'subjsuffix'  => $this->config->item('mail_subject_suffix')
         );
         if (empty($sendOptions['subjsuffix'])) {
             $sendOptions['subjsuffix'] = '';
         }
-        while (TRUE) {
+        while (true) {
             if (empty($sendOptions['sendenabled'])) {
                 log_message('warning', 'MAILQUEUE :: sending mails is disabled - check config "mail_sending_active" ');
             } else {
@@ -91,60 +89,67 @@ class Gworkers extends MY_Controller
         }
     }
 
-    public function jcronmonitor()
-    {
+    public function jcronmonitor() {
         if (!is_cli()) {
             log_message('error', __METHOD__ . ' called not via cli');
             set_status_header('403');
             echo 'denied';
+
             return;
         }
 
         $gearmanConf = $this->config->item('gearmanconf');
 
         $runJobs = array();
-        while (TRUE) {
+        while (true) {
 
 
-            $cronEntries = $this->em->getRepository("models\Jcrontab")->findBy(array('isenabled' => true));
-            echo count($cronEntries) . PHP_EOL;
-            $currentTime = new \DateTime("now");
-            foreach ($cronEntries as $c) {
-                $cron = Cron\CronExpression::factory($c->getCronToStr());
-                if ($cron->isDue()) {
+            try {
+                $cronEntries = $this->em->getRepository("models\Jcrontab")->findBy(array('isenabled' => true));
+                $currentTime = new \DateTime("now");
+                foreach ($cronEntries as $c) {
+                    $cron = Cron\CronExpression::factory($c->getCronToStr());
+                    if ($cron->isDue()) {
 
-                    $didRunInRange = $c->isLastRunMatchRange($currentTime, 60);
-                    if (!$didRunInRange) {
-                        $r = $this->jcronRun($c);
-                        if (!empty($r)) {
-                            foreach($r as $rv)
-                            {
-                                $runJobs[] = $rv;
+                        $didRunInRange = $c->isLastRunMatchRange($currentTime, 60);
+                        if (!$didRunInRange) {
+                            $r = $this->jcronRun($c);
+                            if (!empty($r)) {
+                                foreach ($r as $rv) {
+                                    $runJobs[] = $rv;
+                                }
                             }
                         }
                     }
                 }
-            }
-            $this->em->flush();
+                $this->em->flush();
 
-            $gclient = new GearmanClient();
-            foreach ($gearmanConf['jobserver'] as $gs) {
-                try {
-                    $gclient->addServer('' . $gs['ip'] . '', $gs['port']);
-                } catch (Exception $e) {
-                    echo 'Exception : ' . $e . PHP_EOL;
+            } catch (Exception $e) {
+                log_message('error', 'JCRONMONITOR :: Probably lost connection to database trying to reconnect');
+                $this->em->getConnection()->close();
+                $this->em->getConnection()->connect();
+            }
+
+            if(count($runJobs)>0) {
+                $gclient = new GearmanClient();
+                foreach ($gearmanConf['jobserver'] as $gs) {
+                    try {
+                        $gclient->addServer('' . $gs['ip'] . '', $gs['port']);
+                    } catch (Exception $e) {
+                        echo 'Exception : ' . $e . PHP_EOL;
+                    }
                 }
-            }
 
-            foreach ($runJobs as $k => $j) {
-                $jstatus = $gclient->jobStatus($j);
-                if (array_key_exists('0', $jstatus) && empty($jstatus[0])) {
-                    log_message('info', 'JCRON:: ' . $j . ' not known (already finished or removed from jobserver)');
-                    unset($runJobs[$k]);
-                } elseif (array_key_exists('1', $jstatus) && !empty($jstatus[1])) {
-                    log_message('info', 'JCRON:: ' . $j . ' is still running on jobserver');
-                } elseif (array_key_exists('1', $jstatus) && empty($jstatus[1])) {
-                    log_message('info', 'JCRON:: ' . $j . ' is on jobserver but it is waiting for worker');
+                foreach ($runJobs as $k => $j) {
+                    $jstatus = $gclient->jobStatus($j);
+                    if (array_key_exists('0', $jstatus) && empty($jstatus[0])) {
+                        log_message('info', 'JCRON:: ' . $j . ' not known (already finished or removed from jobserver)');
+                        unset($runJobs[$k]);
+                    } elseif (array_key_exists('1', $jstatus) && !empty($jstatus[1])) {
+                        log_message('info', 'JCRON:: ' . $j . ' is still running on jobserver');
+                    } elseif (array_key_exists('1', $jstatus) && empty($jstatus[1])) {
+                        log_message('info', 'JCRON:: ' . $j . ' is on jobserver but it is waiting for worker');
+                    }
                 }
             }
             $this->em->clear();
@@ -152,13 +157,13 @@ class Gworkers extends MY_Controller
         }
     }
 
-    private function jcronRun(\models\Jcrontab $c)
-    {
+    private function jcronRun(\models\Jcrontab $c) {
         $isTemplate = $c->getTemplate();
         if ($isTemplate) {
             $resolvedT = $this->gworkertemplates->resolveTemplate($c->getJcommand(), $c->getJparams());
             if (empty($resolvedT)) {
                 log_message('error', __METHOD__ . ' could not resolve taskcheduler template for name:' . $c->getJcommand());
+
                 return false;
             }
         } else {
@@ -191,14 +196,15 @@ class Gworkers extends MY_Controller
                 $result[] = $jobhandle;
 
             } catch (Exception $e) {
-                log_message('error',__METHOD__.' '.$e);
+                log_message('error', __METHOD__ . ' ' . $e);
             }
 
 
         }
-        if(count($result)>0) {
+        if (count($result) > 0) {
             $c->setLastRun();
             $this->em->persist($c);
+
             return $result;
         }
 
