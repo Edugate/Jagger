@@ -19,7 +19,7 @@ class Gworkertemplates
     protected $digestmethod;
     protected $ispreworkers;
 
-    function __construct() {
+    public function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->digestmethod = $this->ci->config->item('signdigest');

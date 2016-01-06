@@ -2,6 +2,7 @@
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
+
 /**
  * @package   Jagger
  * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
@@ -9,11 +10,10 @@ if (!defined('BASEPATH')) {
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
  */
-
 class Gearmanw
 {
 
-    function __construct() {
+    public function __construct() {
         $this->ci = &get_instance();
         $this->ci->load->library('doctrine');
         $this->em = $this->ci->doctrine->em;
@@ -30,6 +30,7 @@ class Gearmanw
             if (empty($args) || !is_array($args)) {
                 log_message('error', 'GEARMAN ::' . __METHOD__ . ' didnt received args from requester');
                 $em->clear();
+
                 return false;
             }
         }
@@ -39,22 +40,24 @@ class Gearmanw
         sleep(1);
         $storage = $ci->config->item('datastorage_path');
         $img_mimes = array(
-            'image/jpeg' => 'jpg',
+            'image/jpeg'  => 'jpg',
             'image/pjpeg' => 'jpg',
-            'image/png' => 'png',
+            'image/png'   => 'png',
             'image/x-png' => 'png',
-            'image/gif' => 'gif',
+            'image/gif'   => 'gif',
         );
 
         if (empty($storage)) {
             log_message('error', 'GEARMAN :: datastorage not found');
             $em->clear();
+
             return false;
         }
         $statstorage = $storage . 'stats/';
         if (!array_key_exists('defid', $args)) {
             log_message('error', 'GEARMAN ::' . __METHOD__ . ' definition stat id not found in args');
             $em->clear();
+
             return false;
         } else {
             log_message('debug', 'GEARMAN ::' . __METHOD__ . ' processing job for defid ' . $args['defid'] . '');
@@ -80,6 +83,7 @@ class Gearmanw
         if (empty($def)) {
             log_message('error', 'GEARMAN ::' . __METHOD__ . ' defition stat not found with provider defid');
             $em->clear();
+
             return false;
         }
         $job->sendStatus(1, 10);
@@ -88,6 +92,7 @@ class Gearmanw
         if (empty($provider)) {
             log_message('debug', 'GEARMAN ::' . __METHOD__ . ' statdefinition has no provider owner');
             $em->clear();
+
             return false;
         }
         $job->sendStatus(2, 10);
@@ -137,6 +142,7 @@ class Gearmanw
                 if (!array_key_exists($mimeType, $img_mimes)) {
                     log_message('error', 'GEARMAN ::' . __METHOD__ . ' not allowed mimetype: ' . $mimeType);
                     $em->clear();
+
                     return false;
                 } else {
                     log_message('debug', 'GEARMAN ::' . __METHOD__ . ' mimetype is allowed... processing');
@@ -156,9 +162,12 @@ class Gearmanw
                 }
                 if (!write_file($statstorage . $filename, $data)) {
                     log_message('debug', 'GEARMAN ::' . __METHOD__ . ' coulnd write file ' . $statstorage . $filename . ' on disk');
+
                     return false;
                 } else {
                     $job->sendStatus(8, 10);
+                    $em->getConnection()->close();
+                    $em->getConnection()->connect();
                     if (empty($s)) {
                         $st = new models\ProviderStatsCollection;
                         $st->setFilename($filename);
@@ -191,6 +200,7 @@ class Gearmanw
         $gearmanConfig = $this->ci->config->item('gearmanconf');
         if (empty($gearmanConfig) || !isset($gearmanConfig['jobserver'])) {
             log_message('error', 'config[gearmanconf][jobserver] not found in config_rr file');
+
             return false;
         }
         $gm = new GearmanWorker();
@@ -215,7 +225,7 @@ class Gearmanw
                 }
             }
         }
-        while ($gm->work()) ;
+        while ($gm->work());
     }
 
     public function worker() {
