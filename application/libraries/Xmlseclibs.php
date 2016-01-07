@@ -1,29 +1,21 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-/**
- * ResourceRegistry3
- * 
- * @package     RR3
- * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
- */
+<?php
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 /**
- * Xmlseclibs Class
- * 
- * @package     RR3
- * @subpackage  Libraries
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @copyright 2012, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
+ *
  */
+class Xmlseclibs
+{
 
-
-class Xmlseclibs {
-
-     function __construct()
-     {
+    public function __construct() {
         require('xmlseclibs/xmlseclibs.php');
 
-     }
+    }
 
 }

@@ -1,13 +1,19 @@
 <?php
-
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
+/**
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @copyright 2012, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
+ */
 
 class Metadatavalidator
 {
     protected $rootSchemaFile;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->helper('metadata_elements');
@@ -17,10 +23,10 @@ class Metadatavalidator
         }
     }
 
-    public function validateWithSchema($metadata = null)
-    {
+    public function validateWithSchema($metadata = null) {
         if (empty($metadata)) {
             log_message('error', 'cannot validate empty metadata');
+
             return false;
         }
 
@@ -41,7 +47,7 @@ class Metadatavalidator
                     throw new RuntimeException($message);
                 }
             );
-            $schemaLocation =  $schemasFolder . $this->rootSchemaFile;
+            $schemaLocation = $schemasFolder . $this->rootSchemaFile;
         } else {
             $schemaLocation = dirname(APPPATH) . '/schemas/old/' . $this->rootSchemaFile;
         }
@@ -62,6 +68,7 @@ class Metadatavalidator
         } else {
             log_message('error', 'tested metadata is not valid:' . serialize($errors));
         }
+
         return $result;
     }
 
