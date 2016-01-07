@@ -66,6 +66,11 @@ class Federation {
     protected $publisher;
 
     /**
+     * @Column(type="string", length=512, nullable=true, unique=false)
+     */
+    protected $publisherexport;
+
+    /**
      * @Column(type="text",  nullable=true)
      */
     protected $description;
@@ -255,6 +260,18 @@ class Federation {
         {
             $this->publisher = null;
         }
+        return $this;
+    }
+
+    public function setPublisherExport($publisher = null)
+    {
+        if($publisher !== null){
+            $publisher = trim($publisher);
+            if(empty($publisher)){
+                $publisher = null;
+            }
+        }
+        $this->publisherexport = $publisher;
         return $this;
     }
 
@@ -613,6 +630,10 @@ class Federation {
         return $this->publisher;
     }
 
+    public function getPublisherExport()
+    {
+        return $this->publisherexport;
+    }
     public function importFromArray(array $r)
     {
         $this->setName($r['name']);

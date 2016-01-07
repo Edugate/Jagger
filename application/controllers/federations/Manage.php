@@ -366,6 +366,7 @@ class Manage extends MY_Controller
             array(lang('rr_fed_sysname'), html_escape($federation->getSysname())),
             $this->genEntitiesDescriptorId($federation),
             array(lang('rr_fed_publisher'), html_escape($federation->getPublisher())),
+            array(lang('rr_fed_publisher').' (in export metadata)', html_escape($federation->getPublisherExport())),
             array(lang('rr_fed_desc'), html_escape($federation->getDescription())),
             array(lang('rr_fed_tou'), html_escape($federation->getTou())),
             array(lang('rr_downcontactsintxt'), $contactLists['idp'] . '<br />' . $contactLists['sp'] . '<br />' . $contactLists['all']),
