@@ -158,7 +158,13 @@ class Metadata extends MY_Controller
         /**
          * @var $federation models\Federation
          */
-        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $federationName, 'is_lexport' => TRUE, 'is_active' => TRUE));
+        try {
+            $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $federationName, 'is_lexport' => TRUE, 'is_active' => TRUE));
+        }
+        catch (Exception $e){
+            log_message('error',__METHOD__.' '.$e);
+            return $this->output->set_status_header(500)->set_output('Internal server error');
+        }
 
         if ($federation === null) {
             show_404('page', 'log_error');
@@ -167,6 +173,7 @@ class Metadata extends MY_Controller
         /**
          * check if federation is active
          */
+        $publisher = $federation->getPublisherExport();
         $termsofuse = $federation->getTou();
         $attrfedreq_tmp = new models\AttributeRequirements;
         $options = array('attrs' => 1, 'fedreqattrs' => $attrfedreq_tmp->getRequirementsByFed($federation));
@@ -179,9 +186,9 @@ class Metadata extends MY_Controller
         $validfor = new \DateTime('now', new \DateTimezone('UTC'));
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
-
+        $creationInstant = $validfor->format('Y-m-d\TH:i:s\Z');
         $entitiesDescriptorId = $federation->getDescriptorId();
-        if ($entitiesDescriptorId === '') {
+        if (empty($entitiesDescriptorId)) {
             $idprefix = $this->config->item('fedexportmetadataidprefix');
             if (empty($idprefix)) {
                 $idprefix = '';
@@ -210,6 +217,14 @@ class Metadata extends MY_Controller
         $regNamespaces = h_metadataNamespaces();
         foreach ($regNamespaces as $k => $v) {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
+        }
+        if (!empty($publisher)) {
+            $xmlOut->startElementNs('md', 'Extensions', null);
+            $xmlOut->startElementNs('mdrpi', 'PublicationInfo', null);
+            $xmlOut->writeAttribute('creationInstant', $creationInstant);
+            $xmlOut->writeAttribute('publisher', $publisher);
+            $xmlOut->endElement(); // PublicationInfo
+            $xmlOut->endElement(); // Extensions
         }
         foreach ($members as $k => $m) {
 

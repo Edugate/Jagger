@@ -53,6 +53,7 @@ class Fededit extends MY_Controller
         $this->form_validation->set_rules('ispublic', lang('rr_isfedpublic'), 'strip_tags|trim|max_length[10]');
         $this->form_validation->set_rules('lexport', lang('rr_lexport_enabled'), 'strip_tags|trim|max_length[10]');
         $this->form_validation->set_rules('publisher', lang('rr_fed_publisher'), 'strip_tags|trim|max_length[500]');
+        $this->form_validation->set_rules('publisherexport', lang('rr_fed_publisher').' export', 'strip_tags|trim|max_length[500]');
         $this->form_validation->set_rules('digestmethod', lang('digestmethodsign'), 'trim|matches_inarray[' . serialize($allowedDigests) . ']');
         $this->form_validation->set_rules('digestmethodext', lang('digestmethodexportsign'), 'trim|matches_inarray[' . serialize($allowedDigests) . ']');
         $this->form_validation->set_rules('usealtmeta', lang('metaalturlinput') . ' radio', 'strip_tags|trim|required');
@@ -103,6 +104,7 @@ class Fededit extends MY_Controller
             $lexport = $this->input->post('lexport');
             $ispublic = $this->input->post('ispublic');
             $publisher = $this->input->post('publisher');
+            $publisherexport = $this->input->post('publisherexport');
             $digest = $this->input->post('digestmethod');
             $digestExport = $this->input->post('digestmethodext');
             $usealtmeta = $this->input->post('usealtmeta');
@@ -130,10 +132,12 @@ class Fededit extends MY_Controller
 
             if ($lexport === 'accept') {
                 $fed->setLocalExport(TRUE);
+
             } elseif (empty($lexport)) {
                 $fed->setLocalExport(FALSE);
             }
             $fed->setPublisher($publisher);
+            $fed->setPublisherExport($publisherexport);
             $fed->setDescription($indesc);
             $fed->setTou($intou);
             $fed->setDigest($digest);
