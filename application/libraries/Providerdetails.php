@@ -778,6 +778,16 @@ class Providerdetails
         }
         if ($sppart) {
             $d[++$i]['msection'] = 'SPSSODescriptor';
+
+            $wantAssertionSigned = $ent->getWantAssertionSigned();
+            $d[++$i]['name'] = 'WantAssertionsSigned';
+            if($wantAssertionSigned === true){
+                $d[$i]['value'] = 'yes';
+            }
+            else {
+                 $d[$i]['value'] = 'no/not set';
+            }
+
             $d[++$i]['name'] = lang('rr_supportedprotocols');
             $v = implode('<br />', $ent->getProtocolSupport('spsso'));
             $d[$i]['value'] = $v;

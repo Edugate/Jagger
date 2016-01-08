@@ -92,6 +92,12 @@ class Provider
     protected $type;
 
     /**
+     * used for WantAssertionsSigned in SPSSODescriptor
+     * @Column(type="boolean")
+     */
+    protected $wantassertsigned;
+
+    /**
      * @Column(type="text", nullable=true)
      */
     protected $scope;
@@ -485,6 +491,16 @@ class Provider
     public function resetRegistrationPolicy() {
         $this->regpolicy = serialize(array());
 
+        return $this;
+    }
+
+
+    public function setWantAssertionSigned($b) {
+        if ($b === true) {
+            $this->wantassertsigned = true;
+        } else {
+            $this->wantassertsigned = false;
+        }
         return $this;
     }
 
@@ -1109,6 +1125,7 @@ class Provider
             $this->setProtocolSupport($a, $provider->getProtocolSupport($a));
         }
         $this->setType($provider->getType());
+        $this->setWantAssertionSigned($provider->getWantAssertionSigned());
         $this->setHelpdeskUrl($provider->getHelpdeskUrl());
         $this->setValidFrom($provider->getValidFrom());
         $this->setValidTo($provider->getValidTo());
@@ -1252,13 +1269,17 @@ class Provider
      */
     public function getRegistrationDateInFormat($format, $offset = 0) {
         if (!empty($this->registerdate)) {
-            if($offset < 0){
+            if ($offset < 0) {
                 return \date($format, $this->registerdate->format('U') - abs($offset));
             }
             return \date($format, $this->registerdate->format('U') + $offset);
         }
 
         return null;
+    }
+
+    public function getWantAssertionSigned(){
+        return (bool) $this->wantassertsigned;
     }
 
     /**
@@ -1846,26 +1867,26 @@ class Provider
 
     public function convertToArray($addmeta = false) {
         $r = array(
-            'id'           => $this->id,
-            'entityid'     => $this->entityid,
-            'type'         => $this->type,
-            'validfrom'    => $this->getValidFrom(),
-            'validto'      => $this->getValidTo(),
-            'is_local'     => $this->getLocal(),
-            'is_approved'  => $this->getApproved(),
-            'is_active'    => $this->getActive(),
-            'is_locked'    => $this->getLocked(),
-            'is_static'    => $this->getStatic(),
-            'name'         => $this->getName(),
-            'displayname'  => $this->getDisplayname(),
-            'nameid'       => array(),
-            'protocol'     => array(),
-            'scope'        => $this->getScope('idpsso'),
-            'aascope'      => $this->getScope('aa'),
-            'helpdeskurl'  => $this->getHelpdeskUrl(),
-            'privacyurl'   => $this->getPrivacyUrl(),
-            'contacts'     => array(),
-            'services'     => array(),
+            'id' => $this->id,
+            'entityid' => $this->entityid,
+            'type' => $this->type,
+            'validfrom' => $this->getValidFrom(),
+            'validto' => $this->getValidTo(),
+            'is_local' => $this->getLocal(),
+            'is_approved' => $this->getApproved(),
+            'is_active' => $this->getActive(),
+            'is_locked' => $this->getLocked(),
+            'is_static' => $this->getStatic(),
+            'name' => $this->getName(),
+            'displayname' => $this->getDisplayname(),
+            'nameid' => array(),
+            'protocol' => array(),
+            'scope' => $this->getScope('idpsso'),
+            'aascope' => $this->getScope('aa'),
+            'helpdeskurl' => $this->getHelpdeskUrl(),
+            'privacyurl' => $this->getPrivacyUrl(),
+            'contacts' => array(),
+            'services' => array(),
             'certificates' => array()
         );
 
@@ -2058,9 +2079,9 @@ class Provider
         }
 
         $otherExtends = array(
-            'desc'           => 'Description',
-            'displayname'    => 'DisplayName',
-            'privacyurl'     => 'PrivacyStatementURL',
+            'desc' => 'Description',
+            'displayname' => 'DisplayName',
+            'privacyurl' => 'PrivacyStatementURL',
             'informationurl' => 'InformationURL'
         );
 
@@ -2221,6 +2242,10 @@ class Provider
     private function spSSODescriptorFromArray($b) {
         if (array_key_exists('extensions', $b)) {
             $this->ssoDescriptorExtensionsFromArray($b['extensions'], 'sp');
+        }
+        $this->setWantAssertionSigned(false);
+        if (array_key_exists('wantassertsigned', $b) && $b['wantassertsigned'] === true){
+            $this->setWantAssertionSigned(true);
         }
         if (array_key_exists('nameid', $b) && is_array($b['nameid'])) {
             $this->setNameIds('spsso', $b['nameid']);

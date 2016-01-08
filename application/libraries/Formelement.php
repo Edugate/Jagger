@@ -1260,6 +1260,19 @@ class Formelement
             $result[] = '<div class="section">SPSSODescriptor</div>';
 
 
+            $wantAssert = $ent->getWantAssertionSigned();
+            if($sessform){
+               if(isset($ses['wantassertionssigned']) && $ses['wantassertionssigned'] === 'yes'){
+                   $wantAssert = true;
+               }
+                else {
+                    $wantAssert = false;
+                }
+            }
+            $result[] = '';
+            $result[] = '<div class="medium-3 columns medium-text-right"><label>WantAssertionsSigned</label></div><div class="medium-7 columns end" >' . form_checkbox(array('name' => 'f[wantassertionssigned]', 'id' => 'f[wantassertionssigned]', 'value' => 'yes', 'checked' => $wantAssert)) . ' </div>';
+            $result[] = '';
+
             /**
              * generate ACS part
              */

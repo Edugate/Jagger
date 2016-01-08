@@ -602,6 +602,7 @@ class Providertoxml
      * @return XMLWriter
      */
     private function createSPSSODescriptor(\XMLWriter $xml, \models\Provider $ent, $options) {
+        $wantAssertionSigned = $ent->getWantAssertionSigned();
         $protocol = $ent->getProtocolSupport('spsso');
         $protocolEnum = implode(" ", $protocol);
         if (empty($protocolEnum)) {
@@ -632,6 +633,9 @@ class Providertoxml
 
 
         $xml->startElementNs('md', 'SPSSODescriptor', null);
+        if($wantAssertionSigned === true){
+            $xml->writeAttribute('WantAssertionsSigned','true');
+        }
         $xml->writeAttribute('protocolSupportEnumeration', $protocolEnum);
 
         $extXML = new XMLWriter();
