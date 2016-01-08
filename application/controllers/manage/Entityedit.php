@@ -233,6 +233,7 @@ class Entityedit extends MY_Controller
                     $this->form_validation->set_rules('f[reqattr][' . $k . '][attrid]', 'Attribute requirement - attribute id is missing', 'trim|required|');
                 }
             }
+            $this->form_validation->set_rules('f[wantassertionssigned]', 'WantAssertionsSigned', 'trim');
             $this->form_validation->set_rules('f[regauthority]', lang('rr_regauthority'), 'trim|htmlspecialchars');
             $this->form_validation->set_rules('f[registrationdate]', lang('rr_regdate'), 'trim|valid_date_past');
             $this->form_validation->set_rules('f[registrationtime]', lang('rr_regtime'), 'trim|valid_time_hhmm');

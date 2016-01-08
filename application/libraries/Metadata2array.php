@@ -367,10 +367,16 @@ class Metadata2array
     }
 
     private function spSSODescriptorConvert(\DOMElement $node) {
+        $WantAssertSigned = false;
+        $tmpWantAssertSigned = $node->getAttribute('WantAssertionsSigned');
+        if ($tmpWantAssertSigned === 'true') {
+            $WantAssertSigned = true;
+        }
         $profilesTmp = $node->getAttribute('protocolSupportEnumeration');
         $profiles = explode(' ', $profilesTmp);
         $result = array(
             'protocols' => $profiles,
+            'wantassertsigned' => $WantAssertSigned,
             'servicelocations' => array('assertionconsumerservice' => array(), 'singlelogout' => array()),
             'extensions' => array(
                 'idpdisc' => array(),

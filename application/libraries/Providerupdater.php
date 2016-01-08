@@ -1213,6 +1213,20 @@ class Providerupdater
         }
 
 
+        if($type !== 'IDP'){
+            $currWantAssert = $ent->getWantAssertionSigned();
+            if(array_key_exists('wantassertionssigned',$ch) && $ch['wantassertionssigned'] === 'yes'){
+                $ent->setWantAssertionSigned(true);
+            }
+            else
+            {
+                $ent->setWantAssertionSigned(false);
+            }
+            $newWantAssert = $ent->getWantAssertionSigned();
+            if($currWantAssert !== $newWantAssert){
+                 $changeList['WantAssertionsSigned'] = array('before'=> (string) $currWantAssert, 'after'=> (string) $newWantAssert);
+            }
+        }
         /**
          * START update protocols enumeration
          */
