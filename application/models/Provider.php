@@ -93,7 +93,7 @@ class Provider
 
     /**
      * used for WantAssertionsSigned in SPSSODescriptor
-     * @Column(type="boolean")
+     * @Column(type="boolean", nullable=true)
      */
     protected $wantassertsigned;
 
