@@ -1603,7 +1603,8 @@ $(document).ready(function () {
 
         var mapCanvas = providerEditForm.find("#map-canvas");
         if (mapCanvas.length) {
-            google.maps.event.addDomListener(window, 'load', mapInitialize);
+            if (typeof google === 'object' && typeof google.maps === 'object'){
+                google.maps.event.addDomListener(window, 'load', mapInitialize);
 
 
             var georows = $("#geogroup").first();
@@ -1648,8 +1649,12 @@ $(document).ready(function () {
                     google.maps.event.removeListener(listener);
                 });
             });
-
         }
+            else {
+                mapCanvas.append('<div data-alert class="alert-box alert">Map could not be loaded</div>');
+            }
+        }
+
         providerEditForm.on('click', 'a.rmgeo', function (e) {
 
             var inputtorm = $(this).closest('div.georow').find('input').first().val();
@@ -1674,7 +1679,7 @@ $(document).ready(function () {
                 window.alert('incorrect value');
             }
             else {
-                var bounds = new google.maps.LatLngBounds();
+
                 var rname = 'z';
                 var possible = "0123456789";
                 for (var i = 0; i < 5; i++) {
@@ -1682,18 +1687,21 @@ $(document).ready(function () {
                 }
                 var html = '<div class="small-12 column collapse georow"><div class="small-11 column"><input name="f[uii][idpsso][geo][' + rname + ']" type="text" value="' + inputgeo + '" readonly="readonly"></div><div class="small-1 column"><a href="#" class="rmgeo"><i class="fi-trash alert" style="color: red"></i></a></div></div>';
                 $(html).appendTo($('#geogroup'));
-                var geoLatLng = inputgeo.split(',');
-                var myLatlng = new google.maps.LatLng(geoLatLng[0], geoLatLng[1]);
+                if(typeof google === 'object' && typeof google.maps === 'object') {
+                    var bounds = new google.maps.LatLngBounds();
+                    var geoLatLng = inputgeo.split(',');
+                    var myLatlng = new google.maps.LatLng(geoLatLng[0], geoLatLng[1]);
 
-                var marker = new google.maps.Marker({
-                    position: myLatlng,
-                    map: map,
-                    title: ''
-                });
-                marker.setMap(map);
-                gMarkers.push(marker);
+                    var marker = new google.maps.Marker({
+                        position: myLatlng,
+                        map: map,
+                        title: ''
+                    });
+                    marker.setMap(map);
+                    gMarkers.push(marker);
 
-                bounds.extend(marker.position);
+                    bounds.extend(marker.position);
+                }
 
 
             }
