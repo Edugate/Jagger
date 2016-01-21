@@ -64,7 +64,12 @@ class Arp extends MY_Controller
             log_message('error', $e);
             return $this->output->set_content_type('text/html')->set_status_header(500)->set_output('Internal server error');
         }
-        $xml = $this->arpgen->genXML($ent, $version);
+        if($version === 3){
+            $xml = $this->arpgen->genXMLv3($ent);
+        }
+        else {
+            $xml = $this->arpgen->genXML($ent, $version);
+        }
         $result = $xml->outputMemory();
         return $this->output->set_content_type('text/xml')->set_output($result);
 

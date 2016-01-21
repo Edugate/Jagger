@@ -565,6 +565,234 @@ class Arpgen
         return $xml;
     }
 
+    public function genXMLv3(\models\Provider $idp)
+    {
+
+
+        // difference for shibboleth ver 2.x and ver 3.x
+
+       $entcatRuleTxt = 'EntityAttributeExactMatch';
+
+        $policy = $this->genPolicyDefs($idp);
+
+        $xml = $this->createXMLHead();
+
+        $comment = PHP_EOL . '
+			Experimental verion Attribute Release Policy for ' . $idp->getEntityId() . PHP_EOL . '
+                        generated on ' . date('D M j G:i:s T Y') . PHP_EOL . '
+                        compatible with shibboleth idp ff version: 3.x
+			' . PHP_EOL;
+
+
+        $xml->startElement('AttributeFilterPolicyGroup');
+        $xml->startAttribute('id');
+        $xml->text('policy');
+        $xml->endAttribute();
+        $xml->startAttribute('xmlns');
+        $xml->text('urn:mace:shibboleth:2.0:afp');
+        $xml->endAttribute();
+
+        $xml->startAttribute('xmlns:xsi');
+        $xml->text('http://www.w3.org/2001/XMLSchema-instance');
+        $xml->endAttribute();
+
+        $xml->startAttribute('xsi:schemaLocation');
+        $xml->text('urn:mace:shibboleth:2.0:afp http://shibboleth.net/schema/idp/shibboleth-afp.xsd');
+        $xml->endAttribute();
+
+
+        $xml->writeComment($comment);
+
+///////////////// ENTITY CATEGORIES /////////////////////////
+        $ecPolicies = $policy['ecPolicies'];
+        $ecPoliciesByEntCat = array();
+        foreach ($ecPolicies as $key => $value) {
+            foreach ($value as $key2 => $value2) {
+                if(in_array($key, $policy['supported'])) {
+                    $ecPoliciesByEntCat[$key2][$key] = $value2;
+                }
+            }
+        }
+
+
+        foreach ($ecPoliciesByEntCat as $lkey => $lval) {
+            $xml->writeComment('EntityCategory: ' . $policy['definitions']['ec'][$lkey]['value']);
+            $xml->startElement('AttributeFilterPolicy');
+            $xml->startAttribute('id');
+            $xml->text('EntityAttribute-' . $lkey);
+            $xml->endAttribute();
+
+            $xml->startElement('PolicyRequirementRule');
+            $xml->startAttributeNs('xsi', 'type', null);
+            $xml->text($entcatRuleTxt);
+            $xml->endAttribute();
+            $xml->startAttribute('attributeName');
+            $xml->text($policy['definitions']['ec'][$lkey]['name']);
+            $xml->endAttribute();
+            $xml->startAttribute('attributeValue');
+            $xml->text($policy['definitions']['ec'][$lkey]['value']);
+            $xml->endAttribute();
+            $xml->endElement();
+
+
+            foreach ($lval as $attr1ID => $attrP) {
+                $xml->startElement('AttributeRule');
+                $xml->startAttribute('attributeID');
+                $xml->text($policy['definitions']['attrs'][$attr1ID]);
+                $xml->endAttribute();
+
+
+                /**
+                 * @todo decide if always add saml:AttributeInMetadata
+                 */
+                if ($attrP === 0) {
+                    $xml->startElement('DenyValueRule');
+                    $xml->startAttributeNs('xsi', 'type', null);
+                    $xml->text('ANY');
+                    $xml->endAttribute();
+                    $xml->endElement();
+                } else {
+                    $xml->startElement('PermitValueRule');
+                    $xml->startAttributeNs('xsi', 'type', null);
+                    $xml->text('AttributeInMetadata');
+                    $xml->endAttribute();
+                    $xml->startAttribute('id');
+                    $xml->text('PermitRule');
+                    $xml->endAttribute();
+
+                    $xml->startAttribute('onlyIfRequired');
+                    if ($attrP === 2) {
+                        $xml->text('false');
+                    } else {
+                        $xml->text('true');
+                    }
+                    $xml->endAttribute();
+
+                    $xml->endElement();
+                }
+                $xml->endElement();
+            }
+            $xml->endElement();
+        }
+///////////////////////END ENTITY CATEGORIES //////////////////////////
+        /// start per sp
+        foreach ($policy['sps'] as  $spdets) {
+            if (!array_key_exists('active', $spdets)) {
+                continue;
+            }
+            $requireAttrsIds = array_keys($spdets['req']);
+            foreach ($requireAttrsIds as $reqattrid) {
+                foreach ($spdets['entcat'] as $encats) {
+                    if (!array_key_exists($reqattrid, $policy['global']) || (isset($policy['ecPolicies'][$reqattrid][$encats]) && !isset($spdets['spec'][$reqattrid]))) {
+                        unset($spdets['req'][$reqattrid], $spdets['final'][$reqattrid]);
+                    }
+                }
+            }
+            if (count($spdets['final']) == 0) {
+                $xml->writeComment('Ommited requester: ' . $spdets['entityid'] . '');
+                continue;
+            }
+
+            $releases = array();
+
+
+            foreach ($spdets['final'] as $finattrid => $finpolicy) {
+                if ($finpolicy >= $spdets['req'][$finattrid]) {
+                    $releases[$finattrid] = 1;
+                } elseif(array_key_exists($finattrid,$policy['ecPolicies'])) {
+                    $releases[$finattrid] = 0;
+                }
+            }
+            if (count($releases) == 0) {
+                $xml->writeComment('Ommited requester: ' . $spdets['entityid'] . '');
+                continue;
+            }
+            $xml->writeComment('Requester: ' . $spdets['entityid'] . '');
+            $xml->startElement('AttributeFilterPolicy');
+            $xml->startAttribute('id');
+            $xml->text($spdets['entityid']);
+            $xml->endAttribute();
+            $xml->startElement('PolicyRequirementRule');
+            $xml->startAttribute('xsi:type');
+            $xml->text('Requester');
+            $xml->endAttribute();
+            $xml->startAttribute('value');
+            $xml->text($spdets['entityid']);
+            $xml->endAttribute();
+            $xml->endElement();
+
+            foreach ($releases as $attrsToRelease => $permordeny) {
+                $xml->startElement('AttributeRule');
+                $xml->startAttribute('attributeID');
+                $xml->text($policy['definitions']['attrs'][$attrsToRelease]);
+                $xml->endAttribute();
+                if ($permordeny === 1) {
+                    if (isset($spdets['custom'][$attrsToRelease]) && count($spdets['custom'][$attrsToRelease]) > 0) {
+                        foreach ($spdets['custom'][$attrsToRelease] as $accessType => $values) {
+                            if ($accessType === 'deny') {
+                                $xml->startElement('DenyValueRule');
+                            } else {
+                                $xml->startElement('PermitValueRule');
+                            }
+                            if (count($values) > 1) {
+                                $xml->startAttribute('xsi:type');
+                                $xml->text('OR');
+                                $xml->endAttribute();
+                                foreach ($values as $singleValue) {
+                                    $xml->startElement('Rule');
+                                    $xml->startAttribute('xsi:type');
+                                    $xml->text('Value');
+                                    $xml->endAttribute();
+                                    $xml->startAttribute('value');
+                                    $xml->text($singleValue);
+                                    $xml->endAttribute();
+                                    $xml->startAttribute('ignoreCase');
+                                    $xml->text('true');
+                                    $xml->endAttribute();
+                                    $xml->endElement();
+                                }
+                            } else {
+
+                                $xml->startAttribute('xsi:type');
+                                $xml->text('Value');
+                                $xml->startAttribute('ignoreCase');
+                                $xml->text('true');
+                                $xml->endAttribute();
+                                $xml->startAttribute('value');
+                                $xml->text(array_shift($values));
+                                $xml->endAttribute();
+                            }
+
+                            $xml->endElement();
+                        }
+
+                    } else {
+                        $xml->startElement('PermitValueRule');
+                        $xml->startAttribute('xsi:type');
+                        $xml->text('ANY');
+                        $xml->endAttribute();
+                        $xml->endElement();
+                    }
+                } else {
+                    $xml->startElement('DenyValueRule');
+                    $xml->startAttribute('xsi:type');
+                    $xml->text('ANY');
+                    $xml->endAttribute();
+                    $xml->endElement();
+                }
+
+                $xml->endElement();
+            }
+
+            $xml->endElement();
+
+        }
+//////
+        $xml->endElement();
+        $xml->endDocument();
+        return $xml;
+    }
+
     /**
      * @return XMLWriter
      */
