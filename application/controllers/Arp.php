@@ -71,7 +71,8 @@ class Arp extends MY_Controller
             $xml = $this->arpgen->genXML($ent, $version);
         }
         $result = $xml->outputMemory();
-        return $this->output->set_content_type('text/xml')->set_output($result);
+        $lastUpdated = time();
+        return $this->output->set_content_type('text/xml')->set_header('Last-Modified: '.gmdate('D, d M Y H:i:s', $lastUpdated).' GMT')->set_output($result);
 
     }
 
