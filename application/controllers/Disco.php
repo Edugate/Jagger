@@ -16,7 +16,6 @@ class Disco extends MY_Controller
 
     public function __construct() {
         parent::__construct();
-        $this->output->set_content_type('application/json');
         $this->logoBasePath = $this->config->item('rr_logouriprefix');
         $this->logoBaseUrl = $this->config->item('rr_logobaseurl');
         if ($this->logoBaseUrl === null) {
@@ -95,13 +94,20 @@ class Disco extends MY_Controller
                 $output[$icounter] = $this->providerToDisco($ents, 'idp');
                 $icounter++;
             }
-            $jsonoutput = json_encode($output);
-            $this->j_ncache->saveFullDisco($jsonoutput);
+            $result = json_encode($output);
+            $this->j_ncache->saveFullDisco($result);
 
-            return $jsonoutput;
+        } else {
+            $result = $cachedDisco;
+        }
+        $callback = $this->input->get('callback');
+        if ($callback !== null  && $this->isCallbackValid($callback)) {
+            return $this->output->set_content_type('application/javascript')->set_output('' . $callback . '(' . $result . ')');
+
+        } else {
+            return $this->output->set_content_type('application/json')->set_output($result);
         }
 
-        return $cachedDisco;
 
     }
 
@@ -117,19 +123,16 @@ class Disco extends MY_Controller
         if (!$this->isFeatureEnabled()) {
             return $this->output->set_status_header(404)->set_output('The feature not enabled');
         }
-        $call = $this->input->get('callback');
-        $callArray = array_filter(explode('_', $call));
-        $inopaq = (count($callArray) === 3 && $callArray['0'] === 'dj' && $callArray['1'] === 'md' && is_numeric($callArray['2']));
-
 
         try {
             $result = $this->getFullDiscoData();
-            if ($inopaq) {
-                $data['result'] = $call . '(' . $result . ')';
+            $callback = $this->input->get('callback');
+            if ($callback !== null  && $this->isCallbackValid($callback)) {
+                return $this->output->set_content_type('application/javascript')->set_output('' . $callback . '(' . $result . ')');
+
             } else {
-                $data['result'] = $result;
+                return $this->output->set_content_type('application/json')->set_output($result);
             }
-            $this->load->view('disco_view', $data);
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
@@ -145,21 +148,16 @@ class Disco extends MY_Controller
     public function circle($entityId, $filename = null) {
 
         if ($filename !== 'metadata.json') {
-            return $this->output->set_status_header(403)->set_output('Request not allowed');
+             return $this->output->set_status_header(403)->set_output('Request not allowed');
         }
         if (!$this->isFeatureEnabled()) {
             return $this->output->set_status_header(404)->set_output('The feature not enabled');
         }
-
-        $call = $this->input->get('callback');
-        $callArray = array_filter(explode('_', $call));
-        $inopaq = (count($callArray) === 3 && $callArray['0'] === 'dj' && $callArray['1'] === 'md' && is_numeric($callArray['2']));
-        $data = array();
         $decodedEntityId = base64url_decode($entityId);
         /**
          * @var $ent models\Provider
          */
-        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('entityid'=>$decodedEntityId,'type'=>array('SP','BOTH')));
+        $ent = $this->em->getRepository('models\Provider')->findOneBy(array('entityid' => $decodedEntityId, 'type' => array('SP', 'BOTH')));
         if ($ent === null) {
             log_message('warning', 'Failed generating json  for provided entity:' . $decodedEntityId);
 
@@ -197,15 +195,16 @@ class Disco extends MY_Controller
                     $icounter++;
                 }
             }
-            $result = json_encode($output);
+            $result = json_encode($output, JSON_UNESCAPED_SLASHES);
             $this->j_ncache->saveCircleDisco($ent->getId(), $result);
         }
-        if ($inopaq) {
-            $data['result'] = $call . '(' . $result . ')';
+        $callback = $this->input->get('callback');
+        if ($callback !== null  && $this->isCallbackValid($callback)) {
+            return $this->output->set_content_type('application/javascript')->set_output('' . $callback . '(' . $result . ')');
+
         } else {
-            $data['result'] = $result;
+            return $this->output->set_content_type('application/json')->set_output($result);
         }
-        $this->load->view('disco_view', $data);
     }
 
 
@@ -222,9 +221,24 @@ class Disco extends MY_Controller
         if ($ent === null) {
             return $this->output->set_status_header(404)->set_output('Unknown serivce provider');
         }
+
         $result = $this->providerToDisco($ent, 'sp');
-        $data['result'] = json_encode($result);
-        $this->load->view('disco_view', $data);
+        $output = json_encode($result);
+        $callback = $this->input->get('callback');
+        if ($callback !== null && $this->isCallbackValid($callback)) {
+            return $this->output->set_content_type('application/javascript')->set_output('' . $callback . '(' . $output . ')');
+
+        } else {
+            return $this->output->set_content_type('application/json')->set_output($output);
+        }
+    }
+
+    /**
+     * @param $str
+     * @return bool
+     */
+    private function isCallbackValid($str) {
+        return (bool)preg_match('/^[a-z0-9$_]+$/i', $str);
     }
 
 }
