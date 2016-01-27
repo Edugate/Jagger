@@ -1,10 +1,14 @@
 <?php
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
+
 
 /**
- * Created by PhpStorm.
- * User: januszu
- * Date: 05/06/15
- * Time: 09:09
+ * @package   Jagger
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2016 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 class Arpgen
 {
@@ -137,7 +141,7 @@ class Arpgen
     {
         $filteredFeds = array_intersect_key($this->attrRequiredByFeds, $feds);
         $result = array();
-        foreach ($filteredFeds as $fedid => $attrs) {
+        foreach ($filteredFeds as  $attrs) {
             foreach ($attrs as $attrid => $status) {
                 if ((array_key_exists($attrid, $result) && $status < $result[$attrid]) || (!array_key_exists($attrid, $result))) {
                     $result[$attrid] = $status;
@@ -198,7 +202,7 @@ class Arpgen
         }
 
         $presum = array();
-        foreach ($filtered as $k => $arr) {
+        foreach ($filtered as $arr) {
 
             foreach ($arr as $k3 => $v3) {
                 $presum[$k3][] = $v3;
@@ -571,7 +575,7 @@ class Arpgen
 
         // difference for shibboleth ver 2.x and ver 3.x
 
-       $entcatRuleTxt = 'EntityAttributeExactMatch';
+        $entcatRuleTxt = 'EntityAttributeExactMatch';
 
         $policy = $this->genPolicyDefs($idp);
 
