@@ -97,12 +97,11 @@ class Disco extends MY_Controller
             $result = json_encode($output);
             $this->j_ncache->saveFullDisco($result);
 
-        }
-        else {
+        } else {
             $result = $cachedDisco;
         }
         $callback = $this->input->get('callback');
-        if ($callback !== null) {
+        if ($callback !== null  && $this->isCallbackValid($callback)) {
             return $this->output->set_content_type('application/javascript')->set_output('' . $callback . '(' . $result . ')');
 
         } else {
@@ -128,7 +127,7 @@ class Disco extends MY_Controller
         try {
             $result = $this->getFullDiscoData();
             $callback = $this->input->get('callback');
-            if ($callback !== null) {
+            if ($callback !== null  && $this->isCallbackValid($callback)) {
                 return $this->output->set_content_type('application/javascript')->set_output('' . $callback . '(' . $result . ')');
 
             } else {
@@ -149,7 +148,7 @@ class Disco extends MY_Controller
     public function circle($entityId, $filename = null) {
 
         if ($filename !== 'metadata.json') {
-            //   return $this->output->set_status_header(403)->set_output('Request not allowed');
+             return $this->output->set_status_header(403)->set_output('Request not allowed');
         }
         if (!$this->isFeatureEnabled()) {
             return $this->output->set_status_header(404)->set_output('The feature not enabled');
@@ -200,7 +199,7 @@ class Disco extends MY_Controller
             $this->j_ncache->saveCircleDisco($ent->getId(), $result);
         }
         $callback = $this->input->get('callback');
-        if ($callback !== null) {
+        if ($callback !== null  && $this->isCallbackValid($callback)) {
             return $this->output->set_content_type('application/javascript')->set_output('' . $callback . '(' . $result . ')');
 
         } else {
@@ -226,12 +225,20 @@ class Disco extends MY_Controller
         $result = $this->providerToDisco($ent, 'sp');
         $output = json_encode($result);
         $callback = $this->input->get('callback');
-        if ($callback !== null) {
+        if ($callback !== null && $this->isCallbackValid($callback)) {
             return $this->output->set_content_type('application/javascript')->set_output('' . $callback . '(' . $output . ')');
 
         } else {
             return $this->output->set_content_type('application/json')->set_output($output);
         }
+    }
+
+    /**
+     * @param $str
+     * @return bool
+     */
+    private function isCallbackValid($str) {
+        return (bool)preg_match('/^[a-z0-9$_]+$/i', $str);
     }
 
 }
