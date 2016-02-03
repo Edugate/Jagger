@@ -4848,8 +4848,7 @@ $(document).on('click', '#resetloginform', function (e) {
         }
     });
 });
-$(document).on('submit', "#duo_form", function (e) {
-    e.preventDefault();
+$(document).on('click','#duo_form',function (e) {
     var link = $(this).attr('action');
     var secondfactorrow = $('.secondfactorrow');
     $.ajax({
@@ -4887,6 +4886,7 @@ $(document).on('submit', "#duo_form", function (e) {
 
         }
     });
+    return false;
 });
 
 $(document).ready(
