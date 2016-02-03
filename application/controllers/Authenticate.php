@@ -58,10 +58,10 @@ class Authenticate extends MY_Controller
 
     private function genDuo() {
         $sig_request = Duo::signRequest($this->config->item('duo-ikey'), $this->config->item('duo-skey'), $this->config->item('duo-akey'), $this->session->userdata('username'));
-        $html = '<script src="' . base_url() . 'js/duo/Duo-Web-v1.js"></script>';
+        $html = '<script src="' . base_url() . 'js/duo/Duo-Web-v2.js"></script>';
 
-        $html .= '<input type="hidden" id="duo_host" value="' . $this->config->item('duo-host') . '">';
-        $html .= '<input type="hidden" id="duo_sig_request" value="' . $sig_request . '">';
+        $html .= form_open('',array('id'=>'duo_form')).'<input type="hidden" id="duo_host" value="' . $this->config->item('duo-host') . '">';
+        $html .= '<input type="hidden" id="duo_sig_request" value="' . $sig_request . '">'.form_close();
 
 
         $html .= "<script>
@@ -72,7 +72,7 @@ class Authenticate extends MY_Controller
 			'post_action': '" . base_url() . "authenticate/dologin',
 			'sig_request': '" . $sig_request . "'
 		});
-		Duo.ready();
+	//	Duo.ready();
 		});
 		</script>  ";
         $html .= '<iframe id="duo_iframe" width="600" height="250" frameborder="0" allowtransparency="true" style="background: transparent;" onload="document.getElementById(\'spinner\').style.display=\'none\';"></iframe>';
