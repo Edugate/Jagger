@@ -337,6 +337,9 @@ window.Duo = (function(document, window) {
         form.appendChild(input);
 
         // away we go!
+	// form.submit();
+	// Janusz
+	// submit replaced by click to get working properly with jagger
         form.click();
     }
 
