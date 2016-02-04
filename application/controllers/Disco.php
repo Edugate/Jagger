@@ -94,19 +94,13 @@ class Disco extends MY_Controller
                 $output[$icounter] = $this->providerToDisco($ents, 'idp');
                 $icounter++;
             }
-            $result = json_encode($output);
-            $this->j_ncache->saveFullDisco($result);
+            $this->j_ncache->saveFullDisco($output);
+             $result = $output;
 
         } else {
             $result = $cachedDisco;
         }
-        $callback = $this->input->get('callback');
-        if ($callback !== null  && $this->isCallbackValid($callback)) {
-            return $this->output->set_content_type('application/javascript')->set_output('' . $callback . '(' . $result . ')');
-
-        } else {
-            return $this->output->set_content_type('application/json')->set_output($result);
-        }
+        return $result;
 
 
     }
@@ -126,6 +120,7 @@ class Disco extends MY_Controller
 
         try {
             $result = $this->getFullDiscoData();
+            $result = json_encode($result);
             $callback = $this->input->get('callback');
             if ($callback !== null  && $this->isCallbackValid($callback)) {
                 return $this->output->set_content_type('application/javascript')->set_output('' . $callback . '(' . $result . ')');
