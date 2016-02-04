@@ -85,7 +85,7 @@ class Ajax extends MY_Controller
             CURLOPT_SSL_VERIFYPEER => $sslvalidate,
             CURLOPT_SSL_VERIFYHOST => $sslvalidatehost,
             CURLOPT_TIMEOUT => 10,
-            CURLOPT_BUFFERSIZE => 128,
+            CURLOPT_BUFFERSIZE => 8192,
             CURLOPT_NOPROGRESS => FALSE,
             CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) {
                 return ($Downloaded > (1000 * 1024)) ? 1 : 0;
