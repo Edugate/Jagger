@@ -2,6 +2,7 @@
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
+
 /**
  * @package   Jagger
  * @author    Middleware Team HEAnet
@@ -63,6 +64,7 @@ class Providertoxml
                 'name' => 'AssertionConsumerService',
                 'isorder' => 1,
                 'ns' => 'md',
+                'defaultattr' => 1
             ),
             'SPSingleLogoutService' => array(
                 'name' => 'SingleLogoutService',
@@ -326,6 +328,9 @@ class Providertoxml
 
     private function createServiceLocations(\XMLWriter $xml, $serviceCollection) {
         $discrespindex = array('-1');
+        /**
+         * @var models\ServiceLocation[] $serviceCollection
+         */
         foreach ($serviceCollection as $srv) {
             $srvType = $srv->getType();
             $xml->startElementNs($this->srvMap['' . $srvType . '']['ns'], '' . $this->srvMap['' . $srvType . '']['name'] . '', null);
@@ -340,6 +345,10 @@ class Providertoxml
                     $discrespindex[] = $discorder;
                 }
                 $xml->writeAttribute('index', $discorder);
+            }
+            $isdefault = $srv->getDefault();
+            if (isset($this->srvMap['' . $srvType . '']['defaultattr']) && $isdefault === true) {
+                $xml->writeAttribute('isDefault', 'true');
             }
             $xml->endElement();
         }
@@ -633,8 +642,8 @@ class Providertoxml
 
 
         $xml->startElementNs('md', 'SPSSODescriptor', null);
-        if($wantAssertionSigned === true){
-            $xml->writeAttribute('WantAssertionsSigned','true');
+        if ($wantAssertionSigned === true) {
+            $xml->writeAttribute('WantAssertionsSigned', 'true');
         }
         $xml->writeAttribute('protocolSupportEnumeration', $protocolEnum);
 

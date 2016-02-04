@@ -2263,7 +2263,7 @@ class Provider
                 if (isset($s['order'])) {
                     $sso->setOrder($s['order']);
                 }
-                if (!empty($s['isdefault'])) {
+                if (array_key_exists('isdefault',$s) && $s['isdefault'] === 'true') {
                     $sso->setDefault(true);
                 }
                 $sso->setProvider($this);
