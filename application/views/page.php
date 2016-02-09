@@ -281,28 +281,7 @@ if ($breadcrumbsEnabled === true) {
 </div>
 
 <?php
-// list js files to load 
-$jsToLoad1 = array(
-    'jquery.min.js',
-    'jquery-ui-1.10.4.custom.min.js',
-    'jquery.jqplot.min.js',
-    'jqplot.dateAxisRenderer.min.js',
-    'jqplot.cursor.min.js',
-    'jqplot.highlighter.min.js',
-    'jquery.tablesorter.js',
-    'jquery.searcher.min.js',
-    'fastclick.js',
-    'foundation.min.js',
-    'Chart.min.js',
-    'select2.min.js',
-    'datatables.min.js',
-    'dataTables.select.min.js','buttons.colVis.min.js',
-    'dataTables.foundation.min.js',
-    'buttons.foundation.js',
-    'buttons.print.js');
-foreach ($jsToLoad1 as $jsFile) {
-    echo '<script type="text/javascript" src="' . $base_url . 'js/' . $jsFile . '"></script>' . PHP_EOL;
-}
+echo '<script type="text/javascript" src="' . $base_url . 'js/thirdpartylibs.js"></script>' . PHP_EOL;
 
 if (!empty($load_matrix_js)) {
     echo '<script type="text/javascript">';

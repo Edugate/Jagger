@@ -1,7 +1,13 @@
 {
-  "name": "foundation-libsass-template",
+  "name": "jagger",
   "dependencies": {
     "foundation": "zurb/bower-foundation",
-    "jquery": "2.1.*"
+    "jquery": "2.1.*",
+    "jquery-ui": "1.11.4",
+    "jquery-searcher": "0.3.0",
+    "Chart.js": "1.0.2",
+    "select2": "4.0.1",
+    "datatables": "1.10.10",
+    "datatables-plugins": "1.10.10"
   }
 }

@@ -1,7 +1,26 @@
 module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-
+        concat: {
+            dist: {
+                src: [
+                    'bower_components/jquery/dist/jquery.js',
+                    'bower_components/jquery-ui/jquery-ui.js',
+                    'bower_components/jquery-searcher/dist/jquery.searcher.js',
+                    'src/js/jquery.jqplot.js',
+                    'src/js/jqplot.dateAxisRenderer.js',
+                    'src/js/jqplot.cursor.js',
+                    'src/js/jqplot.highlighter.js',
+                    'src/js/jquery.tablesorter.js',
+                    'bower_components/fastclick/lib/fastclick.js',
+                    'bower_components/foundation/js/foundation.js',
+                    'bower_components/Chart.js/Chart.js',
+                    'bower_components/select2/dist/js/select2.js',
+                    'src/js/datatables.js'
+                ],
+                dest: 'tmpdist/thirdpartylibs.js'
+            }
+        },
         sass: {
             options: {
                 includePaths: ['bower_components/foundation/scss']
@@ -18,8 +37,8 @@ module.exports = function (grunt) {
         },
         clean: {
             dist: {
-                src: ['js/*', 'css/*']
-            },
+                src: ['js/*', 'css/*', 'tmpdist/*']
+            }
         },
         copy: {
             dist: {
@@ -28,20 +47,16 @@ module.exports = function (grunt) {
                         expand: true,
                         flatten: true, // AT THIS LINE
                         src: [
-                            'bower_components/foundation/js/foundation/*.*',
-                            'other_components/jquery-ui-1.10.4.custom.min.js',
-                            'bower_components/foundation/js/foundation.js',
-                            'bower_components/foundation/js/foundation.min.js',
-                            'bower_components/fastclick/lib/fastclick.js',
-                            'bower_components/jquery/dist/*.*',
+                            'tmpdist/thirdpartylibs.js',
                             'bower_components/jquery.cookie/jquery.cookie.js',
                             'bower_components/jquery-placeholder/jquery.placeholder.js',
-                            'bower_components/modernizr/modernizr.js'
+                            'bower_components/modernizr/modernizr.js',
+                            'src/js/local.js'
                         ],
                         dest: '../js/'
                     }
                 ]
-            },
+            }
         },
         watch: {
             grunt: { files: ['Gruntfile.js'] },
@@ -58,7 +73,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.registerTask('build', ['sass']);
     grunt.registerTask('publish', ['clean:dist', 'build', 'copy:dist']);
+    grunt.registerTask('devpublish', ['clean:dist', 'build', 'concat:dist', 'copy:dist']);
     grunt.registerTask('default', ['build', 'watch']);
 }
