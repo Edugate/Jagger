@@ -860,7 +860,7 @@ var GINIT = {
             e.preventDefault();
             var tmodal = $(this);
             var tform = tmodal.find('form').first();
-            var tdata = tform.serializeArray()
+            var tdata = tform.serializeArray();
             var msgdiv = tmodal.find("#removeusermodalmsg").first();
             var inputencusr = tmodal.find('#encodedusr').first();
             var link = tform.attr('action');
@@ -1493,7 +1493,6 @@ $(document).ready(function () {
                 var dictAllow = json.definitions.dictionary.allow;
                 var dictDeny = json.definitions.dictionary.deny;
                 var dictHasAccess = json.definitions.dictionary.hasaccess;
-                var dictHasAccess = json.definitions.dictionary.hasaccess;
                 var dictHasNoAccess = json.definitions.dictionary.hasnoaccess;
                 var dictUsername = json.definitions.dictionary.username;
                 var dictIsAdmin = 'Administrator';
@@ -2069,6 +2068,7 @@ $(document).ready(function () {
                 logolangtxt = logolang;
             }
 
+	    var hiddeninputurl;
 
             var hiddeninputsize = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][size]" value="' + logosize + '">';
             var hiddeninputlang = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][lang]" value="' + logolang + '">';
@@ -2076,12 +2076,12 @@ $(document).ready(function () {
             var newblock = origblock.clone(true);
             newblock.removeAttr('id');
             if (logoembeddedcheck !== null && logoembeddedcheck.is(':checked') && logoembeddedcheck.val() === 'embedded' && logoraw !== undefined && logoraw !== null && logoraw !== '') {
-                var hiddeninputurl = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][url]" value="' + logoraw + '">';
+                hiddeninputurl = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][url]" value="' + logoraw + '">';
                 newblock.find('img').first().attr('src', logoraw).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputlang);
                 newblock.find('div.logoinfo').first().append('' + logolangtxt + '<br />').append(logosize + '<br />');
             }
             else {
-                var hiddeninputurl = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][url]" value="' + logourl + '">';
+                hiddeninputurl = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][url]" value="' + logourl + '">';
                 newblock.find('img').first().attr('src', logourl).append(hiddeninputurl).append(hiddeninputsize).append(hiddeninputlang);
                 newblock.find('div.logoinfo').first().append('' + logolangtxt + '<br />').append(logourl + '<br />').append(logosize + '<br />');
             }
@@ -2460,7 +2460,7 @@ $(document).ready(function () {
                     }
                     else if (data.type === 'entcat') {
                         nrcols = 0;
-                        var labelclass = '';
+                        labelclass = '';
                         var entpolicy;
                         var idf;
                         var unsupwttr;
@@ -2677,11 +2677,12 @@ $(document).ready(function () {
             var spid = $(this).attr('data-jagger-spid');
             var entityid = $(this).attr('data-jagger-entityid');
             var baseurl = $("[name='baseurl']").val();
+	    var modal;
             if (arptype !== undefined && arpaction !== undefined) {
 
                 if (arptype === 'global' && arpaction === 'delete') {
 
-                    var modal = $("#arpmdelattr");
+                    modal = $("#arpmdelattr");
                     modal.find('.response').first().removeClass('alert').removeClass('alert-box').empty().hide();
                     modal.find('input[name="attrname"]').first().val(attrname);
                     modal.find('input[name="attrid"]').first().val(attrid);
@@ -2689,7 +2690,7 @@ $(document).ready(function () {
                     modal.foundation('reveal', 'open');
                 }
                 else if (arptype === 'global' && arpaction === 'edit') {
-                    var modal = $("#arpmeditglobalattr");
+                    modal = $("#arpmeditglobalattr");
                     modal.find('.response').first().removeClass('alert').removeClass('alert-box').empty().hide();
                     modal.find('span.attributename').first().html(attrname);
                     modal.find('input[name="attrname"]').first().val(attrname);
@@ -2706,7 +2707,7 @@ $(document).ready(function () {
                     modal.foundation('reveal', 'open');
                 }
                 else if (arptype === 'fed' && arpaction === 'edit') {
-                    var modal = $("#arpmeditfedattr");
+                    modal = $("#arpmeditfedattr");
                     modal.find('.response').first().removeClass('alert').removeClass('alert-box').empty().hide();
                     modal.find('span.attributename').first().html(attrname);
                     modal.find('input[name="attrid"]').first().val(attrid);
@@ -2715,7 +2716,7 @@ $(document).ready(function () {
                     modal.foundation('reveal', 'open');
                 }
                 else if (arptype === 'entcat' && arpaction === 'edit') {
-                    var modal = $('#arpmeditentcatattr');
+                    modal = $('#arpmeditentcatattr');
                     modal.find('.response').first().removeClass('alert').removeClass('alert-box').empty().hide();
                     modal.find('span.attributename').first().html(attrname);
                     modal.find('input[name="attrid"]').first().val(attrid);
@@ -2724,7 +2725,7 @@ $(document).ready(function () {
                     modal.foundation('reveal', 'open');
                 }
                 else if (arptype === 'sp' && arpaction === 'edit') {
-                    var modal = $('#arpmeditspattr');
+                    modal = $('#arpmeditspattr');
 
                     modal.find('.response').first().removeClass('alert').removeClass('alert-box').empty().hide();
                     modal.find('span.attributename').first().html(attrname);

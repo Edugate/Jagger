@@ -37,7 +37,7 @@ module.exports = function (grunt) {
         },
         clean: {
             dist: {
-                src: ['js/*', 'css/*', 'tmpdist/*']
+                src: ['js/*', 'css/*', 'tmpdist/*', 'build/src/*', 'build/minified/*']
             }
         },
         copy: {
@@ -47,16 +47,36 @@ module.exports = function (grunt) {
                         expand: true,
                         flatten: true, // AT THIS LINE
                         src: [
-                            'tmpdist/thirdpartylibs.js',
+                            'tmpdist/*',
                             'bower_components/jquery.cookie/jquery.cookie.js',
                             'bower_components/jquery-placeholder/jquery.placeholder.js',
                             'bower_components/modernizr/modernizr.js',
                             'src/js/local.js'
                         ],
-                        dest: '../js/'
+                        dest: 'build/src/'
                     }
                 ]
             }
+        },
+        uglify: {
+          dynamicmapping: {
+              files: [
+                  {
+                      expand: true,
+                      cwd: 'build/src/',
+                      src: ['*.js'],
+                      dest: 'build/minified/',
+                      ext: '.min.js',
+                      extDot: 'last'
+                  }
+              ]
+          }
+        },
+        filerev: {
+          js: {
+              src: ['build/minified/*.js'],
+              dest: '../js/'
+          }
         },
         watch: {
             grunt: { files: ['Gruntfile.js'] },
@@ -74,8 +94,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-filerev');
     grunt.registerTask('build', ['sass']);
     grunt.registerTask('publish', ['clean:dist', 'build', 'copy:dist']);
-    grunt.registerTask('devpublish', ['clean:dist', 'build', 'concat:dist', 'copy:dist']);
+    grunt.registerTask('devpublish', ['clean:dist', 'build', 'concat:dist', 'copy:dist', 'uglify', 'filerev']);
     grunt.registerTask('default', ['build', 'watch']);
 }

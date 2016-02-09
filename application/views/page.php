@@ -56,7 +56,7 @@ $foundation = $base_url . 'foundation/';
         '<meta content=\'\' name=\'author\'>' . PHP_EOL .
         '<meta content=\'width=device-width, initial-scale=1.0, user-scalable=0\' name=\'viewport\'>' . PHP_EOL .
         '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/' . $colorTheme . '.css" />' . PHP_EOL .
-        '<script src="' . $base_url . 'js/modernizr.min.js"></script>';
+        '<script src="' . $base_url . 'js/modernizr.min.32fa189c.js"></script>';
     ?>
 
 </head>
@@ -281,7 +281,7 @@ if ($breadcrumbsEnabled === true) {
 </div>
 
 <?php
-echo '<script type="text/javascript" src="' . $base_url . 'js/thirdpartylibs.js"></script>' . PHP_EOL;
+echo '<script type="text/javascript" src="' . $base_url . 'js/thirdpartylibs.min.fd05bf60.js"></script>' . PHP_EOL;
 
 if (!empty($load_matrix_js)) {
     echo '<script type="text/javascript">';
@@ -315,7 +315,7 @@ if (!$loggedin) {
 </script>
 <?php
 // load local final js
-echo '<script type="text/javascript" src="' . $base_url . 'js/locals-v9.min.js"></script>' . PHP_EOL;
+echo '<script type="text/javascript" src="' . $base_url . 'js/local.min.513d5ae2.js"></script>' . PHP_EOL;
 
 // raw js from array
 if (!empty($rawJs) && is_array($rawJs)) {
