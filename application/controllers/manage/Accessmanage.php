@@ -92,7 +92,7 @@ class Accessmanage extends MY_Controller
 
     private function validateUpdatePost() {
 
-        $this->form_validation->set_rules('changeaccess', 'Update access', 'trim|required|min_length[5]|max_length[500]|no_white_spaces');
+        $this->form_validation->set_rules('changeaccess', 'Update access', 'trim|required|min_length[5]|max_length[500]');
 
         return $this->form_validation->run();
 
