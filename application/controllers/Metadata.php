@@ -18,15 +18,13 @@ class Metadata extends MY_Controller
 {
 
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $this->output->set_content_type('application/samlmetadata+xml');
         $this->load->library('j_ncache');
     }
 
-    public function federation($federationName = null, $limitType = null)
-    {
+    public function federation($federationName = null, $limitType = null) {
         if ($federationName === null) {
             return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Not found');
         }
@@ -88,8 +86,8 @@ class Metadata extends MY_Controller
         // EntitiesDescriptor
         $xmlOut->startComment();
         $xmlOut->text('Metadata was generated on: ' . $now->format('Y-m-d H:i') . ' UTC' . PHP_EOL . 'TERMS OF USE' . PHP_EOL . $federation->getTou() . PHP_EOL);
-        if($excludeType !== null){
-            $xmlOut->text('Note: '.$excludeType.' type of entities have been exluded from the generated metadata'.PHP_EOL);
+        if ($excludeType !== null) {
+            $xmlOut->text('Note: ' . $excludeType . ' type of entities have been exluded from the generated metadata' . PHP_EOL);
         }
         $xmlOut->endComment();
         $xmlOut->startElementNs('md', 'EntitiesDescriptor', null);
@@ -143,8 +141,7 @@ class Metadata extends MY_Controller
         $this->load->view('metadata_view', $data);
     }
 
-    public function federationexport($federationName = null)
-    {
+    public function federationexport($federationName = null) {
         if ($federationName === null) {
             show_error('Not found', 404);
         }
@@ -160,9 +157,8 @@ class Metadata extends MY_Controller
          */
         try {
             $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $federationName, 'is_lexport' => TRUE, 'is_active' => TRUE));
-        }
-        catch (Exception $e){
-            log_message('error',__METHOD__.' '.$e);
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
             return $this->output->set_status_header(500)->set_output('Internal server error');
         }
 
@@ -249,8 +245,7 @@ class Metadata extends MY_Controller
         $this->load->view('metadata_view', $data);
     }
 
-    public function preregister($tmpid)
-    {
+    public function preregister($tmpid) {
         if (!ctype_digit($tmpid)) {
             show_error('Not found');
         }
@@ -264,56 +259,153 @@ class Metadata extends MY_Controller
         }
     }
 
-    public function service($entityId = null, $fileName = null)
-    {
-        if (empty($entityId) || empty($fileName) || strcmp($fileName, 'metadata.xml') != 0) {
+    private function serviceOld($encodedEntityId = null, $fileName = null) {
+
+        if (empty($encodedEntityId) || empty($fileName) || strcmp($fileName, 'metadata.xml') != 0) {
             show_error('Page not found', 404);
         }
 
 
         $data = array();
         $this->load->library('providertoxml');
-        $name = base64url_decode($entityId);
+        $entityId = base64url_decode($encodedEntityId);
         $options['attrs'] = 1;
         /**
          * @var $entity models\Provider
          */
-        $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $name));
-        if (!empty($entity)) {
-            $isStatic = $entity->isStaticMetadata();
-            if ($isStatic) {
-                $xmlOut = $this->providertoxml->createXMLDocument();
-                $this->providertoxml->entityStaticConvert($xmlOut, $entity);
-                $xmlOut->endDocument();
-                $data['out'] = $xmlOut->outputMemory();
-                $mem = memory_get_usage();
-                $mem = round($mem / 1048576, 2);
-                log_message('info', 'Memory usage: ' . $mem . 'M');
-                $this->load->view('metadata_view', $data);
-            } else {
-                $xmlOut = $this->providertoxml->entityConvertNewDocument($entity, $options);
-            }
-            if (!empty($xmlOut)) {
-                $data['out'] = $xmlOut->outputMemory();
-                $mem = memory_get_usage();
-                $mem = round($mem / 1048576, 2);
-                log_message('info', 'Memory usage: ' . $mem . 'M');
-                $this->load->view('metadata_view', $data);
-            } else {
-                log_message('error', __METHOD__ . ' empty xml has been generated');
-                show_error('Internal server error', 500);
-            }
-        } else {
-            log_message('debug', 'Identity Provider not found');
-            show_error('Identity Provider not found', 404);
+        $entity = null;
+        try {
+            $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityId));
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ': ' . $e);
+            return $this->output->set_status_header(500)->set_output('Internal server error');
         }
+        if ($entity === null) {
+            log_message('debug', 'Identity/Service Provider not found');
+            return $this->output->set_status_header(404)->set_output('Service metadata not found');
+        }
+
+        $isStatic = $entity->isStaticMetadata();
+        if ($isStatic) {
+            $xmlOut = $this->providertoxml->createXMLDocument();
+            $this->providertoxml->entityStaticConvert($xmlOut, $entity);
+            $xmlOut->endDocument();
+            $data['out'] = $xmlOut->outputMemory();
+            $mem = memory_get_usage();
+            $mem = round($mem / 1048576, 2);
+            log_message('info', 'Memory usage: ' . $mem . 'M');
+            $this->load->view('metadata_view', $data);
+        } else {
+            $xmlOut = $this->providertoxml->entityConvertNewDocument($entity, $options);
+        }
+        if (!empty($xmlOut)) {
+            $data['out'] = $xmlOut->outputMemory();
+            $mem = memory_get_usage();
+            $mem = round($mem / 1048576, 2);
+            log_message('info', 'Memory usage: ' . $mem . 'M');
+            $this->load->view('metadata_view', $data);
+        } else {
+            log_message('error', __METHOD__ . ' empty xml has been generated');
+            show_error('Internal server error', 500);
+        }
+
+    }
+
+    public function service($encodedEntityId = null, $fileName = null) {
+
+        if (empty($encodedEntityId) || empty($fileName) || strcmp($fileName, 'metadata.xml') != 0) {
+            show_error('Page not found', 404);
+        }
+
+
+        $data = array();
+        $this->load->library('providertoxml');
+        $entityId = base64url_decode($encodedEntityId);
+        $options['attrs'] = 1;
+        /**
+         * @var $entity models\Provider
+         */
+        $entity = null;
+        try {
+            $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityId));
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ': ' . $e);
+            return $this->output->set_status_header(500)->set_output('Internal server error');
+        }
+        if ($entity === null) {
+            log_message('debug', 'Identity/Service Provider not found');
+            return $this->output->set_status_header(404)->set_output('Service metadata not found');
+        }
+
+        $isStatic = $entity->isStaticMetadata();
+        /**
+         * @var \XMLWriter $xmlOut
+         */
+        if ($isStatic) {
+            $xmlOut = $this->providertoxml->createXMLDocument();
+            $this->providertoxml->entityStaticConvert($xmlOut, $entity);
+            $xmlOut->endDocument();
+
+
+            $outPut = $xmlOut->outputMemory();
+            $domXML = new DOMDocument();
+
+            $domXML->loadXML($outPut,LIBXML_NOERROR|LIBXML_NOWARNING);
+            $xpath = new DOMXPath($domXML);
+            $xpath->registerNamespace('', 'urn:oasis:names:tc:SAML:2.0:metadata');
+            $xpath->registerNamespace('md', 'urn:oasis:names:tc:SAML:2.0:metadata');
+            $xpath->registerNamespace('ds', 'http://www.w3.org/2000/09/xmldsig#');
+            $xpath->registerNamespace('mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');
+            $xpath->registerNamespace('mdui', 'urn:oasis:names:tc:SAML:metadata:ui');
+            $xpath->registerNamespace('mdattr','urn:oasis:names:tc:SAML:metadata:attribute');
+            $xpath->registerNamespace('shibmd','urn:mace:shibboleth:metadata:1.0');
+            /**
+             * @var \DOMElement $element
+             */
+            $element =  $domXML->getElementsByTagName('EntityDescriptor')->item(0);
+            if($element === null){
+                $element =  $domXML->getElementsByTagName('md:EntityDescriptor')->item(0);
+            }
+
+
+            if ($element !== null) {
+                $element->setAttribute('xmlns','urn:oasis:names:tc:SAML:2.0:metadata');
+                $element->setAttribute('xmlns:md', 'urn:oasis:names:tc:SAML:2.0:metadata');
+                $element->setAttribute('xmlns:ds', 'http://www.w3.org/2000/09/xmldsig#');
+                $element->setAttribute('xmlns:mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');
+                $element->setAttribute('xmlns:mdui','urn:oasis:names:tc:SAML:metadata:ui');
+                $element->setAttribute('xmlns:mdattr','urn:oasis:names:tc:SAML:metadata:attribute');
+                $element->setAttribute('xmlns:shibmd','urn:mace:shibboleth:metadata:1.0');
+            }
+             $out = $domXML->saveXML();
+
+
+
+            $data['out'] = $out;//$xmlOut->outputMemory();
+            $mem = memory_get_usage();
+            $mem = round($mem / 1048576, 2);
+            log_message('info', 'Memory usage: ' . $mem . 'M');
+            $this->load->view('metadata_view', $data);
+        } else {
+            $xmlOut = $this->providertoxml->entityConvertNewDocument($entity, $options);
+        }
+        if (!empty($xmlOut)) {
+            $data['out'] = $xmlOut->outputMemory();
+            $mem = memory_get_usage();
+            $mem = round($mem / 1048576, 2);
+            log_message('info', 'Memory usage: ' . $mem . 'M');
+            $this->load->view('metadata_view', $data);
+        } else {
+            log_message('error', __METHOD__ . ' empty xml has been generated');
+            show_error('Internal server error', 500);
+        }
+
     }
 
     /**
      * @return bool
      */
-    private function isCircleFeatureEnabled()
-    {
+    private function isCircleFeatureEnabled() {
         $cnf = $this->config->item('featdisable');
         return !(isset($cnf['circlemeta']) && $cnf['circlemeta'] === true);
     }
@@ -322,8 +414,7 @@ class Metadata extends MY_Controller
      * @param \models\Provider $provider
      * @return bool
      */
-    private function isProviderAllowedForCircle(\models\Provider $provider)
-    {
+    private function isProviderAllowedForCircle(\models\Provider $provider) {
         $circleForExternalAllowed = $this->config->item('disable_extcirclemeta');
         $isLocal = $provider->getLocal();
         $result = true;
@@ -337,8 +428,7 @@ class Metadata extends MY_Controller
      * @param null $encodedEntityId
      * @param null $fileName
      */
-    public function circle($encodedEntityId = null, $fileName = null)
-    {
+    public function circle($encodedEntityId = null, $fileName = null) {
         $isEnabled = $this->isCircleFeatureEnabled();
         if (!$isEnabled) {
             show_error('Circle of trust  metadata : Feature is disabled', 404);
@@ -439,8 +529,7 @@ class Metadata extends MY_Controller
      * @param $tokenid
      * @return bool|void
      */
-    public function queue($tokenid)
-    {
+    public function queue($tokenid) {
         if (strlen($tokenid) > 100 || !ctype_alnum($tokenid)) {
             show_error('Not found', 404);
             return null;
@@ -484,15 +573,14 @@ class Metadata extends MY_Controller
     /**
      * @return bool
      */
-    private function checkAccess()
-    {
+    private function checkAccess() {
         if ($this->jauth->isLoggedIn()) {
             return true;
         }
         $remoteip = $this->input->ip_address();
         $limits = $this->config->item('unsignedmeta_iplimits');
-        if(is_array($limits)){
-            if(in_array($remoteip, $limits, true)){
+        if (is_array($limits)) {
+            if (in_array($remoteip, $limits, true)) {
                 return true;
             }
             return false;

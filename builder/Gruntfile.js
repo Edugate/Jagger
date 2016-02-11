@@ -59,24 +59,24 @@ module.exports = function (grunt) {
             }
         },
         uglify: {
-          dynamicmapping: {
-              files: [
-                  {
-                      expand: true,
-                      cwd: 'build/src/',
-                      src: ['*.js'],
-                      dest: 'build/minified/',
-                      ext: '.min.js',
-                      extDot: 'last'
-                  }
-              ]
-          }
+            dynamicmapping: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'build/src/',
+                        src: ['*.js'],
+                        dest: 'build/minified/',
+                        ext: '.min.js',
+                        extDot: 'last'
+                    }
+                ]
+            }
         },
         filerev: {
-          js: {
-              src: ['build/minified/*.js'],
-              dest: '../js/'
-          }
+            js: {
+                src: ['build/minified/*.js'],
+                dest: '../js/'
+            }
         },
         watch: {
             grunt: { files: ['Gruntfile.js'] },
