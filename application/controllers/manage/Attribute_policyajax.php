@@ -5,7 +5,7 @@ if (!defined('BASEPATH')) {
 
 /**
  * @package   Jagger
- * @author    Middleware Team HEAnet
+ * @author    Middleware Team HEAnet <noc-middleware@heanet.ie>
  * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  * @copyright 2014 HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
@@ -200,17 +200,17 @@ class Attribute_policyajax extends MY_Controller
         }
         $this->load->library('zacl');
         $tmpAt = $this->config->item('policy_dropdown');
-        $idpid = $this->input->post('idpid');
-        if (empty($idpid) || !ctype_digit($idpid)) {
-            log_message('warning', 'idpid in post not provided or not numeric');
+        $idpidInPost = $this->input->post('idpid');
+        if (!ctype_digit($idpidInPost)) {
+            log_message('warning', 'idpidInPost in post not provided or not numeric');
             return $this->output->set_status_header(403)->set_output(lang('missedinfoinpost'));
         }
-        if ($idpID != $idpid) {
-            log_message('error', 'idp id from post is not equal with idp in url, idp in post:' . $idpid . ', idp in url:' . $idpID);
+        if ((int) $idpID != (int) $idpidInPost) {
+            log_message('error', 'idp id from post is not equal with idp in url, idp in post:' . $idpidInPost . ', idp in url:' . $idpID);
             return $this->output->set_status_header(500)->set_output(lang('unknownerror'));
         }
         $policy = trim($this->input->post('policy'));
-        if (!isset($policy) || !is_numeric($policy)) {
+        if (!ctype_digit($policy)) {
             log_message('error', 'policy in post not provided or not numeric:' . $policy);
             return $this->output->set_status_header(403)->set_output(lang('wrongpolicyval'));
         }
@@ -287,9 +287,7 @@ class Attribute_policyajax extends MY_Controller
 
     public function updatefed($idpID) {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
-            set_status_header(401);
-            echo 'access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access Denied');
         }
         $postIdpID = trim($this->input->post('idpid'));
         $postAttrID = trim($this->input->post('attribute'));
@@ -297,7 +295,7 @@ class Attribute_policyajax extends MY_Controller
         $postFedID = trim($this->input->post('fedid'));
         $allowedPols = array(0, 1, 2, 100);
         if (!ctype_digit($postFedID) || !ctype_digit($postAttrID) || !ctype_digit($postIdpID) || !ctype_digit($postPolicy) || strcasecmp($postIdpID, $idpID) != 0 || !in_array($postPolicy, $allowedPols)) {
-            return $this->output->set_status_header(403)->set_output('Access denie');
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         /**
          * @var models\Provider $idp
@@ -309,10 +307,10 @@ class Attribute_policyajax extends MY_Controller
         $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $postAttrID));
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $postFedID));
         if ($idp === null || $attribute === null || $federation === null) {
-            return $this->output->set_status_header(404)->set_output('Not found');
+            return $this->output->set_status_header(403)->set_output('Attribute, Identity Provider or Federation not found');
         }
         if (!$this->checkAccess($idp)) {
-            return $this->output->set_status_header(403)->set_output('Access denie');
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         $dropdown = $this->config->item('policy_dropdown');
         $dropdown[100] = lang('dropnotset');
@@ -320,6 +318,8 @@ class Attribute_policyajax extends MY_Controller
          * @var models\AttributeReleasePolicy[] $policy
          */
         $policy = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute' => $postAttrID, 'idp' => $idpID, 'type' => 'fed', 'requester' => $postFedID));
+
+
         if (strcmp($postPolicy, '100') == 0) {
             if (empty($policy)) {
                 $statusPol = 100;
@@ -374,7 +374,7 @@ class Attribute_policyajax extends MY_Controller
          */
         $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idpID));
         $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $postAttrID));
-        if (empty($idp) || empty($attribute)) {
+        if ($idp === null || $attribute === null) {
             return $this->output->set_status_header(404)->set_output('Not found');
         }
 
