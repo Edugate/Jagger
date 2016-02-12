@@ -2,6 +2,7 @@
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
+
 /**
  * @package   Jagger
  * @author    Middleware Team HEAnet
@@ -33,7 +34,7 @@ class Attribute_policyajax extends MY_Controller
         if (empty($policy)) {
             return $this->output->set_status_header(404)->set_output('Policy not found');
         }
-        echo $policy->getPolicy();
+        return $this->output->set_status_header(200)->set_output($policy->getPolicy());
     }
 
     public function getfedattrpolicy($idpid, $fedid, $attrid) {
@@ -58,7 +59,7 @@ class Attribute_policyajax extends MY_Controller
             'status' => true,
             'policy' => $resultPolicy,
         );
-        $this->output->set_content_type('application/json')->set_output(json_encode($result));
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
 
     }
@@ -279,11 +280,9 @@ class Attribute_policyajax extends MY_Controller
         $this->cache->delete($cache2);
         $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idpID), -1);
         if ($custom) {
-            echo $policy . 'c';
-        } else {
-            echo $policy;
+            return $this->output->set_status_header(200)->set_output('' . $policy . 'c');
         }
-
+        return $this->output->set_status_header(200)->set_output($policy);
     }
 
     public function updatefed($idpID) {
@@ -391,13 +390,10 @@ class Attribute_policyajax extends MY_Controller
          */
         $globalPolicy = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute' => $postAttrID, 'idp' => $idpID, 'type' => 'global'));
         if (strcmp($postPolicy, '100') == 0) {
-            if (empty($globalPolicy)) {
-                $statusPol = 100;
-            } else {
-                $this->em->remove($globalPolicy);
-                $statusPol = 100;
+            if ($globalPolicy !== null) {
+              $this->em->remove($globalPolicy);
             }
-
+            $statusPol = 100;
         } elseif (empty($globalPolicy)) {
             $npolicy = new models\AttributeReleasePolicy();
             $npolicy->setGlobalPolicy($idp, $attribute, $postPolicy);

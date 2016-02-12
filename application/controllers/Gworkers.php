@@ -1,21 +1,14 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
-/**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
+}
 
 /**
- * Gworkers
+ * @package   Jagger
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 class Gworkers extends MY_Controller
 {
@@ -37,46 +30,61 @@ class Gworkers extends MY_Controller
 
     public function mailqueuesender() {
         if (!is_cli()) {
-            show_error('denied', 403);
-
-            return;
+            return $this->output->set_status_header(403)->set_output('Denied');
         }
         log_message('info', 'MAILQUEUE STARTED : daemon needs to be restarted after any changes in configs');
         $this->load->library('doctrine');
         $em = $this->doctrine->em;
         $this->load->library('rrpreference');
         $sendOptions = array(
-            'sendenabled' => $this->config->item('mail_sending_active'),
-            'mailfrom'    => $this->config->item('mail_from'),
-            'subjsuffix'  => $this->config->item('mail_subject_suffix')
+            'mailfrom' => $this->config->item('mail_from'),
+            'subjsuffix' => (string)$this->config->item('mail_subject_suffix')
         );
-        if (empty($sendOptions['subjsuffix'])) {
-            $sendOptions['subjsuffix'] = '';
-        }
+        /**
+         * @var $mailsSent array
+         */
+        $mailsSent = array();
         while (true) {
-            if (empty($sendOptions['sendenabled'])) {
+            $isSendingEnabled = $this->config->item('mail_sending_active');
+            if ($isSendingEnabled !== true) {
                 log_message('warning', 'MAILQUEUE :: sending mails is disabled - check config "mail_sending_active" ');
             } else {
                 log_message('debug', 'MAILQUEUE :: checks for mails to be sent');
                 try {
+                    /**
+                     * @var models\MailQueue[] $mails
+                     */
                     $mails = $em->getRepository("models\MailQueue")->findBy(array('deliverytype' => 'mail', 'frequence' => '1', 'issent' => false));
                     $mailFooter = $this->rrpreference->getTextValueByName('mailfooter');
-                    foreach ($mails as $m) {
-                        log_message('info', 'MAILQUEUE sending mail with id: ' . $m->getId());
-                        $maildata = $m->getMailToArray();
+                    foreach ($mails as $mailRow) {
+                        $mailId = $mailRow->getId();
+                        log_message('info', 'MAILQUEUE sending mail with id: ' . $mailId);
+                        if (in_array($mailId, $mailsSent)) {
+                            $mailRow->setMailSent();
+                            $em->persist($mailRow);
+                            continue;
+                        }
+                        $maildata = $mailRow->getMailToArray();
                         $this->email->clear();
                         $this->email->from($sendOptions['mailfrom']);
                         $this->email->to($maildata['to']);
                         $this->email->subject($maildata['subject'] . ' ' . $sendOptions['subjsuffix']);
                         $this->email->message($maildata['data'] . PHP_EOL . '' . $mailFooter . PHP_EOL);
+
                         if ($this->email->send()) {
-                            $m->setMailSent();
-                            $em->persist($m);
+                            $mailsSent[] = $mailRow->getId();
+                            $mailRow->setMailSent();
+                            $em->persist($mailRow);
                         } else {
                             log_message('error', 'MAILQUEUE couldnt sent mail to ' . $maildata['to'] . '    ::' . $this->email->print_debugger());
                         }
                     }
-                    $em->flush();
+                    try {
+                        $em->flush();
+                        $mailsSent = array();
+                    } catch (Exception $e) {
+                        log_message('eror', 'MAILQUEUE: could not update db about sent status');
+                    }
                     $em->clear();
                 } catch (Exception $e) {
                     log_message('error', 'MAILQUEUE ::' . __METHOD__ . ' lost connection to database trying to reconnect');
@@ -87,23 +95,19 @@ class Gworkers extends MY_Controller
             }
             sleep(60);
         }
+        return $this->output->set_status_header(500)->set_output('unexpected exit');
     }
 
     public function jcronmonitor() {
         if (!is_cli()) {
             log_message('error', __METHOD__ . ' called not via cli');
-            set_status_header('403');
-            echo 'denied';
-
-            return;
+            return $this->output->set_status_header(403)->set_output('Denied');
         }
 
         $gearmanConf = $this->config->item('gearmanconf');
 
         $runJobs = array();
         while (true) {
-
-
             try {
                 $cronEntries = $this->em->getRepository("models\Jcrontab")->findBy(array('isenabled' => true));
                 $currentTime = new \DateTime("now");
@@ -130,7 +134,7 @@ class Gworkers extends MY_Controller
                 $this->em->getConnection()->connect();
             }
 
-            if(count($runJobs)>0) {
+            if (count($runJobs) > 0) {
                 $gclient = new GearmanClient();
                 foreach ($gearmanConf['jobserver'] as $gs) {
                     try {
@@ -145,9 +149,13 @@ class Gworkers extends MY_Controller
                     if (array_key_exists('0', $jstatus) && empty($jstatus[0])) {
                         log_message('info', 'JCRON:: ' . $j . ' not known (already finished or removed from jobserver)');
                         unset($runJobs[$k]);
-                    } elseif (array_key_exists('1', $jstatus) && !empty($jstatus[1])) {
+                        continue;
+                    }
+                    if (array_key_exists('1', $jstatus) && !empty($jstatus[1])) {
                         log_message('info', 'JCRON:: ' . $j . ' is still running on jobserver');
-                    } elseif (array_key_exists('1', $jstatus) && empty($jstatus[1])) {
+                        continue;
+                    }
+                    if (array_key_exists('1', $jstatus) && empty($jstatus[1])) {
                         log_message('info', 'JCRON:: ' . $j . ' is on jobserver but it is waiting for worker');
                     }
                 }
@@ -155,22 +163,23 @@ class Gworkers extends MY_Controller
             $this->em->clear();
             sleep(15);
         }
+        return $this->output->set_status_header(500)->set_output('unexpected exit');
     }
 
-    private function jcronRun(\models\Jcrontab $c) {
-        $isTemplate = $c->getTemplate();
+    private function jcronRun(\models\Jcrontab $cronEntry) {
+        $isTemplate = $cronEntry->getTemplate();
         if ($isTemplate) {
-            $resolvedT = $this->gworkertemplates->resolveTemplate($c->getJcommand(), $c->getJparams());
+            $resolvedT = $this->gworkertemplates->resolveTemplate($cronEntry->getJcommand(), $cronEntry->getJparams());
             if (empty($resolvedT)) {
-                log_message('error', __METHOD__ . ' could not resolve taskcheduler template for name:' . $c->getJcommand());
+                log_message('error', __METHOD__ . ' could not resolve taskcheduler template for name:' . $cronEntry->getJcommand());
 
                 return false;
             }
         } else {
-            $resolvedT[] = array('fname' => $c->getJcommand(), 'fparams' => $c->getJparams());
+            $resolvedT[] = array('fname' => $cronEntry->getJcommand(), 'fparams' => $cronEntry->getJparams());
         }
         $gearmanConf = $this->config->item('gearmanconf');
-        $jobOwnServers = $c->getJservers();
+        $jobOwnServers = $cronEntry->getJservers();
         $result = array();
         foreach ($resolvedT as $jobTo) {
             $gclient = new GearmanClient();
@@ -189,7 +198,7 @@ class Gworkers extends MY_Controller
             }
             $jcommand = $jobTo['fname'];
             $jparams = $jobTo['fparams'];
-            $jparams['cronid'] = $c->getId();
+            $jparams['cronid'] = $cronEntry->getId();
 
             try {
                 $jobhandle = $gclient->doBackground($jcommand, json_encode($jparams));
@@ -202,8 +211,8 @@ class Gworkers extends MY_Controller
 
         }
         if (count($result) > 0) {
-            $c->setLastRun();
-            $this->em->persist($c);
+            $cronEntry->setLastRun();
+            $this->em->persist($cronEntry);
 
             return $result;
         }
