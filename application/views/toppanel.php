@@ -1,7 +1,5 @@
 <div class="sticky">
     <nav class="top-bar docs-bar" data-topbar data-options="sticky_on: large">
-        <?php
-        ?>
         <ul class="title-area">
             <li class="menu">
                 <?php
@@ -9,13 +7,13 @@
                 if (empty($siteLogo)) {
                     $siteLogo = 'logo-default.png';
                 }
+                $logoSrc = $base_url.'images/'.$siteLogo;
+                $homeUrl = $base_url;
                 if ($loggedin) {
-                    echo '<a href="' . $base_url . 'home"><img src="' . $base_url . 'images/' . $siteLogo . '" alt="Logo" style="max-height: 40px; margin-top: 2px; padding-right: 5px;"/></a>';
-                } else {
-                    echo '<a href="' . $base_url . '"><img src="' . $base_url . 'images/' . $siteLogo . '" alt="Logo" style="max-height: 40px; margin-top: 2px; padding-right: 5px;"/></a>';
+                    $homeUrl = $base_url . 'home';
                 }
+                echo '<a href="' . $homeUrl . '" class="sitelogo"><img src="' . $logoSrc . '" alt="Logo"/></a>';
                 ?>
-
             </li>
             <li class="divider"></li>
             <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
@@ -26,11 +24,8 @@
             <ul class="right">
                 <?php
                 if ($loggedin) {
-                    echo '<li><a href="' . $base_url . 'reports/awaitinglist"><sup id="qcounter" class="label alert tiny round" style="box-shadow: 0px 1px 5px #0a0a0a, inset 0px 1px 2px #bdbdbd;">&nbsp;</sup></a></li>';
-                    echo '<li class="show-for-small-only"><a href="' . $base_url . 'auth/logout" class="button alert logoutbutton tiny userlogout" jagger-data-logout="'.$shibLogoutUri.'">' . lang('btnlogout') . '</a></li>';
-
-                    ?>
-                <?php
+                    echo '<li><a href="' . $base_url . 'reports/awaitinglist"><sup id="qcounter" class="label alert tiny round">&nbsp;</sup></a></li>';
+                    echo '<li class="show-for-small-only"><a href="' . $base_url . 'auth/logout" class="button alert logoutbutton tiny userlogout" jagger-data-logout="' . $shibLogoutUri . '">' . lang('btnlogout') . '</a></li>';
                 }
                 ?>
                 <li class="has-form">
@@ -57,14 +52,15 @@
                             <li>
                                 <a href="<?php echo $base_url . 'notifications/subscriber/mysubscriptions/' . base64url_encode($user) . ''; ?>"><?php echo lang('rrmynotifications'); ?></a>
                             </li>
-                            <li class="show-for-medium-up"><a href="<?php echo $base_url; ?>auth/logout" class="alert userlogout" jagger-data-logout="<?php echo $shibLogoutUri;?>"><?php echo lang('btnlogout'); ?></a></li>
+                            <li class="show-for-medium-up"><a href="<?php echo $base_url; ?>auth/logout"
+                                                              class="alert userlogout"
+                                                              jagger-data-logout="<?php echo $shibLogoutUri; ?>"><?php echo lang('btnlogout'); ?></a>
+                            </li>
                         </ul>
                     </li>
 
 
-
-
-                <?php
+                    <?php
                 } else {
                     ?>
                     <li class="has-form">
@@ -73,18 +69,18 @@
                             ?>
                             <a href="<?php echo $base_url; ?>authenticate/getloginform" class="button alert autoclick"
                                id="loginbtn"><?php echo lang('toploginbtn'); ?></a>
-                        <?php
+                            <?php
                         } else {
                             ?>
                             <a href="<?php echo $base_url; ?>authenticate/getloginform" class="button alert"
                                id="loginbtn"><?php echo lang('toploginbtn'); ?></a>
-                        <?php
+                            <?php
                         }
                         ?>
 
                     </li>
 
-                <?php
+                    <?php
                 }
 
                 ?>
@@ -117,7 +113,7 @@
             <ul class="left">
                 <?php
                 if ($loggedin) {
-                    if ($breadcrumbsEnabled !== TRUE) {
+                    if ($breadcrumbsEnabled !== true) {
                         echo '<li class="' . $dashactive . '"><a href="' . $base_url . '">' . lang('dashboard') . '</a></li>';
                         echo $divider;
                     }
@@ -129,57 +125,74 @@
                     echo $divider;
                     echo '<li class="' . $regactive . ' has-dropdown">';
                     ?>
-                        <a href="<?php echo $base_url; ?>"><?php echo lang('register'); ?></a>
-                        <ul class="dropdown">
-                            <li><a href="<?php echo $base_url; ?>providers/idp_registration"><?php echo lang('identityprovider'); ?></a></li>
-                            <li><a href="<?php echo $base_url; ?>providers/sp_registration"><?php echo lang('serviceprovider'); ?></a></li>
-                            <li><a href="<?php echo $base_url; ?>providers/idpsp_registration"><?php echo lang('idpspprovider'); ?></a></li>
-                            <?php
-                    if ($loggedin) {
-                        ?>
+                    <a href="<?php echo $base_url; ?>"><?php echo lang('register'); ?></a>
+                    <ul class="dropdown">
                         <li>
-                            <a href="<?php echo $base_url; ?>federations/federation_registration"><?php echo lang('rr_federation'); ?></a>
+                            <a href="<?php echo $base_url; ?>providers/idp_registration"><?php echo lang('identityprovider'); ?></a>
                         </li>
-                    <?php
-                    }
-                    ?>
-                        </ul>
+                        <li>
+                            <a href="<?php echo $base_url; ?>providers/sp_registration"><?php echo lang('serviceprovider'); ?></a>
+                        </li>
+                        <li>
+                            <a href="<?php echo $base_url; ?>providers/idpsp_registration"><?php echo lang('idpspprovider'); ?></a>
+                        </li>
+                        <?php
+                        if ($loggedin) {
+                            ?>
+                            <li>
+                                <a href="<?php echo $base_url; ?>federations/federation_registration"><?php echo lang('rr_federation'); ?></a>
+                            </li>
+                            <?php
+                        }
+                        ?>
+                    </ul>
                     </li>
                     <li class="divider"></li>
                     <?php
                     echo '<li class="' . $adminsactive . ' has-dropdown"><a href="' . $base_url . '">' . lang('rr_administration') . '</a>';
                     ?>
-                        <ul class="dropdown">
-                            <?php
-                    if ($isAdministrator) {
-                        echo '<li><a href="' . $base_url . 'smanage/reports">' . lang('sys_menulink') . '</a></li>';
-                        echo '<li><a href="' . $base_url . 'smanage/sysprefs/show">' . lang('globalconf_menulink') . '</a></li>';
-                        $featenabled = $this->config->item('featenable');
-                        if (is_array($featenabled) && array_key_exists('tasks',$featenabled) && $featenabled['tasks'] === true) {
-                            echo '<li><a href="' . $base_url . 'smanage/taskscheduler/tasklist">' . lang('tasks_menulink') . '</a></li>';
-                        }
-                    }
-                    ?>
-                            <li><a href="<?php echo $base_url; ?>tools/addontools/show"><?php echo lang('addons_menulink'); ?></a></li>
-                            <li><a href="<?php echo $base_url; ?>manage/fedcategory/show"><?php echo lang('rrfedcatslist'); ?></a></li>
-                            <li class="divider"></li>
-                            <li><a href="<?php echo $base_url; ?>manage/ec/show"><?php echo lang('entcats_menulink'); ?></a></li>
-                            <li><a href="<?php echo $base_url; ?>manage/regpolicy/show"><?php echo lang('regpols_menulink'); ?></a></li>
-                            <li class="divider"></li>
-                            <li><a href="<?php echo $base_url; ?>attributes/attributes/show"><?php echo lang('rr_attr_defs'); ?></a></li>
-                            <?php
-                    if ($isAdministrator) {
-
-                        echo '<li><a href="' . $base_url . 'manage/importer">' . lang('rr_meta_importer') . '</a></li>';
-                        ?>
-                        <li><a href="<?php echo $base_url; ?>manage/users/showlist"><?php echo lang('rr_users'); ?></a></li>
+                    <ul class="dropdown">
                         <?php
-                        echo '<li><a href="' . $base_url . 'manage/spage/showall">' . lang('rr_articlesmngmt') . '</a></li>';
-                        echo '<li><a href="' . $base_url . 'manage/mailtemplates/showlist">' . lang('rr_mailtemplmngmt') . '</a></li>';
-                    }
-                    ?>
+                        if ($isAdministrator) {
+                            echo '<li><a href="' . $base_url . 'smanage/reports">' . lang('sys_menulink') . '</a></li>';
+                            echo '<li><a href="' . $base_url . 'smanage/sysprefs/show">' . lang('globalconf_menulink') . '</a></li>';
+                            $featenabled = $this->config->item('featenable');
+                            if (is_array($featenabled) && array_key_exists('tasks', $featenabled) && $featenabled['tasks'] === true) {
+                                echo '<li><a href="' . $base_url . 'smanage/taskscheduler/tasklist">' . lang('tasks_menulink') . '</a></li>';
+                            }
+                        }
+                        ?>
+                        <li>
+                            <a href="<?php echo $base_url; ?>tools/addontools/show"><?php echo lang('addons_menulink'); ?></a>
+                        </li>
+                        <li>
+                            <a href="<?php echo $base_url; ?>manage/fedcategory/show"><?php echo lang('rrfedcatslist'); ?></a>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="<?php echo $base_url; ?>manage/ec/show"><?php echo lang('entcats_menulink'); ?></a>
+                        </li>
+                        <li>
+                            <a href="<?php echo $base_url; ?>manage/regpolicy/show"><?php echo lang('regpols_menulink'); ?></a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="<?php echo $base_url; ?>attributes/attributes/show"><?php echo lang('rr_attr_defs'); ?></a>
+                        </li>
+                        <?php
+                        if ($isAdministrator) {
 
-                        </ul>
+                            echo '<li><a href="' . $base_url . 'manage/importer">' . lang('rr_meta_importer') . '</a></li>';
+                            ?>
+                            <li>
+                                <a href="<?php echo $base_url; ?>manage/users/showlist"><?php echo lang('rr_users'); ?></a>
+                            </li>
+                            <?php
+                            echo '<li><a href="' . $base_url . 'manage/spage/showall">' . lang('rr_articlesmngmt') . '</a></li>';
+                            echo '<li><a href="' . $base_url . 'manage/mailtemplates/showlist">' . lang('rr_mailtemplmngmt') . '</a></li>';
+                        }
+                        ?>
+
+                    </ul>
 
                     </li>
                     <li class="divider"></li>
