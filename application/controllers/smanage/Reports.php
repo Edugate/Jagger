@@ -1,36 +1,26 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
-use Doctrine\ORM\Tools\SchemaValidator,
-    Doctrine\ORM\Version;
+}
+use Doctrine\ORM\Tools\SchemaValidator;
+use Doctrine\ORM\Version;
 
 /**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
-
-/**
- * Reports Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2016, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 class Reports extends MY_Controller
 {
 
-    function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         MY_Controller::$menuactive = 'admins';
     }
 
-    public function  index()
-    {
+    public function index() {
         $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
             redirect('auth/login', 'location');
@@ -48,15 +38,43 @@ class Reports extends MY_Controller
         $data['breadcrumbs'] = array(
             array('url' => '#', 'name' => lang('rr_administration'), 'type' => 'unavailable'),
             array('url' => '#', 'name' => lang('title_sysreports'), 'type' => 'current'),
-
         );
         $this->load->view('page', $data);
+    }
 
+    public function expiredcerts() {
+        if (!$this->input->is_ajax_request()) {
+         //   return $this->output->set_status_header(401)->set_output('Bad request');
+        }
+        if (!$this->jauth->isLoggedIn()) {
+            return $this->output->set_status_header(401)->set_output('Session Lost');
+        }
+        if (!$this->jauth->isAdministrator()) {
+            return $this->output->set_status_header(401)->set_output('You need to have Administrator rights');
+        }
+        /**
+         * @var \models\Provider[] $providers
+         */
+        $tmpProviders = new models\Providers();
+        $providers =  $tmpProviders->getProvidersPartialWithCerts('IDP');
+        $this->load->library('jalert');
+        $result = array();
+        foreach($providers as $provider){
+            $alert  = $this->jalert->genCertsAlerts($provider) ;
+            if(count($alert) > 0) {
+                $result[] = array(
+                    'entityid' => html_escape($provider->getEntityId()),
+                    'islocal' => $provider->getLocal(),
+                    'alerts' => $alert
+                );
+            }
+
+        }
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
     }
 
-    public function vormversion()
-    {
+    public function vormversion() {
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
@@ -65,7 +83,7 @@ class Reports extends MY_Controller
             return $this->output->set_status_header(401)->set_output('Session Lost');
         }
         if (!$this->jauth->isAdministrator()) {
-           return $this->output->set_status_header(401)->set_output('No perm');
+            return $this->output->set_status_header(401)->set_output('No perm');
         }
 
         $currentVersion = Doctrine\ORM\Version::VERSION;
@@ -78,16 +96,16 @@ class Reports extends MY_Controller
         } else {
             echo '<div class="success alert-box" data-alert>' . lang('rr_doctrinever') . ': ' . $currentVersion . ' : ' . lang('rr_meetsminimumreq') . '</div>';
         }
-        if(!$minphpversion){
-            echo '<div class="alert alert-box" data-alert>Installed PHP VERSION: ' .PHP_VERSION. ' : ' . lang('rr_mimumreqversion') . ' 5.5.x.</div>';
-        }else{
-             echo '<div class="success alert-box" data-alert>Installed PHP VERSION: ' .PHP_VERSION. ' : ' . lang('rr_meetsminimumreq') . '</div>';
+        if (!$minphpversion) {
+            echo '<div class="alert alert-box" data-alert>Installed PHP VERSION: ' . PHP_VERSION . ' : ' . lang('rr_mimumreqversion') . ' 5.5.x.</div>';
+        } else {
+            echo '<div class="success alert-box" data-alert>Installed PHP VERSION: ' . PHP_VERSION . ' : ' . lang('rr_meetsminimumreq') . '</div>';
         }
 
     }
 
-    public function vschema()
-    {
+
+    public function vschema() {
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
@@ -116,8 +134,7 @@ class Reports extends MY_Controller
     }
 
 
-    public function vschemadb()
-    {
+    public function vschemadb() {
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
@@ -139,8 +156,7 @@ class Reports extends MY_Controller
     }
 
 
-    public function vmigrate()
-    {
+    public function vmigrate() {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn() || !$this->jauth->isAdministrator()) {
             return $this->output->set_status_header(403)->set_output('Unauthorized request');
         }

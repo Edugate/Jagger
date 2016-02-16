@@ -313,9 +313,22 @@ class Providers
         $query->setParameter(1, '' . $type . '');
         $query->setParameter(2, 'BOTH');
         $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
-
         return $query->getResult();
+    }
 
+    public function getProvidersPartialWithCerts($type = null){
+        if($type === null){
+            $dql = "SELECT partial p.{id,entityid,type,validfrom,validto,is_approved,is_active,is_locked,is_local,hidepublic},c FROM models\Provider p LEFT OUTER JOIN p.certificates c";
+            $query = $this->em->createQuery($dql);
+        }
+        else {
+            $dql = "SELECT partial p.{id,entityid,type,validfrom,validto,is_approved,is_active,is_locked,is_local,hidepublic},c FROM models\Provider p LEFT OUTER JOIN p.certificates c  WHERE p.type IN (?1,?2)";
+            $query = $this->em->createQuery($dql);
+            $query->setParameter(1, '' . $type . '');
+            $query->setParameter(2, 'BOTH');
+        }
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        return $query->getResult();
     }
 
 
