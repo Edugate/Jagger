@@ -23,7 +23,7 @@ class Ec extends MY_Controller
     public function show($entcatId = null) {
 
 
-        if (!ctype_digit($entcatId)) {
+        if ($entcatId !== null && !ctype_digit($entcatId)) {
             show_error('Argument passed to page  not allowed', 403);
         }
         $loggedin = $this->jauth->isLoggedIn();
