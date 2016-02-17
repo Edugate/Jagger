@@ -331,6 +331,34 @@ class Providers
         return $query->getResult();
     }
 
+    public function getLocalProvidersPartialWithCerts($type = null){
+        if($type === null){
+            $dql = "SELECT partial p.{id,entityid,type,validfrom,validto,is_approved,is_active,is_locked,is_local,hidepublic},c FROM models\Provider p LEFT OUTER JOIN p.certificates c WHERE p.is_local = '1' ";
+            $query = $this->em->createQuery($dql);
+        }
+        else {
+            $dql = "SELECT partial p.{id,entityid,type,validfrom,validto,is_approved,is_active,is_locked,is_local,hidepublic},c FROM models\Provider p LEFT OUTER JOIN p.certificates c  WHERE p.is_local = '1' AND p.type IN (?1,?2)";
+            $query = $this->em->createQuery($dql);
+            $query->setParameter(1, '' . $type . '');
+            $query->setParameter(2, 'BOTH');
+        }
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        return $query->getResult();
+    }
+    public function getExtProvidersPartialWithCerts($type = null){
+        if($type === null){
+            $dql = "SELECT partial p.{id,entityid,type,validfrom,validto,is_approved,is_active,is_locked,is_local,hidepublic},c FROM models\Provider p LEFT OUTER JOIN p.certificates c WHERE p.is_local = '0' ";
+            $query = $this->em->createQuery($dql);
+        }
+        else {
+            $dql = "SELECT partial p.{id,entityid,type,validfrom,validto,is_approved,is_active,is_locked,is_local,hidepublic},c FROM models\Provider p LEFT OUTER JOIN p.certificates c  WHERE p.is_local = '0' AND p.type IN (?1,?2)";
+            $query = $this->em->createQuery($dql);
+            $query->setParameter(1, '' . $type . '');
+            $query->setParameter(2, 'BOTH');
+        }
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        return $query->getResult();
+    }
 
     public function getSPsEntities() {
         $dql = "SELECT partial p.{id,entityid} FROM models\Provider p WHERE p.type IN (?1,?2)";

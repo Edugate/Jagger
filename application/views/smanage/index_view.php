@@ -58,12 +58,12 @@
             </tbody>
         </table>
     </section>
-    <section role="tabpanel" aria-hidden="false" class="content active" id="panel2-2">
+    <section role="tabpanel" aria-hidden="false" class="content " id="panel2-2">
         <table class="details">
             <tbody>
             <tr>
-                <td>Certificates</td>
-                <td><button id="vcerts" class="savebutton small"><?php echo lang('rr_runprocess'); ?></button></td>
+                <td>Certificates checks</td>
+                <td><div><select><optgroup label="Local"><option value="localidp">IdP (local)</option><option value="localsp">SP (local)</option></optgroup><optgroup label="External"><option value="extidp">IdP (external)</option><option value="extsp">SP (external)</option></optgroup></select><button id="vcerts" class="savebutton small" value=""><?php echo lang('rr_runprocess'); ?></button></div></td>
             </tr>
             <tr id="rvcerts" class="hidden">
                 <td colspan="2"></td>

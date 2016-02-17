@@ -42,7 +42,7 @@ class Reports extends MY_Controller
         $this->load->view('page', $data);
     }
 
-    public function expiredcerts() {
+    public function expiredcerts($param = null) {
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
@@ -56,13 +56,28 @@ class Reports extends MY_Controller
          * @var \models\Provider[] $providers
          */
         $tmpProviders = new models\Providers();
-        $providers =  $tmpProviders->getProvidersPartialWithCerts('IDP');
+        if($param === 'localidp'){
+            $providers =  $tmpProviders->getLocalProvidersPartialWithCerts('IDP');
+        }
+        elseif($param === 'localsp'){
+            $providers =  $tmpProviders->getLocalProvidersPartialWithCerts('SP');
+        }
+        elseif($param === 'extsp'){
+            $providers =  $tmpProviders->getExtProvidersPartialWithCerts('SP');
+        }
+        elseif($param === 'extidp'){
+            $providers =  $tmpProviders->getExtProvidersPartialWithCerts('IDP');
+        }
+        else {
+            return $this->output->set_status_header(401)->set_output('The type of entities has not been specified');
+        }
         $this->load->library('jalert');
         $result = array();
         foreach($providers as $provider){
             $alert  = $this->jalert->genCertsAlerts($provider) ;
             if(count($alert) > 0) {
                 $result[] = array(
+                    'id' => $provider->getId(),
                     'entityid' => html_escape($provider->getEntityId()),
                     'islocal' => $provider->getLocal(),
                     'alerts' => $alert
@@ -70,7 +85,7 @@ class Reports extends MY_Controller
             }
 
         }
-        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
+        return $this->output->set_content_type('application/json')->set_output(json_encode(array('definitions'=>array('baseurl'=>base_url()),'data'=>$result)));
 
     }
 

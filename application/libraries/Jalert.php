@@ -77,13 +77,13 @@ class Jalert
                     $diffTimeStamp = $res['validTo_time_t'] - $nowInTimeStamp;
 
                     if ($diffTimeStamp <= 0) {
-                        $result[] = array('msg' => 'The certificate (sha1: ' . $cfingerprint . ') expired on: ' . $validto->format('Y-m-d H:i:s'), 'level' => 'warning');
+                        $result[] = array('msg' => 'The certificate (sha1: ' . $cfingerprint . ') expired on: ' . $validto->format('Y-m-d H:i:s'), 'level' => 'alert');
                     } elseif ($diffTimeStamp < 2628000) { // will expire within month
                         $result[] = array('msg' => 'The crtificate (sha1: ' . $cfingerprint . ') will expire on: ' . $validto->format('Y-m-d H:i:s'), 'level' => 'warning');
                     }
                 }
             } else {
-                $result[] = array('msg' => 'One of certificatess is not valid', 'level' => 'warning');
+                $result[] = array('msg' => 'One of the certificates could not be validated', 'level' => 'warning');
                 continue;
             }
         }

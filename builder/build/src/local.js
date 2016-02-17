@@ -4037,22 +4037,41 @@ $(document).ready(function () {
     });
 
     $("#vcerts").click(function () {
+
+        var parent = $(this).closest('div');
+        var op = parent.find('select').first();
+        var valueselected;
+        if(op){
+            var optselected = op.find("option:selected");
+            valueselected = optselected.val();
+        }
+        var urlParam = '';
+        if(valueselected === 'localidp' || valueselected === 'extidp' || valueselected === 'localsp' || valueselected === 'extsp'){
+            urlParam = '/'+valueselected;
+        }
         $.ajax({
             cache: false,
             type: "GET",
-            url: baseurl + 'smanage/reports/expiredcerts',
+            url: baseurl + 'smanage/reports/expiredcerts'+urlParam,
             dataType: "json",
-            success: function (data) {
+            success: function (result) {
+                var data = result.data;
+                var baseurl = result.definitions.baseurl;
                 var calerts = [];
                 var rows = [];
                 rows.push('<table><tbody>');
                 $.each(data, function (k, v) {
                     if(v.alerts){
                         $.each(v.alerts, function(l,m){
-                            calerts.push('<div>'+m.msg +'</dvi>');
+                            if(m.level){
+                                calerts.push('<div class="alert-box '+ m.level+'" style="" data-alert="">'+m.msg +'</div>');
+                            }
+                            else {
+                                calerts.push('<div>'+m.msg +'</div>');
+                            }
                         });
                     }
-                    rows.push('<tr><td>' + v.entityid + '</td><td>'+calerts.join('')+'</td></tr>');
+                    rows.push('<tr><td><a href="'+baseurl+'providers/detail/show/'+ v.id+'">' + v.entityid + '</a></td><td>'+calerts.join('')+'</td></tr>');
                     calerts = [];
                 });
                 rows.push('</tbody></table>');
