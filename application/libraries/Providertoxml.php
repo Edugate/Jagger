@@ -114,7 +114,7 @@ class Providertoxml
         /**
          * @var $cocs models\Coc[]
          */
-        $doFilter = array(TRUE);
+        $doFilter = array(true);
         $cocs = $ent->getCoc()->filter(
             function (models\Coc $entry) use ($doFilter) {
                 return in_array($entry->getAvailable(), $doFilter);
@@ -266,13 +266,13 @@ class Providertoxml
         $enLang = array();
         foreach (array('DisplayName', 'Description', 'InformationURL', 'PrivacyStatementURL') as $mduiElement) {
 
-            $enLang['' . $mduiElement . ''] = FALSE;
+            $enLang['' . $mduiElement . ''] = false;
 
             foreach ($extarray['' . $mduiElement . ''] as $value) {
                 $lang = $value->getAttributes();
                 if (isset($lang['xml:lang'])) {
                     if (strcmp($lang['xml:lang'], 'en') == 0) {
-                        $enLang['' . $mduiElement . ''] = TRUE;
+                        $enLang['' . $mduiElement . ''] = true;
                     }
                     $xml->startElementNs('mdui', '' . $mduiElement . '', null);
                     $xml->writeAttribute('xml:lang', $lang['xml:lang']);
@@ -802,8 +802,8 @@ class Providertoxml
         }
         $islocal = $ent->getLocal();
         $valiUntil = $ent->getValidTo();
-        $isValidIDPSSO = FALSE;
-        $isValidAA = FALSE;
+        $isValidIDPSSO = false;
+        $isValidAA = false;
         if ($hasIdpRole) {
             $isValidIDPSSO = $this->verifyIDPSSO($ent);
             $isValidAA = $this->verifyAA($ent);

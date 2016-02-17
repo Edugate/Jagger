@@ -10,7 +10,6 @@ if (!defined('BASEPATH')) {
  * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
-
 class Jalert
 {
     /**
@@ -28,16 +27,8 @@ class Jalert
 
     }
 
-    public function genProviderAlertsDetails(models\Provider $provider, $msgprefix = null) {
-
+    public function genCertsAlerts(models\Provider $provider) {
         $result = array();
-
-
-        $contacts = $provider->getContacts();
-        if (count($contacts) == 0) {
-            $result[] = array('msg' => 'No contacts are defined', 'level' => 'warning');
-        }
-
         $certificates = $provider->getCertificates();
         $this->CI->load->helper('cert');
         $minkeysize = $this->CI->config->item('entkeysizemin');
@@ -79,19 +70,39 @@ class Jalert
                 $dateTimeNow = new DateTime('now');
                 $nowInTimeStamp = $dateTimeNow->format('U');
 
-                if (isset($res['validTo_time_t']) && ($nowInTimeStamp > $res['validTo_time_t'])) {
-
+                if (isset($res['validTo_time_t'])) {
                     $validto = new DateTime();
                     $validto->setTimestamp($res['validTo_time_t']);
                     $cfingerprint = generateFingerprint($ncert, 'sha1');
+                    $diffTimeStamp = $res['validTo_time_t'] - $nowInTimeStamp;
 
-                    $result[] = array('msg' => 'Certificate (sha1: ' . $cfingerprint . ') expired on: ' . $validto->format('Y-m-d H:i:s'), 'level' => 'warning');
+                    if ($diffTimeStamp <= 0) {
+                        $result[] = array('msg' => 'The certificate (sha1: ' . $cfingerprint . ') expired on: ' . $validto->format('Y-m-d H:i:s'), 'level' => 'alert');
+                    } elseif ($diffTimeStamp < 2628000) { // will expire within month
+                        $result[] = array('msg' => 'The crtificate (sha1: ' . $cfingerprint . ') will expire on: ' . $validto->format('Y-m-d H:i:s'), 'level' => 'warning');
+                    }
                 }
             } else {
-                $result[] = array('msg' => 'One of certs is not valid', 'level' => 'warning');
+                $result[] = array('msg' => 'One of the certificates could not be validated', 'level' => 'warning');
                 continue;
             }
         }
+
+        return $result;
+
+    }
+
+    public function genProviderAlertsDetails(models\Provider $provider, $msgprefix = null) {
+
+        $result = array();
+
+
+        $contacts = $provider->getContacts();
+        if (count($contacts) == 0) {
+            $result[] = array('msg' => 'No contacts are defined', 'level' => 'warning');
+        }
+        $certResult = $this->genCertsAlerts($provider);
+        $result = array_merge($result, $certResult);
 
         /**
          * @var models\ServiceLocation[] $serviceLocation

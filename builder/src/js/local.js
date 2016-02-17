@@ -1049,7 +1049,7 @@ var GINIT = {
                         url: gridUrl2,
                         cache: false,
                         success: function (data3) {
-                            var assignedLogos =  $("form#assignedlogos");
+                            var assignedLogos = $("form#assignedlogos");
                             assignedLogos.replaceWith(data3);
                             $('#availablelogos').unbind();
                             assignedLogos.unbind();
@@ -1602,53 +1602,53 @@ $(document).ready(function () {
 
         var mapCanvas = providerEditForm.find("#map-canvas");
         if (mapCanvas.length) {
-            if (typeof google === 'object' && typeof google.maps === 'object'){
+            if (typeof google === 'object' && typeof google.maps === 'object') {
                 google.maps.event.addDomListener(window, 'load', mapInitialize);
 
 
-            var georows = $("#geogroup").first();
+                var georows = $("#geogroup").first();
 
 
-            markers = [];
+                markers = [];
 
-            georows.find('input').each(function (e) {
-                var geoLatLng = $(this).val().split(',');
-                markers.push(geoLatLng);
-            });
-
-
-            var markersSet = false;
-            tabMap.on('toggled', function (event, tab) {
-
-                if (markersSet === false) {
-                    var bounds = new google.maps.LatLngBounds();
-                    for (var i = 0, tot = markers.length; i < tot; i++) {
-                        var myLatlng = new google.maps.LatLng(markers[i][0], markers[i][1]);
-                        var marker = new google.maps.Marker({
-                            position: myLatlng,
-                            map: map,
-                            title: ''
-                        });
-
-                        marker.setMap(map);
-                        gMarkers.push(marker);
-                        bounds.extend(marker.position);
-                    }
-                    markersSet = true;
-
-                    var center = map.getCenter();
-                    google.maps.event.trigger(map, "resize");
-                    map.setCenter(center);
-                    if (markers.length > 0) {
-                        map.fitBounds(bounds);
-                    }
-                }
-                var listener = google.maps.event.addListener(map, "idle", function () {
-                    if (map.getZoom() > 16) map.setZoom(16);
-                    google.maps.event.removeListener(listener);
+                georows.find('input').each(function (e) {
+                    var geoLatLng = $(this).val().split(',');
+                    markers.push(geoLatLng);
                 });
-            });
-        }
+
+
+                var markersSet = false;
+                tabMap.on('toggled', function (event, tab) {
+
+                    if (markersSet === false) {
+                        var bounds = new google.maps.LatLngBounds();
+                        for (var i = 0, tot = markers.length; i < tot; i++) {
+                            var myLatlng = new google.maps.LatLng(markers[i][0], markers[i][1]);
+                            var marker = new google.maps.Marker({
+                                position: myLatlng,
+                                map: map,
+                                title: ''
+                            });
+
+                            marker.setMap(map);
+                            gMarkers.push(marker);
+                            bounds.extend(marker.position);
+                        }
+                        markersSet = true;
+
+                        var center = map.getCenter();
+                        google.maps.event.trigger(map, "resize");
+                        map.setCenter(center);
+                        if (markers.length > 0) {
+                            map.fitBounds(bounds);
+                        }
+                    }
+                    var listener = google.maps.event.addListener(map, "idle", function () {
+                        if (map.getZoom() > 16) map.setZoom(16);
+                        google.maps.event.removeListener(listener);
+                    });
+                });
+            }
             else {
                 mapCanvas.append('<div data-alert class="alert-box alert">Map could not be loaded</div>');
             }
@@ -1686,7 +1686,7 @@ $(document).ready(function () {
                 }
                 var html = '<div class="small-12 column collapse georow"><div class="small-11 column"><input name="f[uii][idpsso][geo][' + rname + ']" type="text" value="' + inputgeo + '" readonly="readonly"></div><div class="small-1 column"><a href="#" class="rmgeo"><i class="fi-trash alert" style="color: red"></i></a></div></div>';
                 $(html).appendTo($('#geogroup'));
-                if(typeof google === 'object' && typeof google.maps === 'object') {
+                if (typeof google === 'object' && typeof google.maps === 'object') {
                     var bounds = new google.maps.LatLngBounds();
                     var geoLatLng = inputgeo.split(',');
                     var myLatlng = new google.maps.LatLng(geoLatLng[0], geoLatLng[1]);
@@ -2068,7 +2068,7 @@ $(document).ready(function () {
                 logolangtxt = logolang;
             }
 
-	    var hiddeninputurl;
+            var hiddeninputurl;
 
             var hiddeninputsize = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][size]" value="' + logosize + '">';
             var hiddeninputlang = '<input type="hidden" name="f[uii][' + type + 'sso][logo][n' + rname + '][lang]" value="' + logolang + '">';
@@ -2677,7 +2677,7 @@ $(document).ready(function () {
             var spid = $(this).attr('data-jagger-spid');
             var entityid = $(this).attr('data-jagger-entityid');
             var baseurl = $("[name='baseurl']").val();
-	    var modal;
+            var modal;
             if (arptype !== undefined && arpaction !== undefined) {
 
                 if (arptype === 'global' && arpaction === 'delete') {
@@ -4036,6 +4036,61 @@ $(document).ready(function () {
         return false;
     });
 
+    $("#vcerts").click(function () {
+
+        var parent = $(this).closest('div');
+        var op = parent.find('select').first();
+        var valueselected;
+        if(op){
+            var optselected = op.find("option:selected");
+            valueselected = optselected.val();
+        }
+        var urlParam = '';
+        if(valueselected === 'localidp' || valueselected === 'extidp' || valueselected === 'localsp' || valueselected === 'extsp'){
+            urlParam = '/'+valueselected;
+        }
+        $.ajax({
+            cache: false,
+            type: "GET",
+            url: baseurl + 'smanage/reports/expiredcerts'+urlParam,
+            dataType: "json",
+            success: function (result) {
+                var data = result.data;
+                var baseurl = result.definitions.baseurl;
+                var calerts = [];
+                var rows = [];
+                rows.push('<table><tbody>');
+                $.each(data, function (k, v) {
+                    if(v.alerts){
+                        $.each(v.alerts, function(l,m){
+                            if(m.level){
+                                calerts.push('<div class="alert-box '+ m.level+'" style="" data-alert="">'+m.msg +'</div>');
+                            }
+                            else {
+                                calerts.push('<div>'+m.msg +'</div>');
+                            }
+                        });
+                    }
+                    rows.push('<tr><td><a href="'+baseurl+'providers/detail/show/'+ v.id+'">' + v.entityid + '</a></td><td>'+calerts.join('')+'</td></tr>');
+                    calerts = [];
+                });
+                rows.push('</tbody></table>');
+                var result = rows.join('');
+                $('#spinner').hide();
+                $("#rvcerts").show();
+                $("tr#rvcerts td:first-child").html(result);
+            },
+            beforeSend: function () {
+                $('#spinner').show();
+            },
+            error: function () {
+                $('#spinner').hide();
+                window.alert('Error ocured');
+            }
+        });
+        return false;
+    });
+
 
     $('button[name="fedstatus"]').click(function (ev) {
         var btnVal = $(this).attr('value');
@@ -4827,9 +4882,9 @@ $('button[name="update2f"]').click(function (e) {
 });
 
 var checkRegpol;
-$('input[type="radio"].withuncheck').on('hover',function(){
+$('input[type="radio"].withuncheck').on('hover', function () {
     checkRegpol = $(this).is(':checked');
-}).on('click',function(){
+}).on('click', function () {
     checkRegpol = !checkRegpol;
     $(this).attr('checked', checkRegpol);
 });
@@ -4849,7 +4904,7 @@ $(document).on('click', '#resetloginform', function (e) {
         }
     });
 });
-$(document).on('click','#duo_form',function (e) {
+$(document).on('click', '#duo_form', function (e) {
     var link = $(this).attr('action');
     var secondfactorrow = $('.secondfactorrow');
     $.ajax({

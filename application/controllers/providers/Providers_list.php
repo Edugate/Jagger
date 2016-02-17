@@ -1,107 +1,55 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 
 /**
- * Jagger
- *
- * @package     Jagger
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
-
-/**
- * Providers_list Class
- *
- * @package     Jagger
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2016 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 class Providers_list extends MY_Controller
 {
 
-    function __construct() {
+    public function __construct() {
         parent::__construct();
         $this->output->set_content_type('application/json');
     }
 
-    public function federation($fedsysname = null, $type = null) {
-        if (!$this->input->is_ajax_request()) {
-            set_status_header(403);
-            echo 'Request not allowed';
-            return;
-        }
-        if (empty($fedsysname)) {
-            set_status_header(403);
-            echo 'no federation name provided';
-            return;
-        }
-        $tmpfedsysname = xss_clean($fedsysname);
-        if (strcmp($fedsysname, $tmpfedsysname) != 0) {
-            set_status_header(403);
-            echo 'security';
-            return;
-        }
-        if (!empty($type) && (strcmp($type, 'idp') == 0 || strcmp($type, 'sp') == 0)) {
-            set_status_header(403);
-            echo 'incorrect or missing type';
-            return;
-        }
-        $loggedin = $this->jauth->isLoggedIn();
-        if (!$loggedin) {
-            set_status_header(403);
-            echo 'Not authenticated - access denied';
-            return;
-        }
-        /**
-         * @todo check acl
-         */
-
-
-    }
-
     /**
      * @param $type
+     * @return CI_Output
      */
-    function show($type) {
+    public function show($type) {
 
         if (!$this->input->is_ajax_request()) {
-            set_status_header(403);
-            echo 'Request not allowed';
-            return;
+            return $this->output->set_status_header(403)->set_output('Request not allowed');
         }
-        if (strcmp($type, 'idp') != 0 && strcmp($type, 'sp') != 0) {
-            set_status_header(404);
-            echo 'Incorrect type of entities provided';
-            return;
+        if ($type !== 'idp' && $type !== 'sp') {
+            return $this->output->set_status_header(404)->set_output('Incorrect type of entities provided');
         }
 
         if (!$this->jauth->isLoggedIn()) {
-            set_status_header(403);
-            echo 'Not authenticated - access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Not authenticated - access denied');
         }
         $this->load->library('zacl');
-        if (strcmp($type, 'idp') == 0) {
+        $resource = 'sp_list';
+        if ($type === 'idp') {
             $resource = 'idp_list';
-        } else {
-            $resource = 'sp_list';
         }
 
         $action = 'read';
         $group = 'default';
         $hasReadAccess = $this->zacl->check_acl($resource, $action, $group, '');
         if (!$hasReadAccess) {
-            set_status_header(403);
-            echo 'no permission';
-            return;
+            return $this->output->set_status_header(403)->set_output('Permission denied');
         }
 
         $result = $this->getList($type);
-	$this->output->set_content_type('application/json')->set_output(json_encode($result));
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
     }
 
@@ -114,23 +62,23 @@ class Providers_list extends MY_Controller
         $result['data'] = array();
         $result['baseurl'] = base_url();
         $result['statedefs'] = array(
-            'plocked' => array('1' => '' . lang('rr_locked') . ''),
-            'pactive' => array('0' => '' . lang('rr_disabled') . ''),
-            'plocal' => array('0' => '' . lang('rr_external') . ''),
-            'pstatic' => array('1' => '' . lang('rr_static') . ''),
-            'pvisible' => array('0' => '' . lang('lbl_publichidden') . ''),
+            'plocked'    => array('1' => '' . lang('rr_locked') . ''),
+            'pactive'    => array('0' => '' . lang('rr_disabled') . ''),
+            'plocal'     => array('0' => '' . lang('rr_external') . ''),
+            'pstatic'    => array('1' => '' . lang('rr_static') . ''),
+            'pvisible'   => array('0' => '' . lang('lbl_publichidden') . ''),
             'pavailable' => array('0' => 'unavailable'),
         );
         $result['definitions']['lang'] = array(
-            'next' => lang('nextpage'),
-            'previous' => lang('prevpage'),
-            'search' => lang('rr_search'),
-            'display' => lang('displperpage'),
+            'next'        => lang('nextpage'),
+            'previous'    => lang('prevpage'),
+            'search'      => lang('rr_search'),
+            'display'     => lang('displperpage'),
             'btnexternal' => lang('extprov'),
-            'btnlocal' => lang('localprov'),
+            'btnlocal'    => lang('localprov'),
         );
 
-        if (strcmp($type, 'idp') == 0) {
+        if ($type === 'idp') {
             $lnamcol = lang('e_idpservicename');
         } else {
             $lnamcol = lang('e_spservicename');
@@ -138,14 +86,14 @@ class Providers_list extends MY_Controller
 
         $result['columns'] = array(
             'nameandentityid' => array('colname' => '' . $lnamcol . '', 'status' => 1, 'cols' => array('pname', 'pentityid')),
-            'url' => array('colname' => '' . lang('e_orgurl') . '', 'status' => 1, 'cols' => array('phelpurl')),
-            'pregdate' => array('colname' => '' . lang('tbl_title_regdate') . '', 'status' => 1, 'cols' => array('pregdate')),
-            'contacts' => array('colname' => 'Contacts', 'status' => 1, 'cols' => array('contacts')),
-            'entstatus' => array('colname' => 'status', 'status' => 1, 'cols' => array('plocked', 'pactive', 'pvisible', 'pstatic', 'plocal'))
+            'url'             => array('colname' => '' . lang('e_orgurl') . '', 'status' => 1, 'cols' => array('phelpurl')),
+            'pregdate'        => array('colname' => '' . lang('tbl_title_regdate') . '', 'status' => 1, 'cols' => array('pregdate')),
+            'contacts'        => array('colname' => 'Contacts', 'status' => 1, 'cols' => array('contacts')),
+            'entstatus'       => array('colname' => 'status', 'status' => 1, 'cols' => array('plocked', 'pactive', 'pvisible', 'pstatic', 'plocal'))
         );
 
         $cachedResult = $this->cache->get($cachedid);
-        if (empty($cachedResult) || !empty($fresh)) {
+        if (empty($cachedResult) || $fresh !== null) {
             log_message('debug', 'list of ' . $type . '(s) for lang (' . $lang . ') not found in cache ... retriving from db');
             $tmpprovs = new models\Providers();
             $typeToUpper = strtoupper($type);
@@ -161,18 +109,18 @@ class Providers_list extends MY_Controller
                     $cnts[] = html_escape($c->getType() . ': ' . $c->getFullName() . ' <' . $c->getEmail() . '>');
                 }
                 $data['"' . $counter++ . '"'] = array(
-                    'pid' => $v->getId(),
-                    'plocked' => (int)$v->getLocked(),
-                    'pactive' => (int)$v->getActive(),
-                    'plocal' => (int)$v->getLocal(),
-                    'pstatic' => (int)$v->getStatic(),
-                    'pvisible' => (int)$v->getPublicVisible(),
+                    'pid'        => $v->getId(),
+                    'plocked'    => (int)$v->getLocked(),
+                    'pactive'    => (int)$v->getActive(),
+                    'plocal'     => (int)$v->getLocal(),
+                    'pstatic'    => (int)$v->getStatic(),
+                    'pvisible'   => (int)$v->getPublicVisible(),
                     'pavailable' => (int)$v->getAvailable(),
-                    'pentityid' => $v->getEntityId(),
-                    'pname' => $v->getNameToWebInLang($lang, $type),
-                    'pregdate' => $v->getRegistrationDateInFormat('Y-m-d', jauth::$timeOffset),
-                    'phelpurl' => $v->getHelpdeskUrl(),
-                    'contacts' => $cnts,
+                    'pentityid'  => $v->getEntityId(),
+                    'pname'      => $v->getNameToWebInLang($lang, $type),
+                    'pregdate'   => $v->getRegistrationDateInFormat('Y-m-d', jauth::$timeOffset),
+                    'phelpurl'   => $v->getHelpdeskUrl(),
+                    'contacts'   => $cnts,
                 );
             }
             if (count($data) > 0) {
@@ -182,6 +130,7 @@ class Providers_list extends MY_Controller
         } else {
             $result['data'] = &$cachedResult;
         }
+
         return $result;
     }
 
