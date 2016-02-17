@@ -71,6 +71,4 @@
             </tbody>
         </table>
     </section>
-
-
 </div>

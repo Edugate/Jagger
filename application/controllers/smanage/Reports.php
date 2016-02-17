@@ -44,7 +44,7 @@ class Reports extends MY_Controller
 
     public function expiredcerts() {
         if (!$this->input->is_ajax_request()) {
-         //   return $this->output->set_status_header(401)->set_output('Bad request');
+            return $this->output->set_status_header(401)->set_output('Bad request');
         }
         if (!$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(401)->set_output('Session Lost');
