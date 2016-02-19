@@ -350,11 +350,18 @@ class Arpgen
         $xml->startAttributeNs('xsi', 'schemaLocation', 'http://www.w3.org/2001/XMLSchema-instance');
         $xml->text('urn:mace:shibboleth:2.0:afp classpath:/schema/shibboleth-2.0-afp.xsd urn:mace:shibboleth:2.0:afp:mf:basic classpath:/schema/shibboleth-2.0-afp-mf-basic.xsd urn:mace:shibboleth:2.0:afp:mf:saml classpath:/schema/shibboleth-2.0-afp-mf-saml.xsd');
         $xml->endAttribute();
-
+        $xml->startAttribute('xmlns');
+        $xml->text('urn:mace:shibboleth:2.0:afp');
+        $xml->endAttribute();
 
         $xml->startAttribute('xmlns:basic');
         $xml->text('urn:mace:shibboleth:2.0:afp:mf:basic');
         $xml->endAttribute();
+
+        $xml->startAttribute('xmlns:saml');
+        $xml->text('urn:mace:shibboleth:2.0:afp:mf:saml');
+        $xml->endAttribute();
+
 
         $xml->writeComment($comment);
 
