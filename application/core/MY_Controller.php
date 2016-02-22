@@ -163,7 +163,7 @@ class MY_Controller extends CI_Controller
             $fileName = APPPATH . 'extplugins/' . str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
         }
         $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
-        if (file_exists($fileName)) {
+        if (is_file($fileName)) {
             require $fileName;
         }
     }

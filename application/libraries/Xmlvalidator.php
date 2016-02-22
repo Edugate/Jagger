@@ -34,7 +34,6 @@ class Xmlvalidator
 
     public function validateMetadata($xml, $signed = false, $pubkey = false) {
         $schemaLocation = dirname(APPPATH) . '/schemas/old/' . $this->rootSchemaFile;
-        //echo $schemaLocation;
         \log_message('debug', __METHOD__ . ' started');
         $result = false;
         $this->pubKey = $pubkey;
@@ -45,7 +44,6 @@ class Xmlvalidator
             if (!$this->xmlDOM->loadXML($xml)) {
                 $this->ci->globalerrors[] = 'Metadata validation: couldnt load xml document';
                 log_message('error', __METHOD__ . ' couldn load xml into DOMDocument');
-
                 return false;
             }
         }

@@ -13,7 +13,7 @@ class Providerformelements
     protected $ent;
     protected $ses;
 
-    function __construct($params) {
+    public function __construct($params) {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         if (!is_array($params) || !isset($params['provider'])) {

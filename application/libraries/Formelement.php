@@ -23,7 +23,7 @@ class Formelement
     protected $defaultlangselect = 'en';
     protected $langs;
 
-    function __construct() {
+    public function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->helper(array('form', 'shortcodes'));
@@ -649,8 +649,8 @@ class Formelement
         foreach ($allAttrs as $a) {
             $attrArray[$a->getId()] = array('attrname' => $a->getName(), 'attrid' => $a->getId());
         }
-        $enttype = $ent->getType();
-        if (strcasecmp($enttype, 'IDP') == 0) {
+        $entityType = $ent->getType();
+        if (strcasecmp($entityType, 'IDP') == 0) {
             return null;
         }
         $sessform = (is_null($ses)) ? false : true;
@@ -664,7 +664,7 @@ class Formelement
                 $rid = $req->getId();
                 $attrid = $req->getAttribute()->getId();
                 if (in_array($attrid, $alreadyDefined)) {
-                    log_message('warning', __METHOD__ . 'OKA found duplicated attr req');
+                    log_message('warning', __METHOD__ . ': found duplicated attr req for entityid: ' . $ent->getEntityId());
                     $origreqattrs->removeElement($req);
                     $this->em->remove($req);
                     continue;
@@ -675,22 +675,20 @@ class Formelement
                     $rid = 'x' . $tmpid++ . '';
                 }
                 $rstatus = $req->getStatus();
-                $z = '<fieldset><legend>' . $req->getAttribute()->getName() . '</legend>';
-                $z .= '<input type="hidden" name="f[reqattr][' . $rid . '][attrname]" value="' . $req->getAttribute()->getName() . '">';
-                $z .= '<input type="hidden" name="f[reqattr][' . $rid . '][attrid]" value="' . $req->getAttribute()->getId() . '">';
-                $z .= '<div class="small-12 columns">';
-
-                $z .= '<div class="medium-3 columns medium-text-right ">';
-                $z .= form_dropdown('f[reqattr][' . $rid . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $rstatus);
-                $z .= '</div>';
-                $z .= '<div class="medium-6 columns">';
-                $z .= '<textarea name="f[reqattr][' . $rid . '][reason]" placeholder="' . lang('rrjustifyreqattr') . '">' . $req->getReason() . '</textarea>';
-
-                $z .= '</div>';
-                $z .= '<div class="medium-3 columns end"></div>';
-                $z .= '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr][' . $rid . ']" >' . lang('rr_remove') . '</button>';
-                $z .= '</div>';
-                $z .= '</fieldset>';
+                $z = '<fieldset><legend>' . $req->getAttribute()->getName() . '</legend>' .
+                    '<input type="hidden" name="f[reqattr][' . $rid . '][attrname]" value="' . $req->getAttribute()->getName() . '">' .
+                    '<input type="hidden" name="f[reqattr][' . $rid . '][attrid]" value="' . $req->getAttribute()->getId() . '">' .
+                    '<div class="small-12 columns">' .
+                    '<div class="medium-3 columns medium-text-right ">' .
+                    form_dropdown('f[reqattr][' . $rid . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $rstatus) .
+                    '</div>' .
+                    '<div class="medium-6 columns">' .
+                    '<textarea name="f[reqattr][' . $rid . '][reason]" placeholder="' . lang('rrjustifyreqattr') . '">' . $req->getReason() . '</textarea>' .
+                    '</div>' .
+                    '<div class="medium-3 columns end"></div>' .
+                    '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr][' . $rid . ']" >' . lang('rr_remove') . '</button>' .
+                    '</div>' .
+                    '</fieldset>';
                 $reqattrs[] = $z;
                 $attrArray['' . $attrid . '']['disabled'] = 1;
             }
@@ -698,29 +696,25 @@ class Formelement
             foreach ($ses['reqattr'] as $sk => $sv) {
                 if (in_array($sv['attrid'], $alreadyDefined)) {
                     log_message('warning', __METHOD__ . ' found duplicated attr req');
-
-
                     continue;
                 } else {
                     $alreadyDefined[] = $sv['attrid'];
                 }
                 $attrArray['' . $sv['attrid'] . '']['disabled'] = 1;
-                $z = '<fieldset><legend>' . $sv['attrname'] . '</legend>';
-                $z .= '<input type="hidden" name="f[reqattr][' . $sk . '][attrname]" value="' . $sv['attrname'] . '">';
-                $z .= '<input type="hidden" name="f[reqattr][' . $sk . '][attrid]" value="' . $sv['attrid'] . '">';
-                $z .= '<div class="small-12 columns">';
-
-                $z .= '<div class="medium-3 columns medium-text-right ">';
-                $z .= form_dropdown('f[reqattr][' . $sk . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $sv['status']);
-                $z .= '</div>';
-                $z .= '<div class="medium-6 columns">';
-                $z .= '<textarea name="f[reqattr][' . $sk . '][reason]">' . $sv['reason'] . '</textarea>';
-
-                $z .= '</div>';
-                $z .= '<div class="medium-3 columns end"></div>';
-                $z .= '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr][' . $sk . ']" >' . lang('rr_remove') . '</button>';
-                $z .= '</div>';
-                $z .= '</fieldset>';
+                $z = '<fieldset><legend>' . $sv['attrname'] . '</legend>' .
+                    '<input type="hidden" name="f[reqattr][' . $sk . '][attrname]" value="' . $sv['attrname'] . '">' .
+                    '<input type="hidden" name="f[reqattr][' . $sk . '][attrid]" value="' . $sv['attrid'] . '">' .
+                    '<div class="small-12 columns">' .
+                    '<div class="medium-3 columns medium-text-right ">' .
+                    form_dropdown('f[reqattr][' . $sk . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $sv['status']) .
+                    '</div>' .
+                    '<div class="medium-6 columns">' .
+                    '<textarea name="f[reqattr][' . $sk . '][reason]">' . $sv['reason'] . '</textarea>' .
+                    '</div>' .
+                    '<div class="medium-3 columns end"></div>' .
+                    '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr][' . $sk . ']" >' . lang('rr_remove') . '</button>' .
+                    '</div>' .
+                    '</fieldset>';
                 $reqattrs[] = $z;
             }
         }
@@ -730,7 +724,6 @@ class Formelement
             $result[] = implode('', $reqattrs);
         }
         $result[] = $this->_generateAttrReqAddButton($attrArray);
-
         return $result;
     }
 
@@ -1261,11 +1254,10 @@ class Formelement
 
 
             $wantAssert = $ent->getWantAssertionSigned();
-            if($sessform){
-               if(isset($ses['wantassertionssigned']) && $ses['wantassertionssigned'] === 'yes'){
-                   $wantAssert = true;
-               }
-                else {
+            if ($sessform) {
+                if (isset($ses['wantassertionssigned']) && $ses['wantassertionssigned'] === 'yes') {
+                    $wantAssert = true;
+                } else {
                     $wantAssert = false;
                 }
             }
@@ -1935,7 +1927,7 @@ class Formelement
                     $eelement = $e->getElement();
                     $evalue = $e->getEvalue();
                     if (strcasecmp($eelement, 'IPHint') == 0) {
-                       $dataByBlocks['ip']['' . $eid . ''] = trim($evalue);
+                        $dataByBlocks['ip']['' . $eid . ''] = trim($evalue);
                         continue;
                     }
                     if (strcasecmp($eelement, 'DomainHint') == 0) {
@@ -2553,7 +2545,7 @@ class Formelement
         $f .= '</div>';
 
         $f .= '<div class="small-12 columns">';
-        $f .= jGenerateInput(lang('rr_fed_publisher').' in export metadata', 'publisherexport', set_value('publisherexport', $federation->getPublisherExport(), false), '');
+        $f .= jGenerateInput(lang('rr_fed_publisher') . ' in export metadata', 'publisherexport', set_value('publisherexport', $federation->getPublisherExport(), false), '');
         $f .= '</div>';
 
         $f .= '<div class="small-12 columns">';
