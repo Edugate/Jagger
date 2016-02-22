@@ -38,7 +38,7 @@ class Formelement
             $disallowedparts = array();
         } else {
             $disallowedparts = $this->ci->config->item('entpartschangesdisallowed');
-            if (empty($disallowedparts) || !is_array($disallowedparts)) {
+            if (!is_array($disallowedparts)) {
                 $disallowedparts = array();
             }
         }
@@ -640,7 +640,10 @@ class Formelement
         return $result;
     }
 
-    public function nGenerateAttrsReqs(models\Provider $ent, array $ses = null) {
+    /**
+     * @return array
+     */
+    private function getAttrDefsInArray() {
         /**
          * @var $allAttrs models\Attribute[]
          */
@@ -649,16 +652,26 @@ class Formelement
         foreach ($allAttrs as $a) {
             $attrArray[$a->getId()] = array('attrname' => $a->getName(), 'attrid' => $a->getId());
         }
+
+        return $attrArray;
+    }
+
+    public function nGenerateAttrsReqs(models\Provider $ent, $ses = null) {
         $entityType = $ent->getType();
         if (strcasecmp($entityType, 'IDP') == 0) {
             return null;
         }
-        $sessform = (is_null($ses)) ? false : true;
+        $attrArray = $this->getAttrDefsInArray();
+        $sessform = false;
+        $ses = (array)$ses;
+        if (array_key_exists('reqattr', $ses)) {
+            $sessform = true;
+        }
         $reqattrs = array();
         $tmpid = 100;
         $origreqattrs = $ent->getAttributesRequirement();
         $alreadyDefined = array();
-        if (!$sessform || !array_key_exists('reqattr', $ses)) {
+        if (!$sessform) {
             foreach ($origreqattrs as $req) {
 
                 $rid = $req->getId();
@@ -674,13 +687,12 @@ class Formelement
                 if (empty($rid)) {
                     $rid = 'x' . $tmpid++ . '';
                 }
-                $rstatus = $req->getStatus();
-                $z = '<fieldset><legend>' . $req->getAttribute()->getName() . '</legend>' .
+                $reqattrs[] = '<fieldset><legend>' . $req->getAttribute()->getName() . '</legend>' .
                     '<input type="hidden" name="f[reqattr][' . $rid . '][attrname]" value="' . $req->getAttribute()->getName() . '">' .
                     '<input type="hidden" name="f[reqattr][' . $rid . '][attrid]" value="' . $req->getAttribute()->getId() . '">' .
                     '<div class="small-12 columns">' .
                     '<div class="medium-3 columns medium-text-right ">' .
-                    form_dropdown('f[reqattr][' . $rid . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $rstatus) .
+                    form_dropdown('f[reqattr][' . $rid . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $req->getStatus()) .
                     '</div>' .
                     '<div class="medium-6 columns">' .
                     '<textarea name="f[reqattr][' . $rid . '][reason]" placeholder="' . lang('rrjustifyreqattr') . '">' . $req->getReason() . '</textarea>' .
@@ -689,7 +701,6 @@ class Formelement
                     '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr][' . $rid . ']" >' . lang('rr_remove') . '</button>' .
                     '</div>' .
                     '</fieldset>';
-                $reqattrs[] = $z;
                 $attrArray['' . $attrid . '']['disabled'] = 1;
             }
         } else {
@@ -701,7 +712,7 @@ class Formelement
                     $alreadyDefined[] = $sv['attrid'];
                 }
                 $attrArray['' . $sv['attrid'] . '']['disabled'] = 1;
-                $z = '<fieldset><legend>' . $sv['attrname'] . '</legend>' .
+                $reqattrs[] = '<fieldset><legend>' . $sv['attrname'] . '</legend>' .
                     '<input type="hidden" name="f[reqattr][' . $sk . '][attrname]" value="' . $sv['attrname'] . '">' .
                     '<input type="hidden" name="f[reqattr][' . $sk . '][attrid]" value="' . $sv['attrid'] . '">' .
                     '<div class="small-12 columns">' .
@@ -715,7 +726,6 @@ class Formelement
                     '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr][' . $sk . ']" >' . lang('rr_remove') . '</button>' .
                     '</div>' .
                     '</fieldset>';
-                $reqattrs[] = $z;
             }
         }
         if (count($reqattrs) == 0) {
@@ -724,6 +734,7 @@ class Formelement
             $result[] = implode('', $reqattrs);
         }
         $result[] = $this->_generateAttrReqAddButton($attrArray);
+
         return $result;
     }
 
