@@ -681,9 +681,9 @@ class Formelement
                     $origreqattrs->removeElement($req);
                     $this->em->remove($req);
                     continue;
-                } else {
-                    $alreadyDefined[] = $attrid;
                 }
+                $alreadyDefined[] = $attrid;
+
                 if (empty($rid)) {
                     $rid = 'x' . $tmpid++ . '';
                 }
@@ -693,39 +693,31 @@ class Formelement
                     '<div class="small-12 columns">' .
                     '<div class="medium-3 columns medium-text-right ">' .
                     form_dropdown('f[reqattr][' . $rid . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $req->getStatus()) .
-                    '</div>' .
-                    '<div class="medium-6 columns">' .
+                    '</div><div class="medium-6 columns">' .
                     '<textarea name="f[reqattr][' . $rid . '][reason]" placeholder="' . lang('rrjustifyreqattr') . '">' . $req->getReason() . '</textarea>' .
-                    '</div>' .
-                    '<div class="medium-3 columns end"></div>' .
+                    '</div><div class="medium-3 columns end"></div>' .
                     '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr][' . $rid . ']" >' . lang('rr_remove') . '</button>' .
-                    '</div>' .
-                    '</fieldset>';
+                    '</div></fieldset>';
                 $attrArray['' . $attrid . '']['disabled'] = 1;
             }
         } else {
-            foreach ($ses['reqattr'] as $sk => $sv) {
-                if (in_array($sv['attrid'], $alreadyDefined)) {
+            foreach ($ses['reqattr'] as $skey => $sval) {
+                if (in_array($sval['attrid'], $alreadyDefined)) {
                     log_message('warning', __METHOD__ . ' found duplicated attr req');
                     continue;
-                } else {
-                    $alreadyDefined[] = $sv['attrid'];
                 }
-                $attrArray['' . $sv['attrid'] . '']['disabled'] = 1;
-                $reqattrs[] = '<fieldset><legend>' . $sv['attrname'] . '</legend>' .
-                    '<input type="hidden" name="f[reqattr][' . $sk . '][attrname]" value="' . $sv['attrname'] . '">' .
-                    '<input type="hidden" name="f[reqattr][' . $sk . '][attrid]" value="' . $sv['attrid'] . '">' .
-                    '<div class="small-12 columns">' .
-                    '<div class="medium-3 columns medium-text-right ">' .
-                    form_dropdown('f[reqattr][' . $sk . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $sv['status']) .
-                    '</div>' .
-                    '<div class="medium-6 columns">' .
-                    '<textarea name="f[reqattr][' . $sk . '][reason]">' . $sv['reason'] . '</textarea>' .
-                    '</div>' .
-                    '<div class="medium-3 columns end"></div>' .
-                    '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr][' . $sk . ']" >' . lang('rr_remove') . '</button>' .
-                    '</div>' .
-                    '</fieldset>';
+                $alreadyDefined[] = $sval['attrid'];
+                $attrArray['' . $sval['attrid'] . '']['disabled'] = 1;
+                $reqattrs[] = '<fieldset><legend>' . $sval['attrname'] . '</legend>' .
+                    '<input type="hidden" name="f[reqattr][' . $skey . '][attrname]" value="' . $sval['attrname'] . '">' .
+                    '<input type="hidden" name="f[reqattr][' . $skey . '][attrid]" value="' . $sval['attrid'] . '">' .
+                    '<div class="small-12 columns"><div class="medium-3 columns medium-text-right ">' .
+                    form_dropdown('f[reqattr][' . $skey . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $sval['status']) .
+                    '</div><div class="medium-6 columns">' .
+                    '<textarea name="f[reqattr][' . $skey . '][reason]">' . $sval['reason'] . '</textarea>' .
+                    '</div><div class="medium-3 columns end"></div>' .
+                    '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr][' . $skey . ']" >' . lang('rr_remove') . '</button>' .
+                    '</div></fieldset>';
             }
         }
         if (count($reqattrs) == 0) {
@@ -738,7 +730,12 @@ class Formelement
         return $result;
     }
 
-    public function NgenerateSAMLTab(models\Provider $ent, array  $ses = null) {
+    /**
+     * @param \models\Provider $ent
+     * @param array|null $ses
+     * @return array
+     */
+    public function NgenerateSAMLTab(models\Provider $ent, array $ses = null) {
         $entid = $ent->getId();
         $enttype = $ent->getType();
         $idppart = false;
