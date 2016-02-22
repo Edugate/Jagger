@@ -34,6 +34,7 @@ class Attribute_policyajax extends MY_Controller
         if (empty($policy)) {
             return $this->output->set_status_header(404)->set_output('Policy not found');
         }
+
         return $this->output->set_status_header(200)->set_output($policy->getPolicy());
     }
 
@@ -52,13 +53,14 @@ class Attribute_policyajax extends MY_Controller
         }
 
         $result = array(
-            'attrid' => (int)$attrid,
-            'idpid' => (int)$idpid,
-            'type' => 'fed',
+            'attrid'    => (int)$attrid,
+            'idpid'     => (int)$idpid,
+            'type'      => 'fed',
             'requester' => (int)$fedid,
-            'status' => true,
-            'policy' => $resultPolicy,
+            'status'    => true,
+            'policy'    => $resultPolicy,
         );
+
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
 
@@ -169,6 +171,7 @@ class Attribute_policyajax extends MY_Controller
                 $result['details'][] = array('name' => lang('custompolicy'), 'value' => '<small>' . lang('customappliedifpermited') . '</small>' . $suffix);
             }
         }
+
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
@@ -180,6 +183,7 @@ class Attribute_policyajax extends MY_Controller
         $this->load->library('zacl');
         $isLocked = $provider->getLocked();
         $hasWriteAccess = $this->zacl->check_acl($provider->getId(), 'write', 'entity', '');
+
         return ($hasWriteAccess && !$isLocked);
     }
 
@@ -203,15 +207,18 @@ class Attribute_policyajax extends MY_Controller
         $idpidInPost = $this->input->post('idpid');
         if (!ctype_digit($idpidInPost)) {
             log_message('warning', 'idpidInPost in post not provided or not numeric');
+
             return $this->output->set_status_header(403)->set_output(lang('missedinfoinpost'));
         }
-        if ((int) $idpID != (int) $idpidInPost) {
+        if ((int)$idpID != (int)$idpidInPost) {
             log_message('error', 'idp id from post is not equal with idp in url, idp in post:' . $idpidInPost . ', idp in url:' . $idpID);
+
             return $this->output->set_status_header(500)->set_output(lang('unknownerror'));
         }
         $policy = trim($this->input->post('policy'));
         if (!ctype_digit($policy)) {
             log_message('error', 'policy in post not provided or not numeric:' . $policy);
+
             return $this->output->set_status_header(403)->set_output(lang('wrongpolicyval'));
         }
 
@@ -228,6 +235,7 @@ class Attribute_policyajax extends MY_Controller
 
         if (!in_array($policy, array('1', '2', '0', '100'))) {
             log_message('error', 'wrong policy in post: ' . $policy);
+
             return $this->output->set_status_header(403)->set_output(lang('wrongpolicyval'));
         }
 
@@ -245,7 +253,7 @@ class Attribute_policyajax extends MY_Controller
                 $this->em->remove($arp);
                 $changes['attr: ' . $attribute->getName() . ''] = array(
                     'before' => 'policy for ' . $sp->getEntityId() . ' : ' . $tmpAt[$old_policy] . '',
-                    'after' => 'removed',
+                    'after'  => 'removed',
                 );
                 $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
             } elseif ($policy !== $old_policy) {
@@ -254,7 +262,7 @@ class Attribute_policyajax extends MY_Controller
 
                 $changes['attr: ' . $attribute->getName() . ''] = array(
                     'before' => 'policy for ' . $sp->getEntityId() . ' : ' . $tmpAt[$old_policy] . '',
-                    'after' => $tmpAt[$policy],
+                    'after'  => $tmpAt[$policy],
                 );
                 $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
 
@@ -268,7 +276,7 @@ class Attribute_policyajax extends MY_Controller
                 $this->em->persist($narp);
                 $changes['attr: ' . $attribute->getName() . ''] = array(
                     'before' => 'policy for ' . $sp->getEntityId() . ' : not set/inherited',
-                    'after' => $tmpAt[$policy]
+                    'after'  => $tmpAt[$policy]
                 );
                 $this->tracker->save_track('idp', 'modification', $idp->getEntityId(), serialize($changes), false);
             }
@@ -282,6 +290,7 @@ class Attribute_policyajax extends MY_Controller
         if ($custom) {
             return $this->output->set_status_header(200)->set_output('' . $policy . 'c');
         }
+
         return $this->output->set_status_header(200)->set_output($policy);
     }
 
@@ -302,7 +311,7 @@ class Attribute_policyajax extends MY_Controller
          */
         $idp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $idpID));
         /**
-         * @var models\Attribute[] $attribute
+         * @var models\Attribute $attribute
          */
         $attribute = $this->em->getRepository("models\Attribute")->findOneBy(array('id' => $postAttrID));
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $postFedID));
@@ -320,39 +329,32 @@ class Attribute_policyajax extends MY_Controller
         $policy = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute' => $postAttrID, 'idp' => $idpID, 'type' => 'fed', 'requester' => $postFedID));
 
 
-        if (strcmp($postPolicy, '100') == 0) {
-            if (empty($policy)) {
-                $statusPol = 100;
-            } else {
-                $this->em->remove($policy);
-                $statusPol = 100;
-            }
-
-        } elseif (empty($policy)) {
-            $npolicy = new models\AttributeReleasePolicy();
-            $npolicy->setFedPolicy($idp, $attribute, $federation, $postPolicy);
-            $this->em->persist($npolicy);
-            $statusPol = $postPolicy;
-
-
+        if (strcmp($postPolicy, '100') == 0 && ($policy !== null)) {
+            $this->em->remove($policy);
+        } elseif ($policy === null) {
+            $policy = new models\AttributeReleasePolicy();
+            $policy->setFedPolicy($idp, $attribute, $federation, $postPolicy);
+            $this->em->persist($policy);
         } else {
             $policy->setPolicy($postPolicy);
             $this->em->persist($policy);
-            $statusPol = $postPolicy;
         }
+        $statusPol = $postPolicy;
         try {
             $this->em->flush();
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
+
             return $this->output->set_status_header(500)->set_output('Internal server error');
         }
 
         $policyStr = '';
-        if (array_key_exists($statusPol, $dropdown)) {
-            $policyStr = $dropdown[$statusPol];
+        if (array_key_exists($postPolicy, $dropdown)) {
+            $policyStr = $dropdown[$postPolicy];
         }
-        $result = array('status' => 1, 'policy' => $statusPol, 'attrid' => $postAttrID, 'policystr' => $policyStr);
+        $result = array('status' => 1, 'policy' => $postPolicy, 'attrid' => $postAttrID, 'policystr' => $policyStr);
         $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idpID), -1);
+
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
     }
@@ -391,7 +393,7 @@ class Attribute_policyajax extends MY_Controller
         $globalPolicy = $this->em->getRepository("models\AttributeReleasePolicy")->findOneBy(array('attribute' => $postAttrID, 'idp' => $idpID, 'type' => 'global'));
         if (strcmp($postPolicy, '100') == 0) {
             if ($globalPolicy !== null) {
-              $this->em->remove($globalPolicy);
+                $this->em->remove($globalPolicy);
             }
             $statusPol = 100;
         } elseif (empty($globalPolicy)) {
@@ -415,10 +417,12 @@ class Attribute_policyajax extends MY_Controller
             }
             $result = array('status' => 1, 'policy' => $statusPol, 'attrid' => $postAttrID, 'policystr' => $policyStr);
             $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($idpID), -1);
+
             return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
+
             return $this->output->set_status_header(500)->set_output('Internal server error');
         }
 
