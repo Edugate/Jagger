@@ -24,10 +24,6 @@ class Sp_list extends MY_Controller
             redirect('auth/login', 'location');
         }
         $this->session->set_userdata(array('currentMenu' => 'sp'));
-        $this->current_idp = $this->session->userdata('current_idp');
-        $this->current_idp_name = $this->session->userdata('current_idp_name');
-        $this->current_sp = $this->session->userdata('current_sp');
-        $this->current_sp_name = $this->session->userdata('current_sp_name');
         $this->load->library('table');
         $this->load->library('zacl');
     }

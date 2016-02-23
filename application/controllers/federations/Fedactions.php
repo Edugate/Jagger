@@ -22,7 +22,7 @@ class Fedactions extends MY_Controller
 
     function changestatus() {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
-            return $this->output->set_status_header(403)->set_output('Access denied');
+            return $this->output->set_status_header(401)->set_output('Access denied');
         }
         $status = trim($this->input->post('status'));
         $fedname = trim($this->input->post('fedname'));
