@@ -31,14 +31,14 @@ class Auth extends MY_Controller
         if ($this->jauth->isLoggedIn()) {
             $this->jauth->logout();
         }
-        if($this->input->is_ajax_request()){
+        if ($this->input->is_ajax_request()) {
             return $this->output->set_status_header(200)->set_output('OK');
         }
         $this->load->view('auth/logout');
     }
 
     public function fedregister() {
-        $method = $this->input->method(TRUE);
+        $method = $this->input->method(true);
         if (!$this->input->is_ajax_request() || $method !== 'POST') {
             return $this->output->set_status_header(403)->set_output('Permission Denied');
         }
@@ -49,11 +49,11 @@ class Auth extends MY_Controller
         $fedidentity = $this->session->userdata('fedidentity');
         $newUserData = array(
             'username' => null,
-            'email' => null,
-            'fname' => null,
-            'sname' => null,
-            'type' => 'federated',
-            'ip' => $this->input->ip_address()
+            'email'    => null,
+            'fname'    => null,
+            'sname'    => null,
+            'type'     => 'federated',
+            'ip'       => $this->input->ip_address()
         );
         log_message('debug', __METHOD__ . ' fedregistration in post received' . serialize($this->session->userdata()));
         if (is_array($fedidentity)) {
@@ -65,7 +65,8 @@ class Auth extends MY_Controller
             }
             if (empty($newUserData['username']) || empty($newUserData['email'])) {
                 $this->session->sess_destroy();
-                $this->session->sess_regenerate(TRUE);
+                $this->session->sess_regenerate(true);
+
                 return $this->output->set_status_header(403)->set_output('missing some attrs like username or/and email');
             }
             if (array_key_exists('fedfname', $fedidentity)) {
@@ -82,6 +83,7 @@ class Auth extends MY_Controller
         if ($checkuser !== null) {
             $this->session->sess_destroy();
             $this->session->sess_regenerate(true);
+
             return $this->output->set_status_header(403)->set_output('' . lang('err_userexist') . '');
         }
         /**
@@ -109,16 +111,16 @@ class Auth extends MY_Controller
         $nowUtc = new \DateTime('now', new \DateTimeZone('UTC'));
 
         $templateArgs = array(
-            'token' => $queue->getToken(),
-            'srcip' => $this->input->ip_address(),
-            'reqemail' => $newUserData['email'],
+            'token'       => $queue->getToken(),
+            'srcip'       => $this->input->ip_address(),
+            'reqemail'    => $newUserData['email'],
             'requsername' => $newUserData['username'],
             'reqfullname' => $reqfullname,
-            'qurl' => '' . base_url('reports/awaiting/detail/' . $queue->getToken() . ''),
+            'qurl'        => '' . base_url('reports/awaiting/detail/' . $queue->getToken() . ''),
             'datetimeutc' => '' . $nowUtc->format('Y-m-d h:i:s') . ' UTC',
         );
         $mailTemplate = $this->email_sender->feduserRegistrationRequest($templateArgs);
-        $this->email_sender->addToMailQueue(array(), null, $mailTemplate['subject'], $mailTemplate['body'], array(), FALSE);
+        $this->email_sender->addToMailQueue(array(), null, $mailTemplate['subject'], $mailTemplate['body'], array(), false);
 
         /**
          * END send notification
@@ -127,10 +129,11 @@ class Auth extends MY_Controller
             $this->em->flush();
             $this->session->sess_destroy();
             $this->session->sess_regenerate(true);
-            return $this->output->set_status_header(200)->set_output('' . lang('userregreceived') . '');
         } catch (Exception $e) {
             return $this->output->set_status_header(500)->set_output('Unknown error occured');
         }
+
+        return $this->output->set_status_header(200)->set_output('' . lang('userregreceived') . '');
     }
 
     public function ssphpauth() {
@@ -265,13 +268,16 @@ class Auth extends MY_Controller
 
     }
 
+    /**
+     * @return string
+     */
     private function getShibUsername() {
         $usernameVarName = $this->config->item('Shib_username');
         $usernameValue = $this->input->server($usernameVarName);
         if ($usernameValue === null) {
             $usernameValue = $this->input->server('REDIRECT_' . $usernameVarName);
         }
-        return $usernameValue;
+        return trim($usernameValue);
     }
 
     private function getShibFname() {
@@ -284,6 +290,7 @@ class Auth extends MY_Controller
         } elseif (isset($_SERVER['REDIRECT_' . $fnameVarName])) {
             return $_SERVER['REDIRECT_' . $fnameVarName];
         }
+
         return false;
     }
 
@@ -297,6 +304,7 @@ class Auth extends MY_Controller
         } elseif (isset($_SERVER['REDIRECT_' . $snameVarName])) {
             return $_SERVER['REDIRECT_' . $snameVarName];
         }
+
         return false;
     }
 
@@ -320,8 +328,8 @@ class Auth extends MY_Controller
         );
         $idpVal = null;
         foreach ($IdpEnvVars as $val) {
-            if (!empty($val)) {
-                $idpVal = $val;
+            $idpVal = $this->input->server($val);
+            if (!empty($idpVal)) {
                 break;
             }
         }
@@ -333,6 +341,7 @@ class Auth extends MY_Controller
         if ($varToReturn === null) {
             $varToReturn = $this->input->server('REDIRECT_' . $groupsVarName);
         }
+
         return $varToReturn;
     }
 
@@ -366,8 +375,10 @@ class Auth extends MY_Controller
             $userGroup = 'Guest';
         } else {
             log_message('warning', 'The group attribute is not present in federated authentication');
+
             return null;
         }
+
         return $userGroup;
 
     }
@@ -404,15 +415,15 @@ class Auth extends MY_Controller
         $shibb_valid = $this->getShibIdp();
         if ($shibb_valid === null) {
             log_message('error', 'This location should be protected by shibboleth in apache');
-            show_error('Internal server error', 500);
+            return $this->output->set_status_header(500)->set_output('Internal server error');
         }
         if ($this->jauth->isLoggedIn()) {
             redirect('' . base_url() . '', 'location');
         }
         $userValue = $this->getShibUsername();
-        if (empty($userValue)) {
-            log_message('error', 'IdP:: ' . $this->getShibIdp() . ' didnt provide username');
-            show_error('Internal server error: missing required attribute in SAML response from Identity Provider', 500);
+        if ($userValue === '') {
+            log_message('error', __METHOD__.': IdP: ' . $this->getShibIdp() . ' didnt provide username');
+            return $this->output->set_status_header(500)->set_output('Internal server error: missing required attribute in SAML response from Identity Provider');
         }
 
         /**
@@ -420,8 +431,8 @@ class Auth extends MY_Controller
          */
         $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $userValue));
         if ($user !== null) {
-            $can_access = (bool)($user->isEnabled() && $user->getFederated());
-            if (!$can_access) {
+            $canAccess = (bool)($user->isEnabled() && $user->getFederated());
+            if (!$canAccess) {
                 show_error(lang('rerror_youraccountdisorfeddis'), 403);
             }
             $session_data = $user->getBasic();
@@ -431,16 +442,12 @@ class Auth extends MY_Controller
             $this->session->set_userdata('authntype', 'federated');
 
             $systemTwoFactor = $this->config->item('twofactorauthn');
-            if (!empty($systemTwoFactor) && $systemTwoFactor === true) {
+            if ($systemTwoFactor === true) {
                 $userSecondFactor = $user->getSecondFactor();
-                $systemAllowed2Factors = $this->config->item('2fengines');
-                if (empty($systemAllowed2Factors) || !is_array($systemAllowed2Factors)) {
-                    $systemAllowed2Factors = array();
-                }
+                $systemAllowed2Factors = (array) $this->config->item('2fengines');
                 if (!empty($userSecondFactor) && in_array($userSecondFactor, $systemAllowed2Factors)) {
-
                     $this->session->set_userdata('partiallogged', 1);
-                    $this->session->set_userdata('secondfactor', trim($userSecondFactor));
+                    $this->session->set_userdata('secondfactor', $userSecondFactor);
                     $this->session->set_userdata('twofactor', 1);
                     $this->session->set_userdata('logged', 0);
                 } else {
@@ -463,10 +470,10 @@ class Auth extends MY_Controller
             if ($updatefullname === true) {
                 $fname = trim($this->getShibFname());
                 $sname = trim($this->getShibSname());
-                if (!empty($fname)) {
+                if ($fname !== '') {
                     $user->setGivenname('' . $fname . '');
                 }
-                if (!empty($sname)) {
+                if ($sname !== '') {
                     $user->setSurname('' . $sname . '');
                 }
             }
@@ -506,6 +513,7 @@ class Auth extends MY_Controller
                 $fedidentity = array('fedusername' => $userValue, 'fedfname' => $this->getShibFname(), 'fedsname' => $this->getShibSname(), 'fedemail' => $this->getShibMail());
                 $this->session->set_userdata(array('fedidentity' => $fedidentity));
                 $data['content_view'] = 'feduserregister_view';
+
                 return $this->load->view('page', $data);
             } else {
 
