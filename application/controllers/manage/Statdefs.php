@@ -339,21 +339,21 @@ class Statdefs extends MY_Controller
     }
 
     public function statdefedit($providerid = null, $statdefid = null) {
-        if (empty($statdefid) || !ctype_digit($providerid) || !ctype_digit($statdefid)) {
-            show_error('Page not found', 404);
+        if (!ctype_digit($providerid) || !ctype_digit($statdefid)) {
+            show_error('Inorrect request', 400);
         }
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         if ($this->isStats() !== true) {
-            show_error('not found', 404);
+            show_error('The feature is not enabled', 404);
         }
         /**
          * @var $statDefinition models\ProviderStatsDef
          */
         $statDefinition = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $statdefid, 'provider' => $providerid));
         if ($statDefinition === null) {
-            show_error('Statdef Page not found', 404);
+            show_error('Stats definition not found', 404);
         }
         /**
          * @var $provider models\Provider
@@ -368,6 +368,8 @@ class Statdefs extends MY_Controller
         }
 
         $data = array(
+            'titlepage' => '<a href="' . base_url() . 'providers/detail/show/' . $providerid. '">' . $providerLangName . '</a>',
+            'subtitlepage' => lang('statdefeditform'),
             'providerid' => $providerid,
             'providerentity' => $provider->getEntityId(),
             'providername' => $providerLangName,
@@ -415,8 +417,7 @@ class Statdefs extends MY_Controller
         $statdefpostparam = $statDefinition->getPostOptions();
 
         $data['statdefpostparam'] = '';
-        $data['titlepage'] = '<a href="' . base_url() . 'providers/detail/show/' . $data['providerid'] . '">' . $data['providername'] . '</a>';
-        $data['subtitlepage'] = lang('statdefeditform');
+
         $data['submenupage'][] = array('name' => lang('statdeflist'), 'link' => '' . base_url() . 'manage/statdefs/show/' . $data['providerid'] . '');
         if (!empty($statdefpostparam)) {
             foreach ($statdefpostparam as $key => $value) {
