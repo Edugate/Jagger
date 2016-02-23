@@ -32,7 +32,6 @@ class Joinfed extends MY_Controller
         $this->form_validation->set_rules('fedid', 'Federation', 'trim|numeric');
         $this->form_validation->set_rules('formmessage', 'Message', 'strip_tags|trim|required');
         return $this->form_validation->run();
-
     }
 
     public function joinfederation($providerid = null)
@@ -55,6 +54,7 @@ class Joinfed extends MY_Controller
         $myLang = MY_Controller::getLang();
         $entType = strtolower($ent->getType());
         $nameInLang = $ent->getNameToWebInLang($myLang, $entType);
+        $this->title = $nameInLang . ':' . lang('joinfederation');
         $data = array(
             'name' => $nameInLang,
             'entityid' => $ent->getEntityId(),
@@ -62,7 +62,6 @@ class Joinfed extends MY_Controller
             'titlepage' => '<a href="' . base_url() . 'providers/detail/show/' . $ent->getId() . '">' . $nameInLang . '</a>',
             'subtitlepage' => lang('fedejoinform')
         );
-        $this->title = $nameInLang . ':' . lang('joinfederation');
         if (strcasecmp($entType, 'SP') == 0) {
             $plist = array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders'));
         } else {
@@ -118,7 +117,7 @@ class Joinfed extends MY_Controller
                         $message = '';
                     }
                     $mail_body = '';
-                    $this->tracker->save_track(strtolower($ent->getType()), 'request', $ent->getEntityId(), 'requested to join federation: ' . $federation->getName() . '. Message attached: ' . htmlspecialchars($message) . '', false);
+                    $this->tracker->save_track(strtolower($ent->getType()), 'request', $ent->getEntityId(), 'requested to join federation: ' . $federation->getName() . '. Message attached: ' . html_escape($message) . '', false);
 
                     $overrideconfig = $this->config->item('defaultmail');
                     if (!empty($overrideconfig) && is_array($overrideconfig) && array_key_exists('joinfed', $overrideconfig) && !empty($overrideconfig['joinfed'])) {

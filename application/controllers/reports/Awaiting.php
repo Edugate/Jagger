@@ -208,11 +208,12 @@ class Awaiting extends MY_Controller
     }
 
     public function dashajaxrefresh() {
-        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
-            set_status_header(403);
-            echo "Permission denied";
-
-            return;
+        if(!$this->input->is_ajax_request())
+        {
+            return $this->output->set_status_header(400)->set_output('Incorrect request');
+        }
+        if (!$this->jauth->isLoggedIn()) {
+            return $this->output->set_status_header(401)->set_output('Not authenticated');
         }
         $this->load->library(array('zacl', 'j_queue'));
         $data = array(
@@ -223,9 +224,14 @@ class Awaiting extends MY_Controller
     }
 
     public function counterqueue() {
-        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
-            return $this->output->set_status_header(403)->set_output('Access Denied');
+        if(!$this->input->is_ajax_request())
+        {
+            return $this->output->set_status_header(400)->set_output('Incorrect request');
         }
+        if (!$this->jauth->isLoggedIn()) {
+            return $this->output->set_status_header(401)->set_output('Not authenticated');
+        }
+
         $queuelist = $this->getQueueList();
         $c = count($queuelist['q']) + count($queuelist['s']);
 

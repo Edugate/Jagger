@@ -61,8 +61,10 @@ class Fedactions extends MY_Controller
             $this->em->persist($q);
             $this->em->flush();
             return $this->output->set_status_header(200)->set_output('todelete');
+        } else {
+            return $this->output->set_status_header(403)->set_output('incorrect params sent');
         }
-        return $this->output->set_status_header(403)->set_output('incorrect params sent');
+
     }
 
     /**
