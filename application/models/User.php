@@ -430,13 +430,14 @@ class User
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getSecondFactor()
     {
-        $pref = $this->getUserpref();
-        if (!empty($pref) && is_array($pref)) {
-            if (isset($pref['2f']) && !empty($pref['2f'])) {
-                return $pref['2f'];
-            }
+        $pref = (array) $this->getUserpref();
+        if (isset($pref['2f']) && !empty($pref['2f'])) {
+            return trim($pref['2f']);
         }
         return null;
 

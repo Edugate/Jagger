@@ -32,6 +32,7 @@ class Metadata extends MY_Controller
         $permitPull = $this->checkAccess();
         if ($permitPull !== true) {
             log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
+
             return $this->output->set_status_header(403)->set_content_type('text/html')->set_output('Access Denied');
         }
 
@@ -71,7 +72,7 @@ class Metadata extends MY_Controller
         }
         $tmpAttrRequirements = new models\AttributeRequirements;
         $options = array(
-            'attrs' => 1,
+            'attrs'       => 1,
             'fedreqattrs' => $tmpAttrRequirements->getRequirementsByFed($federation));
 
         $tmpm = new models\Providers;
@@ -156,9 +157,10 @@ class Metadata extends MY_Controller
          * @var $federation models\Federation
          */
         try {
-            $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $federationName, 'is_lexport' => TRUE, 'is_active' => TRUE));
+            $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $federationName, 'is_lexport' => true, 'is_active' => true));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
+
             return $this->output->set_status_header(500)->set_output('Internal server error');
         }
 
@@ -259,62 +261,10 @@ class Metadata extends MY_Controller
         }
     }
 
-    private function serviceOld($encodedEntityId = null, $fileName = null) {
-
-        if (empty($encodedEntityId) || empty($fileName) || strcmp($fileName, 'metadata.xml') != 0) {
-            show_error('Page not found', 404);
-        }
-
-
-        $data = array();
-        $this->load->library('providertoxml');
-        $entityId = base64url_decode($encodedEntityId);
-        $options['attrs'] = 1;
-        /**
-         * @var $entity models\Provider
-         */
-        $entity = null;
-        try {
-            $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityId));
-        } catch (Exception $e) {
-            log_message('error', __METHOD__ . ': ' . $e);
-            return $this->output->set_status_header(500)->set_output('Internal server error');
-        }
-        if ($entity === null) {
-            log_message('debug', 'Identity/Service Provider not found');
-            return $this->output->set_status_header(404)->set_output('Service metadata not found');
-        }
-
-        $isStatic = $entity->isStaticMetadata();
-        if ($isStatic) {
-            $xmlOut = $this->providertoxml->createXMLDocument();
-            $this->providertoxml->entityStaticConvert($xmlOut, $entity);
-            $xmlOut->endDocument();
-            $data['out'] = $xmlOut->outputMemory();
-            $mem = memory_get_usage();
-            $mem = round($mem / 1048576, 2);
-            log_message('info', 'Memory usage: ' . $mem . 'M');
-            $this->load->view('metadata_view', $data);
-        } else {
-            $xmlOut = $this->providertoxml->entityConvertNewDocument($entity, $options);
-        }
-        if (!empty($xmlOut)) {
-            $data['out'] = $xmlOut->outputMemory();
-            $mem = memory_get_usage();
-            $mem = round($mem / 1048576, 2);
-            log_message('info', 'Memory usage: ' . $mem . 'M');
-            $this->load->view('metadata_view', $data);
-        } else {
-            log_message('error', __METHOD__ . ' empty xml has been generated');
-            show_error('Internal server error', 500);
-        }
-
-    }
-
     public function service($encodedEntityId = null, $fileName = null) {
 
         if (empty($encodedEntityId) || empty($fileName) || strcmp($fileName, 'metadata.xml') != 0) {
-            show_error('Page not found', 404);
+            return $this->output->set_status_header(404)->set_output('Page not found');
         }
 
 
@@ -325,7 +275,6 @@ class Metadata extends MY_Controller
         /**
          * @var $entity models\Provider
          */
-        $entity = null;
         try {
             $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityId));
         } catch (Exception $e) {
@@ -342,64 +291,63 @@ class Metadata extends MY_Controller
          * @var \XMLWriter $xmlOut
          */
         if ($isStatic) {
-            $xmlOut = $this->providertoxml->createXMLDocument();
-            $this->providertoxml->entityStaticConvert($xmlOut, $entity);
-            $xmlOut->endDocument();
-
-
-            $outPut = $xmlOut->outputMemory();
-            $domXML = new DOMDocument();
-
-            $domXML->loadXML($outPut,LIBXML_NOERROR|LIBXML_NOWARNING);
-            $xpath = new DOMXPath($domXML);
-            $xpath->registerNamespace('', 'urn:oasis:names:tc:SAML:2.0:metadata');
-            $xpath->registerNamespace('md', 'urn:oasis:names:tc:SAML:2.0:metadata');
-            $xpath->registerNamespace('ds', 'http://www.w3.org/2000/09/xmldsig#');
-            $xpath->registerNamespace('mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');
-            $xpath->registerNamespace('mdui', 'urn:oasis:names:tc:SAML:metadata:ui');
-            $xpath->registerNamespace('mdattr','urn:oasis:names:tc:SAML:metadata:attribute');
-            $xpath->registerNamespace('shibmd','urn:mace:shibboleth:metadata:1.0');
-            /**
-             * @var \DOMElement $element
-             */
-            $element =  $domXML->getElementsByTagName('EntityDescriptor')->item(0);
-            if($element === null){
-                $element =  $domXML->getElementsByTagName('md:EntityDescriptor')->item(0);
-            }
-
-
-            if ($element !== null) {
-                $element->setAttribute('xmlns','urn:oasis:names:tc:SAML:2.0:metadata');
-                $element->setAttribute('xmlns:md', 'urn:oasis:names:tc:SAML:2.0:metadata');
-                $element->setAttribute('xmlns:ds', 'http://www.w3.org/2000/09/xmldsig#');
-                $element->setAttribute('xmlns:mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');
-                $element->setAttribute('xmlns:mdui','urn:oasis:names:tc:SAML:metadata:ui');
-                $element->setAttribute('xmlns:mdattr','urn:oasis:names:tc:SAML:metadata:attribute');
-                $element->setAttribute('xmlns:shibmd','urn:mace:shibboleth:metadata:1.0');
-            }
-             $out = $domXML->saveXML();
-
-
-
-            $data['out'] = $out;//$xmlOut->outputMemory();
+            $data['out'] = $this->regenerateStatic($entity);
             $mem = memory_get_usage();
             $mem = round($mem / 1048576, 2);
             log_message('info', 'Memory usage: ' . $mem . 'M');
             $this->load->view('metadata_view', $data);
         } else {
             $xmlOut = $this->providertoxml->entityConvertNewDocument($entity, $options);
-        }
-        if (!empty($xmlOut)) {
-            $data['out'] = $xmlOut->outputMemory();
-            $mem = memory_get_usage();
-            $mem = round($mem / 1048576, 2);
-            log_message('info', 'Memory usage: ' . $mem . 'M');
-            $this->load->view('metadata_view', $data);
-        } else {
-            log_message('error', __METHOD__ . ' empty xml has been generated');
-            show_error('Internal server error', 500);
+            if (!empty($xmlOut)) {
+                $data['out'] = $xmlOut->outputMemory();
+                $mem = memory_get_usage();
+                $mem = round($mem / 1048576, 2);
+                log_message('info', 'Memory usage: ' . $mem . 'M');
+                $this->load->view('metadata_view', $data);
+            } else {
+                log_message('error', __METHOD__ . ' empty xml has been generated');
+                show_error('Internal server error', 500);
+            }
         }
 
+    }
+
+    private function regenerateStatic(models\Provider $entity){
+        $xmlOut = $this->providertoxml->createXMLDocument();
+        $this->providertoxml->entityStaticConvert($xmlOut, $entity);
+        $xmlOut->endDocument();
+
+
+        $outPut = $xmlOut->outputMemory();
+        $domXML = new DOMDocument();
+
+        $domXML->loadXML($outPut, LIBXML_NOERROR | LIBXML_NOWARNING);
+        $xpath = new DOMXPath($domXML);
+        $xpath->registerNamespace('', 'urn:oasis:names:tc:SAML:2.0:metadata');
+        $xpath->registerNamespace('md', 'urn:oasis:names:tc:SAML:2.0:metadata');
+        $xpath->registerNamespace('ds', 'http://www.w3.org/2000/09/xmldsig#');
+        $xpath->registerNamespace('mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');
+        $xpath->registerNamespace('mdui', 'urn:oasis:names:tc:SAML:metadata:ui');
+        $xpath->registerNamespace('mdattr', 'urn:oasis:names:tc:SAML:metadata:attribute');
+        $xpath->registerNamespace('shibmd', 'urn:mace:shibboleth:metadata:1.0');
+        /**
+         * @var \DOMElement $element
+         */
+        $element = $domXML->getElementsByTagName('EntityDescriptor')->item(0);
+        if ($element === null) {
+            $element = $domXML->getElementsByTagName('md:EntityDescriptor')->item(0);
+        }
+        if ($element !== null) {
+            $element->setAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
+            $element->setAttribute('xmlns:md', 'urn:oasis:names:tc:SAML:2.0:metadata');
+            $element->setAttribute('xmlns:ds', 'http://www.w3.org/2000/09/xmldsig#');
+            $element->setAttribute('xmlns:mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');
+            $element->setAttribute('xmlns:mdui', 'urn:oasis:names:tc:SAML:metadata:ui');
+            $element->setAttribute('xmlns:mdattr', 'urn:oasis:names:tc:SAML:metadata:attribute');
+            $element->setAttribute('xmlns:shibmd', 'urn:mace:shibboleth:metadata:1.0');
+        }
+        $out = $domXML->saveXML();
+        return $out;
     }
 
     /**
@@ -407,6 +355,7 @@ class Metadata extends MY_Controller
      */
     private function isCircleFeatureEnabled() {
         $cnf = $this->config->item('featdisable');
+
         return !(isset($cnf['circlemeta']) && $cnf['circlemeta'] === true);
     }
 
@@ -421,6 +370,7 @@ class Metadata extends MY_Controller
         if (!$isLocal && (!empty($circleForExternalAllowed) && $circleForExternalAllowed === true)) {
             $result = false;
         }
+
         return $result;
     }
 
@@ -532,6 +482,7 @@ class Metadata extends MY_Controller
     public function queue($tokenid) {
         if (strlen($tokenid) > 100 || !ctype_alnum($tokenid)) {
             show_error('Not found', 404);
+
             return null;
         }
         $queue = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $tokenid));
@@ -558,8 +509,8 @@ class Metadata extends MY_Controller
             $this->load->library('xmlvalidator');
             libxml_use_internal_errors(true);
             $metadataDOM = new \DOMDocument();
-            $metadataDOM->strictErrorChecking = FALSE;
-            $metadataDOM->WarningChecking = FALSE;
+            $metadataDOM->strictErrorChecking = false;
+            $metadataDOM->WarningChecking = false;
             $metadataDOM->loadXML(base64_decode($queueData['metadata']));
             $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, false, false);
             if (!$isValid) {
@@ -583,8 +534,10 @@ class Metadata extends MY_Controller
             if (in_array($remoteip, $limits, true)) {
                 return true;
             }
+
             return false;
         }
+
         return true;
     }
 

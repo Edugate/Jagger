@@ -24,7 +24,7 @@ class Gworkers extends MY_Controller
             $this->load->library('gearmanw');
             $this->gearmanw->worker();
         } else {
-            show_error('denied', 403);
+            return $this->output->set_status_header(403)->set_output('Denied');
         }
     }
 
@@ -37,7 +37,7 @@ class Gworkers extends MY_Controller
         $em = $this->doctrine->em;
         $this->load->library('rrpreference');
         $sendOptions = array(
-            'mailfrom' => $this->config->item('mail_from'),
+            'mailfrom'   => $this->config->item('mail_from'),
             'subjsuffix' => (string)$this->config->item('mail_subject_suffix')
         );
         /**
@@ -45,56 +45,58 @@ class Gworkers extends MY_Controller
          */
         $mailsSent = array();
         while (true) {
+            sleep(60);
             $isSendingEnabled = $this->config->item('mail_sending_active');
             if ($isSendingEnabled !== true) {
                 log_message('warning', 'MAILQUEUE :: sending mails is disabled - check config "mail_sending_active" ');
-            } else {
-                log_message('debug', 'MAILQUEUE :: checks for mails to be sent');
-                try {
-                    /**
-                     * @var models\MailQueue[] $mails
-                     */
-                    $mails = $em->getRepository("models\MailQueue")->findBy(array('deliverytype' => 'mail', 'frequence' => '1', 'issent' => false));
-                    $mailFooter = $this->rrpreference->getTextValueByName('mailfooter');
-                    foreach ($mails as $mailRow) {
-                        $mailId = $mailRow->getId();
-                        log_message('info', 'MAILQUEUE sending mail with id: ' . $mailId);
-                        if (in_array($mailId, $mailsSent)) {
-                            $mailRow->setMailSent();
-                            $em->persist($mailRow);
-                            continue;
-                        }
-                        $maildata = $mailRow->getMailToArray();
-                        $this->email->clear();
-                        $this->email->from($sendOptions['mailfrom']);
-                        $this->email->to($maildata['to']);
-                        $this->email->subject($maildata['subject'] . ' ' . $sendOptions['subjsuffix']);
-                        $this->email->message($maildata['data'] . PHP_EOL . '' . $mailFooter . PHP_EOL);
-
-                        if ($this->email->send()) {
-                            $mailsSent[] = $mailRow->getId();
-                            $mailRow->setMailSent();
-                            $em->persist($mailRow);
-                        } else {
-                            log_message('error', 'MAILQUEUE couldnt sent mail to ' . $maildata['to'] . '    ::' . $this->email->print_debugger());
-                        }
-                    }
-                    try {
-                        $em->flush();
-                        $mailsSent = array();
-                    } catch (Exception $e) {
-                        log_message('eror', 'MAILQUEUE: could not update db about sent status');
-                    }
-                    $em->clear();
-                } catch (Exception $e) {
-                    log_message('error', 'MAILQUEUE ::' . __METHOD__ . ' lost connection to database trying to reconnect');
-                    $em->getConnection()->close();
-                    sleep(10);
-                    $em->getConnection()->connect();
-                }
+                continue;
             }
-            sleep(60);
+            log_message('debug', 'MAILQUEUE :: checks for mails to be sent');
+            try {
+                /**
+                 * @var models\MailQueue[] $mails
+                 */
+                $mails = $em->getRepository("models\MailQueue")->findBy(array('deliverytype' => 'mail', 'frequence' => '1', 'issent' => false));
+                $mailFooter = $this->rrpreference->getTextValueByName('mailfooter');
+                foreach ($mails as $mailRow) {
+                    $mailId = $mailRow->getId();
+                    log_message('info', 'MAILQUEUE sending mail with id: ' . $mailId);
+                    if (in_array($mailId, $mailsSent)) {
+                        $mailRow->setMailSent();
+                        $em->persist($mailRow);
+                        continue;
+                    }
+                    $maildata = $mailRow->getMailToArray();
+                    $this->email->clear();
+                    $this->email->from($sendOptions['mailfrom']);
+                    $this->email->to($maildata['to']);
+                    $this->email->subject($maildata['subject'] . ' ' . $sendOptions['subjsuffix']);
+                    $this->email->message($maildata['data'] . PHP_EOL . '' . $mailFooter . PHP_EOL);
+
+                    if ($this->email->send()) {
+                        $mailsSent[] = $mailRow->getId();
+                        $mailRow->setMailSent();
+                        $em->persist($mailRow);
+                    } else {
+                        log_message('error', 'MAILQUEUE couldnt sent mail to ' . $maildata['to'] . '    ::' . $this->email->print_debugger());
+                    }
+                }
+                try {
+                    $em->flush();
+                    $mailsSent = array();
+                } catch (Exception $e) {
+                    log_message('eror', 'MAILQUEUE: could not update db about sent status');
+                }
+                $em->clear();
+            } catch (Exception $e) {
+                log_message('error', 'MAILQUEUE ::' . __METHOD__ . ' lost connection to database trying to reconnect');
+                $em->getConnection()->close();
+                sleep(10);
+                $em->getConnection()->connect();
+            }
+
         }
+
         return $this->output->set_status_header(500)->set_output('unexpected exit');
     }
 
@@ -108,6 +110,7 @@ class Gworkers extends MY_Controller
 
         $runJobs = array();
         while (true) {
+            sleep(15);
             try {
                 $cronEntries = $this->em->getRepository("models\Jcrontab")->findBy(array('isenabled' => true));
                 $currentTime = new \DateTime("now");
@@ -161,7 +164,6 @@ class Gworkers extends MY_Controller
                 }
             }
             $this->em->clear();
-            sleep(15);
         }
         return $this->output->set_status_header(500)->set_output('unexpected exit');
     }

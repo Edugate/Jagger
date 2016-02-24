@@ -276,7 +276,7 @@ class Jauth
      * @throws Exception
      */
     public function registerUser(array $attrs, $accountType, $systemRole = null) {
-        if (!array_key_exists('username', $attrs) || $attrs['username'] === null || trim($attrs['username']) === '' || !array_key_exists('mail', $attrs)) {
+        if (!array_key_exists('username', $attrs) || trim($attrs['username']) === '' || !array_key_exists('mail', $attrs)) {
             throw new Exception('Cannot register user. Missing username or/and email address');
         }
         $username = trim($attrs['username']);
