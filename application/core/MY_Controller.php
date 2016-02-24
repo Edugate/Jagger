@@ -46,6 +46,7 @@ if (!defined('BASEPATH')) {
  * @property Jusermanage $jusermanage
  * @property Formelement $formelement
  * @property Xmlvalidator $xmlvalidator
+ * @property ProviderRemover $providerremover
  * @property Doctrine $doctrine
  * @property CI_Cache $cache
  */

@@ -24,6 +24,7 @@ class ProviderRemover
     public function __construct()
     {
         $this->ci = &get_instance();
+        $this->ci->load->library('doctrine');
         $this->em = $this->ci->doctrine->em;
     }
 
@@ -34,11 +35,11 @@ class ProviderRemover
     public function removeProvider(models\Provider $provider)
     {
         /**
-         * @var models\AclResource[] $aclresources
+         * @var models\AclResource[] $aclResources
          */
-        $aclresources = $this->em->getRepository("models\AclResource")->findBy(array('resource' => $provider->getId()));
+        $aclResources = $this->em->getRepository("models\AclResource")->findBy(array('resource' => $provider->getId()));
 
-        foreach ($aclresources as $a) {
+        foreach ($aclResources as $a) {
             $this->em->remove($a);
         }
         $attreqtmp = new models\AttributeRequirements;
@@ -80,7 +81,7 @@ class ProviderRemover
             $this->em->remove($p3);
         }
         $cmstaticmetadata = $provider->getStaticMetadata();
-        if (!empty($cmstaticmetadata)) {
+        if ($cmstaticmetadata !== null) {
             $this->em->remove($cmstaticmetadata);
         }
         $this->em->remove($provider);
