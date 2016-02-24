@@ -223,6 +223,20 @@ class Awaiting extends MY_Controller
         $this->load->view('reports/dashawaiting_list_view', $data);
     }
 
+    public function dashz(){
+        if(!$this->input->is_ajax_request())
+        {
+            return $this->output->set_status_header(400)->set_output('Incorrect request');
+        }
+        if (!$this->jauth->isLoggedIn()) {
+            return $this->output->set_status_header(401)->set_output('Not authenticated');
+        }
+        $this->load->library(array('zacl', 'j_queue'));
+        $result['data'] = $this->getQueueList();
+        return $this->output->set_content_type('application/json')->set_status_header(200)->set_output(json_encode($result));
+
+    }
+
     public function counterqueue() {
         if(!$this->input->is_ajax_request())
         {

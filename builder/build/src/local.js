@@ -3508,24 +3508,78 @@ $(function () {
     if (baseurl === undefined) {
         baseurl = '';
     }
-
-    $("#responsecontainer").load(baseurl + "reports/awaiting/ajaxrefresh");
-    setInterval(function () {
-        $("#responsecontainer").load(baseurl + 'reports/awaiting/ajaxrefresh');
-    }, 172000);
-    $("#dashresponsecontainer").load(baseurl + "reports/awaiting/dashajaxrefresh");
-    setInterval(function () {
-        $("#dashresponsecontainer").load(baseurl + 'reports/awaiting/dashajaxrefresh');
-    }, 172000);
-
-
     $.ajaxSetup({
         cache: false
     });
-    $("#qcounter").load(baseurl + 'reports/awaiting/counterqueue');
-    setInterval(function () {
-        $("#qcounter").load(baseurl + 'reports/awaiting/counterqueue');
-    }, 86000);
+
+    var iqcounter = $('#qcounter');
+
+    if(iqcounter.length > 0) {
+        var iqsrc = iqcounter.attr('data-jagger-src');
+        var qcounterFromSession = sessionStorage.getItem('jaggerqcounter');
+        if(qcounterFromSession !== null){
+            iqcounter.html(parseInt(qcounterFromSession));
+        }
+        var refresherFn = function () {
+            var dashresponsecontainer = $('#dashresponsecontainer').first();;
+            $.ajax({
+                url: iqsrc,
+                method: 'GET',
+                cache: false,
+                dataType: 'json',
+                success: function (result) {
+                    var thesum = 0;
+                    if (result.data) {
+                        $.each(result.data, function (v, k) {
+                            thesum = thesum + k.length;
+                        });
+                    }
+                    sessionStorage.setItem('jaggerqcounter', thesum);
+
+                    iqcounter.html(thesum);
+                    if(dashresponsecontainer){
+                        var rows = [];
+                        if(result.definitions){
+                            var defs = result.definitions;
+                            rows.push('<table id="detailsi" class="itablesorter"><thead><tr><th>' +defs.date+'</th><th>'+defs.requester+'</th><th>'+defs.requesttype+'</th><th></th></tr><thead><tbody>');
+                        }
+                        else {
+                            rows.push('<table id="detailsi" class="itablesorter"><thead><tr><th>Date</th><th>Requester</th><th>Request type</th><th></th></tr><thead><tbody>');
+                        }
+                        if(result.data.q){
+                            $.each(result.data.q, function(v,k){
+
+                                rows.push('<tr><td>'+ k.idate+'</td><td>'+ k.requesterCN + ' '+ k.mail+'</td><td>'+ k.type+' - '+ k.action+'</td><td><a href="'+baseurl+'reports/awaiting/detail/'+ k.token+'"><i class="fi-arrow-right"></i></a></td></tr>');
+                            });
+                        }
+                        rows.push('</tbody></table>');
+                        var tableresult = rows.join('');
+                        dashresponsecontainer.html(tableresult);
+                    }
+                },
+                error: function(){
+                    if(dashresponsecontainer){
+                        var errmsg = '<div data-alert class="alert-box alert center">Could not refresh queue</div>';
+                        dashresponsecontainer.html(errmsg);
+                    }
+                }
+
+
+            });
+        };
+        setTimeout(refresherFn,1000);
+        var refreshInterval = setInterval(refresherFn, 30000);
+        refreshInterval;
+    }
+
+
+
+$("#responsecontainer").load(baseurl + "reports/awaiting/ajaxrefresh");
+   setInterval(function () {
+        $("#responsecontainer").load(baseurl + 'reports/awaiting/ajaxrefresh');
+    }, 172000);
+
+
 
 
     $('#languageset').on('change', 'select', function (e) {

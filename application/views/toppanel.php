@@ -24,7 +24,7 @@
             <ul class="right">
                 <?php
                 if ($loggedin) {
-                    echo '<li><a href="' . $base_url . 'reports/awaitinglist"><sup id="qcounter" class="label alert tiny round">&nbsp;</sup></a></li>';
+                    echo '<li><a href="' . $base_url . 'reports/awaitinglist"><sup id="qcounter" class="label alert tiny round" data-jagger-src="'.$base_url.'reports/awaiting/dashz">&nbsp;</sup></a></li>';
                     echo '<li class="show-for-small-only"><a href="' . $base_url . 'auth/logout" class="button alert logoutbutton tiny userlogout" jagger-data-logout="' . $shibLogoutUri . '">' . lang('btnlogout') . '</a></li>';
                 }
                 ?>

@@ -315,7 +315,7 @@ if (!$loggedin) {
 </script>
 <?php
 // load local final js
-echo '<script type="text/javascript" src="' . $base_url . 'js/local.min.5362ea4d.js"></script>' . PHP_EOL;
+echo '<script type="text/javascript" src="' . $base_url . 'js/local.min.34d99bba.js"></script>' . PHP_EOL;
 
 // raw js from array
 if (!empty($rawJs) && is_array($rawJs)) {
@@ -329,6 +329,8 @@ if (!empty($rawJs) && is_array($rawJs)) {
     echo '</script>';
 }
 ?>
+
+
 <div id="malert" data-reveal class="reveal-modal tiny"></div>
 </body>
 </html>
