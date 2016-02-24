@@ -17,11 +17,17 @@ if (!defined('BASEPATH')) {
 class Metadata extends MY_Controller
 {
 
+    protected $metadaNs;
 
     public function __construct() {
         parent::__construct();
         $this->output->set_content_type('application/samlmetadata+xml');
         $this->load->library('j_ncache');
+        $this->metadaNs = h_metadataNamespaces();
+        $additionalNs = $this->config->item('metadatans');
+        if(is_array($additionalNs)){
+            $this->metadaNs = array_merge($this->metadaNs, $additionalNs);
+        }
     }
 
     public function federation($federationName = null, $limitType = null) {
@@ -96,8 +102,7 @@ class Metadata extends MY_Controller
         $xmlOut->writeAttribute('Name', $federation->getUrn());
         $xmlOut->writeAttribute('validUntil', $validuntil);
         $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
-        $regNamespaces = h_metadataNamespaces();
-        foreach ($regNamespaces as $k => $v) {
+        foreach ($this->metadaNs as $k => $v) {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
         if (!empty($publisher)) {
@@ -212,8 +217,7 @@ class Metadata extends MY_Controller
         $xmlOut->writeAttribute('Name', $federation->getUrn());
         $xmlOut->writeAttribute('validUntil', $validuntil);
         $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
-        $regNamespaces = h_metadataNamespaces();
-        foreach ($regNamespaces as $k => $v) {
+        foreach ($this->metadaNs as $k => $v) {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
         if (!empty($publisher)) {
@@ -440,8 +444,7 @@ class Metadata extends MY_Controller
         $xmlOut->writeAttribute('Name', '' . $provider->getEntityId() . '');
         $xmlOut->writeAttribute('validUntil', '' . $validuntil . '');
         $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
-        $regNamespaces = h_metadataNamespaces();
-        foreach ($regNamespaces as $k => $v) {
+        foreach ($this->metadaNs as $k => $v) {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
 
