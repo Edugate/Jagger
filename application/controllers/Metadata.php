@@ -17,16 +17,16 @@ if (!defined('BASEPATH')) {
 class Metadata extends MY_Controller
 {
 
-    protected $metadaNs;
+    protected $metadataNS;
 
     public function __construct() {
         parent::__construct();
         $this->output->set_content_type('application/samlmetadata+xml');
         $this->load->library('j_ncache');
-        $this->metadaNs = h_metadataNamespaces();
+        $this->metadataNS = h_metadataNamespaces();
         $additionalNs = $this->config->item('metadatans');
         if(is_array($additionalNs)){
-            $this->metadaNs = array_merge($this->metadaNs, $additionalNs);
+            $this->metadataNS = array_merge($this->metadataNS, $additionalNs);
         }
     }
 
@@ -102,7 +102,7 @@ class Metadata extends MY_Controller
         $xmlOut->writeAttribute('Name', $federation->getUrn());
         $xmlOut->writeAttribute('validUntil', $validuntil);
         $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
-        foreach ($this->metadaNs as $k => $v) {
+        foreach ($this->metadataNS as $k => $v) {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
         if (!empty($publisher)) {
@@ -217,7 +217,7 @@ class Metadata extends MY_Controller
         $xmlOut->writeAttribute('Name', $federation->getUrn());
         $xmlOut->writeAttribute('validUntil', $validuntil);
         $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
-        foreach ($this->metadaNs as $k => $v) {
+        foreach ($this->metadataNS as $k => $v) {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
         if (!empty($publisher)) {
@@ -444,7 +444,7 @@ class Metadata extends MY_Controller
         $xmlOut->writeAttribute('Name', '' . $provider->getEntityId() . '');
         $xmlOut->writeAttribute('validUntil', '' . $validuntil . '');
         $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
-        foreach ($this->metadaNs as $k => $v) {
+        foreach ($this->metadataNS as $k => $v) {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
 
