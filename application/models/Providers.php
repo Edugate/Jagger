@@ -36,7 +36,6 @@ class Providers
         foreach ($result as $r) {
             $feds->add($r->getFederation());
         }
-
         return $feds;
     }
 
@@ -60,7 +59,6 @@ class Providers
         foreach ($result as $r) {
             $r2->add($r);
         }
-
         return $r2;
     }
 
@@ -131,7 +129,6 @@ class Providers
         $endTime = microtime(true);
         $execTime = $endTime - $startTime;
         \log_message('info', __METHOD__ . ' time execution: ' . $execTime);
-
         return $result;
     }
 
@@ -369,37 +366,6 @@ class Providers
 
         return $query->getResult();
 
-    }
-
-    /**
-     *  getIdpsInNative and getSpsInNative to display just the list of entities without details.
-     *   it's faster than getIdps and getSps but its sesnsitive to database changes like column names etc
-     */
-    public function getIdpsInNative($local = null) {
-
-        $rsm = new ResultSetMapping;
-
-        $rsm->addEntityResult('models\Provider', 'u');
-        $rsm->addFieldResult('u', 'id', 'id');
-        $rsm->addFieldResult('u', 'name', 'name');
-        $rsm->addFieldResult('u', 'entityid', 'entityid');
-        $rsm->addFieldResult('u', 'helpdeskurl', 'helpdeskurl');
-        $rsm->addFieldResult('u', 'is_active', 'is_active');
-        $rsm->addFieldResult('u', 'is_approved', 'is_approved');
-        $rsm->addFieldResult('u', 'validfrom', 'validfrom');
-        $rsm->addFieldResult('u', 'validto', 'validto');
-        $rsm->addFieldResult('u', 'displayname', 'displayname');
-        $rsm->addFieldResult('u', 'contacts', 'contacts');
-        if (!empty($local) && $local === true) {
-            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) AND is_local = \'1\' ORDER BY name ASC', $rsm);
-        } else {
-            $query = $this->em->createNativeQuery('SELECT id,name,entityid,helpdeskurl,displayname,is_active,is_approved,validfrom,validto FROM provider WHERE type IN (?,?) ORDER BY name ASC', $rsm);
-        }
-        $query->setParameter(1, 'IDP');
-        $query->setParameter(2, 'BOTH');
-        $this->providers = $query->execute();
-
-        return $this->providers;
     }
 
     public function getPublicIdpsInNative() {
