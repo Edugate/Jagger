@@ -158,6 +158,17 @@ class User
         return $this;
     }
 
+    public function setPasswordWithSalt($password = null){
+        $this->setSalt();
+        if(trim($password) === ''){
+            $this->setRandomPassword();
+        }
+        else{
+            $this->setPassword($password);
+        }
+        return $this;
+    }
+
     public function setRawPassword($password)
     {
         $this->password = $password;
@@ -308,14 +319,14 @@ class User
      * @param $type
      * @return $this
      */
-    public function setAccessType($type)
+    public function setAccessType($type = null)
     {
         $this->federated = false;
         $this->local = false;
-        if ($type === 'both') {
+        if ($type === null || $type === 'both') {
             $this->federated = true;
             $this->local = true;
-        } elseif ($type === 'fed') {
+        } elseif ($type === 'fed' || $type === 'federated') {
             $this->federated = true;
         } elseif ($type === 'local') {
             $this->local = true;

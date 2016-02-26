@@ -96,14 +96,7 @@ class J_queue
         $u->setUsername($objdata['username']);
         $u->setEmail($objdata['email']);
         $type = $objdata['type'];
-        if (strcmp($type, 'federated') == 0) {
-            $u->setFederatedEnabled();
-        } elseif (strcmp($type, 'local') == 0) {
-            $u->setLocalEnabled();
-        } else {
-            $u->setFederatedEnabled();
-            $u->setLocalEnabled();
-        }
+        $u->setAccessType($type);
         $u->setAccepted();
         if (!empty($objdata['fname'])) {
             $u->setGivenname($objdata['fname']);
@@ -112,12 +105,11 @@ class J_queue
             $u->setSurname($objdata['sname']);
         }
         $u->setEnabled();
-        $u->setSalt();
+        $password = null;
         if (!empty($objdata['pass'])) {
-            $u->setPassword($objdata['pass']);
-        } else {
-            $u->setRandomPassword();
+            $password = trim($objdata['pass']);
         }
+        $u->setPasswordWithSalt($password);
         $u->setValid();
         $member = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Member'));
         if (!empty($member)) {
@@ -132,10 +124,10 @@ class J_queue
         $this->em->persist($u);
 
         $mailSubject = 'User Registration';
-        $mailBody = 'Dear user,' . PHP_EOL;
-        $mailBody .= 'User registration request to use the service ' . base_url() . ' has been accepted' . PHP_EOL;
-        $mailBody .= 'Details:' . PHP_EOL . 'Username: ' . $u->getUsername() . PHP_EOL;
-        $mailBody .= 'E-mail: ' . $u->getEmail() . PHP_EOL;
+        $mailBody = 'Dear user,' . PHP_EOL .
+            'User registration request to use the service ' . base_url() . ' has been accepted' . PHP_EOL .
+            'Details:' . PHP_EOL . 'Username: ' . $u->getUsername() . PHP_EOL .
+            'E-mail: ' . $u->getEmail() . PHP_EOL;
         $recipient[] = $u->getEmail();
         $this->ci->email_sender->addToMailQueue(array(), null, $mailSubject, $mailBody, $recipient, $sync = false);
         return true;
@@ -436,18 +428,18 @@ class J_queue
             $orderString = '';
             if (in_array($serviceType, $servicetypesWithIndex)) {
                 $orderString = 'index: ' . $service->getOrder();
-            } 
+            }
             $dataRows[$i]['value'] = "" . $service->getUrl() . "<br /><small>" . $service->getBindingName() . " " . $orderString . " </small><br />";
             $i++;
         }
 
-        array_push($dataRows,array('header'=>lang('rr_supportednameids')),array('name'=>lang('nameid'),'value'=>$nameids),array('header'=>lang('rr_certificates')));
+        array_push($dataRows, array('header' => lang('rr_supportednameids')), array('name' => lang('nameid'), 'value' => $nameids), array('header' => lang('rr_certificates')));
         foreach ($objData->getCertificates() as $cert) {
             $certdatacell = reformatPEM($cert->getCertdata());
-            array_push($dataRows,array('name'=>lang('rr_certificateuse').' <span class="label info">'.html_escape($cert->getCertUseInStr()).'</span>','value'=>'<span class="span-10"><code>' . $certdatacell . '</code></span>'));
+            array_push($dataRows, array('name' => lang('rr_certificateuse') . ' <span class="label info">' . html_escape($cert->getCertUseInStr()) . '</span>', 'value' => '<span class="span-10"><code>' . $certdatacell . '</code></span>'));
         }
 
-        array_push($dataRows,array('header'=>lang('rr_contacts')));
+        array_push($dataRows, array('header' => lang('rr_contacts')));
 
         foreach ($objData->getContacts() as $contact) {
             $phone = $contact->getPhone();
@@ -455,7 +447,7 @@ class J_queue
             if (!empty($phone)) {
                 $phoneStr = 'Tel:' . $phone;
             }
-            array_push($dataRows,array('name'=>''.lang('rr_contact') . ' (' . $contact->getType() . ')','value'=>''.$contact->getFullName() . " &lt;" . $contact->getEmail() . "&gt; " . $phoneStr.''));
+            array_push($dataRows, array('name' => '' . lang('rr_contact') . ' (' . $contact->getType() . ')', 'value' => '' . $contact->getFullName() . " &lt;" . $contact->getEmail() . "&gt; " . $phoneStr . ''));
         }
 
         if ($showXML === true) {
@@ -464,7 +456,7 @@ class J_queue
             $params = array(
                 'enable_classes' => true,
             );
-            array_push($dataRows,array('name'=>'XML','value'=>'' . $this->ci->geshilib->highlight($metadataXML, 'xml', $params) . ''));
+            array_push($dataRows, array('name' => 'XML', 'value' => '' . $this->ci->geshilib->highlight($metadataXML, 'xml', $params) . ''));
 
         }
         return $dataRows;
