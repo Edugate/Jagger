@@ -49,6 +49,7 @@ if (!defined('BASEPATH')) {
  * @property ProviderRemover $providerremover
  * @property Doctrine $doctrine
  * @property CI_Cache $cache
+ * @property Providertoxml $providertoxml
  */
 class MY_Controller extends CI_Controller
 {

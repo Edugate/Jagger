@@ -904,13 +904,12 @@ class MY_form_validation extends CI_form_validation
 
     public function matches_inarray($str, $serialized_array) {
         $array = unserialize($serialized_array);
-        $result = true;
         if (!in_array($str, $array)) {
             $this->set_message('matches_inarray', "%s: doesnt match allowed value");
-            $result = false;
+            return false;
         }
 
-        return $result;
+        return true;
     }
 
     public function valid_cronminute($str) {

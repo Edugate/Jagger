@@ -10,10 +10,6 @@ if (!defined('BASEPATH')) {
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 
-/**
- * @property Providertoxml $providertoxml
- * @property Xmlvalidator $xmlvalidator
- */
 class Metadata extends MY_Controller
 {
 
