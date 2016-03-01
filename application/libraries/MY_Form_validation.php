@@ -48,28 +48,21 @@ class MY_form_validation extends CI_form_validation
         return $result;
     }
 
-    public function matches_value($str1, $str2) {
-        log_message('debug', 'GKS ' . __METHOD__ . ' ' . $str1 . ' :: ' . $str2);
+    public function mustmatch_value($str1, $str2) {
         if (strcmp($str1, $str2) === 0) {
             return true;
         }
-        $this->set_message('matches_value', 'The %s: ' . htmlentities($str2) . ' must not been changed to ' . htmlentities($str1));
-
+        $this->set_message('mustmatch_value', 'The %s: ' . html_escape($str2) . ' must not been changed to ' . html_escape($str1));
         return false;
-
-
     }
 
     public function no_white_spaces($str) {
         $y = preg_match('/[\s]/i', $str);
         if ($y) {
             $this->set_message('no_white_spaces', "%s :  contains whitespaces");
-
             return false;
         }
-
         return true;
-
     }
 
     public function alpha_dash_comma($str) {
@@ -83,19 +76,12 @@ class MY_form_validation extends CI_form_validation
         return $result;
     }
 
-    public function valid_contact($s) {
-        log_message('debug', 'HHH : func' . serialize($s));
-        $this->set_message('valid_contact', "%s :  contains incorrect characters");
-
-        return false;
-    }
-
     public function valid_domain($domain) {
         $result = preg_match('/^ (?: [a-z0-9] (?:[a-z0-9\-]* [a-z0-9])? \. )* [a-z0-9] (?:[a-z0-9\-]* [a-z0-9])?  \. [a-z]{2,6} $ /ix', $domain);
         if ($result) {
             return true;
         }
-        $this->set_message('valid_domain', "%s :  invalid domain: " . htmlentities($domain));
+        $this->set_message('valid_domain', "%s :  invalid domain: " . html_escape($domain));
 
         return false;
 
@@ -253,14 +239,16 @@ class MY_form_validation extends CI_form_validation
      *
      */
     public function homeorg_unique($homeorg) {
+        /**
+         * @var models\Provider $ent
+         */
         $ent = $this->em->getRepository("models\Provider")->findOneBy(array('name' => $homeorg));
-        if (!empty($ent)) {
+        if ($ent !== null) {
             $this->set_message('homeorg_unique', "The %s : \"$homeorg\" does already exist in the system.");
-
             return false;
-        } else {
-            return true;
         }
+        return true;
+
     }
 
 
@@ -273,8 +261,11 @@ class MY_form_validation extends CI_form_validation
         }
         $pid = $p['fedid'];
         $attr = $p['attr'];
+        /**
+         * @var models\Federation $fed
+         */
         $fed = $this->em->getRepository("models\Federation")->findOneBy(array($attr => $value));
-        if (empty($fed)) {
+        if ($fed === null) {
             return true;
         }
         $fedid = $fed->getId();
@@ -298,17 +289,16 @@ class MY_form_validation extends CI_form_validation
         } else {
             \log_message('error', __METHOD__ . ' missing argtype');
             $this->set_message('federation_unique', 'error ocured during validation');
-
             return false;
         }
         $fed = $this->em->getRepository("models\Federation")->findOneBy(array('' . $attr . '' => $arg));
-        if (empty($fed)) {
+        if ($fed === null) {
             return true;
-        } else {
-            $this->set_message('federation_unique', 'The %s: ' . htmlentities($arg) . ' already exists');
-
-            return false;
         }
+        $this->set_message('federation_unique', 'The %s: ' . htmlentities($arg) . ' already exists');
+
+        return false;
+
 
     }
 
@@ -320,8 +310,11 @@ class MY_form_validation extends CI_form_validation
 
         }
 
+        /**
+         * @var models\MailLocalization $l
+         */
         $l = $this->em->getRepository("models\MailLocalization")->findOneBy(array('mgroup' => $group, 'lang' => $jlang));
-        if (!empty($l)) {
+        if ($l !== null) {
             $this->set_message('mailtemplate_unique', 'The template already exists for language: ' . html_escape($jlang));
 
             return false;
@@ -342,7 +335,7 @@ class MY_form_validation extends CI_form_validation
         }
 
         $l = $this->em->getRepository("models\MailLocalization")->findOneBy(array('mgroup' => $group, 'isdefault' => true));
-        if (!empty($l)) {
+        if ($l !== null) {
             $this->set_message('mailtemplate_isdefault', 'Templeate with specidi group already has default ');
 
             return false;
@@ -364,7 +357,7 @@ class MY_form_validation extends CI_form_validation
 
     public function fedcategory_unique($name, $id = null) {
         $ent = $this->em->getRepository("models\FederationCategory")->findOneBy(array('shortname' => $name));
-        if (!empty($ent)) {
+        if ($ent !== null) {
             if (!is_null($id) && ((int)$id == $ent->getId())) {
                 return true;
             } else {
@@ -380,7 +373,7 @@ class MY_form_validation extends CI_form_validation
 
     public function cocurl_unique($url) {
         $e = $this->em->getRepository("models\Coc")->findOneBy(array('url' => $url));
-        if (!empty($e)) {
+        if ($e !== null) {
             $this->set_message('cocurl_unique', "The %s : \"$url\" does already exist in the system.");
 
             return false;
@@ -403,7 +396,7 @@ class MY_form_validation extends CI_form_validation
 
     public function ecUrlInsert($url, $attrname) {
         $e = $this->em->getRepository("models\Coc")->findOneBy(array('url' => $url, 'subtype' => $attrname, 'type' => 'entcat'));
-        if (!empty($e)) {
+        if ($e !== null) {
             $this->set_message('ecUrlInsert', "The %s : (" . $attrname . " : " . $url . ") does already exist in the system.");
 
             return false;
@@ -439,7 +432,7 @@ class MY_form_validation extends CI_form_validation
 
     public function cocurl_unique_update($url, $id) {
         $e = $this->em->getRepository("models\Coc")->findOneBy(array('url' => $url));
-        if (!empty($e)) {
+        if ($e !== null) {
             if ($id == $e->getId()) {
                 return true;
             } else {
@@ -447,25 +440,25 @@ class MY_form_validation extends CI_form_validation
 
                 return false;
             }
-        } else {
-            return true;
         }
+        return true;
+
     }
 
     public function cocname_unique($name) {
         $e = $this->em->getRepository("models\Coc")->findOneBy(array('name' => $name));
-        if (!empty($e)) {
+        if ($e !== null) {
             $this->set_message('cocname_unique', "The %s : \"$name\" does already exist in the system.");
 
             return false;
-        } else {
-            return true;
         }
+        return true;
+
     }
 
     public function cocname_unique_update($name, $id) {
         $e = $this->em->getRepository("models\Coc")->findOneBy(array('name' => $name));
-        if (!empty($e)) {
+        if ($e !== null) {
             if ($id == $e->getId()) {
                 return true;
             }
@@ -653,22 +646,20 @@ class MY_form_validation extends CI_form_validation
     public function valid_extendedurl($str) {
         if (empty($str)) {
             return false;
-        } else {
-            preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches);
-            if (empty($matches[2])) {
-                $this->set_message('valid_extendedurl', "incorrect URL  \"%s\" ");
-
-                return false;
-            } elseif (!in_array($matches[1], array('http', 'https', 'ftp', 'ftps')) || empty($matches[1])) {
-                $this->set_message('valid_extendedurl', "incorrect protocol  \"%s\" ");
-
-                return false;
-            } else {
-                return true;
-            }
-
-
         }
+        preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches);
+        if (empty($matches[2])) {
+            $this->set_message('valid_extendedurl', "incorrect URL  \"%s\" ");
+
+            return false;
+        }
+        if (!in_array($matches[1], array('http', 'https', 'ftp', 'ftps')) || empty($matches[1])) {
+            $this->set_message('valid_extendedurl', "incorrect protocol  \"%s\" ");
+
+            return false;
+        }
+        return true;
+
 
     }
 

@@ -209,7 +209,7 @@ class Entityedit extends MY_Controller
             }
             if (!$register) {
                 if (in_array('entityid', $this->disallowedParts)) {
-                    $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|required|valid_urnorurl|min_length[4]|max_length[255]|matches_value[' . $this->entityid . ']');
+                    $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|required|valid_urnorurl|min_length[4]|max_length[255]|mustmatch_value[' . $this->entityid . ']');
                 } else {
                     $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|required|valid_urnorurl|min_length[4]|max_length[255]|entityid_unique_update[' . $id . ']');
                 }
