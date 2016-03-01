@@ -1,22 +1,14 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
-/**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
+}
 
 /**
- * MY_form_validation Class
- *
- * @package     RR3
- * @subpackage  Libraries
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2016, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 class MY_form_validation extends CI_form_validation
 {
@@ -35,16 +27,16 @@ class MY_form_validation extends CI_form_validation
     }
 
 
-    public function str_matches_array($str, $ar) {
+    public function str_matches_array($str, $arr) {
         $result = false;
-        $ar = unserialize($ar);
+        $arr = unserialize($arr);
         if (empty($str)) {
-            if (count($ar) == 0) {
+            if (count($arr) == 0) {
                 $result = true;
             }
         } else {
             $ar1 = explode(",", $str);
-            if (count(array_diff($ar1, $ar)) == 0 && count(array_diff($ar, $ar1)) == 0) {
+            if (count(array_diff($ar1, $arr)) == 0 && count(array_diff($arr, $ar1)) == 0) {
                 $result = true;
             }
 
@@ -681,62 +673,38 @@ class MY_form_validation extends CI_form_validation
     }
 
     public function valid_url($str) {
-
-        if ($str === '') {
-            $this->set_message('valid_url', 'empty URL');
-
+        $isValidURL = parent::valid_url($str);
+        if (!$isValidURL) {
             return false;
         }
         preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches);
-        if (empty($matches[2])) {
-            $this->set_message('valid_url', "incorrect URL  \"%s\" ");
-
+        if (!isset($matches[1])) {
+            $this->set_message('valid_url', "missing protocol  \"%s\" ");
             return false;
         }
-        if (!in_array($matches[1], array('http', 'https')) || empty($matches[1])) {
+        if (!in_array($matches[1], array('http', 'https'))) {
             $this->set_message('valid_url', "incorrect protocol  \"%s\" ");
-
             return false;
         }
-
         return true;
-
     }
 
     public function valid_url_ssl($str) {
-        if ($str === '') {
+        $isValidURL = parent::valid_url($str);
+        if (!$isValidURL) {
             return false;
         }
-        if (preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches)) {
-            if (empty($matches[2])) {
-                $this->set_message('valid_url_ssl', 'Invalid URL');
-
-                return false;
-            }
-            if (!in_array($matches[1], array('https'), true)) {
-                $this->set_message('valid_url_ssl', 'Allowed only https protocol');
-
-                return false;
-            }
-
-            $str = $matches[2];
+        preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches);
+        if (!isset($matches[1])) {
+            $this->set_message('valid_url', "missing protocol  \"%s\" ");
+            return false;
         }
-
-        $str = 'https://' . $str;
-
-        // There's a bug affecting PHP 5.2.13, 5.3.2 that considers the
-        // underscore to be a valid hostname character instead of a dash.
-        // Reference: https://bugs.php.net/bug.php?id=51192
-        if (version_compare(PHP_VERSION, '5.2.13', '==') || version_compare(PHP_VERSION, '5.3.2', '==')) {
-            sscanf($str, 'https://%[^/]', $host);
-            $str = substr_replace($str, strtr($host, array('_' => '-', '-' => '_')), 7, strlen($host));
+        if (!in_array($matches[1], array('https'), true)) {
+            $this->set_message('valid_url', "Only https protocol is allowed  \"%s\" ");
+            return false;
         }
-        $result = (filter_var($str, FILTER_VALIDATE_URL) !== false);
-        if (!$result) {
-            $this->set_message('valid_url_ssl', 'Invalid URL');
-        }
+        return true;
 
-        return $result;
     }
 
     public function match_language($str) {
@@ -768,19 +736,9 @@ class MY_form_validation extends CI_form_validation
         if ($str === '') {
             return true;
         }
-        preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches);
-        if (empty($matches[2])) {
-            $this->set_message('valid_url_or_empty', "incorrect URL  \"%s\" ");
+        $isValid = $this->valid_url($str);
+        return $isValid;
 
-            return false;
-        }
-        if (!in_array($matches[1], array('http', 'https')) || empty($matches[1])) {
-            $this->set_message('valid_url_or_empty', "incorrect protocol  \"%s\" ");
-
-            return false;
-        }
-
-        return true;
     }
 
 
@@ -979,22 +937,16 @@ class MY_form_validation extends CI_form_validation
         $result = (bool)preg_match('/^[\*,\/\-0-9]+$/', $str);
         if ($result !== true) {
             $this->set_message('valid_cronhour', "%s : is incorrect.");
-
-            return false;
         }
-
-        return true;
+        return $result;
     }
 
     public function valid_crondom($str) {
         $result = (bool)preg_match('/^[\*,\/\-\?LW0-9A-Za-z]+$/', $str);
         if ($result !== true) {
             $this->set_message('valid_crondom', "%s : is incorrect.");
-
-            return false;
         }
-
-        return true;
+        return $result;
     }
 
     public function valid_crondow($str) {
@@ -1002,11 +954,9 @@ class MY_form_validation extends CI_form_validation
         foreach (explode(',', $str) as $expr) {
             if (!preg_match('/^(\*|[0-7](L?|#[1-5]))([\/\,\-][0-7]+)*$/', $expr)) {
                 $this->set_message('valid_crondow', "%s : is incorrect.");
-
                 return false;
             }
         }
-
         return true;
     }
 
@@ -1014,10 +964,7 @@ class MY_form_validation extends CI_form_validation
         $result = (bool)preg_match('/^[\*,\/\-0-9A-Z]+$/', $str);
         if ($result !== true) {
             $this->set_message('valid_cronmonth', "%s : is incorrect.");
-
-            return false;
         }
-
-        return true;
+        return $result;
     }
 }
