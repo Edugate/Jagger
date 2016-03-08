@@ -1,30 +1,23 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
-use Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Configuration;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
 
-define('DEBUGGING', FALSE);
-/**
- * ResourceRegistry3
- * 
- * @package     RR3
- * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
- */
+define('DEBUGGING', false);
 
 /**
- * Doctrine Class
- * 
- * @package     RR3
- * @subpackage  Libraries
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2016, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
+ *
  */
-
-class Doctrine {
+class Doctrine
+{
 
     public $em = null;
 
@@ -52,7 +45,6 @@ class Doctrine {
         $config->setMetadataDriverImpl($driverImpl);
 
 
-
         // Caching
         $config->setMetadataCacheImpl($cache);
         $config->setQueryCacheImpl($cache);
@@ -73,13 +65,32 @@ class Doctrine {
             $logger = new \Doctrine\DBAL\Logging\EchoSQLLogger;
             $config->setSQLLogger($logger);
         }
-        
-        /** 
+
+        /**
          * keep compatibility with old configs
          */
-        $dbriver = $db['default']['dbdriver'];
-        if($dbriver === 'mysql'){
-           $dbriver = 'pdo_mysql';
+        if (!isset($db['default']) || !is_array($db['default'])) {
+            log_message('error', __METHOD__ . ' ::: database.php conf file is misconfigured. missing array : $db[\'default\']');
+            throw new \Exception('system misconfigured');
+        }
+        $dbconfig = $db['default'];
+
+        if (!isset($dbconfig['dbdriver'])) {
+            log_message('error', __METHOD__ . ' ::: database.php conf file is misconfigured. missing : $db[\'default\'][\'dbdriver\']');
+            throw new \Exception('system misconfigured');
+        }
+
+        $dbriver = $dbconfig['dbdriver'];
+        if ($dbconfig['dbdriver'] === 'pdo') {
+            if (!isset($dbconfig['dsn'])) {
+                log_message('error', __METHOD__ . ' ::: database.php conf file is misconfigured: $db[\'default\'][\'dbdriver\'] is set to "pdo" but $db[\'default\'][\'dsn\'] is missing');
+                throw new \Exception('system misconfigured');
+            }
+            if (preg_match('/([^:]+):/', $dbconfig['dsn'], $match) && count($match) === 2) {
+                $dbriver = 'pdo_'.$match['1'];
+            }
+
+
         }
         // Database connection information
         $connectionOptions = array(
@@ -89,9 +100,11 @@ class Doctrine {
             'host' => $db['default']['hostname'],
             'dbname' => $db['default']['database']
         );
-        if(isset($db['default']['port'])) {
-	    $connectionOptions['port'] = $db['default']['port'];                                                                                                                                                  
-	}    
+        if (isset($db['default']['port'])) {
+            $connectionOptions['port'] = $db['default']['port'];
+
+        }
+
 
         // Create EntityManager
         $this->em = EntityManager::create($connectionOptions, $config);

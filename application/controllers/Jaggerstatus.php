@@ -1,5 +1,7 @@
 <?php
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 
 /**
@@ -15,18 +17,18 @@ class Jaggerstatus extends MY_Controller
         parent::__construct();
     }
 
-    public function gstatus(){
+    public function gstatus() {
         $isenabled = $this->config->item('statuscheck');
-        if($isenabled === true) {
+        if ($isenabled === true) {
             try {
                 $this->em->getRepository('models\Provider')->findOneBy(array('id' => '1'));
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 log_message('error', __METHOD__ . ' ' . $e);
-                return $this->output->set_status_header(500)->_display('error');
+                return $this->output->set_status_header(500)->set_output('error');
             }
-            return $this->output->set_status_header(200)->_display('OK');
+            return $this->output->set_status_header(200)->set_output('OK');
         }
-        return $this->output->set_status_header(404)->_display('functionality disabled');
+        return $this->output->set_status_header(404)->set_output('functionality disabled');
     }
 
 }
