@@ -81,7 +81,7 @@ class Doctrine
         }
 
         $dbriver = $dbconfig['dbdriver'];
-        if ($dbconfig['dbdriver'] === 'pdo') {
+        if ($dbriver === 'pdo') {
             if (!isset($dbconfig['dsn'])) {
                 log_message('error', __METHOD__ . ' ::: database.php conf file is misconfigured: $db[\'default\'][\'dbdriver\'] is set to "pdo" but $db[\'default\'][\'dsn\'] is missing');
                 throw new \Exception('system misconfigured');
