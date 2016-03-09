@@ -87,6 +87,8 @@ class Doctrine
             }
 
 
+        } elseif($dbriver === 'mysql'){
+            $dbriver = 'pdo_mysql';
         }
         // Database connection information
         $connectionOptions = array(
