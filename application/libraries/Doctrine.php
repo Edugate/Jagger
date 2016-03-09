@@ -30,14 +30,12 @@ class Doctrine
 
         $proxiesClassLoader = new \Doctrine\Common\ClassLoader('Proxies', APPPATH . 'models');
         $proxiesClassLoader->register();
-
+        $cache = new \Doctrine\Common\Cache\ArrayCache;
 
         // Choose caching method based on application mode
         if (ENVIRONMENT === 'production' && extension_loaded('apc') && ini_get('apc.enabled')) {
             $cache = new \Doctrine\Common\Cache\ApcCache;
-        } else {
-            $cache = new \Doctrine\Common\Cache\ArrayCache;
-        }
+        } 
         $config = new Configuration;
 
         // Metadata driver
@@ -53,11 +51,9 @@ class Doctrine
         // Proxies
         $config->setProxyDir(APPPATH . 'models/Proxies');
         $config->setProxyNamespace('Proxies');
-
+        $config->setAutoGenerateProxyClasses(false);
         if (ENVIRONMENT === 'development') {
             $config->setAutoGenerateProxyClasses(true);
-        } else {
-            $config->setAutoGenerateProxyClasses(false);
         }
 
         // SQL query logger
@@ -87,7 +83,7 @@ class Doctrine
                 throw new \Exception('system misconfigured');
             }
             if (preg_match('/([^:]+):/', $dbconfig['dsn'], $match) && count($match) === 2) {
-                $dbriver = 'pdo_'.$match['1'];
+                $dbriver = 'pdo_' . $match['1'];
             }
 
 
