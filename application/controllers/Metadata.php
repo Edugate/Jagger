@@ -2,6 +2,7 @@
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
+
 /**
  * @package   Jagger
  * @author    Middleware Team HEAnet
@@ -9,24 +10,25 @@ if (!defined('BASEPATH')) {
  * @copyright 2014 HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
-
-/**
- * @property Providertoxml $providertoxml
- * @property Xmlvalidator $xmlvalidator
- */
 class Metadata extends MY_Controller
 {
 
+    protected $metadataNS;
 
     public function __construct() {
         parent::__construct();
         $this->output->set_content_type('application/samlmetadata+xml');
         $this->load->library('j_ncache');
+        $this->metadataNS = h_metadataNamespaces();
+        $additionalNs = $this->config->item('metadatans');
+        if (is_array($additionalNs)) {
+            $this->metadataNS = array_merge($this->metadataNS, $additionalNs);
+        }
     }
 
     public function federation($federationName = null, $limitType = null) {
         if ($federationName === null) {
-            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Not found');
+            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Federation name was not provided in the request');
         }
 
         $permitPull = $this->checkAccess();
@@ -62,17 +64,13 @@ class Metadata extends MY_Controller
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
         $entitiesDescriptorId = $federation->getDescriptorId();
         if (empty($entitiesDescriptorId)) {
-            $idprefix = '';
-            $prefid = $this->config->item('fedmetadataidprefix');
-            if (!empty($prefid)) {
-                $idprefix = $prefid;
-            }
+            $idprefix = (string)$this->config->item('fedmetadataidprefix');
             $idsuffix = $validfor->format('YmdHis');
             $entitiesDescriptorId = $idprefix . $idsuffix;
         }
         $tmpAttrRequirements = new models\AttributeRequirements;
         $options = array(
-            'attrs'       => 1,
+            'attrs' => 1,
             'fedreqattrs' => $tmpAttrRequirements->getRequirementsByFed($federation));
 
         $tmpm = new models\Providers;
@@ -96,8 +94,7 @@ class Metadata extends MY_Controller
         $xmlOut->writeAttribute('Name', $federation->getUrn());
         $xmlOut->writeAttribute('validUntil', $validuntil);
         $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
-        $regNamespaces = h_metadataNamespaces();
-        foreach ($regNamespaces as $k => $v) {
+        foreach ($this->metadataNS as $k => $v) {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
         if (!empty($publisher)) {
@@ -144,13 +141,13 @@ class Metadata extends MY_Controller
 
     public function federationexport($federationName = null) {
         if ($federationName === null) {
-            show_error('Not found', 404);
+            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Federation name was not provided in the request');
         }
         $data = array();
         $permitPull = $this->checkAccess();
         if ($permitPull !== true) {
             log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
-            show_error('Access denied', 403);
+            return $this->output->set_status_header(403)->set_content_type('text/html')->set_output('Access denied');
         }
 
         /**
@@ -160,12 +157,11 @@ class Metadata extends MY_Controller
             $federation = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $federationName, 'is_lexport' => true, 'is_active' => true));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
-
-            return $this->output->set_status_header(500)->set_output('Internal server error');
+            return $this->output->set_status_header(500)->set_content_type('text/html')->set_output('Internal server error');
         }
 
         if ($federation === null) {
-            show_404('page', 'log_error');
+            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Federation not found');
         }
         $this->load->library('providertoxml');
         /**
@@ -212,8 +208,7 @@ class Metadata extends MY_Controller
         $xmlOut->writeAttribute('Name', $federation->getUrn());
         $xmlOut->writeAttribute('validUntil', $validuntil);
         $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
-        $regNamespaces = h_metadataNamespaces();
-        foreach ($regNamespaces as $k => $v) {
+        foreach ($this->metadataNS as $k => $v) {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
         if (!empty($publisher)) {
@@ -262,11 +257,11 @@ class Metadata extends MY_Controller
     }
 
     public function service($encodedEntityId = null, $fileName = null) {
+        $encodedEntityId = trim($encodedEntityId);
 
-        if (empty($encodedEntityId) || empty($fileName) || strcmp($fileName, 'metadata.xml') != 0) {
-            return $this->output->set_status_header(404)->set_output('Page not found');
+        if (($encodedEntityId === '') || ($fileName !== 'metadata.xml')) {
+            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Page not found');
         }
-
 
         $data = array();
         $this->load->library('providertoxml');
@@ -312,7 +307,10 @@ class Metadata extends MY_Controller
 
     }
 
-    private function regenerateStatic(models\Provider $entity){
+    private function regenerateStatic(models\Provider $entity) {
+
+        $standardNS = h_metadataNamespaces();
+
         $xmlOut = $this->providertoxml->createXMLDocument();
         $this->providertoxml->entityStaticConvert($xmlOut, $entity);
         $xmlOut->endDocument();
@@ -324,12 +322,9 @@ class Metadata extends MY_Controller
         $domXML->loadXML($outPut, LIBXML_NOERROR | LIBXML_NOWARNING);
         $xpath = new DOMXPath($domXML);
         $xpath->registerNamespace('', 'urn:oasis:names:tc:SAML:2.0:metadata');
-        $xpath->registerNamespace('md', 'urn:oasis:names:tc:SAML:2.0:metadata');
-        $xpath->registerNamespace('ds', 'http://www.w3.org/2000/09/xmldsig#');
-        $xpath->registerNamespace('mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');
-        $xpath->registerNamespace('mdui', 'urn:oasis:names:tc:SAML:metadata:ui');
-        $xpath->registerNamespace('mdattr', 'urn:oasis:names:tc:SAML:metadata:attribute');
-        $xpath->registerNamespace('shibmd', 'urn:mace:shibboleth:metadata:1.0');
+        foreach ($standardNS as $key => $val) {
+            $xpath->registerNamespace('' . $key . '', '' . $val . '');
+        }
         /**
          * @var \DOMElement $element
          */
@@ -339,12 +334,9 @@ class Metadata extends MY_Controller
         }
         if ($element !== null) {
             $element->setAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
-            $element->setAttribute('xmlns:md', 'urn:oasis:names:tc:SAML:2.0:metadata');
-            $element->setAttribute('xmlns:ds', 'http://www.w3.org/2000/09/xmldsig#');
-            $element->setAttribute('xmlns:mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi');
-            $element->setAttribute('xmlns:mdui', 'urn:oasis:names:tc:SAML:metadata:ui');
-            $element->setAttribute('xmlns:mdattr', 'urn:oasis:names:tc:SAML:metadata:attribute');
-            $element->setAttribute('xmlns:shibmd', 'urn:mace:shibboleth:metadata:1.0');
+            foreach ($standardNS as $key => $val) {
+                $element->setAttribute('xmlns:' . $key . '', '' . $val . '');
+            }
         }
         $out = $domXML->saveXML();
         return $out;
@@ -366,12 +358,10 @@ class Metadata extends MY_Controller
     private function isProviderAllowedForCircle(\models\Provider $provider) {
         $circleForExternalAllowed = $this->config->item('disable_extcirclemeta');
         $isLocal = $provider->getLocal();
-        $result = true;
         if (!$isLocal && (!empty($circleForExternalAllowed) && $circleForExternalAllowed === true)) {
-            $result = false;
+            return false;
         }
-
-        return $result;
+        return true;
     }
 
     /**
@@ -380,26 +370,34 @@ class Metadata extends MY_Controller
      */
     public function circle($encodedEntityId = null, $fileName = null) {
         $isEnabled = $this->isCircleFeatureEnabled();
+        $encodedEntityId = trim($encodedEntityId);
         if (!$isEnabled) {
-            show_error('Circle of trust  metadata : Feature is disabled', 404);
+            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Circle of trust  metadata : Feature is disabled');
+
         }
-        if ($encodedEntityId === null || $fileName === null || strcmp($fileName, 'metadata.xml') != 0) {
-            show_error('Request not allowed', 403);
+        if ($encodedEntityId === '' || $fileName !== 'metadata.xml') {
+            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Metadata not found: incorrect/missing params provided');
         }
         $permitPull = $this->checkAccess();
         if ($permitPull !== true) {
             log_message('error', __METHOD__ . ' access denied from ip: ' . $this->input->ip_address());
-            show_error('Access denied', 403);
+            return $this->output->set_status_header(403)->set_content_type('text/html')->set_output('You  are not allowed to retrieve requested metadata');
         }
         $data = array();
         $entityID = base64url_decode($encodedEntityId);
         /**
          * @var $provider models\Provider
          */
-        $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => '' . $entityID . ''));
-        if (empty($provider)) {
+        try {
+            $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => '' . $entityID . ''));
+        }
+        catch(\Exception $e){
+            log_message('error',__METHOD__.' : '.$e);
+            return $this->output->set_status_header(500)->set_content_type('text/html')->set_output('Internal server error');
+        }
+        if ($provider === null) {
             log_message('debug', 'Failed generating circle metadata for ' . $entityID);
-            show_error('unknown provider', 404);
+            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Metadata not found');
         }
         if (!$this->isProviderAllowedForCircle($provider)) {
             log_message('warning', 'Cannot generate circle metadata for external provider:' . $provider->getEntityId());
@@ -440,8 +438,7 @@ class Metadata extends MY_Controller
         $xmlOut->writeAttribute('Name', '' . $provider->getEntityId() . '');
         $xmlOut->writeAttribute('validUntil', '' . $validuntil . '');
         $xmlOut->writeAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
-        $regNamespaces = h_metadataNamespaces();
-        foreach ($regNamespaces as $k => $v) {
+        foreach ($this->metadataNS as $k => $v) {
             $xmlOut->writeAttribute('xmlns:' . $k . '', '' . $v . '');
         }
 

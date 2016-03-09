@@ -31,7 +31,7 @@ class J_queue
     private $tmp_federations;
     private $attributesByName;
 
-    function __construct() {
+    public function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->tmp_providers = new models\Providers;
@@ -51,7 +51,7 @@ class J_queue
      * @param bool $onlycancel
      * @return string
      */
-    function displayFormsButtons($qid, $onlycancel = FALSE) {
+    public function displayFormsButtons($qid, $onlycancel = false) {
         /* add approve form */
         $approveForm = '';
         $rejecttext = lang('rr_cancel');
@@ -67,17 +67,20 @@ class J_queue
         $rejectForm = form_open('reports/awaiting/reject', $reject_attrid, $reject_hidden_attributes);
         $rejectForm .= '<button type="submit" name="mysubmit" value="Reject request!" class="resetbutton reseticon left alert">' . $rejecttext . '</button>' . form_close();
         $result = '<div class="small-12 large-6 columns"><div class="buttons panel clearfix" >' . $rejectForm . '' . $approveForm . '</div></div>';
+
         return $result;
     }
 
-    function createUserFromQueue(models\Queue $q) {
+    public function createUserFromQueue(models\Queue $q) {
         $objdata = $q->getData();
         if (!is_array($objdata)) {
             log_message('error', __METHOD__ . ' data not in array');
+
             return false;
         }
         if (!isset($objdata['username']) || !isset($objdata['email']) || !isset($objdata['type'])) {
             log_message('error', __METHOD__ . ' data doesnt contain information about username/email');
+
             return false;
         }
         /**
@@ -90,58 +93,49 @@ class J_queue
             log_message('error', __METHOD__ . ' User ' . $objdata['username'] . ' already exists, remove request from the queue with id: ' . $q->getId());
             $this->em->remove($q);
             $this->em->flush();
+
             return false;
         }
-        $u = new models\User;
-        $u->setUsername($objdata['username']);
-        $u->setEmail($objdata['email']);
-        $type = $objdata['type'];
-        if (strcmp($type, 'federated') == 0) {
-            $u->setFederatedEnabled();
-        } elseif (strcmp($type, 'local') == 0) {
-            $u->setLocalEnabled();
-        } else {
-            $u->setFederatedEnabled();
-            $u->setLocalEnabled();
+        $password = null;
+        if (!empty($objdata['pass'])) {
+            $password = trim($objdata['pass']);
         }
-        $u->setAccepted();
+        $type = $objdata['type'];
+
+        $user = new models\User;
+        $user->genNewValidUser($objdata['username'],$password,$objdata['email'],null,null,$type);
+
         if (!empty($objdata['fname'])) {
-            $u->setGivenname($objdata['fname']);
+            $user->setGivenname($objdata['fname']);
         }
         if (!empty($objdata['sname'])) {
-            $u->setSurname($objdata['sname']);
+            $user->setSurname($objdata['sname']);
         }
-        $u->setEnabled();
-        $u->setSalt();
-        if (!empty($objdata['pass'])) {
-            $u->setPassword($objdata['pass']);
-        } else {
-            $u->setRandomPassword();
-        }
-        $u->setValid();
+
         $member = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Member'));
         if (!empty($member)) {
-            $u->setRole($member);
+            $user->setRole($member);
         }
         $personalRole = new models\AclRole;
-        $personalRole->setName($u->getUsername());
+        $personalRole->setName($user->getUsername());
         $personalRole->setType('user');
-        $personalRole->setDescription('personal role for user ' . $u->getUsername());
-        $u->setRole($personalRole);
+        $personalRole->setDescription('personal role for user ' . $user->getUsername());
+        $user->setRole($personalRole);
         $this->em->persist($personalRole);
-        $this->em->persist($u);
+        $this->em->persist($user);
 
-        $mailSubject = 'User Registration';
-        $mailBody = 'Dear user,' . PHP_EOL;
-        $mailBody .= 'User registration request to use the service ' . base_url() . ' has been accepted' . PHP_EOL;
-        $mailBody .= 'Details:' . PHP_EOL . 'Username: ' . $u->getUsername() . PHP_EOL;
-        $mailBody .= 'E-mail: ' . $u->getEmail() . PHP_EOL;
-        $recipient[] = $u->getEmail();
-        $this->ci->email_sender->addToMailQueue(array(), null, $mailSubject, $mailBody, $recipient, $sync = false);
+        $mailBody = 'Dear user,' . PHP_EOL .
+            'User registration request to use the service ' . base_url() . ' has been accepted' . PHP_EOL .
+            'Details:' . PHP_EOL . 'Username: ' . $user->getUsername() . PHP_EOL .
+            'E-mail: ' . $user->getEmail() . PHP_EOL;
+        $recipient[] = $user->getEmail();
+        $this->ci->email_sender->addToMailQueue(array(), null, 'User Registration', $mailBody, $recipient, $sync = false);
+
         return true;
     }
 
     private function genCocArray(models\Queue $q, $type) {
+        $typeLabel ='';
         if ($type === 'entcat') {
             $r = array(
                 array('header' => lang('request')),
@@ -184,19 +178,20 @@ class J_queue
             }
             $r[] = array('name' => $typeLabel, 'value' => '<span class="label info">' . $coc->getLang() . '</span> ' . $coc->getName() . ': ' . $coc->getUrl() . ' ' . $lenabled);
         }
+
         return $r;
 
     }
 
-    function displayApplyForEntityCategory(models\Queue $q) {
+    public function displayApplyForEntityCategory(models\Queue $q) {
         return $this->genCocArray($q, 'entcat');
     }
 
-    function displayApplyForRegistrationPolicy(models\Queue $q) {
+    public function displayApplyForRegistrationPolicy(models\Queue $q) {
         return $this->genCocArray($q, 'regpol');
     }
 
-    function displayRegisterUser(models\Queue $q) {
+    public function displayRegisterUser(models\Queue $q) {
         $objdata = $q->getData();
         $r = array(
             array('header' => lang('request')),
@@ -237,7 +232,7 @@ class J_queue
      * @param \models\Queue $q
      * @return array
      */
-    function displayRegisterFederation(models\Queue $q) {
+    public function displayRegisterFederation(models\Queue $q) {
         $objData = new models\Federation;
         $objData->importFromArray($q->getData());
         $creator = $q->getCreator();
@@ -258,6 +253,7 @@ class J_queue
             array('name' => lang('Description'), 'value' => $objData->getDescription()),
             array('name' => lang('rr_fed_tou'), 'value' => $objData->getTou())
         );
+
         return $fedrows;
     }
 
@@ -265,7 +261,7 @@ class J_queue
      * @param \models\Queue $q
      * @return array
      */
-    function displayDeleteFederation(models\Queue $q) {
+    public function displayDeleteFederation(models\Queue $q) {
         $objData = new models\Federation;
         $objData->importFromArray($q->getData());
         $creator = $q->getCreator();
@@ -284,6 +280,7 @@ class J_queue
             array('name' => lang('rr_fed_name'), 'value' => $objData->getName()),
             array('name' => lang('fednameinmeta'), 'value' => $objData->getUrn())
         );
+
         return $fedrows;
     }
 
@@ -323,7 +320,7 @@ class J_queue
                     $objData->setProviderFromArray(current($entarray), false);
                     $objData->setReqAttrsFromArray(current($entarray), $this->attributesByName);
                     $metadataXML = $this->ci->providertoxml->entityConvertNewDocument($objData, array('attrs' => 1), true);
-                    $showXML = TRUE;
+                    $showXML = true;
                 }
             }
         }
@@ -436,18 +433,18 @@ class J_queue
             $orderString = '';
             if (in_array($serviceType, $servicetypesWithIndex)) {
                 $orderString = 'index: ' . $service->getOrder();
-            } 
-            $dataRows[$i]['value'] = "" . $service->getUrl() . "<br /><small>" . $service->getBindingName() . " " . $orderString . " </small><br />";
+            }
+            $dataRows[$i]['value'] = '' . $service->getUrl() . '<br /><small>' . $service->getBindingName() . ' '. $orderString . ' </small><br />';
             $i++;
         }
 
-        array_push($dataRows,array('header'=>lang('rr_supportednameids')),array('name'=>lang('nameid'),'value'=>$nameids),array('header'=>lang('rr_certificates')));
+        array_push($dataRows, array('header' => lang('rr_supportednameids')), array('name' => lang('nameid'), 'value' => $nameids), array('header' => lang('rr_certificates')));
         foreach ($objData->getCertificates() as $cert) {
             $certdatacell = reformatPEM($cert->getCertdata());
-            array_push($dataRows,array('name'=>lang('rr_certificateuse').' <span class="label info">'.html_escape($cert->getCertUseInStr()).'</span>','value'=>'<span class="span-10"><code>' . $certdatacell . '</code></span>'));
+            array_push($dataRows, array('name' => lang('rr_certificateuse') . ' <span class="label info">' . html_escape($cert->getCertUseInStr()) . '</span>', 'value' => '<span class="span-10"><code>' . $certdatacell . '</code></span>'));
         }
 
-        array_push($dataRows,array('header'=>lang('rr_contacts')));
+        array_push($dataRows, array('header' => lang('rr_contacts')));
 
         foreach ($objData->getContacts() as $contact) {
             $phone = $contact->getPhone();
@@ -455,7 +452,7 @@ class J_queue
             if (!empty($phone)) {
                 $phoneStr = 'Tel:' . $phone;
             }
-            array_push($dataRows,array('name'=>''.lang('rr_contact') . ' (' . $contact->getType() . ')','value'=>''.$contact->getFullName() . " &lt;" . $contact->getEmail() . "&gt; " . $phoneStr.''));
+            array_push($dataRows, array('name' => '' . lang('rr_contact') . ' (' . $contact->getType() . ')', 'value' => '' . $contact->getFullName() . " &lt;" . $contact->getEmail() . "&gt; " . $phoneStr . ''));
         }
 
         if ($showXML === true) {
@@ -464,13 +461,14 @@ class J_queue
             $params = array(
                 'enable_classes' => true,
             );
-            array_push($dataRows,array('name'=>'XML','value'=>'' . $this->ci->geshilib->highlight($metadataXML, 'xml', $params) . ''));
+            array_push($dataRows, array('name' => 'XML', 'value' => '' . $this->ci->geshilib->highlight($metadataXML, 'xml', $params) . ''));
 
         }
+
         return $dataRows;
     }
 
-    function displayInviteProvider(models\Queue $queue) {
+    public function displayInviteProvider(models\Queue $queue) {
 
         /**
          * @var models\Provider $provider
@@ -481,6 +479,7 @@ class J_queue
         }
         if (empty($provider)) {
             log_message('error', __METHOD__ . ' entity with ID: ' . $queue->getRecipient() . ' not found in db');
+
             return false;
         }
         $tmpl = array('table_open' => '<table id="details" class="zebra">');
@@ -507,6 +506,7 @@ class J_queue
         $this->ci->table->add_row($cell);
         $result = $this->ci->table->generate();
         $this->ci->table->clear();
+
         return $result;
     }
 
@@ -515,7 +515,7 @@ class J_queue
      * @param bool|false $canApprove
      * @return mixed
      */
-    function displayInviteFederation(models\Queue $queue, $canApprove = false) {
+    public function displayInviteFederation(models\Queue $queue, $canApprove = false) {
 
 
         $recipientType = $queue->getRecipientType();
@@ -528,6 +528,7 @@ class J_queue
         }
         if ($federation === null) {
             \log_message('error', __METHOD__ . ' Federation (' . $queue->getRecipient() . ') does not exist anymore');
+
             return false;
         }
         $tmpl = array('table_open' => '<table id="details" class="zebra">');
@@ -593,6 +594,7 @@ class J_queue
         }
         $result = $this->ci->table->generate();
         $this->ci->table->clear();
+
         return $result;
     }
 

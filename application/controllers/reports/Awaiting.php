@@ -15,7 +15,7 @@ class Awaiting extends MY_Controller
 
     private $error_message;
 
-    function __construct() {
+    public function __construct() {
         parent::__construct();
         $this->load->helper(array('form', 'url', 'cert'));
         $this->load->library(array('table', 'tracker'));
@@ -23,7 +23,7 @@ class Awaiting extends MY_Controller
     }
 
 
-    function ajaxrefresh() {
+    public function ajaxrefresh() {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             set_status_header(403);
             echo 'Permission denied';
@@ -56,6 +56,7 @@ class Awaiting extends MY_Controller
                 return $this->zacl->check_acl('f_' . $fedindb->getId() . '', 'approve', 'federation');
             }
         }
+
         return false;
     }
 
@@ -207,25 +208,9 @@ class Awaiting extends MY_Controller
         return $result;
     }
 
-    public function dashajaxrefresh() {
-        if(!$this->input->is_ajax_request())
-        {
-            return $this->output->set_status_header(400)->set_output('Incorrect request');
-        }
-        if (!$this->jauth->isLoggedIn()) {
-            return $this->output->set_status_header(401)->set_output('Not authenticated');
-        }
-        $this->load->library(array('zacl', 'j_queue'));
-        $data = array(
-            'list'         => $this->getQueueList(),
-            'content_view' => 'reports/dashawaiting_list_view'
-        );
-        $this->load->view('reports/dashawaiting_list_view', $data);
-    }
 
-    public function dashz(){
-        if(!$this->input->is_ajax_request())
-        {
+    public function dashz() {
+        if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(400)->set_output('Incorrect request');
         }
         if (!$this->jauth->isLoggedIn()) {
@@ -233,23 +218,9 @@ class Awaiting extends MY_Controller
         }
         $this->load->library(array('zacl', 'j_queue'));
         $result['data'] = $this->getQueueList();
+
         return $this->output->set_content_type('application/json')->set_status_header(200)->set_output(json_encode($result));
 
-    }
-
-    public function counterqueue() {
-        if(!$this->input->is_ajax_request())
-        {
-            return $this->output->set_status_header(400)->set_output('Incorrect request');
-        }
-        if (!$this->jauth->isLoggedIn()) {
-            return $this->output->set_status_header(401)->set_output('Not authenticated');
-        }
-
-        $queuelist = $this->getQueueList();
-        $c = count($queuelist['q']) + count($queuelist['s']);
-
-        return $this->output->set_status_header(200)->set_output($c);
     }
 
 
@@ -340,7 +311,7 @@ class Awaiting extends MY_Controller
         return null;
     }
 
-    function detail($token) {
+    public function detail($token) {
         if (!ctype_alnum($token)) {
             show_error('Wrong token provided', 404);
         }
@@ -418,13 +389,16 @@ class Awaiting extends MY_Controller
 
         }
 
-        if (!empty($result)) {
+        if (!empty($result) && is_array($result)) {
             $result['data']['breadcrumbs'] = $breadcrumbs;
         } else {
-            $result['data'] = array(
-                'content_view' => 'nopermission',
-                'error'        => 'no permission or unkown error',
+            $result = array(
+                'data' => array(
+                    'content_view' => 'nopermission',
+                    'error'        => 'no permission or unkown error',
+                )
             );
+            
         }
         $this->load->view('page', $result['data']);
     }
@@ -595,7 +569,7 @@ class Awaiting extends MY_Controller
         }
     }
 
-    function approve() {
+    public function approve() {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
@@ -678,7 +652,7 @@ class Awaiting extends MY_Controller
 
                 return;
             }
-        } elseif (strcasecmp($queueAction, 'Create') == 0 && (strcasecmp($queueObjType, 'IDP') == 0 || strcasecmp($queueObjType, 'SP') == 0) || strcasecmp($queueObjType, 'BOTH') == 0) {
+        } elseif ($queueAction === 'Create' && (strcasecmp($queueObjType, 'IDP') == 0 || strcasecmp($queueObjType, 'SP') == 0 || strcasecmp($queueObjType, 'BOTH') == 0)) {
             $approve_allowed = $this->zacl->check_acl(strtolower($queueObjType), 'create', 'entity', '') || $this->hasApproveByFedadmin($queueObj);
             if ($approve_allowed) {
                 $storedEntity = $this->createProvider($queueObj);
@@ -798,7 +772,7 @@ class Awaiting extends MY_Controller
             $recipient = $queueObj->getRecipient();
             $recipienttype = $queueObj->getRecipientType();
             $type = $queueObj->getType();
-            if (!empty($recipienttype) && !empty($recipient) && strcasecmp($recipienttype,'provider')==0) {
+            if (!empty($recipienttype) && !empty($recipient) && strcasecmp($recipienttype, 'provider') == 0) {
                 $providers_tmp = new models\Providers;
                 $provider = $providers_tmp->getOneById($recipient);
                 if (empty($provider)) {
@@ -851,7 +825,7 @@ class Awaiting extends MY_Controller
                 }
 
                 return;
-            } elseif (!empty($recipienttype) && !empty($recipient) && strcasecmp($recipienttype ,'federation')==0) {
+            } elseif (!empty($recipienttype) && !empty($recipient) && strcasecmp($recipienttype, 'federation') == 0) {
                 $federations_tmp = new models\Federations;
                 $federation = $federations_tmp->getOneFederationById($recipient);
                 if (empty($federation)) {
@@ -982,7 +956,7 @@ class Awaiting extends MY_Controller
         }
     }
 
-    function reject() {
+    public function reject() {
         $loggedin = $this->jauth->isLoggedIn();
         if ($loggedin) {
             $this->load->library('zacl');
@@ -1006,8 +980,7 @@ class Awaiting extends MY_Controller
                 }
                 if ($reject_access === false) {
                     if (strcasecmp($queueAction, 'Create') == 0) {
-                        if(strcasecmp($queueObjType,'idp') == 0 || strcasecmp($queueObjType,'sp') == 0)
-                        {
+                        if (strcasecmp($queueObjType, 'idp') == 0 || strcasecmp($queueObjType, 'sp') == 0) {
                             $reject_access = $this->hasApproveByFedadmin($queueObj) || $this->zacl->check_acl($queueObjType, 'create', 'entity', '');
                         } elseif (strcasecmp($queueObj->getType(), 'Federation') == 0) {
                             $reject_access = $this->zacl->check_acl('federation', 'create', 'default', '');
@@ -1067,10 +1040,12 @@ class Awaiting extends MY_Controller
                     $data['error_message'] = $this->error_message;
                     log_message('debug', $this->error_message);
                     $data['content_view'] = 'reports/awaiting_rejected_view';
+
                     return $this->load->view('page', $data);
                 } else {
                     $data['error_message'] = lang('rerror_noperm_reject');
                     $data['content_view'] = 'error_message';
+
                     return $this->load->view('page', $data);
                 }
             } else {
@@ -1080,12 +1055,14 @@ class Awaiting extends MY_Controller
                 $this->error_message = 'ID: ' . $this->input->post('qid') . ' doesnt exist in queue';
                 $data['error_message'] = $this->error_message;
                 $data['content_view'] = 'reports/awaiting_rejected_view';
+
                 return $this->load->view('page', $data);
             }
         } else {
             $this->error_message = 'something went wrong';
             $data['error_message'] = $this->error_message;
             $data['content_view'] = 'reports/awaiting_rejected_view';
+
             return $this->load->view('page', $data);
         }
     }

@@ -1,6 +1,6 @@
 <?php
 if (!defined('BASEPATH')) {
-    exit('Ni direct script access allowed');
+    exit('No direct script access allowed');
 }
 
 /**
@@ -80,7 +80,7 @@ class Providerdetails
                         array('name' => lang('rr_fingerprint') . ' (sha1)', 'value' => '' . generateFingerprint($certData, 'sha1') . ''),
                         array(
                             'name' => '',
-                            'value' => '<dl class="accordion" data-accordion>   <dd class="accordion-navigation"><a href="#c' . $cert->getId() . '" class="accordion-icon">' . lang('rr_certbody') . '</a><code id="c' . $cert->getId() . '" class="content">' . trim($certData) . '</code></dd></dl>'
+                            'value' => '<dl class="accordion" data-accordion><dd class="accordion-navigation"><a href="#c' . $cert->getId() . '" class="accordion-icon">' . lang('rr_certbody') . '</a><code id="c' . $cert->getId() . '" class="content">' . trim($certData) . '</code></dd></dl>'
                         ));
                 }
             }
@@ -314,9 +314,9 @@ class Providerdetails
         $this->title = lang('rr_providerdetails') . ' :: ' . $data['name'];
         $b = $this->CI->session->userdata('board');
         if (is_array($b)) {
-            if (($type == 'idp' || $type == 'both') && isset($b['idp'][$id])) {
+            if (($type === 'idp' || $type === 'both') && isset($b['idp'][$id])) {
                 $data['bookmarked'] = true;
-            } elseif (($type == 'sp' || $type == 'both') && isset($b['sp'][$id])) {
+            } elseif (($type === 'sp' || $type === 'both') && isset($b['sp'][$id])) {
                 $data['bookmarked'] = true;
             }
         }
@@ -648,17 +648,13 @@ class Providerdetails
         $d[++$i] = &$entityIdRecord;
 
         /**
-         * @todo decide if it is right place to display supported DigestMethods and SigningMethods algorithms
-         */
-
-        /**
          * @var models\ExtendMetadata[] $algs
          * @var models\ExtendMetadata[][] $algorithms
          */
         $algs = $ent->getExtendMetadata();
         $algorithms = array();
         foreach ($algs as $a) {
-            if ($a->getNamespace() == 'alg' && $a->getType() == 'ent') {
+            if ($a->getNamespace() === 'alg' && $a->getType() === 'ent') {
                 $algorithms['' . $a->getElement() . ''][] = $a;
             }
         }

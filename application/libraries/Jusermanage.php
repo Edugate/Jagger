@@ -11,6 +11,10 @@ if (!defined('BASEPATH')) {
  */
 class Jusermanage
 {
+    /**
+     * @var $em Doctrine\ORM\EntityManager
+     */
+    protected  $ci, $em;
 
     public function __construct()
     {

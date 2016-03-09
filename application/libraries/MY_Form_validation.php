@@ -1,53 +1,42 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
-/**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
+}
 
 /**
- * MY_form_validation Class
- *
- * @package     RR3
- * @subpackage  Libraries
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2016, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 class MY_form_validation extends CI_form_validation
 {
 
     protected $em;
 
-    function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $this->em = $this->CI->doctrine->em;
         $this->CI->load->helper('metadata_elements');
     }
 
 
-    public function xss_clean($str)
-    {
+    public function xss_clean($str) {
         return $this->CI->security->xss_clean($str);
     }
 
 
-    function str_matches_array($str, $ar)
-    {
+    public function str_matches_array($str, $arr) {
         $result = false;
-        $ar = unserialize($ar);
+        $arr = unserialize($arr);
         if (empty($str)) {
-            if (count($ar) == 0) {
+            if (count($arr) == 0) {
                 $result = true;
             }
         } else {
             $ar1 = explode(",", $str);
-            if (count(array_diff($ar1, $ar)) == 0 && count(array_diff($ar, $ar1)) == 0) {
+            if (count(array_diff($ar1, $arr)) == 0 && count(array_diff($arr, $ar1)) == 0) {
                 $result = true;
             }
 
@@ -55,104 +44,88 @@ class MY_form_validation extends CI_form_validation
         if (!$result) {
             $this->set_message('str_matches_array', 'The %s  must not been changed to ' . htmlentities($str));
         }
+
         return $result;
     }
 
-    function matches_value($str1, $str2)
-    {
-        log_message('debug', 'GKS ' . __METHOD__ . ' ' . $str1 . ' :: ' . $str2);
+    public function mustmatch_value($str1, $str2) {
         if (strcmp($str1, $str2) === 0) {
-            return TRUE;
-        } else {
-            $this->set_message('matches_value', 'The %s: ' . htmlentities($str2) . ' must not been changed to ' . htmlentities($str1));
-            return FALSE;
+            return true;
         }
-
-    }
-
-    function no_white_spaces($str)
-    {
-        $y = preg_match('/[\s]/i', $str);
-        if ($y) {
-            $this->set_message('no_white_spaces', "%s :  contains whitespaces");
-            return FALSE;
-        }
-        return TRUE;
-
-    }
-
-    function alpha_dash_comma($str)
-    {
-
-        $result = (bool)preg_match('/^[\/\+\=\s-_a-z0-9,\.\@\:]+$/i', $str);
-
-        if ($result === FALSE) {
-            $this->set_message('alpha_dash_comma', "%s :  contains incorrect characters");
-        }
-        return $result;
-    }
-
-    function valid_contact($s)
-    {
-        log_message('debug', 'HHH : func' . serialize($s));
-        $this->set_message('valid_contact', "%s :  contains incorrect characters");
+        $this->set_message('mustmatch_value', 'The %s: ' . html_escape($str2) . ' must not been changed to ' . html_escape($str1));
         return false;
     }
 
-    function valid_domain($domain)
-    {
+    public function no_white_spaces($str) {
+        $y = preg_match('/[\s]/i', $str);
+        if ($y) {
+            $this->set_message('no_white_spaces', "%s :  contains whitespaces");
+            return false;
+        }
+        return true;
+    }
+
+    public function alpha_dash_comma($str) {
+
+        $result = (bool)preg_match('/^[\/\+\=\s-_a-z0-9,\.\@\:]+$/i', $str);
+
+        if ($result === false) {
+            $this->set_message('alpha_dash_comma', "%s :  contains incorrect characters");
+        }
+
+        return $result;
+    }
+
+    public function valid_domain($domain) {
         $result = preg_match('/^ (?: [a-z0-9] (?:[a-z0-9\-]* [a-z0-9])? \. )* [a-z0-9] (?:[a-z0-9\-]* [a-z0-9])?  \. [a-z]{2,6} $ /ix', $domain);
         if ($result) {
-            return TRUE;
+            return true;
         }
-        $this->set_message('valid_domain', "%s :  invalid domain: " . htmlentities($domain));
-        return FALSE;
+        $this->set_message('valid_domain', "%s :  invalid domain: " . html_escape($domain));
+
+        return false;
 
     }
 
-    function valid_ip_with_prefix($str)
-    {
+    public function valid_ip_with_prefix($str) {
         $ip = substr($str, 0, strpos($str . '/', '/'));
         $range = substr($str, strpos($str . '/', '/') + 1);
         if (empty($range) || !ctype_digit($range)) {
             $this->set_message('valid_ip_with_prefix', '%s: ' . htmlentities($str) . ' missing or invalid  prefix');
-            return FALSE;
+
+            return false;
         }
 
         $isIPV4 = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE);
         $isIPV6 = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 | FILTER_FLAG_NO_PRIV_RANGE);
-        if ($isIPV4 !== FALSE) {
+        if ($isIPV4 !== false) {
 
             if ($range <= 32 && $range > 0) {
-                return TRUE;
-            } else {
-                $this->set_message('valid_ip_with_prefix', '%s: ' . htmlentities($str) . ': incorrect  network prefix for IPV4');
-                return FALSE;
+                return true;
             }
-        } elseif ($isIPV6 !== FALSE) {
-            if ($range <= 64 && $range >= 24) {
-                return TRUE;
-            } else {
-                $this->set_message('valid_ip_with_prefix', '%s: ' . htmlentities($str) . ': incorrect  network prefix IPV6');
-                return FALSE;
-            }
+            $this->set_message('valid_ip_with_prefix', '%s: ' . htmlentities($str) . ': incorrect  network prefix for IPV4');
 
-
-        } else {
-            $this->set_message('valid_ip_with_prefix', '%s: ' . htmlentities($str) . ': invalid IP or IP is from private network range');
-            return FALSE;
+            return false;
 
         }
+        if ($isIPV6 !== false) {
+            if ($range <= 64 && $range >= 24) {
+                return true;
+            }
+            $this->set_message('valid_ip_with_prefix', '%s: ' . htmlentities($str) . ': incorrect  network prefix IPV6');
 
+            return false;
+        }
+        $this->set_message('valid_ip_with_prefix', '%s: ' . htmlentities($str) . ': invalid IP or IP is from private network range');
 
+        return false;
     }
 
     /**
      * validates str if is urn or url - for example: validation of entityid
      *
      */
-    public function valid_urnorurl($str)
-    {
+    public function valid_urnorurl($str) {
         $urnRegex = '/^urn:[a-z0-9][a-z0-9-]{1,31}:([a-z0-9()+,-.:=@;$_!*\']|%(0[1-9a-f]|[1-9a-f][0-9a-f]))+$/i';
         $isUrnValid = (bool)preg_match($urnRegex, $str);
         if ($isUrnValid) {
@@ -163,40 +136,39 @@ class MY_form_validation extends CI_form_validation
             return true;
         }
         $this->set_message('valid_urnorurl', "%s : contains invalid URI");
+
         return false;
     }
 
-    public function validimageorurl($str)
-    {
+    public function validimageorurl($str) {
         $isValidUrl = parent::valid_url($str);
         if ($isValidUrl) {
             return true;
         }
-        $str1pos = strpos($str,'data:');
-        $str2pos = strpos($str,'base64,');
-        if($str1pos === 0 && (30 > $str2pos) && ($str2pos > 0))
-        {
-            $cutpos = $str2pos+7;
+        $str1pos = strpos($str, 'data:');
+        $str2pos = strpos($str, 'base64,');
+        if ($str1pos === 0 && (30 > $str2pos) && ($str2pos > 0)) {
+            $cutpos = $str2pos + 7;
             $substr = substr($str, $cutpos);
             $img = base64_decode($substr);
-            if(function_exists('imagecreatefromstring'))
-            {
-                $img2 =  imagecreatefromstring($img);
-                if(!$img2)
-                {
+            if (function_exists('imagecreatefromstring')) {
+                $img2 = imagecreatefromstring($img);
+                if (!$img2) {
                     $this->set_message('validimageorurl', "%s : contains invalid imagedata");
+
                     return false;
                 }
+            } else {
+                $this->set_message('validimageorurl', "%s : cannot validate imagedata");
+
+                return false;
             }
-            else
-            {
-                 $this->set_message('validimageorurl', "%s : cannot validate imagedata");
-                 return false;
-            }
+
             return true;
 
         }
         $this->set_message('validimageorurl', "%s : contains invalid URL/imagedata");
+
         return false;
     }
 
@@ -206,27 +178,27 @@ class MY_form_validation extends CI_form_validation
      * @param type $date
      * @return boolean
      */
-    public function valid_date($date)
-    {
+    public function valid_date($date) {
         if (!empty($date)) {
             if (preg_match("/^(?P<year>[0-9]{4})[-](?P<month>[0-9]{2})[-](?P<day>[0-9]{2})$/", $date, $matches)) {
                 if (checkdate($matches['month'], $matches['day'], $matches['year']))    // Date really exists
                 {
-                    return TRUE;
+                    return true;
                 }
             }
         }
         $this->set_message('valid_date', "The %s : \"$date\" doesn't exist or invalid format. Valid format: yyyy-mm-dd.");
-        return FALSE;
+
+        return false;
     }
 
-    public function valid_time_hhmm($time)
-    {
+    public function valid_time_hhmm($time) {
         $e = explode(":", $time);
         if (count($e) === 2 && is_numeric($e['0']) && is_numeric($e['1']) && ($e['0'] < 24 && $e['0'] >= 0) && ($e['1'] >= 0 && $e['1'] < 60)) {
             return true;
         }
         $this->set_message('valid_time_hhmm', "The %s : invalid format. Valid format: HH:mm.");
+
         return false;
     }
 
@@ -236,8 +208,7 @@ class MY_form_validation extends CI_form_validation
      * @param type $date
      * @return boolean
      */
-    public function valid_date_past($date)
-    {
+    public function valid_date_past($date) {
         if (!empty($date)) {
             if (preg_match("/^(?P<year>[0-9]{4})[-](?P<month>[0-9]{2})[-](?P<day>[0-9]{2})$/", $date, $matches)) {
                 if (checkdate($matches['month'], $matches['day'], $matches['year']))    // Date really exists
@@ -246,16 +217,18 @@ class MY_form_validation extends CI_form_validation
                     $d2 = new DateTime("now");
                     if ($d1 > $d2) {
                         $this->set_message('valid_date_past', "The %s : \"$date\" is set in the future.");
-                        return FALSE;
+
+                        return false;
 
                     } else {
-                        return TRUE;
+                        return true;
                     }
                 }
             }
         }
         $this->set_message('valid_date_past', "The %s : \"$date\" doesn't exist or invalid format. Valid format: yyyy-mm-dd.");
-        return FALSE;
+
+        return false;
 
     }
 
@@ -265,29 +238,34 @@ class MY_form_validation extends CI_form_validation
      * @return type boolean
      *
      */
-    function homeorg_unique($homeorg)
-    {
+    public function homeorg_unique($homeorg) {
+        /**
+         * @var models\Provider $ent
+         */
         $ent = $this->em->getRepository("models\Provider")->findOneBy(array('name' => $homeorg));
-        if (!empty($ent)) {
+        if ($ent !== null) {
             $this->set_message('homeorg_unique', "The %s : \"$homeorg\" does already exist in the system.");
-            return FALSE;
-        } else {
-            return TRUE;
+            return false;
         }
+        return true;
+
     }
 
 
-    function federation_updateunique($value, $params)
-    {
+    public function federation_updateunique($value, $params) {
         $p = unserialize($params);
         if (!isset($p['fedid'])) {
             $this->set_message('federation_updateunique', 'The %s: ' . htmlentities($value) . ' missing federation id');
+
             return false;
         }
         $pid = $p['fedid'];
         $attr = $p['attr'];
+        /**
+         * @var models\Federation $fed
+         */
         $fed = $this->em->getRepository("models\Federation")->findOneBy(array($attr => $value));
-        if (empty($fed)) {
+        if ($fed === null) {
             return true;
         }
         $fedid = $fed->getId();
@@ -295,13 +273,13 @@ class MY_form_validation extends CI_form_validation
             return true;
         }
         $this->set_message('federation_updateunique', 'The %s: ' . htmlentities($value) . ' already exists');
+
         return false;
 
 
     }
 
-    function federation_unique($arg, $argtype)
-    {
+    public function federation_unique($arg, $argtype) {
         if ($argtype === 'name') {
             $attr = 'name';
         } elseif ($argtype === 'uri') {
@@ -314,114 +292,121 @@ class MY_form_validation extends CI_form_validation
             return false;
         }
         $fed = $this->em->getRepository("models\Federation")->findOneBy(array('' . $attr . '' => $arg));
-        if (empty($fed)) {
+        if ($fed === null) {
             return true;
-        } else {
-            $this->set_message('federation_unique', 'The %s: ' . htmlentities($arg) . ' already exists');
-            return false;
         }
+        $this->set_message('federation_unique', 'The %s: ' . htmlentities($arg) . ' already exists');
+
+        return false;
+
 
     }
 
-    function mailtemplate_unique($group, $field)
-    {
+    public function mailtemplate_unique($group, $field) {
         if (isset($this->_field_data[$field], $this->_field_data[$field]['postdata'])) {
             $jlang = $this->_field_data[$field]['postdata'];
         } else {
-            return TRUE;
+            return true;
 
         }
 
+        /**
+         * @var models\MailLocalization $l
+         */
         $l = $this->em->getRepository("models\MailLocalization")->findOneBy(array('mgroup' => $group, 'lang' => $jlang));
-        if (!empty($l)) {
-            $this->set_message('mailtemplate_unique', 'The template already exists for language: '.html_escape($jlang));
-            return FALSE;
+        if ($l !== null) {
+            $this->set_message('mailtemplate_unique', 'The template already exists for language: ' . html_escape($jlang));
+
+            return false;
         }
-        return TRUE;
+
+        return true;
     }
 
-    function mailtemplate_isdefault($isdefault, $field)
-    {
+    public function mailtemplate_isdefault($isdefault, $field) {
         if (isset($this->_field_data[$field], $this->_field_data[$field]['postdata'])) {
             $group = $this->_field_data[$field]['postdata'];
         } else {
-            return TRUE;
+            return true;
 
         }
         if (!empty($isdefault) || strcmp($isdefault, 'yes') != 0) {
-            return TRUE;
+            return true;
         }
 
-        $l = $this->em->getRepository("models\MailLocalization")->findOneBy(array('mgroup' => $group, 'isdefault' => TRUE));
-        if (!empty($l)) {
+        $l = $this->em->getRepository("models\MailLocalization")->findOneBy(array('mgroup' => $group, 'isdefault' => true));
+        if ($l !== null) {
             $this->set_message('mailtemplate_isdefault', 'Templeate with specidi group already has default ');
-            return FALSE;
+
+            return false;
         }
-        return TRUE;
+
+        return true;
     }
 
-    function attribute_unique($value, $name)
-    {
+    public function attribute_unique($value, $name) {
         $attr = $this->em->getRepository("models\Attribute")->findOneBy(array('' . $name . '' => $value));
         if (empty($attr)) {
             return true;
         }
         $this->set_message('attribute_unique', '%s: already exists in the system');
+
         return false;
 
     }
 
-    function fedcategory_unique($name, $id = null)
-    {
+    public function fedcategory_unique($name, $id = null) {
         $ent = $this->em->getRepository("models\FederationCategory")->findOneBy(array('shortname' => $name));
-        if (!empty($ent)) {
+        if ($ent !== null) {
             if (!is_null($id) && ((int)$id == $ent->getId())) {
                 return true;
             } else {
                 $this->set_message('fedcategory_unique', 'The %s : ' . htmlentities($name) . ' already exists');
+
                 return false;
             }
         }
+
         return true;
 
     }
 
-    function cocurl_unique($url)
-    {
+    public function cocurl_unique($url) {
         $e = $this->em->getRepository("models\Coc")->findOneBy(array('url' => $url));
-        if (!empty($e)) {
+        if ($e !== null) {
             $this->set_message('cocurl_unique', "The %s : \"$url\" does already exist in the system.");
-            return FALSE;
+
+            return false;
         } else {
-            return TRUE;
+            return true;
         }
     }
 
-    function valid_contact_type($str)
-    {
+    public function valid_contact_type($str) {
         $allowed = array('administrative', 'technical', 'support', 'billing', 'other');
         if (empty($str) || !in_array($str, $allowed)) {
             $this->set_message('valid_contact_type', 'Invalid contact type');
-            return FALSE;
+
+            return false;
         } else {
-            return TRUE;
+            return true;
         }
     }
 
 
-    function ecUrlInsert($url, $attrname)
-    {
+    public function ecUrlInsert($url, $attrname) {
         $e = $this->em->getRepository("models\Coc")->findOneBy(array('url' => $url, 'subtype' => $attrname, 'type' => 'entcat'));
-        if (!empty($e)) {
+        if ($e !== null) {
             $this->set_message('ecUrlInsert', "The %s : (" . $attrname . " : " . $url . ") does already exist in the system.");
-            return FALSE;
+
+            return false;
 
         }
-        return TRUE;
+
+        return true;
     }
 
-    function ecUrlUpdate($url, $params)
-    {
+    public function ecUrlUpdate($url, $params) {
         $p = unserialize($params);
         $e = $this->em->getRepository("models\Coc")->findBy(array('url' => $url, 'subtype' => $p['subtype'], 'type' => 'entcat'));
         $id = $p['id'];
@@ -435,159 +420,167 @@ class MY_form_validation extends CI_form_validation
         }
         if ($found) {
             $this->set_message('ecUrlUpdate', "The %s :\"$url\" does already exist for \"$attrname\"");
-            return FALSE;
+
+            return false;
 
 
         }
-        return TRUE;
+
+        return true;
 
     }
 
-    function cocurl_unique_update($url, $id)
-    {
+    public function cocurl_unique_update($url, $id) {
         $e = $this->em->getRepository("models\Coc")->findOneBy(array('url' => $url));
-        if (!empty($e)) {
+        if ($e !== null) {
             if ($id == $e->getId()) {
-                return TRUE;
+                return true;
             } else {
                 $this->set_message('cocurl_unique_update', "The %s : \"$url\" does already exist in the system.");
-                return FALSE;
+
+                return false;
             }
-        } else {
-            return TRUE;
         }
+        return true;
+
     }
 
-    function cocname_unique($name)
-    {
+    public function cocname_unique($name) {
         $e = $this->em->getRepository("models\Coc")->findOneBy(array('name' => $name));
-        if (!empty($e)) {
+        if ($e !== null) {
             $this->set_message('cocname_unique', "The %s : \"$name\" does already exist in the system.");
-            return FALSE;
-        } else {
-            return TRUE;
+
+            return false;
         }
+        return true;
+
     }
 
-    function cocname_unique_update($name, $id)
-    {
+    public function cocname_unique_update($name, $id) {
         $e = $this->em->getRepository("models\Coc")->findOneBy(array('name' => $name));
-        if (!empty($e)) {
+        if ($e !== null) {
             if ($id == $e->getId()) {
-                return TRUE;
-            } else {
-                $this->set_message('cocname_unique_update', "The %s : \"$name\" does already exist in the system.");
-                return FALSE;
+                return true;
             }
-        } else {
-            return TRUE;
+            $this->set_message('cocname_unique_update', "The %s : \"$name\" does already exist in the system.");
+
+            return false;
+
         }
+
+        return true;
+
     }
 
-    function entityid_unique_update($entityid, $id)
-    {
+    public function entityid_unique_update($entityid, $id) {
         log_message('debug', 'HHHH entity' . $entityid . ' :: ' . $id);
 
         $ent = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityid));
-        if (!empty($ent)) {
-            if ($id == $ent->getId()) {
-                return TRUE;
-            } else {
-                $this->set_message('entityid_unique_update', "The %s \"$entityid\" does belong to other provider");
-                return FALSE;
+        if ($ent !== null) {
+            if ((string)$id === (string)$ent->getId()) {
+                return true;
             }
-        } else {
-            return TRUE;
+            $this->set_message('entityid_unique_update', "The %s \"$entityid\" does belong to other provider");
+
+            return false;
+
         }
+
+        return true;
+
     }
 
-    function ssohandler_unique($handler)
-    {
+    public function ssohandler_unique($handler) {
         $ent = $this->em->getRepository("models\ServiceLocation")->findOneBy(array('url' => $handler));
         if (!empty($ent)) {
             $this->set_message('ssohandler_unique', "The %s : \"$handler\" does already exist in the system.");
-            return FALSE;
-        } else {
-            return TRUE;
+
+            return false;
         }
+
+        return true;
     }
 
-    function entity_unique($entity)
-    {
+    public function entity_unique($entity) {
         $ent = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entity));
-        if (!empty($ent)) {
+        if ($ent !== null) {
             $this->set_message('entity_unique', "The %s : \"$entity\" does already exist in the system.");
-            return FALSE;
-        } else {
-            return TRUE;
+
+            return false;
         }
+
+        return true;
+
     }
 
-    function spage_unique($pcode)
-    {
+    public function spage_unique($pcode) {
         if (strcasecmp($pcode, 'new') == 0) {
             $this->set_message('spage_unique', "The %s : \"$pcode\" is not allowed. Please choose different code");
-            return FALSE;
+
+            return false;
 
         }
         $page = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode' => $pcode));
-        if (!empty($page)) {
+        if ($page !== null) {
             $this->set_message('spage_unique', "The %s : \"$pcode\" does already exist in the system.");
-            return FALSE;
-        } else {
-            return TRUE;
+
+            return false;
         }
+
+        return true;
 
 
     }
 
-    function user_mail_unique($email)
-    {
-        $u = $this->em->getRepository("models\User")->findOneBy(array('email' => $email));
-        if (!empty($u)) {
+    public function user_mail_unique($email) {
+        $user = $this->em->getRepository("models\User")->findOneBy(array('email' => $email));
+        if ($user !== null) {
             $this->set_message('user_mail_unique', "The %s : \"$email\" does already exist in the system.");
-            return FALSE;
-        } else {
-            return TRUE;
+
+            return false;
         }
+
+        return true;
+
     }
 
-    function user_username_unique($username)
-    {
-        $u = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        $rolename = $this->em->getRepository("models\AclRole")->findOneBy(array('name'=>$username));
-        if (!empty($u) || !empty($rolename)) {
+    public function user_username_unique($username) {
+        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        $rolename = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $username));
+        if ($user !== null || $rolename !== null) {
             $this->set_message('user_username_unique', "The %s : \" $username\" does already exist in the system or conflicts with role names.");
-            return FALSE;
-        } else {
-            return TRUE;
+
+            return false;
         }
+
+        return true;
+
     }
 
-    function valid_requirement_attr($req)
-    {
+    public function valid_requirement_attr($req) {
         if ($req == 'required' || $req == 'desired') {
-            return TRUE;
+            return true;
         } else {
             $this->set_message('valid_requirement_attr', "Invalid value injected in requirement");
-            return FALSE;
+
+            return false;
         }
     }
 
-    function user_username_exists($username)
-    {
-        $u = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
-        if (empty($u)) {
+    public function user_username_exists($username) {
+        $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
+        if ($user === null) {
             $this->set_message('user_username_exists', "The %s : \"$username\" does not exist in the system.");
-            return FALSE;
-        } else {
-            return TRUE;
+
+            return false;
         }
+
+        return true;
+
     }
 
 
-    function verify_cert_nokeysize($cert)
-    {
+    public function verify_cert_nokeysize($cert) {
         $i = explode("\n", $cert);
         $c = count($i);
         if ($c < 2) {
@@ -598,17 +591,14 @@ class MY_form_validation extends CI_form_validation
         $ncert = getPEM($cert);
         $res = openssl_x509_parse($ncert);
         if (is_array($res)) {
-            return TRUE;
-        } else {
-            $this->set_message('verify_cert_nokeysize', "The %s : is not valid x509 cert.");
-            return FALSE;
+            return true;
         }
+        $this->set_message('verify_cert_nokeysize', "The %s : is not valid x509 cert.");
 
-
+        return false;
     }
 
-    function verify_cert($cert)
-    {
+    public function verify_cert($cert) {
         $i = explode("\n", $cert);
         $c = count($i);
         if ($c < 2) {
@@ -628,12 +618,12 @@ class MY_form_validation extends CI_form_validation
             $r = openssl_pkey_get_public($ncert);
             $keysize = 0;
             if (!empty($r)) {
-                $data = array();
                 $data = openssl_pkey_get_details($r);
                 if (isset($data['bits'])) {
                     $keysize = $data['bits'];
                 } else {
                     $this->set_message('verify_cert', "The %s : Could not compute keysize");
+
                     return false;
                 }
             } else {
@@ -641,198 +631,161 @@ class MY_form_validation extends CI_form_validation
             }
             if ($minkeysize > $keysize) {
                 $this->set_message('verify_cert', "The %s : Keysize is less than " . $minkeysize);
+
                 return false;
             }
-            return TRUE;
 
-        } else {
-            $this->set_message('verify_cert', "The %s : is not valid x509 cert.");
-            return FALSE;
+            return true;
+
         }
+        $this->set_message('verify_cert', "The %s : is not valid x509 cert.");
+
+        return false;
     }
 
-    function valid_extendedurl($str)
-    {
+    public function valid_extendedurl($str) {
         if (empty($str)) {
-            return FALSE;
-        } else {
-            preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches);
-            if (empty($matches[2])) {
-                $this->set_message('valid_extendedurl', "incorrect URL  \"%s\" ");
-
-                return FALSE;
-            } elseif (!in_array($matches[1], array('http', 'https', 'ftp', 'ftps')) || empty($matches[1])) {
-                $this->set_message('valid_extendedurl', "incorrect protocol  \"%s\" ");
-                return FALSE;
-            } else {
-                return TRUE;
-            }
-
-
+            return false;
         }
+        preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches);
+        if (empty($matches[2])) {
+            $this->set_message('valid_extendedurl', "incorrect URL  \"%s\" ");
+
+            return false;
+        }
+        if (!in_array($matches[1], array('http', 'https', 'ftp', 'ftps')) || empty($matches[1])) {
+            $this->set_message('valid_extendedurl', "incorrect protocol  \"%s\" ");
+
+            return false;
+        }
+        return true;
+
 
     }
 
-    function valid_url($str)
-    {
-
-        if (empty($str)) {
-            return FALSE;
-        } else {
-            preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches);
-            if (empty($matches[2])) {
-                $this->set_message('valid_url', "incorrect URL  \"%s\" ");
-
-                return FALSE;
-            } elseif (!in_array($matches[1], array('http', 'https')) || empty($matches[1])) {
-                $this->set_message('valid_url', "incorrect protocol  \"%s\" ");
-                return FALSE;
-            } else {
-                return TRUE;
-            }
-
-
+    public function valid_url($str) {
+        $isValidURL = parent::valid_url($str);
+        if (!$isValidURL) {
+            return false;
         }
+        preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches);
+        if (!isset($matches[1])) {
+            $this->set_message('valid_url', "missing protocol  \"%s\" ");
+            return false;
+        }
+        if (!in_array($matches[1], array('http', 'https'))) {
+            $this->set_message('valid_url', "incorrect protocol  \"%s\" ");
+            return false;
+        }
+        return true;
+    }
+
+    public function valid_url_ssl($str) {
+        $isValidURL = parent::valid_url($str);
+        if (!$isValidURL) {
+            return false;
+        }
+        preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches);
+        if (!isset($matches[1])) {
+            $this->set_message('valid_url', "missing protocol  \"%s\" ");
+            return false;
+        }
+        if (!in_array($matches[1], array('https'), true)) {
+            $this->set_message('valid_url', "Only https protocol is allowed  \"%s\" ");
+            return false;
+        }
+        return true;
 
     }
 
-    public function valid_url_ssl($str)
-    {
-        if (empty($str)) {
-            return FALSE;
-        } elseif (preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches)) {
-            if (empty($matches[2])) {
-                $this->set_message('valid_url_ssl', 'Invalid URL');
-                return FALSE;
-            } elseif (!in_array($matches[1], array('https'), TRUE)) {
-                $this->set_message('valid_url_ssl', 'Allowed only https protocol');
-                return FALSE;
-            }
-
-            $str = $matches[2];
-        }
-
-        $str = 'https://' . $str;
-
-        // There's a bug affecting PHP 5.2.13, 5.3.2 that considers the
-        // underscore to be a valid hostname character instead of a dash.
-        // Reference: https://bugs.php.net/bug.php?id=51192
-        if (version_compare(PHP_VERSION, '5.2.13', '==') || version_compare(PHP_VERSION, '5.3.2', '==')) {
-            sscanf($str, 'https://%[^/]', $host);
-            $str = substr_replace($str, strtr($host, array('_' => '-', '-' => '_')), 7, strlen($host));
-        }
-        $result = (filter_var($str, FILTER_VALIDATE_URL) !== FALSE);
-        if (!$result) {
-            $this->set_message('valid_url_ssl', 'Invalid URL');
-        }
-        return $result;
-    }
-
-    function match_language($str)
-    {
+    public function match_language($str) {
         $langs = languagesCodes();
 
         if (array_key_exists($str, $langs)) {
-            return TRUE;
+            return true;
         }
         $this->set_message('match_language', '' . lang('wronglangcode') . ': ' . htmlentities($str));
-        return FALSE;
+
+        return false;
 
     }
 
-    function valid_latlng($str)
-    {
+    public function valid_latlng($str) {
         $pattern = '/^-?([0-8]?[0-9]|90)\.[0-9]{1,15},-?((1?[0-7]?|[0-9]?)[0-9]|180)\.[0-9]{1,15}$/';
         $res = preg_match($pattern, $str);
         if (!$res) {
             $this->set_message('valid_latlng', "Incorrect or too long  \"%s\" ");
-            return FALSE;
+
+            return false;
         }
-        return TRUE;
+
+        return true;
 
     }
 
-    function valid_url_or_empty($str)
-    {
-        if (empty($str)) {
-            return TRUE;
-        } else {
-            preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches);
-            if (empty($matches[2])) {
-                $this->set_message('valid_url_or_empty', "incorrect URL  \"%s\" ");
-
-                return FALSE;
-            } elseif (!in_array($matches[1], array('http', 'https')) || empty($matches[1])) {
-                $this->set_message('valid_url_or_empty', "incorrect protocol  \"%s\" ");
-                return FALSE;
-            } else {
-                return TRUE;
-            }
-
-
+    public function valid_url_or_empty($str) {
+        if ($str === '') {
+            return true;
         }
+        $isValid = $this->valid_url($str);
+        return $isValid;
+
     }
 
 
-    function acs_index_check($acs_index)
-    {
-        $result = true;
-        log_message('debug', 'HHHH:' . $acs_index);
+    public function acs_index_check($acs_index) {
         if (!empty($acs_index) && is_array($acs_index)) {
             $count = count($acs_index);
             foreach ($acs_index as $key => $value) {
                 if (($key != 'n' && !isset($value)) || $value < 0) {
                     $this->set_message('acs_index_check', "incorrect or no value in one of  \"%s\" " . $key . " " . $value);
+
                     return false;
                 }
             }
-
             $acs_index_uniq = array_unique($acs_index);
             $count2 = count($acs_index_uniq);
-
             if ($count != $count2) {
                 $this->set_message('acs_index_check', "Found duplicated values in \"%s\"");
-                $result = false;
+
+                return false;
             }
         }
 
-        return $result;
+        return true;
     }
 
-    function acsindex_unique($acs_index, $field)
-    {
+    public function acsindex_unique($acs_index, $field) {
         $a = $this->_field_data[$field]['postdata'];
-        $result = true;
         if (!empty($a) && is_array($a)) {
             if (count($a) != count(array_unique($a))) {
                 $this->set_message('acsindex_unique', "Incorrect or no value in one of  \"%s\"");
+
                 return false;
             }
-
         }
-        return $result;
+
+        return true;
     }
 
 
-    function setup_allowed()
-    {
+    public function setup_allowed() {
         $x = $this->em->getRepository("models\User")->findAll();
-        $count_x = count($x);
-        if ($count_x > 0) {
+        if (count($x) > 0) {
             $this->set_message('setup_allowed', "Database is not empty, you cannot initialize setup");
-            return FALSE;
-        } else {
-            return true;
+
+            return false;
         }
+
+        return true;
+
     }
 
 
-    function valid_static($usage, $t_metadata_entity)
-    {
-        $tmp_array = array();
+    public function valid_static($usage, $t_metadata_entity) {
         $tmp_array = explode(':::', $t_metadata_entity);
 
-        $compared_entityid = "";
+        $compared_entityid = '';
         if (array_key_exists('1', $tmp_array)) {
             $compared_entityid = trim($tmp_array[1]);
         }
@@ -854,6 +807,7 @@ class MY_form_validation extends CI_form_validation
         if (empty($metadata) && !empty($is_used)) {
             log_message('debug', 'valid_static: result:: invalid metadata');
             $this->set_message('valid_static', "The %s : is empty.");
+
             return $result;
         }
         libxml_use_internal_errors(true);
@@ -875,37 +829,41 @@ class MY_form_validation extends CI_form_validation
             if (empty($first_attempt)) {
                 $tmp_metadata = $docxml->saveXML();
                 $second_attempt = $this->CI->metadatavalidator->validateWithSchema($tmp_metadata);
-                if ($second_attempt === TRUE) {
-                    $result = TRUE;
+                if ($second_attempt === true) {
+                    $result = true;
                 } else {
                     $err_details = "<br />Make sure elements contains namespaces ex. md:EntityDescriptor.";
                     $err_details .= '<br />Also inside EntitiyDescriptor element you must declare namespaces defitions<br/> <code>xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"  xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" xmlns:mdrpi="urn:oasis:names:tc:SAML:metadata:rpi"  xmlns:ds="http://www.w3.org/2000/09/xmldsig#"</code>';
                     $this->set_message('valid_static', "The %s : is not valid metadata." . $err_details);
-                    return FALSE;
+
+                    return false;
                 }
 
 
             } else {
-                $result = TRUE;
+                $result = true;
             }
             if ($result) {
                 $entities_no = $docxml->getElementsbytagname('EntitiesDescriptor');
                 $entity_no = $docxml->getElementsbytagname('EntityDescriptor');
                 if ($entities_no->length > 0) {
                     $this->set_message('valid_static', "The %s : is not valid metadata<br />EntitiesDescriptor element is not allowed for single entity");
-                    return FALSE;
+
+                    return false;
 
                 }
                 if ($entity_no->length != 1) {
                     $this->set_message('valid_static', "The %s : is not valid metadata<br />exact one element EntityDescriptor is allowed");
-                    return FALSE;
+
+                    return false;
 
                 }
                 $ent_id = $entity_no->item(0)->getAttribute('entityID');
                 log_message('debug', '-----"' . $ent_id . '" ".' . $compared_entityid . '"');
                 if (!empty($compared_entityid) && ($compared_entityid != $ent_id)) {
                     $this->set_message('valid_static', "The %s : is not valid metadata<br />entitID from static must match entityID in form");
-                    return FALSE;
+
+                    return false;
                 }
                 log_message('debug', 'PPPPPPPPPPPP' . $entity_no->item(0)->getAttribute('entityID'));
 
@@ -913,7 +871,7 @@ class MY_form_validation extends CI_form_validation
             }
         }
 
-        if ($result === FALSE) {
+        if ($result === false) {
             if (!empty($is_used)) {
                 log_message('debug', 'valid_static: result:: invalid metadata');
                 $err_details = "<br />Make sure elements contains namespaces ex. md:EntityDescriptor.";
@@ -921,106 +879,67 @@ class MY_form_validation extends CI_form_validation
                 $this->set_message('valid_static', "The %s : is not valid metadata." . $err_details);
             } else {
                 log_message('debug', 'valid_static: result:: invalid metadata, but ignored');
-                $result = TRUE;
+                $result = true;
             }
         }
+
         return $result;
     }
 
-    function valid_scopes($str)
-    {
-        $result = TRUE;
+    public function valid_scopes($str) {
         if (!empty($str)) {
             $s = preg_split("/[\s,]+/", $str);
             foreach ($s as $v) {
                 if (!(preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $v) && preg_match("/^.{1,253}$/", $v) && preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $v))) {
                     $this->set_message('valid_scopes', "%s : invalid characters");
-                    return FALSE;
+
+                    return false;
                 }
             }
         }
-        return $result;
+
+        return true;
     }
 
 
-    function matches_inarray($str, $serialized_array)
-    {
+    public function matches_inarray($str, $serialized_array) {
         $array = unserialize($serialized_array);
-        $result = TRUE;
         if (!in_array($str, $array)) {
             $this->set_message('matches_inarray', "%s: doesnt match allowed value");
-            $result = FALSE;
+            return false;
         }
-        return $result;
+
+        return true;
     }
 
-    function valid_static_old($is_used, $metadata)
-    {
-
-        $metadata = trim(base64_decode($metadata));
-
-
-        log_message('debug', '---- validation static metadata ------');
-        log_message('debug', 'is_used::' . $is_used);
-        log_message('debug', 'metadata::' . $metadata);
-        if (empty($metadata)) {
-            log_message('debug', 'metadata --- empty');
-        } else {
-            log_message('debug', 'metadata --- not empty:');
-        }
-        $result = false;
-        if (empty($metadata) && !empty($is_used)) {
-            log_message('debug', 'valid_static: result:: invalid metadata');
-            $this->set_message('valid_static', "The %s : is empty.");
-            return $result;
-        }
-        $this->CI->load->library('metadatavalidator');
-        $result = $this->CI->metadatavalidator->validateWithSchema($metadata);
-
-        if ($result === FALSE) {
-            if (!empty($is_used)) {
-                log_message('debug', 'valid_static: result:: invalid metadata');
-                $this->set_message('valid_static_old', "The %s : is not valid metadata.");
-            } else {
-                log_message('debug', 'valid_static_old: result:: invalid metadata, but ignored');
-                $result = TRUE;
-            }
-        }
-        return $result;
-    }
-
-
-    function valid_cronminute($str)
-    {
+    public function valid_cronminute($str) {
         $result = (bool)preg_match('/^[\*,\/\-0-9]+$/', $str);
-        if ($result !== TRUE) {
+        if ($result !== true) {
             $this->set_message('valid_cronminute', "%s : is incorrect.");
-            return FALSE;
+
+            return false;
         }
-        return TRUE;
+
+        return true;
     }
 
-    function valid_cronhour($str)
-    {
+    public function valid_cronhour($str) {
         $result = (bool)preg_match('/^[\*,\/\-0-9]+$/', $str);
-        if ($result !== TRUE) {
+        if ($result !== true) {
             $this->set_message('valid_cronhour', "%s : is incorrect.");
-            return FALSE;
         }
-        return TRUE;
+        return $result;
     }
 
-    function valid_crondom($str)
-    {
+    public function valid_crondom($str) {
         $result = (bool)preg_match('/^[\*,\/\-\?LW0-9A-Za-z]+$/', $str);
-        if ($result !== TRUE) {
+        if ($result !== true) {
             $this->set_message('valid_crondom', "%s : is incorrect.");
-            return FALSE;
         }
-        return TRUE;
+        return $result;
     }
-    function valid_crondow($str)
-    {
+
+    public function valid_crondow($str) {
 
         foreach (explode(',', $str) as $expr) {
             if (!preg_match('/^(\*|[0-7](L?|#[1-5]))([\/\,\-][0-7]+)*$/', $expr)) {
@@ -1028,17 +947,14 @@ class MY_form_validation extends CI_form_validation
                 return false;
             }
         }
-
-        return TRUE;
+        return true;
     }
 
-    function valid_cronmonth($str)
-    {
-        $result = (bool) preg_match('/^[\*,\/\-0-9A-Z]+$/', $str);
-        if ($result !== TRUE) {
+    public function valid_cronmonth($str) {
+        $result = (bool)preg_match('/^[\*,\/\-0-9A-Z]+$/', $str);
+        if ($result !== true) {
             $this->set_message('valid_cronmonth', "%s : is incorrect.");
-            return FALSE;
         }
-        return TRUE;
+        return $result;
     }
 }
