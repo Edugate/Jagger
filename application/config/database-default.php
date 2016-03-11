@@ -47,11 +47,12 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = 'localhost';
+$db['default']['hostname'] = '127.0.0.1';
 $db['default']['username'] = 'CHANGEME';
 $db['default']['password'] = 'CHANGEME';
 $db['default']['database'] = 'CHANGEME';
-$db['default']['dbdriver'] = 'mysql';
+$db['default']['dsn']      = 'mysql:host=127.0.0.1;port=3306;dbname=CHANGEME';
+$db['default']['dbdriver'] = 'pdo';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;
 $db['default']['db_debug'] = TRUE;
