@@ -109,7 +109,7 @@ class Fvalidator extends MY_Controller
              */
             $provider = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $inputArgs['providerid']));
             if ($provider !== null) {
-                $providerMetadataUrl = base_url() . '/metadata/service/' . base64url_encode($provider->getEntityId()) . '/metadata.xml';
+                $providerMetadataUrl = base_url() . 'metadata/service/' . base64url_encode($provider->getEntityId()) . '/metadata.xml';
                 $reqAttrPassed = TRUE;
             }
         }

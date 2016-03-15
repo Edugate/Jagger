@@ -1232,10 +1232,10 @@ var GINIT = {
                 url: url,
                 cache: false,
                 data: str,
+                dataType: "json",
                 timeout: 120000,
-                success: function (json) {
+                success: function (data) {
                     $('#spinner').hide();
-                    var data = $.parseJSON(json);
                     if (!data) {
                         alert('no data received from upstream server');
                     }
