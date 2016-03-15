@@ -371,9 +371,9 @@ var BINIT = {
                 url: link,
                 timeout: 2500,
                 cache: true,
-                success: function (json) {
+                dataType: "json",
+                success: function (data) {
                     spinner.hide();
-                    var data = $.parseJSON(json);
                     if (data) {
                         var vfedid = data.fedid;
                         var fvalidid = data.id;
@@ -4331,7 +4331,7 @@ $('#joinfed').on('change', '#fedid', function (e) {
     }
     var soption = $(this).find("option:selected").val();
     var sval = $(this).find("option:selected").text();
-    var jsurl = $('div#retrfvalidatorjson').text();
+    var jsurl = $('#retrfvalidatorjson').text();
     var postdata = {};
     postdata[csrfname] = csrfhash;
     postdata.fedid = soption;
