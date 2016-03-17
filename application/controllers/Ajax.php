@@ -87,6 +87,7 @@ class Ajax extends MY_Controller
             CURLOPT_TIMEOUT => 10,
             CURLOPT_BUFFERSIZE => 8192,
             CURLOPT_NOPROGRESS => FALSE,
+            CURLOPT_USERAGENT => 'Jagger Agent',
             CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) {
                 return ($Downloaded > (1000 * 1024)) ? 1 : 0;
             }

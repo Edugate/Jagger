@@ -238,6 +238,7 @@ class Importer extends MY_Controller
             CURLOPT_TIMEOUT => $this->curlTimeout,
             CURLOPT_BUFFERSIZE => 8192,
             CURLOPT_NOPROGRESS => FALSE,
+            CURLOPT_USERAGENT => 'Jagger Agent',
             CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) use ($maxsize) {
                 return ($Downloaded > ($maxsize * 1024)) ? 1 : 0;
             }
@@ -273,6 +274,7 @@ class Importer extends MY_Controller
                 CURLOPT_TIMEOUT => $this->curlTimeout,
                 CURLOPT_BUFFERSIZE => 8192,
                 CURLOPT_NOPROGRESS => FALSE,
+                CURLOPT_USERAGENT => 'Jagger Agent',
                 CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) {
                     return ($Downloaded > (1000 * 1024)) ? 1 : 0;
                 }
