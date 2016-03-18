@@ -4,9 +4,7 @@ if (!defined('BASEPATH')) {
 }
 
 /**
- * ResourceRegistry3
- *
- * @package   RR3
+ * @package   Jagger
  * @author    Middleware Team HEAnet
  * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  * @copyright Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
@@ -17,10 +15,12 @@ class Approval
 
     protected $ci;
     protected $em;
+    /**
+     * @var \models\User $user
+     */
     protected $user;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->user = $this->em->getRepository("models\User")->findOneBy(array('username' => $this->ci->session->userdata('username')));
@@ -32,8 +32,7 @@ class Approval
      * @param $action
      * @return \models\Queue
      */
-    public function addToQueue($obj, $action)
-    {
+    public function addToQueue($obj, $action) {
         log_message('debug', __METHOD__ . ': obj: ' . get_class($obj) . ' , action: ' . $action);
         $queue = new models\Queue();
         if ($obj instanceof models\Federation) {
@@ -50,27 +49,25 @@ class Approval
         return $queue;
     }
 
-    /**
-     * @param \models\Coc      $coc
-     * @param \models\Provider $provider
-     * @return \models\Queue
-     */
-    public function applyForEntityCategory(models\Coc $coc, models\Provider $provider)
-    {
-        $nQueue = new models\Queue();
-        $nQueue->setRecipient($coc->getId());
-        $nQueue->setRecipientType('entitycategory');
-        $nQueue->setCreator($this->user);
-        $nQueue->setName($provider->getEntityId());
-        $nQueue->setEmail($this->user->getEmail());
-        $nQueue->setConfirm(true);
-        $nQueue->setAction('APPLY');
-        $nQueue->setType('Provider');
-        $nQueue->setObjectType('n');
-        $nQueue->setObject(array());
-        $nQueue->setToken();
-        $this->em->persist($nQueue);
-        return $nQueue;
+    public function applyForScopeChange(models\Provider $provider, $newScopes) {
+        $queue = new models\Queue();
+        $queue->setRecipient($provider->getId());
+        $queue->setRecipientType('provider');
+        $queue->setCreator($this->user);
+        $queue->setName($provider->getEntityId());
+        $queue->setEmail($this->user->getEmail());
+        $queue->setConfirm(true);
+        $queue->setAction('UPDATE');
+        $queue->setType('Provider');
+        $queue->setObjectType('n');
+        $data = array(
+            'orig' => $provider->getScopeFull(),
+            'new' => $newScopes
+        );
+        $queue->setObject(array('scope'=>$data));
+        $queue->setToken();
+        $this->em->persist($queue);
+        return $queue;
     }
 
     /**
@@ -78,8 +75,29 @@ class Approval
      * @param \models\Provider $provider
      * @return \models\Queue
      */
-    public function applyForRegistrationPolicy(models\Coc $coc, models\Provider $provider)
-    {
+    public function applyForEntityCategory(models\Coc $coc, models\Provider $provider) {
+        $queue = new models\Queue();
+        $queue->setRecipient($coc->getId());
+        $queue->setRecipientType('entitycategory');
+        $queue->setCreator($this->user);
+        $queue->setName($provider->getEntityId());
+        $queue->setEmail($this->user->getEmail());
+        $queue->setConfirm(true);
+        $queue->setAction('APPLY');
+        $queue->setType('Provider');
+        $queue->setObjectType('n');
+        $queue->setObject(array());
+        $queue->setToken();
+        $this->em->persist($queue);
+        return $queue;
+    }
+
+    /**
+     * @param \models\Coc $coc
+     * @param \models\Provider $provider
+     * @return \models\Queue
+     */
+    public function applyForRegistrationPolicy(models\Coc $coc, models\Provider $provider) {
         $nQueue = new models\Queue();
         $nQueue->setRecipient($coc->getId());
         $nQueue->setRecipientType('regpolicy');
@@ -102,8 +120,7 @@ class Approval
      * @param $action
      * @return \models\Queue
      */
-    public function invitationProviderToQueue(models\Federation $federation, models\Provider $obj, $action)
-    {
+    public function invitationProviderToQueue(models\Federation $federation, models\Provider $obj, $action) {
         $nQueue = new models\Queue();
         $nQueue->setRecipient($obj->getId());
         $nQueue->setRecipientType('provider');
@@ -126,8 +143,7 @@ class Approval
      * @param $action
      * @return \models\Queue
      */
-    public function removeProviderToQueue(models\Federation $federation, models\Provider $obj, $action)
-    {
+    public function removeProviderToQueue(models\Federation $federation, models\Provider $obj, $action) {
         $nQueue = new models\Queue();
         $nQueue->setRecipient($obj->getId());
         $nQueue->setRecipientType('provider');
@@ -151,8 +167,7 @@ class Approval
      * @param null $message
      * @return \models\Queue
      */
-    public function invitationFederationToQueue(models\Provider $provider, models\Federation $obj, $action, $message = null)
-    {
+    public function invitationFederationToQueue(models\Provider $provider, models\Federation $obj, $action, $message = null) {
 
         $nQueue = new models\Queue();
         $nQueue->setRecipient($obj->getId());
@@ -178,8 +193,7 @@ class Approval
      * @param \models\Federation $federation
      * @return \models\Queue
      */
-    public function removeFederation(models\Federation $federation)
-    {
+    public function removeFederation(models\Federation $federation) {
         $nQueue = new models\Queue();
         $nQueue->setCreator($this->user);
         $nQueue->setName($federation->getName());

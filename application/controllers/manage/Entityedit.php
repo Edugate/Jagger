@@ -831,6 +831,9 @@ class Entityedit extends MY_Controller
         $this->load->view('page', $data);
     }
 
+    /**
+     * @return bool
+     */
     private function isFromSimpleRegistration()
     {
         $fromSimpleMode = $this->input->post('advanced');

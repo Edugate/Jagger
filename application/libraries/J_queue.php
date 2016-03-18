@@ -103,7 +103,7 @@ class J_queue
         $type = $objdata['type'];
 
         $user = new models\User;
-        $user->genNewValidUser($objdata['username'],$password,$objdata['email'],null,null,$type);
+        $user->genNewValidUser($objdata['username'], $password, $objdata['email'], null, null, $type);
 
         if (!empty($objdata['fname'])) {
             $user->setGivenname($objdata['fname']);
@@ -135,7 +135,7 @@ class J_queue
     }
 
     private function genCocArray(models\Queue $q, $type) {
-        $typeLabel ='';
+        $typeLabel = '';
         if ($type === 'entcat') {
             $r = array(
                 array('header' => lang('request')),
@@ -182,6 +182,7 @@ class J_queue
         return $r;
 
     }
+
 
     public function displayApplyForEntityCategory(models\Queue $q) {
         return $this->genCocArray($q, 'entcat');
@@ -255,6 +256,20 @@ class J_queue
         );
 
         return $fedrows;
+    }
+
+    public function displayUpdateProvider(models\Queue $queue) {
+        $objData = $queue->getData();
+        $creator = $queue->getCreator();
+        $result = array(
+
+            array('header' => lang('request')),
+            array('name' => lang('rr_sourceip'), 'value' => $queue->getIP()),
+            array('name' => lang('type'), 'value' => 'update provider'),
+            array('name' => lang('requestor'), 'value' => $creator->getFullname() . ' (' . $creator->getUsername() . ')'),
+
+        );
+        return $result;
     }
 
     /**
@@ -434,7 +449,7 @@ class J_queue
             if (in_array($serviceType, $servicetypesWithIndex)) {
                 $orderString = 'index: ' . $service->getOrder();
             }
-            $dataRows[$i]['value'] = '' . $service->getUrl() . '<br /><small>' . $service->getBindingName() . ' '. $orderString . ' </small><br />';
+            $dataRows[$i]['value'] = '' . $service->getUrl() . '<br /><small>' . $service->getBindingName() . ' ' . $orderString . ' </small><br />';
             $i++;
         }
 
