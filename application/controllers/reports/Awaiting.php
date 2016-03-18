@@ -197,7 +197,9 @@ class Awaiting extends MY_Controller
             foreach ($subscriptions as $s) {
                 $result['s'][] = array(
                     'subscriber' => $s->getSubscriber()->getUsername(),
+                    'subscriber_email' => $s->getSubscriber()->getEmail(),
                     'type'       => lang($s->getType()),
+                    'url'         => base_url('notifications/subscriber/mysubscriptions/'.base64url_encode($s->getSubscriber()->getUsername()))
                 );
 
             }

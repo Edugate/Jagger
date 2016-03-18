@@ -3521,7 +3521,7 @@ $(function () {
             iqcounter.html(parseInt(qcounterFromSession));
         }
         var refresherFn = function () {
-            var dashresponsecontainer = $('#dashresponsecontainer').first();;
+            var dashresponsecontainer = $('#dashresponsecontainer').first();
             $.ajax({
                 url: iqsrc,
                 method: 'GET',
@@ -3551,6 +3551,11 @@ $(function () {
 
                                 rows.push('<tr><td>'+ k.idate+'</td><td>'+ k.requesterCN + ' '+ k.mail+'</td><td>'+ k.type+' - '+ k.action+'</td><td><a href="'+baseurl+'reports/awaiting/detail/'+ k.token+'"><i class="fi-arrow-right"></i></a></td></tr>');
                             });
+                        }
+                        if(result.data.s){
+                             $.each(result.data.s, function(v,k){
+                                rows.push('<tr><td>&nbsp;</td><td>'+k.subscriber+' &lt'+k.subscriber_email+'&gt;</td><td>'+k.type+'</td><td><a href="'+k.url+'"><i class="fi-arrow-right"></i></a></td></tr>');
+                             });
                         }
                         rows.push('</tbody></table>');
                         var tableresult = rows.join('');
