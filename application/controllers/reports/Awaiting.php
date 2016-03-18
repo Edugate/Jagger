@@ -149,8 +149,7 @@ class Awaiting extends MY_Controller
          */
         $queueArray = $this->em->getRepository("models\Queue")->findAll();
         $result = array('q' => array(), 's' => array());
-
-        $kid = 0;
+        
         foreach ($queueArray as $q) {
             $c_creator = 'anonymous';
             $c_creatorCN = 'Anonymous';
@@ -173,7 +172,7 @@ class Awaiting extends MY_Controller
                 }
             }
             if ($access) {
-                $result['q'][$kid++] = array(
+                $result['q'][] = array(
                     'issubscription' => 0,
                     'requester'      => $c_creator,
                     'requesterCN'    => $c_creatorCN,
@@ -196,7 +195,7 @@ class Awaiting extends MY_Controller
         if ($isAdmin) {
 
             foreach ($subscriptions as $s) {
-                $result['s'][$kid++] = array(
+                $result['s'][] = array(
                     'subscriber' => $s->getSubscriber()->getUsername(),
                     'type'       => lang($s->getType()),
                 );
