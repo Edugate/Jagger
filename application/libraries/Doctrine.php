@@ -35,7 +35,7 @@ class Doctrine
         // Choose caching method based on application mode
         if (ENVIRONMENT === 'production' && extension_loaded('apc') && ini_get('apc.enabled')) {
             $cache = new \Doctrine\Common\Cache\ApcCache;
-        } 
+        }
         $config = new Configuration;
 
         // Metadata driver
@@ -69,13 +69,17 @@ class Doctrine
             log_message('error', __METHOD__ . ' ::: database.php conf file is misconfigured. missing array : $db[\'default\']');
             throw new \Exception('system misconfigured');
         }
-        $dbconfig = $db['default'];
+        $connectionOptions = self::getDBDriver($db['default']);
+        
+        // Create EntityManager
+        $this->em = EntityManager::create($connectionOptions, $config);
+    }
 
+    private static function getDBDriver($dbconfig) {
         if (!isset($dbconfig['dbdriver'])) {
             log_message('error', __METHOD__ . ' ::: database.php conf file is misconfigured. missing : $db[\'default\'][\'dbdriver\']');
             throw new \Exception('system misconfigured');
         }
-
         $dbriver = $dbconfig['dbdriver'];
         if ($dbriver === 'pdo') {
             if (!isset($dbconfig['dsn'])) {
@@ -87,25 +91,24 @@ class Doctrine
             }
 
 
-        } elseif($dbriver === 'mysql'){
+        } elseif ($dbriver === 'mysql') {
             $dbriver = 'pdo_mysql';
         }
+
         // Database connection information
         $connectionOptions = array(
-            'driver' => $dbriver,
-            'user' => $db['default']['username'],
-            'password' => $db['default']['password'],
-            'host' => $db['default']['hostname'],
-            'dbname' => $db['default']['database']
+            'driver'   => $dbriver,
+            'user'     => $dbconfig['username'],
+            'password' => $dbconfig['password'],
+            'host'     => $dbconfig['hostname'],
+            'dbname'   => $dbconfig['database']
         );
-        if (isset($db['default']['port'])) {
-            $connectionOptions['port'] = $db['default']['port'];
+        if (isset($dbconfig['port'])) {
+            $connectionOptions['port'] = $dbconfig['port'];
 
         }
 
-
-        // Create EntityManager
-        $this->em = EntityManager::create($connectionOptions, $config);
+        return $connectionOptions;
     }
 
 }
