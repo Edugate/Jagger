@@ -1284,6 +1284,27 @@ var GINIT = {
             //return false;
         });
 
+        $("#rejectqueue").on('submit',function(e){
+            var serializedData = $(this).serializeArray();
+            var posturl = $(this).attr('action');
+            $.ajax({
+                type: "POST",
+                url: posturl,
+                data: serializedData,
+                dataType: "json",
+                success: function(data){
+                    if(data){
+                        alert(data.message);
+                        window.location.href = baseurl;
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown){
+                     window.alert('Error occured: ' + errorThrown);
+                }
+            });
+            return false;
+        });
+
         $("form#approvequeue").submit(function (e) {
             var result = 0;
             var validators = 0;
@@ -4423,7 +4444,6 @@ $("#notificationupdateform").on('submit', function (e) {
                 var foundrecord = false;
 
                 $.each(data, function (i, v) {
-
                     if (foundrecord === false && parseInt(v.id) === notid) {
 
                         foundrecord = true;

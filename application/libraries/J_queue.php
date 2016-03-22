@@ -64,7 +64,7 @@ class J_queue
         /* add reject form */
         $rejectHiddenAttrs = array('qaction' => 'reject', 'qid' => $qid);
         $reject_attrid = array('id' => 'rejectqueue');
-        $rejectForm = form_open('reports/awaiting/reject', $reject_attrid, $rejectHiddenAttrs);
+        $rejectForm = form_open('reports/queueactions/reject', $reject_attrid, $rejectHiddenAttrs);
         $rejectForm .= '<button type="submit" name="mysubmit" value="Reject request!" class="resetbutton reseticon left alert">' . $rejecttext . '</button>' . form_close();
         $result = '<div class="small-12 large-6 columns"><div class="buttons panel clearfix" >' . $rejectForm . '' . $approveForm . '</div></div>';
 
