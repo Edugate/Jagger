@@ -100,7 +100,6 @@ class Queueactions extends MY_Controller
                 }
             }
         }
-        $qObjName = $queueObj->getName();
         $qtoken = $queueObj->getToken();
         if ($hasRejectAccess !== true) {
             return $this->output->set_status_header(403)->set_output(lang('rerror_noperm_reject'));
