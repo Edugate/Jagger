@@ -18,7 +18,7 @@ class Awaiting extends MY_Controller
     public function __construct() {
         parent::__construct();
         $this->load->helper(array('form', 'url', 'cert'));
-        $this->load->library(array('table', 'tracker'));
+        $this->load->library(array('table', 'tracker','jqueueaccess'));
         $this->title = lang('title_approval');
     }
 
@@ -44,96 +44,19 @@ class Awaiting extends MY_Controller
      * @return bool
      */
     private function hasApproveByFedadmin(\models\Queue $queue) {
-        $objData = $queue->getData();
-        $providerData = new models\Provider();
-        $providerData->importFromArray($objData);
-        $feds = $providerData->getFederations();
-        $nofeds = $feds->count();
-        if ($nofeds === 1) {
-            $ff = $feds->first();
-            $fedindb = $this->em->getRepository('models\Federation')->findOneBy(array('sysname' => '' . $ff->getSysname() . ''));
-            if ($fedindb !== null) {
-                return $this->zacl->check_acl('f_' . $fedindb->getId() . '', 'approve', 'federation');
-            }
-        }
-
-        return false;
+        return $this->jqueueaccess->hasApproveByFedadmin($queue);
     }
 
     /**
-     * @param \models\Queue $q
+     * @param \models\Queue $queue
      * @return bool
      */
-    private function hasQAccess(\models\Queue $q) {
-        $result = false;
-        if ($this->jauth->isAdministrator()) {
-            return true;
-        }
-        $currentUser = $this->jauth->getLoggedinUsername();
-        /**
-         * @var $creator models\User
-         */
-        $creator = $q->getCreator();
-        if (!empty($creator) && strcasecmp($creator->getUsername(), $currentUser) == 0) {
-            return true;
-        }
-        $action = $q->getAction();
-        $recipient = $q->getRecipient();
-        $recipientType = $q->getRecipientType();
-        $objType = $q->getObjType();
-
-        if (strcasecmp($action, 'Join') == 0) {
-            if (!empty($recipientType) && strcasecmp($recipientType, 'federation') == 0 && !empty($recipient)) {
-                $hasWrite = $this->zacl->check_acl('f_' . $recipient . '', 'write', 'federation', '') || $this->zacl->check_acl('f_' . $recipient . '', 'approve', 'federation', '');
-
-                return $hasWrite;
-            }
-        } elseif (strcasecmp($action, 'Create') == 0 && strcasecmp($objType, 'Provider') == 0) {
-
-            $objData = $q->getData();
-            $providerData = new models\Provider();
-            $providerData->importFromArray($objData);
-            $feds = $providerData->getFederations();
-            $nofeds = $feds->count();
-            if ($nofeds === 1) {
-                $ff = $feds->first();
-                $fedindb = $this->em->getRepository('models\Federation')->findOneBy(array('sysname' => '' . $ff->getSysname() . ''));
-                if ($fedindb !== null) {
-                    return $this->zacl->check_acl('f_' . $fedindb->getId() . '', 'approve', 'federation');
-                }
-            }
-            $result = $this->hasApproveByFedadmin($q);
-        } elseif (strcasecmp($action, 'apply') == 0 && strcasecmp($recipientType, 'entitycategory') == 0) {
-            /**
-             * @todo decide who can approve entity category request
-             */
-        } elseif (strcasecmp($action, 'apply') == 0 && strcasecmp($recipientType, 'regpolicy') == 0) {
-            /**
-             * @todo decide who can approve registration policy request
-             */
-        }
-
-        return $result;
+    private function hasQAccess(\models\Queue $queue) {
+        return $this->jqueueaccess->hasQAccess($queue);
     }
 
-    private function hasApproveAccess(\models\Queue $q) {
-        $result = false;
-        if ($this->jauth->isAdministrator()) {
-            return true;
-        }
-        $action = $q->getAction();
-        $recipient = $q->getRecipient();
-        $recipientType = $q->getRecipientType();
-
-        if (strcasecmp($action, 'Join') == 0 && !empty($recipientType)) {
-            if (strcasecmp($recipientType, 'federation') == 0 && !empty($recipient)) {
-                $result = $this->zacl->check_acl('f_' . $recipient . '', 'write', 'federation', '');
-            } elseif (strcasecmp($recipientType, 'provider') == 0 && !empty($recipient)) {
-                $result = $this->zacl->check_acl($recipient, 'write', 'provider', '');
-            }
-        }
-
-        return $result;
+    private function hasApproveAccess(\models\Queue $queue) {
+        return $this->jqueueaccess->hasApproveAccess($queue);
     }
 
     private function getQueueList() {
