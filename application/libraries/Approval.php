@@ -64,9 +64,25 @@ class Approval
             'orig' => $provider->getScopeFull(),
             'new' => $newScopes
         );
+        $diffFound = false;
+        foreach (array('idpsso','aa') as $v){
+            $diff1 = array_diff_assoc($data['orig'][''.$v.''],$data['new'][''.$v.'']);
+            $diff2 = array_diff_assoc($data['new'][''.$v.''],$data['orig'][''.$v.'']);
+            if(count($diff1) > 0 || count($diff2)>0){
+                $diffFound = true;
+                break;
+            }
+
+        }
+
         $queue->setObject(array('scope'=>$data));
         $queue->setToken();
-        $this->em->persist($queue);
+        if($diffFound) {
+            $this->em->persist($queue);
+        }
+        else {
+            $queue = null;
+        }
         return $queue;
     }
 

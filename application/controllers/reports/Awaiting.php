@@ -18,101 +18,13 @@ class Awaiting extends MY_Controller
     public function __construct() {
         parent::__construct();
         $this->load->helper(array('form', 'url', 'cert'));
-        $this->load->library(array('table', 'tracker','jqueueaccess'));
+        $this->load->library(array('table', 'tracker', 'jqueueaccess'));
         $this->title = lang('title_approval');
     }
 
-
-    public function ajaxrefresh() {
-        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
-            set_status_header(403);
-            echo 'Permission denied';
-
-            return;
-        }
-        $this->load->library(array('zacl', 'j_queue'));
-        $data = array(
-            'list' => $this->getQueueList(),
-            'error_message' => $this->session->flashdata('error_message'),
-            'content_view' => 'reports/awaiting_list_view'
-        );
-        $this->load->view('reports/awaiting_list_view', $data);
-    }
-    
-    private function getQueueList() {
-        $userid = $this->session->userdata('user_id');
-        $cached = $this->j_ncache->getUserQList($userid);
-        if ($cached) {
-            return $cached;
-        }
-        $this->load->library('zacl');
-        $this->load->library('j_queue');
-        /**
-         * @var  models\Queue[] $queueArray
-         */
-        $queueArray = $this->em->getRepository("models\Queue")->findAll();
-        $result = array('q' => array(), 's' => array());
-
-        foreach ($queueArray as $q) {
-            $c_creator = 'anonymous';
-            $c_creatorCN = 'Anonymous';
-            $creator = $q->getCreator();
-            $access = $this->jqueueaccess->hasQAccess($q);
-            if (!$access) {
-                continue;
-            }
-            if (!empty($creator)) {
-                $c_creator = $creator->getUsername();
-                $c_creatorCN = $creator->getFullname();
-            }
-            $recipientid = $q->getRecipient();
-            $recipenttype = $q->getRecipientType();
-            $recipientname = '';
-            if (strcasecmp($recipenttype, 'provider') == 0) {
-                $p = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $recipientid));
-                if (!empty($p)) {
-                    $recipientname = $p->getName();
-                }
-            }
-            if ($access) {
-                $result['q'][] = array(
-                    'issubscription' => 0,
-                    'requester' => $c_creator,
-                    'requesterCN' => $c_creatorCN,
-                    'idate' => $q->getCreatedAt(),
-                    'datei' => $q->getCreatedAt(),
-                    'iname' => $q->getCN(),
-                    'qid' => $q->getId(),
-                    'mail' => $q->getEmail(),
-                    'type' => $q->getType(),
-                    'action' => $q->getAction(),
-                    'recipientname' => $recipientname,
-                    'token' => $q->getToken(),
-                    'confirmed' => $q->getConfirm()
-                );
-
-            }
-        }
-        $subscriptions = $this->em->getRepository('models\NotificationList')->findBy(array('is_approved' => '0', 'is_enabled' => '1'));
-        $isAdmin = $this->jauth->isAdministrator();
-        if ($isAdmin) {
-
-            foreach ($subscriptions as $s) {
-                $result['s'][] = array(
-                    'subscriber' => $s->getSubscriber()->getUsername(),
-                    'subscriber_email' => $s->getSubscriber()->getEmail(),
-                    'type' => lang($s->getType()),
-                    'url' => base_url('notifications/subscriber/mysubscriptions/' . base64url_encode($s->getSubscriber()->getUsername()))
-                );
-
-            }
-        }
-        $this->j_ncache->saveUserQList($this->session->userdata('user_id'), $result);
-
-        return $result;
-    }
-
-
+    /**
+     * @return CI_Output
+     */
     public function dashz() {
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(400)->set_output('Incorrect request');
@@ -125,6 +37,94 @@ class Awaiting extends MY_Controller
 
         return $this->output->set_content_type('application/json')->set_status_header(200)->set_output(json_encode($result));
 
+    }
+
+    public function ajaxrefresh() {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
+            return $this->output->set_status_header(403)->set_output('Permission denied');
+        }
+        $this->load->library(array('zacl', 'j_queue'));
+        $data = array(
+            'list'          => $this->getQueueList(),
+            'error_message' => $this->session->flashdata('error_message'),
+            'content_view'  => 'reports/awaiting_list_view'
+        );
+        $this->load->view('reports/awaiting_list_view', $data);
+    }
+
+    private function getQueueList() {
+        $userid = $this->session->userdata('user_id');
+        $cached = $this->j_ncache->getUserQList($userid);
+        if ($cached) {
+            return $cached;
+        }
+        $this->load->library(array('zacl','j_queue','jqueueaccess'));
+        /**
+         * @var  models\Queue[] $queueArray
+         */
+        $queueArray = $this->em->getRepository("models\Queue")->findAll();
+        $result = array('q' => array(), 's' => array());
+
+        foreach ($queueArray as $q) {
+            $cUsername = 'anonymous';
+            $cCN = 'Anonymous';
+            $creator = $q->getCreator();
+            $access = $this->jqueueaccess->hasQAccess($q);
+            if (!$access) {
+                continue;
+            }
+            if ($creator !== null) {
+                $cUsername = $creator->getUsername();
+                $cCN = $creator->getFullname();
+            }
+            $recipientid = $q->getRecipient();
+            $recipenttype = $q->getRecipientType();
+            $recipientname = '';
+            if (strcasecmp($recipenttype, 'provider') == 0) {
+                /**
+                 * @var models\Provider $p
+                 */
+                $p = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $recipientid));
+                if ($p !== null) {
+                    $recipientname = $p->getName();
+                }
+            }
+            if ($access) {
+                $result['q'][] = array(
+                    'issubscription' => 0,
+                    'requester'      => $cUsername,
+                    'requesterCN'    => $cCN,
+                    'idate'          => $q->getCreatedAt(),
+                    'datei'          => $q->getCreatedAt(),
+                    'iname'          => $q->getCN(),
+                    'qid'            => $q->getId(),
+                    'mail'           => $q->getEmail(),
+                    'type'           => $q->getType(),
+                    'action'         => $q->getAction(),
+                    'recipientname'  => $recipientname,
+                    'token'          => $q->getToken(),
+                    'confirmed'      => $q->getConfirm()
+                );
+
+            }
+        }
+        $subscriptions = $this->em->getRepository('models\NotificationList')->findBy(array('is_approved' => '0', 'is_enabled' => '1'));
+        $isAdmin = $this->jauth->isAdministrator();
+        if ($isAdmin) {
+
+            foreach ($subscriptions as $s) {
+                $result['s'][] = array(
+                    'subscriber'       => $s->getSubscriber()->getUsername(),
+                    'subscriber_email' => $s->getSubscriber()->getEmail(),
+                    'type'             => lang($s->getType()),
+                    'url'              => base_url('notifications/subscriber/mysubscriptions/' . base64url_encode($s->getSubscriber()->getUsername()))
+                );
+
+            }
+        }
+        $this->j_ncache->saveUserQList($this->session->userdata('user_id'), $result);
+
+        return $result;
     }
 
 
@@ -180,11 +180,11 @@ class Awaiting extends MY_Controller
             $objData->importFromArray($qObject->getData());
             /* build table with details */
             $result = array(
-                'data' => array(
-                    'provider' => $this->j_queue->displayRegisterProvider($qObject),
-                    'obj' => $objData,
+                'data'         => array(
+                    'provider'      => $this->j_queue->displayRegisterProvider($qObject),
+                    'obj'           => $objData,
                     'error_message' => $this->error_message,
-                    'content_view' => 'reports/awaiting_provider_register_view'
+                    'content_view'  => 'reports/awaiting_provider_register_view'
                 ),
                 'content_view' => 'reports/awaiting_provider_register_view'
             );
@@ -240,7 +240,7 @@ class Awaiting extends MY_Controller
 
         if ($queueObject === null) {
             return $this->load->view('page', array(
-                'content_view' => 'error_message',
+                'content_view'  => 'error_message',
                 'error_message' => lang('rerror_qid_noexist')
             ));
         }
@@ -248,7 +248,7 @@ class Awaiting extends MY_Controller
         if (!$this->jqueueaccess->hasQAccess($queueObject)) {
             return $this->load->view('page', array(
                 'content_view' => 'nopermission',
-                'error' => lang('rr_nopermission')
+                'error'        => lang('rr_nopermission')
             ));
         }
         $approveaccess = $this->jqueueaccess->hasApproveAccess($queueObject);
@@ -264,8 +264,8 @@ class Awaiting extends MY_Controller
             $result = $this->detailFederation($queueObject);
         } elseif (strcasecmp($objType, 'User') == 0 && strcasecmp($objAction, 'Create') == 0) {
             $result['data'] = array(
-                'requestdata' => $this->j_queue->displayRegisterUser($queueObject),
-                'content_view' => 'reports/awaiting_detail_view',
+                'requestdata'   => $this->j_queue->displayRegisterUser($queueObject),
+                'content_view'  => 'reports/awaiting_detail_view',
                 'error_message' => $this->error_message
             );
             $result['data']['requestdata'][]['2cols'] = $buttons;
@@ -273,7 +273,7 @@ class Awaiting extends MY_Controller
         } elseif (strcasecmp($objType, 'n') == 0) {
             if (strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'entitycategory') == 0) { // apply for entity category
                 $result['data'] = array(
-                    'requestdata' => $this->j_queue->displayApplyForEntityCategory($queueObject),
+                    'requestdata'  => $this->j_queue->displayApplyForEntityCategory($queueObject),
                     'content_view' => 'reports/awaiting_detail_view',
 
                 );
@@ -281,20 +281,21 @@ class Awaiting extends MY_Controller
 
             } elseif (strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'regpolicy') == 0) { // apply for entity category
                 $result['data'] = array(
-                    'requestdata' => $this->j_queue->displayApplyForRegistrationPolicy($queueObject),
+                    'requestdata'  => $this->j_queue->displayApplyForRegistrationPolicy($queueObject),
                     'content_view' => 'reports/awaiting_detail_view'
                 );
                 $result['data']['requestdata'][]['2cols'] = $buttons;
 
             } elseif (strcasecmp($objAction, 'UPDATE') == 0 && strcasecmp($recipientType, 'provider') == 0) {
                 $result['data'] = array(
-                    'requestdata' => $this->j_queue->displayUpdateProvider($queueObject),
+                    'requestdata'  => $this->j_queue->displayUpdateProvider($queueObject),
                     'content_view' => 'reports/awaiting_detail_view');
+                $result['data']['requestdata'][]['2cols'] = $buttons;
             }
         } else {
             return $this->load->view('page', array(
                 'content_view' => 'nopermission',
-                'error' => 'no permission or unkown error',
+                'error'        => 'no permission or unkown error',
             ));
         }
 
@@ -494,12 +495,12 @@ class Awaiting extends MY_Controller
             $queueObj = $this->em->getRepository("models\Queue")->findOneBy(array('id' => $qid));
         }
         if (empty($queueObj)) {
-            $message = $_SERVER['REQUEST_URI'];
+            $message = $this->input->server('REQUEST_URI');
             $message .= ' id=' . $this->input->post('qid') . ' doesnt exist in queue';
             log_message('debug', $message);
             $dataview = array(
                 'error_message' => 'It cannot be approved because it does not exist',
-                'content_view' => 'error_message'
+                'content_view'  => 'error_message'
             );
 
             return $this->load->view('page', $dataview);
@@ -507,7 +508,7 @@ class Awaiting extends MY_Controller
         $queueAction = $queueObj->getAction();
         $queueObjType = $queueObj->getType();
         $allowedActionsAndTypes['Create']['User'] = array(
-            'access' => $this->jqueueaccess->hasApproveAccess($queueObj),
+            'access'      => $this->jqueueaccess->hasApproveAccess($queueObj),
             'fnameAction' => 'createUserFromQueue',
         );
         $allowedActionsAndTypes['Create']['IDP'] = array(
@@ -559,7 +560,7 @@ class Awaiting extends MY_Controller
                 if ($storedEntity) {
                     $data = array(
                         'success_message' => 'entity approved',
-                        'content_view' => 'reports/awaiting_approved_view'
+                        'content_view'    => 'reports/awaiting_approved_view'
                     );
 
                     return $this->load->view('page', $data);

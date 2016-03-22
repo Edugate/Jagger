@@ -267,10 +267,34 @@ class J_queue
 
             array('header' => lang('request')),
             array('name' => lang('rr_sourceip'), 'value' => $queue->getIP()),
-            array('name' => lang('type'), 'value' => 'update provider'),
-            array('name' => lang('requestor'), 'value' => $creator->getFullname() . ' (' . $creator->getUsername() . ')'),
+            array('name' => lang('type'), 'value' => 'update provider: '.html_escape($queue->getName())),
+            array('name' => lang('requestor'), 'value' => $creator->getFullname() . '<br /><b>'.lang('rr_username').'</b>: ' . $creator->getUsername() . ''),
 
         );
+        if(array_key_exists('scope',$objData)){
+            $result[] = array('header'=>'Request for update scope');
+
+            $orig = '';
+            if($objData['scope']['orig']){
+                foreach ($objData['scope']['orig'] as $k=>$v){
+                    foreach ($v as $w){
+                        $orig .= $k.': '.html_escape($w).'<br />';
+                    }
+                }
+            }
+            $new = '';
+            if($objData['scope']['new']){
+                foreach ($objData['scope']['new'] as $k=>$v){
+                    foreach ($v as $w){
+                        $new .= $k.': '.html_escape($w).'<br />';
+                    }
+                }
+            }
+
+
+            $result[] = array('name'=>'Scope current','value'=>$orig);
+            $result[] = array('name'=>'Scope requested','value'=>$new);
+        }
 
         return $result;
     }

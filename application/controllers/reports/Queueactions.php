@@ -38,6 +38,7 @@ class Queueactions extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Invalid post');
         }
 
+        $isAdmin = $this->jauth->isAdministrator();
         $qaction = $this->input->post('qaction');
         $qid = $this->input->post('qid');
         if ($qaction !== 'reject') {
@@ -64,6 +65,9 @@ class Queueactions extends MY_Controller
         if (!empty($creator)) {
             $hasRejectAccess = (strcasecmp($creator->getUsername(), $this->jauth->getLoggedinUsername()) == 0);
         }
+        if($isAdmin){
+            $hasRejectAccess = true;
+        }
         if ($hasRejectAccess === false) {
             if (strcasecmp($queueAction, 'Create') == 0) {
                 if (strcasecmp($queueObjType, 'idp') == 0 || strcasecmp($queueObjType, 'sp') == 0) {
@@ -83,18 +87,15 @@ class Queueactions extends MY_Controller
             } elseif (strcasecmp($queueAction, 'Delete') == 0) {
                 $type = $queueObj->getType();
                 if (strcasecmp($type, 'Federation') == 0) {
-                    $isAdmin = $this->jauth->isAdministrator();
                     if ($isAdmin) {
                         $hasRejectAccess = true;
                     }
                 }
             } elseif (strcasecmp($queueAction, 'apply') == 0 && strcasecmp($recipienttype, 'entitycategory') == 0) {
-                $isAdmin = $this->jauth->isAdministrator();
                 if ($isAdmin) {
                     $hasRejectAccess = true;
                 }
             } elseif (strcasecmp($queueAction, 'apply') == 0 && strcasecmp($recipienttype, 'regpolicy') == 0) {
-                $isAdmin = $this->jauth->isAdministrator();
                 if ($isAdmin) {
                     $hasRejectAccess = true;
                 }
