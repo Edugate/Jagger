@@ -127,51 +127,6 @@ class Awaiting extends MY_Controller
         return $result;
     }
 
-
-    private function detailFederation(models\Queue $qObject) {
-        $objAction = $qObject->getAction();
-        $recipientType = $qObject->getRecipientType();
-        if (strcasecmp($objAction, 'Create') == 0) {
-            $fedrows = $this->j_queue->displayRegisterFederation($qObject);
-            $fedrows[]['2cols'] = $this->j_queue->displayFormsButtons($qObject->getId());
-            $data['fedrows'] = $fedrows;
-            $data['content_view'] = 'reports/awaiting_federation_register_view';
-            $r['data'] = $data;
-
-            return $r;
-        }
-        if (strcasecmp($objAction, 'Join') == 0 && strcasecmp($recipientType, 'provider') == 0) {
-            $recipient_write_access = $this->zacl->check_acl($qObject->getRecipient(), 'write', 'entity', '');
-            $requestor_view_access = (strcasecmp($qObject->getCreator()->getUsername(), $this->jauth->getLoggedinUsername()) == 0);
-            if ($requestor_view_access || $recipient_write_access) {
-                $result = $this->j_queue->displayInviteProvider($qObject);
-                if (!empty($result)) {
-                    $data['result'] = $result;
-                } else {
-                    $data['error_message'] = "Couldn't load request details";
-                }
-            } else {
-                $data['error_message'] = lang('rerror_noperm_viewqueuerequest');
-            }
-
-            $data['content_view'] = 'reports/awaiting_invite_provider_view';
-            $r['data'] = $data;
-
-            return $r;
-        }
-        if (strcasecmp($objAction, 'Delete') == 0) {
-            $fedrows = $this->j_queue->displayDeleteFederation($qObject);
-            $fedrows[]['2cols'] = $this->j_queue->displayFormsButtons($qObject->getId(), !$this->jauth->isAdministrator());
-            $data['fedrows'] = $fedrows;
-            $data['content_view'] = 'reports/awaiting_federation_register_view';
-            $r['data'] = $data;
-
-            return $r;
-        }
-
-        return null;
-    }
-
     private function detailProvider(models\Queue $qObject) {
         $objAction = $qObject->getAction();
         $objRecipientType = $qObject->getRecipientType();
@@ -261,7 +216,7 @@ class Awaiting extends MY_Controller
         if (strcasecmp($objType, 'Provider') == 0) {
             $result = $this->detailProvider($queueObject);
         } elseif (strcasecmp($objType, 'Federation') == 0) {
-            $result = $this->detailFederation($queueObject);
+            $result = $this->j_queue->detailFederation($queueObject);
         } elseif (strcasecmp($objType, 'User') == 0 && strcasecmp($objAction, 'Create') == 0) {
             $result['data'] = array(
                 'requestdata'   => $this->j_queue->displayRegisterUser($queueObject),

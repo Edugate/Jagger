@@ -639,4 +639,48 @@ class J_queue
         return $result;
     }
 
+    public function detailFederation(models\Queue $qObject) {
+        $objAction = $qObject->getAction();
+        $recipientType = $qObject->getRecipientType();
+        if (strcasecmp($objAction, 'Create') == 0) {
+            $fedrows = $this->displayRegisterFederation($qObject);
+            $fedrows[]['2cols'] = $this->displayFormsButtons($qObject->getId());
+            $data['fedrows'] = $fedrows;
+            $data['content_view'] = 'reports/awaiting_federation_register_view';
+            $r['data'] = $data;
+
+            return $r;
+        }
+        if (strcasecmp($objAction, 'Join') == 0 && strcasecmp($recipientType, 'provider') == 0) {
+            $recipient_write_access = $this->ci->zacl->check_acl($qObject->getRecipient(), 'write', 'entity', '');
+            $requestor_view_access = (strcasecmp($qObject->getCreator()->getUsername(), $this->ci->jauth->getLoggedinUsername()) == 0);
+            if ($requestor_view_access || $recipient_write_access) {
+                $result = $this->displayInviteProvider($qObject);
+                if (!empty($result)) {
+                    $data['result'] = $result;
+                } else {
+                    $data['error_message'] = "Couldn't load request details";
+                }
+            } else {
+                $data['error_message'] = lang('rerror_noperm_viewqueuerequest');
+            }
+
+            $data['content_view'] = 'reports/awaiting_invite_provider_view';
+            $r['data'] = $data;
+
+            return $r;
+        }
+        if (strcasecmp($objAction, 'Delete') == 0) {
+            $fedrows = $this->displayDeleteFederation($qObject);
+            $fedrows[]['2cols'] = $this->displayFormsButtons($qObject->getId(), !$this->ci->jauth->isAdministrator());
+            $data['fedrows'] = $fedrows;
+            $data['content_view'] = 'reports/awaiting_federation_register_view';
+            $r['data'] = $data;
+
+            return $r;
+        }
+
+        return null;
+    }
+
 }
