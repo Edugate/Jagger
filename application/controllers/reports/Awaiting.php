@@ -319,37 +319,29 @@ class Awaiting extends MY_Controller
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
-        try {
-            $this->load->library(array('zacl', 'j_queue', 'providertoxml'));
-        } catch (Exception $e) {
-            log_message('error', __METHOD__ . ' ' . $e);
-            show_error('Internal server error', 500);
-        }
         /**
          * @var $queueObject models\Queue
          */
         try {
+            $this->load->library(array('zacl', 'j_queue', 'providertoxml'));
             $queueObject = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $token));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
             show_error('Internal server error', 500);
         }
 
-
         $breadcrumbs = array(
             array('url' => base_url('reports/awaiting'), 'name' => '' . lang('rr_listawaiting') . ''),
             array('url' => '#', 'name' => lang('rr_requestawaiting'), 'type' => 'current'),
         );
 
-        if (empty($queueObject)) {
+        if ($queueObject === null) {
             return $this->load->view('page', array(
                 'content_view' => 'error_message',
                 'error_message' => lang('rerror_qid_noexist')
             ));
         }
-        $objType = $queueObject->getObjType();
-        $objAction = $queueObject->getAction();
-        $recipientType = $queueObject->getRecipientType();
+
         if (!$this->hasQAccess($queueObject)) {
             return $this->load->view('page', array(
                 'content_view' => 'nopermission',
@@ -358,6 +350,10 @@ class Awaiting extends MY_Controller
         }
         $approveaccess = $this->hasApproveAccess($queueObject);
         $buttons = $this->j_queue->displayFormsButtons($queueObject->getId(), !$approveaccess);
+
+        $objType = $queueObject->getObjType();
+        $objAction = $queueObject->getAction();
+        $recipientType = $queueObject->getRecipientType();
 
         if (strcasecmp($objType, 'Provider') == 0) {
             $result = $this->detailProvider($queueObject);
@@ -371,38 +367,36 @@ class Awaiting extends MY_Controller
             );
             $result['data']['requestdata'][]['2cols'] = $buttons;
 
-        } elseif (strcasecmp($objType, 'n') == 0 && strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'entitycategory') == 0) { // apply for entity category
-            $result['data'] = array(
-                'requestdata' => $this->j_queue->displayApplyForEntityCategory($queueObject),
-                'content_view' => 'reports/awaiting_detail_view',
+        } elseif (strcasecmp($objType, 'n') == 0) {
+            if (strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'entitycategory') == 0) { // apply for entity category
+                $result['data'] = array(
+                    'requestdata' => $this->j_queue->displayApplyForEntityCategory($queueObject),
+                    'content_view' => 'reports/awaiting_detail_view',
 
-            );
-            $result['data']['requestdata'][]['2cols'] = $buttons;
+                );
+                $result['data']['requestdata'][]['2cols'] = $buttons;
 
-        } elseif (strcasecmp($objType, 'n') == 0 && strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'regpolicy') == 0) { // apply for entity category
-            $result['data'] = array(
-                'requestdata' => $this->j_queue->displayApplyForRegistrationPolicy($queueObject),
-                'content_view' => 'reports/awaiting_detail_view'
-            );
-            $result['data']['requestdata'][]['2cols'] = $buttons;
+            } elseif (strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'regpolicy') == 0) { // apply for entity category
+                $result['data'] = array(
+                    'requestdata' => $this->j_queue->displayApplyForRegistrationPolicy($queueObject),
+                    'content_view' => 'reports/awaiting_detail_view'
+                );
+                $result['data']['requestdata'][]['2cols'] = $buttons;
 
-        } elseif (strcasecmp($objType, 'n') == 0 && strcasecmp($objAction, 'UPDATE') == 0 && strcasecmp($recipientType, 'provider') == 0) {
-            $result['data'] = array(
-                'requestdata' => $this->j_queue->displayUpdateProvider($queueObject),
-                'content_view' => 'reports/awaiting_detail_view');
-        }
-
-        if (!empty($result) && is_array($result)) {
-            $result['data']['breadcrumbs'] = $breadcrumbs;
+            } elseif (strcasecmp($objAction, 'UPDATE') == 0 && strcasecmp($recipientType, 'provider') == 0) {
+                $result['data'] = array(
+                    'requestdata' => $this->j_queue->displayUpdateProvider($queueObject),
+                    'content_view' => 'reports/awaiting_detail_view');
+            }
         } else {
-            $result = array(
-                'data' => array(
-                    'content_view' => 'nopermission',
-                    'error' => 'no permission or unkown error',
-                )
-            );
-
+            return $this->load->view('page', array(
+                'content_view' => 'nopermission',
+                'error' => 'no permission or unkown error',
+            ));
         }
+
+        $result['data']['breadcrumbs'] = $breadcrumbs;
+
         $this->load->view('page', $result['data']);
     }
 
