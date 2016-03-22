@@ -38,27 +38,7 @@ class Awaiting extends MY_Controller
         );
         $this->load->view('reports/awaiting_list_view', $data);
     }
-
-    /**
-     * @param \models\Queue $queue
-     * @return bool
-     */
-    private function hasApproveByFedadmin(\models\Queue $queue) {
-        return $this->jqueueaccess->hasApproveByFedadmin($queue);
-    }
-
-    /**
-     * @param \models\Queue $queue
-     * @return bool
-     */
-    private function hasQAccess(\models\Queue $queue) {
-        return $this->jqueueaccess->hasQAccess($queue);
-    }
-
-    private function hasApproveAccess(\models\Queue $queue) {
-        return $this->jqueueaccess->hasApproveAccess($queue);
-    }
-
+    
     private function getQueueList() {
         $userid = $this->session->userdata('user_id');
         $cached = $this->j_ncache->getUserQList($userid);
@@ -77,7 +57,7 @@ class Awaiting extends MY_Controller
             $c_creator = 'anonymous';
             $c_creatorCN = 'Anonymous';
             $creator = $q->getCreator();
-            $access = $this->hasQAccess($q);
+            $access = $this->jqueueaccess->hasQAccess($q);
             if (!$access) {
                 continue;
             }
@@ -265,13 +245,13 @@ class Awaiting extends MY_Controller
             ));
         }
 
-        if (!$this->hasQAccess($queueObject)) {
+        if (!$this->jqueueaccess->hasQAccess($queueObject)) {
             return $this->load->view('page', array(
                 'content_view' => 'nopermission',
                 'error' => lang('rr_nopermission')
             ));
         }
-        $approveaccess = $this->hasApproveAccess($queueObject);
+        $approveaccess = $this->jqueueaccess->hasApproveAccess($queueObject);
         $buttons = $this->j_queue->displayFormsButtons($queueObject->getId(), !$approveaccess);
 
         $objType = $queueObject->getObjType();
@@ -527,7 +507,7 @@ class Awaiting extends MY_Controller
         $queueAction = $queueObj->getAction();
         $queueObjType = $queueObj->getType();
         $allowedActionsAndTypes['Create']['User'] = array(
-            'access' => $this->hasApproveAccess($queueObj),
+            'access' => $this->jqueueaccess->hasApproveAccess($queueObj),
             'fnameAction' => 'createUserFromQueue',
         );
         $allowedActionsAndTypes['Create']['IDP'] = array(
@@ -540,7 +520,7 @@ class Awaiting extends MY_Controller
         $allowedActionsAndTypes['apply'] = array();
 
         if (strcasecmp($queueAction, 'Create') == 0 && strcasecmp($queueObjType, 'User') == 0) {
-            $approve_allowed = $this->hasApproveAccess($queueObj);
+            $approve_allowed = $this->jqueueaccess->hasApproveAccess($queueObj);
             if (!$approve_allowed) {
                 $data['error_message'] = lang('rerror_noperm_approve');
                 $data['content_view'] = 'error_message';
@@ -573,7 +553,7 @@ class Awaiting extends MY_Controller
                 return;
             }
         } elseif ($queueAction === 'Create' && (strcasecmp($queueObjType, 'IDP') == 0 || strcasecmp($queueObjType, 'SP') == 0 || strcasecmp($queueObjType, 'BOTH') == 0)) {
-            $approve_allowed = $this->zacl->check_acl(strtolower($queueObjType), 'create', 'entity', '') || $this->hasApproveByFedadmin($queueObj);
+            $approve_allowed = $this->zacl->check_acl(strtolower($queueObjType), 'create', 'entity', '') || $this->jqueueaccess->hasApproveByFedadmin($queueObj);
             if ($approve_allowed) {
                 $storedEntity = $this->createProvider($queueObj);
                 if ($storedEntity) {
@@ -892,7 +872,7 @@ class Awaiting extends MY_Controller
             if (!empty($queueObj)) {
                 $queueAction = $queueObj->getAction();
                 $creator = $queueObj->getCreator();
-                $reject_access = $this->hasQAccess($queueObj);
+                $reject_access = $this->jqueueaccess->hasQAccess($queueObj);
                 $recipienttype = $queueObj->getRecipientType();
                 $queueObjType = strtolower($queueObj->getType());
                 if (!empty($creator)) {
@@ -901,7 +881,7 @@ class Awaiting extends MY_Controller
                 if ($reject_access === false) {
                     if (strcasecmp($queueAction, 'Create') == 0) {
                         if (strcasecmp($queueObjType, 'idp') == 0 || strcasecmp($queueObjType, 'sp') == 0) {
-                            $reject_access = $this->hasApproveByFedadmin($queueObj) || $this->zacl->check_acl($queueObjType, 'create', 'entity', '');
+                            $reject_access = $this->jqueueaccess->hasApproveByFedadmin($queueObj) || $this->zacl->check_acl($queueObjType, 'create', 'entity', '');
                         } elseif (strcasecmp($queueObj->getType(), 'Federation') == 0) {
                             $reject_access = $this->zacl->check_acl('federation', 'create', 'default', '');
                         }
