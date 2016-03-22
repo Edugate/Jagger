@@ -267,7 +267,7 @@ class J_queue
 
             array('header' => lang('request')),
             array('name' => lang('rr_sourceip'), 'value' => $queue->getIP()),
-            array('name' => lang('type'), 'value' => 'update provider: '.html_escape($queue->getName())),
+            array('name' => lang('type'), 'value' => 'provider: '.html_escape($queue->getName()).''),
             array('name' => lang('requestor'), 'value' => $creator->getFullname() . '<br /><b>'.lang('rr_username').'</b>: ' . $creator->getUsername() . ''),
 
         );
