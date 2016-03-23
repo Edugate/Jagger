@@ -9,7 +9,6 @@ if (!defined('BASEPATH')) {
  * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
- *
  */
 class Providerupdater
 {
@@ -40,7 +39,7 @@ class Providerupdater
                 'IDPAttributeService',
                 'IDPArtifactResolutionService'
             ),
-            'sp'  => array(
+            'sp' => array(
                 'AssertionConsumerService',
                 'SPArtifactResolutionService',
                 'DiscoveryResponse',
@@ -128,8 +127,8 @@ class Providerupdater
             $prevregtime = '';
             $prevregistrationdate = $ent->getRegistrationDate();
             if (isset($prevregistrationdate)) {
-                $prevregdate = jaggerDisplayDateTimeByOffset($prevregistrationdate,0,'Y-m-d');
-                $prevregtime = jaggerDisplayDateTimeByOffset($prevregistrationdate,0,'H:i');
+                $prevregdate = jaggerDisplayDateTimeByOffset($prevregistrationdate, 0, 'Y-m-d');
+                $prevregtime = jaggerDisplayDateTimeByOffset($prevregistrationdate, 0, 'H:i');
             }
             if (!array_key_exists('registrationtime', $cData) || empty($cData['registrationtime'])) {
                 $tmpnow = new \DateTime('now');
@@ -163,7 +162,6 @@ class Providerupdater
         $cData['srv'] = $this->cleanIncorrectServicesInput($ent, $cData['srv']);
 
 
-
         /**
          * @var $services models\ServiceLocation[]
          */
@@ -182,13 +180,13 @@ class Providerupdater
 
         $validationBinds = array(
             'IDPArtifactResolutionService' => array('urn:oasis:names:tc:SAML:2.0:bindings:SOAP', 'urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding'),
-            'SPArtifactResolutionService'  => array('urn:oasis:names:tc:SAML:2.0:bindings:SOAP', 'urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding'),
-            'DiscoveryResponse'            => array('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'),
-            'SPSingleLogoutService'        => array('urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact' => false),
-            'IDPSingleLogoutService'       => array('urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact' => false),
-            'SingleSignOnService'          => array('urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:mace:shibboleth:1.0:profiles:AuthnRequest' => false),
-            'IDPAttributeService'          => array('urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding' => false),
-            'AssertionConsumerService'     => array(
+            'SPArtifactResolutionService' => array('urn:oasis:names:tc:SAML:2.0:bindings:SOAP', 'urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding'),
+            'DiscoveryResponse' => array('urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol'),
+            'SPSingleLogoutService' => array('urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact' => false),
+            'IDPSingleLogoutService' => array('urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact' => false),
+            'SingleSignOnService' => array('urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign' => false, 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:mace:shibboleth:1.0:profiles:AuthnRequest' => false),
+            'IDPAttributeService' => array('urn:oasis:names:tc:SAML:2.0:bindings:SOAP' => false, 'urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding' => false),
+            'AssertionConsumerService' => array(
                 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
                 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact',
                 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign',
@@ -199,10 +197,10 @@ class Providerupdater
             ),
         );
         $servicesIndexes = array(
-            'AssertionConsumerService'     => array(),
+            'AssertionConsumerService' => array(),
             'IDPArtifactResolutionService' => array(),
-            'SPArtifactResolutionService'  => array(),
-            'DiscoveryResponse'            => array()
+            'SPArtifactResolutionService' => array(),
+            'DiscoveryResponse' => array()
         );
         $acsdefaultset = false;
         $c = 20;
@@ -425,7 +423,7 @@ class Providerupdater
                 if (!empty($curCrt['certdata'])) {
                     $tdata = true;
                 }
-                $v->setCertData($curCrt['certdata']);
+                $v->setCertdata($curCrt['certdata']);
             }
             if (array_key_exists('encmethods', $curCrt)) {
                 if (is_array($curCrt['encmethods'])) {
@@ -464,7 +462,7 @@ class Providerupdater
                 $ncert->setCertType();
                 $ncert->setCertUse($v2['usage']);
                 $ncert->setKeyname($v2['keyname']);
-                $ncert->setCertData($v2['certdata']);
+                $ncert->setCertdata($v2['certdata']);
                 if (isset($v2['encmethods'])) {
                     $ncert->setEncryptMethods($v2['encmethods']);
                 }
@@ -560,7 +558,7 @@ class Providerupdater
         foreach ($origContacts as $v) {
             $contactID = $v->getId();
 
-            $origcntArray[] = '' . $v->getType() . ' : (' . $v->getGivenname() . ' ' . $v->getSurname() . ') ' . $v->getEmail();
+            $origcntArray[] = '' . $v->getType() . ' : (' . $v->getGivenName() . ' ' . $v->getSurName() . ') ' . $v->getEmail();
             if (!array_key_exists($contactID, $newContacts)) {
                 $ent->removeContact($v);
                 $this->em->remove($v);
@@ -651,7 +649,7 @@ class Providerupdater
         if ($this->checkChangelog($changes)) {
             $m['Registration Policies'] = array(
                 'before' => implode(', ', $changes['before']),
-                'after'  => implode(', ', $changes['after']),
+                'after' => implode(', ', $changes['after']),
             );
             $this->logtracks = array_merge($this->logtracks, $m);
             if (count($this->logtracks) > 0 && !empty($entID)) {
@@ -1056,23 +1054,33 @@ class Providerupdater
             /**
              * set scopes
              */
-            if (array_key_exists('scopes', $ch) && (!in_array('scope', $dissalowedparts) || empty($entid))) {
-
-                $scopeTypes = array('idpsso', 'aa');
-                foreach ($scopeTypes as $scopeType) {
-                    $origScopes = implode(',', $ent->getScope($scopeType));
+            if (array_key_exists('scopes', $ch) && !in_array('scope', $dissalowedparts)) {
+                $newScopesByType = array('idpsso'=>array(), 'aa'=>array());
+                foreach (array('idpsso','aa') as $scopeType) {
                     if (array_key_exists($scopeType, $ch['scopes']) && !empty($ch['scopes'][$scopeType])) {
                         $newScopes = array_filter(preg_split("/[\s,]+/", $ch['scopes'][$scopeType]));
-                        $ent->setScope($scopeType, array_unique($newScopes));
-                        if ($origScopes != implode(',', $newScopes)) {
-                            $changeList['Scope ' . $scopeType . ''] = array('before' => $origScopes, 'after' => implode(',', $newScopes));
-                        }
-                    } else {
-                        $ent->setScope($scopeType, array());
-                        if (!empty($origScopes)) {
-                            $changeList['Scope ' . $scopeType . ''] = array('before' => $origScopes, 'after' => '');
+                        $newScopesByType[''.$scopeType.''] = array_unique($newScopes);
+                    }
+                }
+                if ( empty($entid)) {
+                    foreach (array('idpsso','aa') as $scopeType) {
+                        $origScopes = implode(',', $ent->getScope($scopeType));
+                        if (array_key_exists($scopeType, $ch['scopes']) && !empty($ch['scopes'][$scopeType])) {
+                            $ent->setScope($scopeType, $newScopesByType[''.$scopeType.'']);
+                            if ($origScopes != implode(',',  $newScopesByType[''.$scopeType.''])) {
+                                $changeList['Scope ' . $scopeType . ''] = array('before' => $origScopes, 'after' => implode(',', $newScopesByType[''.$scopeType.'']));
+                            }
+                        } else {
+                            $ent->setScope($scopeType, array());
+                            if (!empty($origScopes)) {
+                                $changeList['Scope ' . $scopeType . ''] = array('before' => $origScopes, 'after' => '');
+                            }
                         }
                     }
+                }
+                else {
+                    $this->ci->approval->applyForScopeChange($ent, $newScopesByType);
+
                 }
             }
         }
@@ -1090,9 +1098,9 @@ class Providerupdater
 
         $fields = array('lname', 'ldisplayname', 'lhelpdesk');
         $fieldsLongName = array(
-            'lname'        => 'OrganizationName',
+            'lname' => 'OrganizationName',
             'ldisplayname' => 'OrganizationDisplayName',
-            'lhelpdesk'    => 'OrganizationURL'
+            'lhelpdesk' => 'OrganizationURL'
         );
         foreach ($fields as $fieldName) {
             $trackorigs = array();
@@ -1206,25 +1214,23 @@ class Providerupdater
 
 
         if (array_key_exists('privacyurl', $ch)) {
-            if ($ent->getPrivacyURL() !== $ch['privacyurl']) {
-                $changeList['PrivacyStatementURL general'] = array('before' => $ent->getPrivacyURL(), 'after' => $ch['privacyurl']);
+            if ($ent->getPrivacyUrl() !== $ch['privacyurl']) {
+                $changeList['PrivacyStatementURL general'] = array('before' => $ent->getPrivacyUrl(), 'after' => $ch['privacyurl']);
             }
             $ent->setPrivacyUrl($ch['privacyurl']);
         }
 
 
-        if($type !== 'IDP'){
+        if ($type !== 'IDP') {
             $currWantAssert = $ent->getWantAssertionSigned();
-            if(array_key_exists('wantassertionssigned',$ch) && $ch['wantassertionssigned'] === 'yes'){
+            if (array_key_exists('wantassertionssigned', $ch) && $ch['wantassertionssigned'] === 'yes') {
                 $ent->setWantAssertionSigned(true);
-            }
-            else
-            {
+            } else {
                 $ent->setWantAssertionSigned(false);
             }
             $newWantAssert = $ent->getWantAssertionSigned();
-            if($currWantAssert !== $newWantAssert){
-                 $changeList['WantAssertionsSigned'] = array('before'=> (string) $currWantAssert, 'after'=> (string) $newWantAssert);
+            if ($currWantAssert !== $newWantAssert) {
+                $changeList['WantAssertionsSigned'] = array('before' => (string)$currWantAssert, 'after' => (string)$newWantAssert);
             }
         }
         /**

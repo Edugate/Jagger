@@ -6,7 +6,7 @@ $errors_v = validation_errors('<span>', '</span><br />');
         echo "</div>";
     }
 $attributes = array('id' => 'federeg', 'class'=>'');
-echo form_open(base_url() . "federations/federation_registration/submit", $attributes);
+echo form_open(base_url() . "federations/fedregistration/submit", $attributes);
 echo '<div class="row">';
 echo '<div class="small-3 large-3 columns"><label for="fedsysname" class="inline right">'.lang('rr_fed_sysname').'</label></div>';
 $fedarray = array('name'=>'fedsysname','id'=>'fedsysname', 'value'=>set_value('fedsysname'),'required'=>'required');

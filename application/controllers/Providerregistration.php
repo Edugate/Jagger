@@ -38,7 +38,6 @@ class Providerregistration extends MY_Controller
         $data['content_view'] = 'providerregisterform_view';
         $data['breadcrumbs'] = array(
             array('url' => '#', 'name' => lang('rr_sp_register_title'), 'type' => 'current'),
-
         );
         $this->load->view('page', $data);
     }
@@ -49,7 +48,6 @@ class Providerregistration extends MY_Controller
         $data['content_view'] = 'providerregisterform_view';
         $data['breadcrumbs'] = array(
             array('url' => '#', 'name' => lang('rr_idpsp_register_title'), 'type' => 'current'),
-
         );
         $this->load->view('page', $data);
     }

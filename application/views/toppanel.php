@@ -65,7 +65,9 @@
                     ?>
                     <li class="has-form">
                         <?php
-                        if (((array_key_exists('logged', $_SESSION) && $_SESSION['logged'] === 0) || !array_key_exists('logged', $_SESSION)) && isset($_SESSION['partiallogged']) && $_SESSION['partiallogged'] === 1) {
+                        $logged = $this->session->userdata('logged');
+                        $partialLogged = $this->session->userdata('partiallogged');
+                        if ($logged !== 1 && $partialLogged === 1) {
                             ?>
                             <a href="<?php echo $base_url; ?>authenticate/getloginform" class="button alert autoclick"
                                id="loginbtn"><?php echo lang('toploginbtn'); ?></a>
@@ -140,7 +142,7 @@
                         if ($loggedin) {
                             ?>
                             <li>
-                                <a href="<?php echo $base_url; ?>federations/federation_registration"><?php echo lang('rr_federation'); ?></a>
+                                <a href="<?php echo $base_url; ?>federations/fedregistration"><?php echo lang('rr_federation'); ?></a>
                             </li>
                             <?php
                         }

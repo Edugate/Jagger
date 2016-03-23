@@ -1,10 +1,11 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 class Timelines extends MY_Controller {
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->load->helper('form');

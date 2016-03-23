@@ -1,16 +1,17 @@
 <?php
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 
 class Awaitinglist extends MY_Controller
 {
 
     public function __construct() {
-        parent:: __construct();
+        parent::__construct();
     }
 
-    function index()
-    {
+    public function index() {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
@@ -20,13 +21,14 @@ class Awaitinglist extends MY_Controller
             log_message('error', __METHOD__ . ' ' . $e);
             set_status_header(500);
             echo 'Internal server error';
+
             return;
         }
         $this->title = lang('rr_listawaiting');
         $data = array(
-            'titlepage' => lang('rr_listawaiting'),
+            'titlepage'    => lang('rr_listawaiting'),
             'content_view' => 'reports/awaiting_view',
-            'breadcrumbs' => array(
+            'breadcrumbs'  => array(
                 array('url' => '#', 'name' => lang('rr_listawaiting'), 'type' => 'current'),
             )
         );

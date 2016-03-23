@@ -18,17 +18,30 @@ class Awaiting extends MY_Controller
     public function __construct() {
         parent::__construct();
         $this->load->helper(array('form', 'url', 'cert'));
-        $this->load->library(array('table', 'tracker'));
+        $this->load->library(array('table', 'tracker', 'jqueueaccess'));
         $this->title = lang('title_approval');
     }
 
+    /**
+     * @return CI_Output
+     */
+    public function dashz() {
+        if (!$this->input->is_ajax_request()) {
+            return $this->output->set_status_header(400)->set_output('Incorrect request');
+        }
+        if (!$this->jauth->isLoggedIn()) {
+            return $this->output->set_status_header(401)->set_output('Not authenticated');
+        }
+        $this->load->library(array('zacl', 'j_queue'));
+        $result['data'] = $this->getQueueList();
+
+        return $this->output->set_content_type('application/json')->set_status_header(200)->set_output(json_encode($result));
+
+    }
 
     public function ajaxrefresh() {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
-            set_status_header(403);
-            echo 'Permission denied';
-
-            return;
+            return $this->output->set_status_header(403)->set_output('Permission denied');
         }
         $this->load->library(array('zacl', 'j_queue'));
         $data = array(
@@ -39,143 +52,48 @@ class Awaiting extends MY_Controller
         $this->load->view('reports/awaiting_list_view', $data);
     }
 
-    /**
-     * @param \models\Queue $queue
-     * @return bool
-     */
-    private function hasApproveByFedadmin(\models\Queue $queue) {
-        $objData = $queue->getData();
-        $providerData = new models\Provider();
-        $providerData->importFromArray($objData);
-        $feds = $providerData->getFederations();
-        $nofeds = $feds->count();
-        if ($nofeds === 1) {
-            $ff = $feds->first();
-            $fedindb = $this->em->getRepository('models\Federation')->findOneBy(array('sysname' => '' . $ff->getSysname() . ''));
-            if ($fedindb !== null) {
-                return $this->zacl->check_acl('f_' . $fedindb->getId() . '', 'approve', 'federation');
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param \models\Queue $q
-     * @return bool
-     */
-    private function hasQAccess(\models\Queue $q) {
-        $result = false;
-        if ($this->jauth->isAdministrator()) {
-            return true;
-        }
-        $currentUser = $this->jauth->getLoggedinUsername();
-        /**
-         * @var $creator models\User
-         */
-        $creator = $q->getCreator();
-        if (!empty($creator) && strcasecmp($creator->getUsername(), $currentUser) == 0) {
-            return true;
-        }
-        $action = $q->getAction();
-        $recipient = $q->getRecipient();
-        $recipientType = $q->getRecipientType();
-        $objType = $q->getObjType();
-
-        if (strcasecmp($action, 'Join') == 0) {
-            if (!empty($recipientType) && strcasecmp($recipientType, 'federation') == 0 && !empty($recipient)) {
-                $hasWrite = $this->zacl->check_acl('f_' . $recipient . '', 'write', 'federation', '') || $this->zacl->check_acl('f_' . $recipient . '', 'approve', 'federation', '');
-
-                return $hasWrite;
-            }
-        } elseif (strcasecmp($action, 'Create') == 0 && strcasecmp($objType, 'Provider') == 0) {
-
-            $objData = $q->getData();
-            $providerData = new models\Provider();
-            $providerData->importFromArray($objData);
-            $feds = $providerData->getFederations();
-            $nofeds = $feds->count();
-            if ($nofeds === 1) {
-                $ff = $feds->first();
-                $fedindb = $this->em->getRepository('models\Federation')->findOneBy(array('sysname' => '' . $ff->getSysname() . ''));
-                if ($fedindb !== null) {
-                    return $this->zacl->check_acl('f_' . $fedindb->getId() . '', 'approve', 'federation');
-                }
-            }
-            $result = $this->hasApproveByFedadmin($q);
-        } elseif (strcasecmp($action, 'apply') == 0 && strcasecmp($recipientType, 'entitycategory') == 0) {
-            /**
-             * @todo decide who can approve entity category request
-             */
-        } elseif (strcasecmp($action, 'apply') == 0 && strcasecmp($recipientType, 'regpolicy') == 0) {
-            /**
-             * @todo decide who can approve registration policy request
-             */
-        }
-
-        return $result;
-    }
-
-    private function hasApproveAccess(\models\Queue $q) {
-        $result = false;
-        if ($this->jauth->isAdministrator()) {
-            return true;
-        }
-        $action = $q->getAction();
-        $recipient = $q->getRecipient();
-        $recipientType = $q->getRecipientType();
-
-        if (strcasecmp($action, 'Join') == 0 && !empty($recipientType)) {
-            if (strcasecmp($recipientType, 'federation') == 0 && !empty($recipient)) {
-                $result = $this->zacl->check_acl('f_' . $recipient . '', 'write', 'federation', '');
-            } elseif (strcasecmp($recipientType, 'provider') == 0 && !empty($recipient)) {
-                $result = $this->zacl->check_acl($recipient, 'write', 'provider', '');
-            }
-        }
-
-        return $result;
-    }
-
     private function getQueueList() {
         $userid = $this->session->userdata('user_id');
         $cached = $this->j_ncache->getUserQList($userid);
         if ($cached) {
             return $cached;
         }
-        $this->load->library('zacl');
-        $this->load->library('j_queue');
+        $this->load->library(array('zacl','j_queue','jqueueaccess'));
         /**
          * @var  models\Queue[] $queueArray
          */
         $queueArray = $this->em->getRepository("models\Queue")->findAll();
         $result = array('q' => array(), 's' => array());
-        
+
         foreach ($queueArray as $q) {
-            $c_creator = 'anonymous';
-            $c_creatorCN = 'Anonymous';
+            $cUsername = 'anonymous';
+            $cCN = 'Anonymous';
             $creator = $q->getCreator();
-            $access = $this->hasQAccess($q);
+            $access = $this->jqueueaccess->hasQAccess($q);
             if (!$access) {
                 continue;
             }
-            if (!empty($creator)) {
-                $c_creator = $creator->getUsername();
-                $c_creatorCN = $creator->getFullname();
+            if ($creator !== null) {
+                $cUsername = $creator->getUsername();
+                $cCN = $creator->getFullname();
             }
             $recipientid = $q->getRecipient();
             $recipenttype = $q->getRecipientType();
             $recipientname = '';
             if (strcasecmp($recipenttype, 'provider') == 0) {
+                /**
+                 * @var models\Provider $p
+                 */
                 $p = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $recipientid));
-                if (!empty($p)) {
+                if ($p !== null) {
                     $recipientname = $p->getName();
                 }
             }
             if ($access) {
                 $result['q'][] = array(
                     'issubscription' => 0,
-                    'requester'      => $c_creator,
-                    'requesterCN'    => $c_creatorCN,
+                    'requester'      => $cUsername,
+                    'requesterCN'    => $cCN,
                     'idate'          => $q->getCreatedAt(),
                     'datei'          => $q->getCreatedAt(),
                     'iname'          => $q->getCN(),
@@ -196,10 +114,10 @@ class Awaiting extends MY_Controller
 
             foreach ($subscriptions as $s) {
                 $result['s'][] = array(
-                    'subscriber' => $s->getSubscriber()->getUsername(),
+                    'subscriber'       => $s->getSubscriber()->getUsername(),
                     'subscriber_email' => $s->getSubscriber()->getEmail(),
-                    'type'       => lang($s->getType()),
-                    'url'         => base_url('notifications/subscriber/mysubscriptions/'.base64url_encode($s->getSubscriber()->getUsername()))
+                    'type'             => lang($s->getType()),
+                    'url'              => base_url('notifications/subscriber/mysubscriptions/' . base64url_encode($s->getSubscriber()->getUsername()))
                 );
 
             }
@@ -207,66 +125,6 @@ class Awaiting extends MY_Controller
         $this->j_ncache->saveUserQList($this->session->userdata('user_id'), $result);
 
         return $result;
-    }
-
-
-    public function dashz() {
-        if (!$this->input->is_ajax_request()) {
-            return $this->output->set_status_header(400)->set_output('Incorrect request');
-        }
-        if (!$this->jauth->isLoggedIn()) {
-            return $this->output->set_status_header(401)->set_output('Not authenticated');
-        }
-        $this->load->library(array('zacl', 'j_queue'));
-        $result['data'] = $this->getQueueList();
-
-        return $this->output->set_content_type('application/json')->set_status_header(200)->set_output(json_encode($result));
-
-    }
-
-
-    private function detailFederation(models\Queue $qObject) {
-        $objAction = $qObject->getAction();
-        $recipientType = $qObject->getRecipientType();
-        if (strcasecmp($objAction, 'Create') == 0) {
-            $fedrows = $this->j_queue->displayRegisterFederation($qObject);
-            $fedrows[]['2cols'] = $this->j_queue->displayFormsButtons($qObject->getId());
-            $data['fedrows'] = $fedrows;
-            $data['content_view'] = 'reports/awaiting_federation_register_view';
-            $r['data'] = $data;
-
-            return $r;
-        }
-        if (strcasecmp($objAction, 'Join') == 0 && strcasecmp($recipientType, 'provider') == 0) {
-            $recipient_write_access = $this->zacl->check_acl($qObject->getRecipient(), 'write', 'entity', '');
-            $requestor_view_access = (strcasecmp($qObject->getCreator()->getUsername(), $this->jauth->getLoggedinUsername()) == 0);
-            if ($requestor_view_access || $recipient_write_access) {
-                $result = $this->j_queue->displayInviteProvider($qObject);
-                if (!empty($result)) {
-                    $data['result'] = $result;
-                } else {
-                    $data['error_message'] = "Couldn't load request details";
-                }
-            } else {
-                $data['error_message'] = lang('rerror_noperm_viewqueuerequest');
-            }
-
-            $data['content_view'] = 'reports/awaiting_invite_provider_view';
-            $r['data'] = $data;
-
-            return $r;
-        }
-        if (strcasecmp($objAction, 'Delete') == 0) {
-            $fedrows = $this->j_queue->displayDeleteFederation($qObject);
-            $fedrows[]['2cols'] = $this->j_queue->displayFormsButtons($qObject->getId(), !$this->jauth->isAdministrator());
-            $data['fedrows'] = $fedrows;
-            $data['content_view'] = 'reports/awaiting_federation_register_view';
-            $r['data'] = $data;
-
-            return $r;
-        }
-
-        return null;
     }
 
     private function detailProvider(models\Queue $qObject) {
@@ -319,50 +177,46 @@ class Awaiting extends MY_Controller
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
-        try {
-            $this->load->library(array('zacl', 'j_queue', 'providertoxml'));
-        } catch (Exception $e) {
-            log_message('error', __METHOD__ . ' ' . $e);
-            show_error('Internal server error', 500);
-        }
         /**
          * @var $queueObject models\Queue
          */
         try {
+            $this->load->library(array('zacl', 'j_queue', 'providertoxml'));
             $queueObject = $this->em->getRepository("models\Queue")->findOneBy(array('token' => $token));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
             show_error('Internal server error', 500);
         }
 
-
         $breadcrumbs = array(
             array('url' => base_url('reports/awaiting'), 'name' => '' . lang('rr_listawaiting') . ''),
             array('url' => '#', 'name' => lang('rr_requestawaiting'), 'type' => 'current'),
         );
 
-        if (empty($queueObject)) {
+        if ($queueObject === null) {
             return $this->load->view('page', array(
                 'content_view'  => 'error_message',
                 'error_message' => lang('rerror_qid_noexist')
             ));
         }
-        $objType = $queueObject->getObjType();
-        $objAction = $queueObject->getAction();
-        $recipientType = $queueObject->getRecipientType();
-        if (!$this->hasQAccess($queueObject)) {
+
+        if (!$this->jqueueaccess->hasQAccess($queueObject)) {
             return $this->load->view('page', array(
                 'content_view' => 'nopermission',
                 'error'        => lang('rr_nopermission')
             ));
         }
-        $approveaccess = $this->hasApproveAccess($queueObject);
+        $approveaccess = $this->jqueueaccess->hasApproveAccess($queueObject);
         $buttons = $this->j_queue->displayFormsButtons($queueObject->getId(), !$approveaccess);
+
+        $objType = $queueObject->getObjType();
+        $objAction = $queueObject->getAction();
+        $recipientType = $queueObject->getRecipientType();
 
         if (strcasecmp($objType, 'Provider') == 0) {
             $result = $this->detailProvider($queueObject);
         } elseif (strcasecmp($objType, 'Federation') == 0) {
-            $result = $this->detailFederation($queueObject);
+            $result = $this->j_queue->detailFederation($queueObject);
         } elseif (strcasecmp($objType, 'User') == 0 && strcasecmp($objAction, 'Create') == 0) {
             $result['data'] = array(
                 'requestdata'   => $this->j_queue->displayRegisterUser($queueObject),
@@ -371,36 +225,36 @@ class Awaiting extends MY_Controller
             );
             $result['data']['requestdata'][]['2cols'] = $buttons;
 
-        } elseif (strcasecmp($objType, 'n') == 0 && strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'entitycategory') == 0) // apply for entity category
-        {
-            $result['data'] = array(
-                'requestdata'  => $this->j_queue->displayApplyForEntityCategory($queueObject),
-                'content_view' => 'reports/awaiting_detail_view',
+        } elseif (strcasecmp($objType, 'n') == 0) {
+            if (strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'entitycategory') == 0) { // apply for entity category
+                $result['data'] = array(
+                    'requestdata'  => $this->j_queue->displayApplyForEntityCategory($queueObject),
+                    'content_view' => 'reports/awaiting_detail_view',
 
-            );
-            $result['data']['requestdata'][]['2cols'] = $buttons;
+                );
+                $result['data']['requestdata'][]['2cols'] = $buttons;
 
-        } elseif (strcasecmp($objType, 'n') == 0 && strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'regpolicy') == 0) // apply for entity category
-        {
-            $result['data'] = array(
-                'requestdata'  => $this->j_queue->displayApplyForRegistrationPolicy($queueObject),
-                'content_view' => 'reports/awaiting_detail_view'
-            );
-            $result['data']['requestdata'][]['2cols'] = $buttons;
+            } elseif (strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'regpolicy') == 0) { // apply for entity category
+                $result['data'] = array(
+                    'requestdata'  => $this->j_queue->displayApplyForRegistrationPolicy($queueObject),
+                    'content_view' => 'reports/awaiting_detail_view'
+                );
+                $result['data']['requestdata'][]['2cols'] = $buttons;
 
-        }
-
-        if (!empty($result) && is_array($result)) {
-            $result['data']['breadcrumbs'] = $breadcrumbs;
+            } elseif (strcasecmp($objAction, 'UPDATE') == 0 && strcasecmp($recipientType, 'provider') == 0) {
+                $result['data'] = array(
+                    'requestdata'  => $this->j_queue->displayUpdateProvider($queueObject),
+                    'content_view' => 'reports/awaiting_detail_view');
+            }
         } else {
-            $result = array(
-                'data' => array(
-                    'content_view' => 'nopermission',
-                    'error'        => 'no permission or unkown error',
-                )
-            );
-            
+            return $this->load->view('page', array(
+                'content_view' => 'nopermission',
+                'error'        => 'no permission or unkown error',
+            ));
         }
+
+        $result['data']['breadcrumbs'] = $breadcrumbs;
+
         $this->load->view('page', $result['data']);
     }
 
@@ -595,7 +449,7 @@ class Awaiting extends MY_Controller
             $queueObj = $this->em->getRepository("models\Queue")->findOneBy(array('id' => $qid));
         }
         if (empty($queueObj)) {
-            $message = $_SERVER['REQUEST_URI'];
+            $message = $this->input->server('REQUEST_URI');
             $message .= ' id=' . $this->input->post('qid') . ' doesnt exist in queue';
             log_message('debug', $message);
             $dataview = array(
@@ -607,8 +461,10 @@ class Awaiting extends MY_Controller
         }
         $queueAction = $queueObj->getAction();
         $queueObjType = $queueObj->getType();
+        $recipient = $queueObj->getRecipient();
+        $recipienttype = $queueObj->getRecipientType();
         $allowedActionsAndTypes['Create']['User'] = array(
-            'access'      => $this->hasApproveAccess($queueObj),
+            'access'      => $this->jqueueaccess->hasApproveAccess($queueObj),
             'fnameAction' => 'createUserFromQueue',
         );
         $allowedActionsAndTypes['Create']['IDP'] = array(
@@ -621,7 +477,7 @@ class Awaiting extends MY_Controller
         $allowedActionsAndTypes['apply'] = array();
 
         if (strcasecmp($queueAction, 'Create') == 0 && strcasecmp($queueObjType, 'User') == 0) {
-            $approve_allowed = $this->hasApproveAccess($queueObj);
+            $approve_allowed = $this->jqueueaccess->hasApproveAccess($queueObj);
             if (!$approve_allowed) {
                 $data['error_message'] = lang('rerror_noperm_approve');
                 $data['content_view'] = 'error_message';
@@ -654,7 +510,7 @@ class Awaiting extends MY_Controller
                 return;
             }
         } elseif ($queueAction === 'Create' && (strcasecmp($queueObjType, 'IDP') == 0 || strcasecmp($queueObjType, 'SP') == 0 || strcasecmp($queueObjType, 'BOTH') == 0)) {
-            $approve_allowed = $this->zacl->check_acl(strtolower($queueObjType), 'create', 'entity', '') || $this->hasApproveByFedadmin($queueObj);
+            $approve_allowed = $this->zacl->check_acl(strtolower($queueObjType), 'create', 'entity', '') || $this->jqueueaccess->hasApproveByFedadmin($queueObj);
             if ($approve_allowed) {
                 $storedEntity = $this->createProvider($queueObj);
                 if ($storedEntity) {
@@ -770,8 +626,6 @@ class Awaiting extends MY_Controller
          *          JOIN - accept request (by provider) sent by federation to provider
          */
         elseif (strcasecmp($queueAction, 'Join') == 0) {
-            $recipient = $queueObj->getRecipient();
-            $recipienttype = $queueObj->getRecipientType();
             $type = $queueObj->getType();
             if (!empty($recipienttype) && !empty($recipient) && strcasecmp($recipienttype, 'provider') == 0) {
                 $providers_tmp = new models\Providers;
@@ -881,8 +735,6 @@ class Awaiting extends MY_Controller
                 show_error('Something went wrong', 500);
             }
         } elseif (strcasecmp($queueAction, 'apply') == 0) {
-            $recipient = $queueObj->getRecipient();
-            $recipienttype = $queueObj->getRecipientType();
             $allowedRecipientTypes = array('entitycategory', 'regpolicy');
             $recipientTypesStrs = array('entitycategory' => lang('req_entcatapply'), 'regpolicy' => lang('req_reqpolapply'));
             $type = $queueObj->getType();
@@ -951,120 +803,40 @@ class Awaiting extends MY_Controller
                 log_message('error', __METHOD__ . ' line:' . __LINE__ . ' unkown request');
                 show_error('unknown request', 404);
             }
+        } elseif(strcasecmp($queueAction, 'update') == 0 && $recipienttype === 'provider'){
+            // update scope
+            /**
+             * @var models\Provider $providerToUpdate
+             */
+            $providerToUpdate = $this->em->getRepository('models\Provider')->findOneBy(array('id'=>$recipient));
+            if($providerToUpdate === null){
+                show_error('Provider not found', 404);
+            }
+            $providerType = $providerToUpdate->getType();
+            $objData = $queueObj->getData();
+            $objType = $queueObj->getObjType();
+            if($objType === 'n' &&  isset($objData['scope']['orig']) && isset($objData['scope']['new']) && ($providerType === 'IDP' || $providerType === 'BOTH')){
+                $changes['scope idpsso'] = array('before' => implode(',', $providerToUpdate->getScope('idpsso')) , 'after' => implode(',', $objData['scope']['new']['idpsso']));
+                $changes['scope aa'] = array('before' => implode(',', $providerToUpdate->getScope('aa')) , 'after' => implode(',', $objData['scope']['new']['aa']));
+                $providerToUpdate->setScope('idpsso',$objData['scope']['new']['idpsso']);
+                $providerToUpdate->setScope('aa',$objData['scope']['new']['aa']);
+                $this->em->persist($providerToUpdate);
+
+                $this->load->library('tracker');
+                $this->tracker->save_track('ent', 'modification', $providerToUpdate->getEntityId(), serialize($changes), false);
+
+                $this->em->remove($queueObj);
+
+                $this->em->flush();
+                $data = array('content_view' => 'reports/awaiting_approved_view', 'success_message' => 'Request has been approved');
+
+               return $this->load->view('page', $data);
+            }
+
         } else {
+            echo $recipienttype . ' '.$queueObjType;
             log_message('error', __METHOD__ . ' line:' . __LINE__ . ' unkown request');
             show_error('unknown request', 404);
-        }
-    }
-
-    public function reject() {
-        $loggedin = $this->jauth->isLoggedIn();
-        if ($loggedin) {
-            $this->load->library('zacl');
-            $this->load->library('j_queue');
-        } else {
-            redirect('auth/login', 'location');
-        }
-
-        if (strcasecmp($this->input->post('qaction'), 'reject') == 0) {
-            $notification = $this->config->item('notify_if_queue_rejected');
-            $queueObj = $this->em->getRepository("models\Queue")->findOneBy(array('id' => $this->input->post('qid')));
-
-            if (!empty($queueObj)) {
-                $queueAction = $queueObj->getAction();
-                $creator = $queueObj->getCreator();
-                $reject_access = $this->hasQAccess($queueObj);
-                $recipienttype = $queueObj->getRecipientType();
-                $queueObjType = strtolower($queueObj->getType());
-                if (!empty($creator)) {
-                    $reject_access = (strcasecmp($creator->getUsername(), $this->jauth->getLoggedinUsername()) == 0);
-                }
-                if ($reject_access === false) {
-                    if (strcasecmp($queueAction, 'Create') == 0) {
-                        if (strcasecmp($queueObjType, 'idp') == 0 || strcasecmp($queueObjType, 'sp') == 0) {
-                            $reject_access = $this->hasApproveByFedadmin($queueObj) || $this->zacl->check_acl($queueObjType, 'create', 'entity', '');
-                        } elseif (strcasecmp($queueObj->getType(), 'Federation') == 0) {
-                            $reject_access = $this->zacl->check_acl('federation', 'create', 'default', '');
-                        }
-                    } elseif (strcasecmp($queueAction, 'Join') == 0) {
-                        $recipient = $queueObj->getRecipient();
-                        if (!empty($recipienttype) && !empty($recipient)) {
-                            if ($recipienttype === 'provider') {
-                                $reject_access = $this->zacl->check_acl($recipient, 'write', 'entity', '');
-                            } elseif ($recipienttype == 'federation') {
-                                $reject_access = $this->zacl->check_acl('f_' . $recipient, 'write', 'federation', '') || $this->zacl->check_acl('f_' . $recipient, 'approve', 'federation', '');
-                            }
-                        }
-                    } elseif (strcasecmp($queueAction, 'Delete') == 0) {
-                        $type = $queueObj->getType();
-                        if (strcasecmp($type, 'Federation') == 0) {
-                            $isAdmin = $this->jauth->isAdministrator();
-                            if ($isAdmin) {
-                                $reject_access = true;
-                            }
-                        }
-                    } elseif (strcasecmp($queueAction, 'apply') == 0 && strcasecmp($recipienttype, 'entitycategory') == 0) {
-                        $isAdmin = $this->jauth->isAdministrator();
-                        if ($isAdmin) {
-                            $reject_access = true;
-                        }
-                    } elseif (strcasecmp($queueAction, 'apply') == 0 && strcasecmp($recipienttype, 'regpolicy') == 0) {
-                        $isAdmin = $this->jauth->isAdministrator();
-                        if ($isAdmin) {
-                            $reject_access = true;
-                        }
-                    }
-                }
-                $p = $queueObj->getName();
-                $qtoken = $queueObj->getToken();
-                if ($reject_access === true) {
-                    $additionalReciepients = array();
-                    $m_creator = $queueObj->getCreator();
-                    if (!empty($m_creator)) {
-                        $additionalReciepients[] = $m_creator->getEmail();
-                    } else {
-                        $additionalReciepients[] = $queueObj->getEmail();
-                    }
-
-                    $subject = 'Request has been canceled/rejected';
-                    $body = 'Hi,' . PHP_EOL;
-                    $body .= 'The request placed on ' . base_url() . PHP_EOL;
-                    $body .= 'Request with tokenID: ' . $queueObj->getToken() . ' has been canceled/rejected' . PHP_EOL;
-                    $body .= "";
-                    log_message('info', 'JAGGER: Queue with token:' . $queueObj->getToken() . ' has been canceled/rejected by ' . $this->jauth->getLoggedinUsername());
-                    $this->em->remove($queueObj);
-                    if ($notification === true) {
-                        $this->email_sender->addToMailQueue(array(), null, $subject, $body, $additionalReciepients, false);
-                    }
-                    $this->em->flush();
-                    $this->error_message = 'ID: ' . $p . 'with tokenID ' . $qtoken . ' has been removed from queue';
-                    $data['error_message'] = $this->error_message;
-                    log_message('debug', $this->error_message);
-                    $data['content_view'] = 'reports/awaiting_rejected_view';
-
-                    return $this->load->view('page', $data);
-                } else {
-                    $data['error_message'] = lang('rerror_noperm_reject');
-                    $data['content_view'] = 'error_message';
-
-                    return $this->load->view('page', $data);
-                }
-            } else {
-                $message = $_SERVER['REQUEST_URI'];
-                $message .= ' id=' . $this->input->post('qid') . ' doesnt exist in queue';
-                log_message('debug', $message);
-                $this->error_message = 'ID: ' . $this->input->post('qid') . ' doesnt exist in queue';
-                $data['error_message'] = $this->error_message;
-                $data['content_view'] = 'reports/awaiting_rejected_view';
-
-                return $this->load->view('page', $data);
-            }
-        } else {
-            $this->error_message = 'something went wrong';
-            $data['error_message'] = $this->error_message;
-            $data['content_view'] = 'reports/awaiting_rejected_view';
-
-            return $this->load->view('page', $data);
         }
     }
 

@@ -128,7 +128,7 @@ class Contact {
      */
     public function overwriteWith(Contact $contact)
     {
-        $this->givenname = $contact->getGivenname();
+        $this->givenname = $contact->getGivenName();
         $this->surname = $contact->getSurname();
         $this->type = $contact->getType();
         $this->phone = $contact->getPhone();

@@ -47,6 +47,7 @@ $route['providers/sp/registration'] = 'providerregistration/sp';
 $route['providers/sp_registration'] = 'providerregistration/sp';
 $route['providers/idp_registration'] = 'providerregistration/idp';
 $route['providers/idpsp_registration'] = 'providerregistration/idpsp';
+$route['federations/federation_registration'] = 'federations/fedregistration';
 $route['home']  = 'p/page/front_page';
 $route['metadata/federatation/(:any)/metadata.xml'] = 'federations/manage/show/$1';
 $route['reports/awaiting'] = 'reports/awaiting/alist';
