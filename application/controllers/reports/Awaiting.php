@@ -816,7 +816,6 @@ class Awaiting extends MY_Controller
             $objData = $queueObj->getData();
             $objType = $queueObj->getObjType();
             if($objType === 'n' &&  isset($objData['scope']['orig']) && isset($objData['scope']['new']) && ($providerType === 'IDP' || $providerType === 'BOTH')){
-                $origScope = $providerToUpdate->getScopeFull();
                 $changes['scope idpsso'] = array('before' => implode(',', $providerToUpdate->getScope('idpsso')) , 'after' => implode(',', $objData['scope']['new']['idpsso']));
                 $changes['scope aa'] = array('before' => implode(',', $providerToUpdate->getScope('aa')) , 'after' => implode(',', $objData['scope']['new']['aa']));
                 $providerToUpdate->setScope('idpsso',$objData['scope']['new']['idpsso']);
