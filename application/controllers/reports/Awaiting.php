@@ -245,7 +245,6 @@ class Awaiting extends MY_Controller
                 $result['data'] = array(
                     'requestdata'  => $this->j_queue->displayUpdateProvider($queueObject),
                     'content_view' => 'reports/awaiting_detail_view');
-                $result['data']['requestdata'][]['2cols'] = $buttons;
             }
         } else {
             return $this->load->view('page', array(
@@ -462,6 +461,8 @@ class Awaiting extends MY_Controller
         }
         $queueAction = $queueObj->getAction();
         $queueObjType = $queueObj->getType();
+        $recipient = $queueObj->getRecipient();
+        $recipienttype = $queueObj->getRecipientType();
         $allowedActionsAndTypes['Create']['User'] = array(
             'access'      => $this->jqueueaccess->hasApproveAccess($queueObj),
             'fnameAction' => 'createUserFromQueue',
@@ -625,8 +626,6 @@ class Awaiting extends MY_Controller
          *          JOIN - accept request (by provider) sent by federation to provider
          */
         elseif (strcasecmp($queueAction, 'Join') == 0) {
-            $recipient = $queueObj->getRecipient();
-            $recipienttype = $queueObj->getRecipientType();
             $type = $queueObj->getType();
             if (!empty($recipienttype) && !empty($recipient) && strcasecmp($recipienttype, 'provider') == 0) {
                 $providers_tmp = new models\Providers;
@@ -736,8 +735,6 @@ class Awaiting extends MY_Controller
                 show_error('Something went wrong', 500);
             }
         } elseif (strcasecmp($queueAction, 'apply') == 0) {
-            $recipient = $queueObj->getRecipient();
-            $recipienttype = $queueObj->getRecipientType();
             $allowedRecipientTypes = array('entitycategory', 'regpolicy');
             $recipientTypesStrs = array('entitycategory' => lang('req_entcatapply'), 'regpolicy' => lang('req_reqpolapply'));
             $type = $queueObj->getType();
@@ -806,7 +803,35 @@ class Awaiting extends MY_Controller
                 log_message('error', __METHOD__ . ' line:' . __LINE__ . ' unkown request');
                 show_error('unknown request', 404);
             }
+        } elseif(strcasecmp($queueAction, 'update') == 0 && $recipienttype === 'provider'){
+            // update scope
+            /**
+             * @var models\Provider $providerToUpdate
+             */
+            $providerToUpdate = $this->em->getRepository('models\Provider')->findOneBy(array('id'=>$recipient));
+            if($providerToUpdate === null){
+                show_error('Provider not found', 404);
+            }
+            $providerType = $providerToUpdate->getType();
+            $objData = $queueObj->getData();
+            $objType = $queueObj->getObjType();
+            if($objType === 'n' &&  isset($objData['scope']['orig']) && isset($objData['scope']['new']) && ($providerType === 'IDP' || $providerType === 'BOTH')){
+                $origScope = $providerToUpdate->getScopeFull();
+                $providerToUpdate->setScope('idpsso',$objData['scope']['new']['idpsso']);
+                $providerToUpdate->setScope('aa',$objData['scope']['new']['aa']);
+                $this->em->persist($providerToUpdate);
+
+                
+                $this->em->remove($queueObj);
+
+                $this->em->flush();
+                $data = array('content_view' => 'reports/awaiting_approved_view', 'success_message' => 'Request has been approved');
+
+               return $this->load->view('page', $data);
+            }
+
         } else {
+            echo $recipienttype . ' '.$queueObjType;
             log_message('error', __METHOD__ . ' line:' . __LINE__ . ' unkown request');
             show_error('unknown request', 404);
         }
