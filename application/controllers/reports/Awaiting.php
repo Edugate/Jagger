@@ -817,11 +817,15 @@ class Awaiting extends MY_Controller
             $objType = $queueObj->getObjType();
             if($objType === 'n' &&  isset($objData['scope']['orig']) && isset($objData['scope']['new']) && ($providerType === 'IDP' || $providerType === 'BOTH')){
                 $origScope = $providerToUpdate->getScopeFull();
+                $changes['scope idpsso'] = array('before' => implode(',', $providerToUpdate->getScope('idpsso')) , 'after' => implode(',', $objData['scope']['new']['idpsso']));
+                $changes['scope aa'] = array('before' => implode(',', $providerToUpdate->getScope('aa')) , 'after' => implode(',', $objData['scope']['new']['aa']));
                 $providerToUpdate->setScope('idpsso',$objData['scope']['new']['idpsso']);
                 $providerToUpdate->setScope('aa',$objData['scope']['new']['aa']);
                 $this->em->persist($providerToUpdate);
 
-                
+                $this->load->library('tracker');
+                $this->tracker->save_track('ent', 'modification', $providerToUpdate->getEntityId(), serialize($changes), false);
+
                 $this->em->remove($queueObj);
 
                 $this->em->flush();
