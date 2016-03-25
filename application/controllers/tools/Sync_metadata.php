@@ -33,7 +33,7 @@ if (!defined('BASEPATH')) {
  * @property J_queue $j_queue
  * @property Approval $approval
  * @property Tracker $tracker
- * @property Email_sender $email_sender
+ * @property Emailsender $emailsender
  * @property Curl $curl
  * @property Show_element $show_element
  * @property Jauth $jauth

@@ -132,7 +132,7 @@ class J_queue
             'Details:' . PHP_EOL . 'Username: ' . $user->getUsername() . PHP_EOL .
             'E-mail: ' . $user->getEmail() . PHP_EOL;
         $recipient[] = $user->getEmail();
-        $this->ci->email_sender->addToMailQueue(array(), null, 'User Registration', $mailBody, $recipient, $sync = false);
+        $this->ci->emailsender->addToMailQueue(array(), null, 'User Registration', $mailBody, $recipient, $sync = false);
 
         return true;
     }

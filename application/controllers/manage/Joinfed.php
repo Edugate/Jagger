@@ -150,7 +150,7 @@ class Joinfed extends MY_Controller
                         $m->setRcptto($s->getRcpt());
                         $this->em->persist($m);
                     }
-                    $this->email_sender->addToMailQueue(array('joinfedreq', 'gjoinfedreq'), $federation, $mail_sbj, $mail_body, array(), FALSE);
+                    $this->emailsender->addToMailQueue(array('joinfedreq', 'gjoinfedreq'), $federation, $mail_sbj, $mail_body, array(), FALSE);
                     try {
                         $this->em->flush();
                         log_message('info', 'JAGGER: ' . __METHOD__ . ' ' . $this->session->userdata('username') . ': request to join federation: entityID: ' . $ent->getEntityId() . ', fed: ' . $federation->getName());

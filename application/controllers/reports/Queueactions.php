@@ -16,7 +16,7 @@ class Queueactions extends MY_Controller
         parent::__construct();
         $this->load->library('form_validation');
     }
-
+    
     /**
      * @return bool
      */
@@ -121,7 +121,7 @@ class Queueactions extends MY_Controller
         log_message('info', 'JAGGER: Queue with token:' . $queueObj->getToken() . ' has been canceled/rejected by ' . $this->jauth->getLoggedinUsername());
         $this->em->remove($queueObj);
         if ($notification === true) {
-            $this->email_sender->addToMailQueue(array(), null, $subject, $body, $additionalRcpts, false);
+            $this->emailsender->addToMailQueue(array(), null, $subject, $body, $additionalRcpts, false);
         }
         try {
             $this->em->flush();

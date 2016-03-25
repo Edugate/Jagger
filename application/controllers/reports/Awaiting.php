@@ -279,7 +279,7 @@ class Awaiting extends MY_Controller
         $this->load->library('FederationRemover');
         $sbj = 'Federation has been removed';
         $body = 'Dear user,' . PHP_EOL . 'Federation : ' . $federation->getName() . ' has been removed from the system';
-        $this->email_sender->addToMailQueue(array(), null, $sbj, $body, array(), false);
+        $this->emailsender->addToMailQueue(array(), null, $sbj, $body, array(), false);
         $this->federationremover->removeFederation($federation);
         $this->em->remove($q);
         $this->tracker->save_track('sys', null, null, 'approved - remove fed: ' . $federation->getName() . '', false);
@@ -407,7 +407,7 @@ class Awaiting extends MY_Controller
         if (!empty($toNotifyRequester)) {
             $additionalReceipents[] = $requester_recipient;
         }
-        $this->email_sender->addToMailQueue(array('greqisterreq', 'gidpregisterreq'), null, $sbj, $body, $additionalReceipents, false);
+        $this->emailsender->addToMailQueue(array('greqisterreq', 'gidpregisterreq'), null, $sbj, $body, $additionalReceipents, false);
         $this->tracker->save_track('sys', null, null, 'approved - provider reg req: ' . $entity->getEntityId() . '', false);
         $this->load->library('j_ncache');
         try {
@@ -660,7 +660,7 @@ class Awaiting extends MY_Controller
                     $body = $this->jauth->getLoggedinUsername() . " just approved request.\r\n";
                     $body .= 'Since now Provider: ' . $provider->getName() . ' becomes a member of ' . $federation->getName() . PHP_EOL;
                     $this->em->remove($queueObj);
-                    $this->email_sender->addToMailQueue(array('grequeststoproviders'), null, $sbj, $body, array(), $sync = false);
+                    $this->emailsender->addToMailQueue(array('grequeststoproviders'), null, $sbj, $body, array(), $sync = false);
                     try {
                         $this->em->flush();
                         $data['success_message'] = 'Request has been approved';
@@ -724,7 +724,7 @@ class Awaiting extends MY_Controller
                     $body .= 'Since now Provider: ' . $provider->getName() . ' becomes a member of ' . $federation->getName() . PHP_EOL;
                     $this->em->persist($provider);
                     $this->em->remove($queueObj);
-                    $this->email_sender->addToMailQueue(array('gjoinfedreq', 'joinfedreq'), $federation, $sbj, $body, $additionalReceipients, false);
+                    $this->emailsender->addToMailQueue(array('gjoinfedreq', 'joinfedreq'), $federation, $sbj, $body, $additionalReceipients, false);
                     $this->em->flush();
                     $data['success_message'] = 'Request has been approved';
                     $data['content_view'] = 'reports/awaiting_approved_view';
@@ -785,7 +785,7 @@ class Awaiting extends MY_Controller
                 $body .= 'Provider: ' . $provider->getEntityId() . PHP_EOL;
                 $body .= '' . $recipientTypesStrs['' . $recipienttype . ''] . ' ' . $coc->getUrl() . PHP_EOL;
 
-                $this->email_sender->addToMailQueue(array(), null, $subject, $body, $additionalReciepients, false);
+                $this->emailsender->addToMailQueue(array(), null, $subject, $body, $additionalReciepients, false);
                 $this->em->remove($queueObj);
                 try {
                     $this->em->flush();

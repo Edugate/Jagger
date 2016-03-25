@@ -637,7 +637,7 @@ class Providerupdater
                             $ent->setCoc($c);
                         } else {
                             $this->ci->approval->applyForRegistrationPolicy($c, $ent);
-                            $this->ci->email_sender->applyForEntcatRegPol($c, $ent);
+                            $this->ci->emailsender->applyForEntcatRegPol($c, $ent);
                         }
                     }
                 }
@@ -1080,6 +1080,7 @@ class Providerupdater
                 }
                 else {
                     $this->ci->approval->applyForScopeChange($ent, $newScopesByType);
+                    $this->ci->emailsender->applyForEntityUpdate($ent, $newScopesByType);
 
                 }
             }
@@ -1205,7 +1206,7 @@ class Providerupdater
                         } else {
 
                             $this->ci->approval->applyForEntityCategory($c, $ent);
-                            $this->ci->email_sender->applyForEntcatRegPol($c, $ent);
+                            $this->ci->emailsender->applyForEntcatRegPol($c, $ent);
                         }
                     }
                 }
