@@ -494,7 +494,7 @@ class Manage extends MY_Controller
                             '======= additional message attached by requestor ===========' . PHP_EOL .
                             html_escape($message) . PHP_EOL .
                             '=============================================================' . PHP_EOL;
-                        $this->email_sender->addToMailQueue(array('grequeststoproviders', 'requeststoproviders'), $invitedProvider, $mailSubject, $mailBody, array(), true);
+                        $this->emailsender->addToMailQueue(array('grequeststoproviders', 'requeststoproviders'), $invitedProvider, $mailSubject, $mailBody, array(), true);
                     }
                 }
             }
@@ -611,7 +611,7 @@ class Manage extends MY_Controller
                         '================================================================' . PHP_EOL;
                 }
 
-                $this->email_sender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $mail_sbj, $mail_body, array(), false);
+                $this->emailsender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $mail_sbj, $mail_body, array(), false);
                 $this->em->flush();
 
 

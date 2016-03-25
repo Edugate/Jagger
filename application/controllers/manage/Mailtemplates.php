@@ -43,7 +43,7 @@ class Mailtemplates extends MY_Controller
     }
 
     private function getMailtmpGroups() {
-        $mailtmplGroups = Email_sender::mailTemplatesGroups();
+        $mailtmplGroups = Emailsender::mailTemplatesGroups();
         $groupDropdown = array();
         foreach ($mailtmplGroups as $k => $v) {
             $groupDropdown['' . $k . ''] = lang('' . $v['desclang'] . '');
@@ -99,7 +99,7 @@ class Mailtemplates extends MY_Controller
             ),
             'groupdropdown'  => $groupDropdown,
             'langdropdown'   => $langsDropdown,
-            'mailtmplGroups' => Email_sender::mailTemplatesGroups(),
+            'mailtmplGroups' => Emailsender::mailTemplatesGroups(),
         );
         if ($idExist !== null) {
             $data['success'] = lang('msgtmplupdated');
@@ -162,7 +162,7 @@ class Mailtemplates extends MY_Controller
          * @var models\MailLocalization[] $mtemplates
          */
         $mtemplates = $this->em->getRepository("models\MailLocalization")->findAll();
-        $templgroups = Email_sender::mailTemplatesGroups();
+        $templgroups = Emailsender::mailTemplatesGroups();
         foreach ($mtemplates as $t) {
             if (array_key_exists($t->getGroup(), $templgroups)) {
                 $templgroups['' . $t->getGroup() . '']['data'][] = $t;

@@ -14,7 +14,7 @@ if (!defined('BASEPATH')) {
  * @property Formelement $formelement
  * @property Providerformelements $providerformelements
  * @property Providertoxml $providertoxml
- * @property Email_sender $email_sender
+ * @property Emailsender $emailsender
  * @property Xmlvalidator $xmlvalidator
  * @property Metadata2array $metadata2array
  *
@@ -700,7 +700,7 @@ class Entityedit extends MY_Controller
         }
         if(!empty($tracker))
         {
-            $this->email_sender->providerIsModified($ent,$tracker);
+            $this->emailsender->providerIsModified($ent,$tracker);
         }
     }
 
@@ -1152,14 +1152,14 @@ class Entityedit extends MY_Controller
                                 'qurl' => '' . base_url() . 'reports/awaiting/detail/' . $q->getToken() . '');
 
 
-                            $messageTemplate = $this->email_sender->generateLocalizedMail($mailTemplateGroup, $messageTemplateArgs);
+                            $messageTemplate = $this->emailsender->generateLocalizedMail($mailTemplateGroup, $messageTemplateArgs);
                             if (empty($messageTemplate)) {
-                                $messageTemplate = $this->email_sender->providerRegRequest($ttype, $messageTemplateParams);
+                                $messageTemplate = $this->emailsender->providerRegRequest($ttype, $messageTemplateParams);
                             }
                             if (!empty($messageTemplate)) {
                                 $notifGroups = (array) $notificationGroup;
                                 array_push($notifGroups, 'greqisterreq');
-                                $this->email_sender->addToMailQueue($notifGroups, null, $messageTemplate['subject'], $messageTemplate['body'], array(), FALSE);
+                                $this->emailsender->addToMailQueue($notifGroups, null, $messageTemplate['subject'], $messageTemplate['body'], array(), FALSE);
                             }
 
 

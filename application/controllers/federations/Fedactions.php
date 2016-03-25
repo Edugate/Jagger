@@ -13,14 +13,14 @@ class Fedactions extends MY_Controller
 {
     protected $tmpProviders;
 
-    function __construct() {
+    public function __construct() {
         parent::__construct();
         MY_Controller::$menuactive = 'fed';
         $this->tmpProviders = new models\Providers;
     }
 
 
-    function changestatus() {
+    public function changestatus() {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(401)->set_output('Access denied');
         }
@@ -72,7 +72,7 @@ class Fedactions extends MY_Controller
      * @param $type
      * @param null $message
      */
-    function addbulk($federationName, $type, $message = null) {
+    public function addbulk($federationName, $type, $message = null) {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
@@ -212,7 +212,7 @@ class Fedactions extends MY_Controller
             if (count($newMembersArray) > 0) {
                 $subject = 'Members of Federations changed';
                 $body = 'Dear user' . PHP_EOL . 'Federation ' . $federation->getName() . ' has new members:' . PHP_EOL . implode(';' . PHP_EOL, $newMembersArray);
-                $this->email_sender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $subject, $body, array(), false);
+                $this->emailsender->addToMailQueue(array('gfedmemberschanged', 'fedmemberschanged'), $federation, $subject, $body, array(), false);
             }
             $this->em->flush();
             $this->j_ncache->cleanFederationMembers($federation->getId());

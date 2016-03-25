@@ -119,8 +119,8 @@ class Auth extends MY_Controller
             'qurl'        => '' . base_url('reports/awaiting/detail/' . $queue->getToken() . ''),
             'datetimeutc' => '' . $nowUtc->format('Y-m-d h:i:s') . ' UTC',
         );
-        $mailTemplate = $this->email_sender->feduserRegistrationRequest($templateArgs);
-        $this->email_sender->addToMailQueue(array(), null, $mailTemplate['subject'], $mailTemplate['body'], array(), false);
+        $mailTemplate = $this->emailsender->feduserRegistrationRequest($templateArgs);
+        $this->emailsender->addToMailQueue(array(), null, $mailTemplate['subject'], $mailTemplate['body'], array(), false);
 
         /**
          * END send notification

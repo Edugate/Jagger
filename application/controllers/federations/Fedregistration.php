@@ -20,7 +20,7 @@ if (!defined('BASEPATH')) {
  */
 
 /**
- * @property Email_sender $email_sender
+ * @property Emailsender $emailsender
  * @property Approval $approval
  */
 class Fedregistration extends MY_Controller
@@ -107,9 +107,9 @@ class Fedregistration extends MY_Controller
             'datetimeutc' => '' . $nowUtc->format('Y-m-d h:i:s') . ' UTC',
         );
 
-        $mailTemplate = $this->email_sender->generateLocalizedMail('fedregresquest', $templateArgs);
+        $mailTemplate = $this->emailsender->generateLocalizedMail('fedregresquest', $templateArgs);
         if (is_array($mailTemplate)) {
-            $this->email_sender->addToMailQueue(array('greqisterreq', 'gfedreqisterreq'), null, $mailTemplate['subject'], $mailTemplate['body'], array(), false);
+            $this->emailsender->addToMailQueue(array('greqisterreq', 'gfedreqisterreq'), null, $mailTemplate['subject'], $mailTemplate['body'], array(), false);
         } else {
             $sbj = 'Federation registration request';
             $body = 'Dear user' . PHP_EOL;
@@ -117,7 +117,7 @@ class Fedregistration extends MY_Controller
             $body .= "Requester's IP :" . $this->input->ip_address() . PHP_EOL;
             $body .= 'Federation name: ' . $fedname . PHP_EOL;
             $body .= 'You can approve or reject it on ' . base_url() . 'reports/awaiting/detail/' . $queue->getToken() . PHP_EOL;
-            $this->email_sender->addToMailQueue(array('greqisterreq', 'gfedreqisterreq'), null, $sbj, $body, array(), false);
+            $this->emailsender->addToMailQueue(array('greqisterreq', 'gfedreqisterreq'), null, $sbj, $body, array(), false);
         }
         $this->em->flush();
         $data['success'] = lang('rr_fed_req_sent');

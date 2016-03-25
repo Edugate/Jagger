@@ -78,7 +78,7 @@ class Metadata2import
         if (!is_array($report)) {
             return false;
         }
-        $this->ci->load->library('email_sender');
+        $this->ci->load->library('emailsender');
         $body = 'Report' . PHP_EOL;
         foreach ($report['body'] as $bb) {
             $body .= $bb . PHP_EOL;
@@ -99,7 +99,7 @@ class Metadata2import
             }
         }
         if ($structureChanged) {
-            $this->ci->email_sender->addToMailQueue(array('gfedmemberschanged'), null, 'Federation sync/import report', $body, array(), false);
+            $this->ci->emailsender->addToMailQueue(array('gfedmemberschanged'), null, 'Federation sync/import report', $body, array(), false);
         }
 
         return true;
