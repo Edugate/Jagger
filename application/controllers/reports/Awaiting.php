@@ -823,9 +823,10 @@ class Awaiting extends MY_Controller
                 $this->em->persist($providerToUpdate);
 
                 $mailRcpts[] = $queueObj->getCreator()->getEmail();
-                $sbj = '';
-                $body = '';
-                $this->emailsender->addToMailQueue(array('providermodified'),$providerToUpdate, $sbj, $body, $mailRcpts, false);
+                $sbj = 'Request approved';
+                $body = 'Hi,'.PHP_EOL.html_escape($this->jauth->getLoggedinUsername()) .' just approved request sent by '. html_escape($queueObj->getCreator()->getEmail()).PHP_EOL;
+                $body .= ' about  update scope(s) for entityID: '.html_escape($providerToUpdate->getEntityId()).PHP_EOL;
+                $this->emailsender->addToMailQueue(array('grequeststoproviders','providermodified'),$providerToUpdate, $sbj, $body, $mailRcpts, false);
                 $this->load->library('tracker');
                 $this->tracker->save_track('ent', 'modification', $providerToUpdate->getEntityId(), serialize($changes), false);
 
