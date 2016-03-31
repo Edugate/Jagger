@@ -2,6 +2,7 @@
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
+
 /**
  * @package   Jagger
  * @author    Middleware Team HEAnet
@@ -9,7 +10,6 @@ if (!defined('BASEPATH')) {
  * @copyright 2016 HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
-
 class Ec extends MY_Controller
 {
 
@@ -21,13 +21,11 @@ class Ec extends MY_Controller
     }
 
     public function show($entcatId = null) {
-
-
         if ($entcatId !== null && !ctype_digit($entcatId)) {
             show_error('Argument passed to page  not allowed', 403);
         }
-        $loggedin = $this->jauth->isLoggedIn();
-        if (!$loggedin) {
+
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
@@ -43,14 +41,14 @@ class Ec extends MY_Controller
             'both' => 'idp, sp'
         );
         $data['rows'] = array();
-        if (is_array($entCategories) && count($entCategories) > 0) {
+        if (count($entCategories) > 0) {
             foreach ($entCategories as $entCat) {
                 $countProviders = $entCat->getProvidersCount();
                 $isEnabled = $entCat->getAvailable();
                 $availFor = $entCat->getAvailFor();
                 $availForStr = 'idp, sp';
-                if(in_array($availFor, $preDefAvailFor)) {
-                    $availForStr = $preDefAvailFor[''.$availFor.''];
+                if (in_array($availFor, $preDefAvailFor)) {
+                    $availForStr = $preDefAvailFor['' . $availFor . ''];
                 }
                 $linetxt = '';
                 if ($hasWriteAccess) {
@@ -142,8 +140,7 @@ class Ec extends MY_Controller
 
     public function add() {
 
-        $loggedin = $this->jauth->isLoggedIn();
-        if (!$loggedin) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
@@ -156,18 +153,14 @@ class Ec extends MY_Controller
 
         if ($this->_add_submit_validate() === true) {
 
-            $name = $this->input->post('name');
-            $url = $this->input->post('url');
             $cenabled = $this->input->post('cenabled');
-            $description = $this->input->post('description');
-
 
             $ncoc = new models\Coc;
-            $ncoc->setName($name);
-            $ncoc->setUrl($url);
+            $ncoc->setName($this->input->post('name'));
+            $ncoc->setUrl($this->input->post('url'));
             $ncoc->setType('entcat');
             $availfor = $this->input->post('availfor');
-            if(in_array($availfor,array('idp','sp','both'))){
+            if (in_array($availfor, array('idp', 'sp', 'both'))) {
                 $ncoc->setAvailFor($availfor);
             }
             $allowedattrs = attrsEntCategoryList();
@@ -175,27 +168,24 @@ class Ec extends MY_Controller
             if (in_array($inputAttrname, $allowedattrs)) {
                 $ncoc->setSubtype($inputAttrname);
             }
-            if (!empty($description)) {
-                $ncoc->setDescription($description);
-            }
-            if (!empty($cenabled) && $cenabled == 'accept') {
+
+            $ncoc->setDescription(trim($this->input->post('description')));
+
+            if ($cenabled === 'accept') {
                 $ncoc->setAvailable(TRUE);
-            } else {
-                $ncoc->setAvailable(FALSE);
             }
             $this->em->persist($ncoc);
             $this->em->flush();
 
             $data['success_message'] = lang('rr_entcatadded');
         } else {
-            $form = form_open();
             $this->load->library('formelement');
-            $form .= $this->formelement->generateAddCoc();
-            $form .= '<div class="buttons small-12 medium-10 large-10 columns end text-right">';
-            $form .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ';
-            $form .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
-
-            $form .= form_close();
+            $form = form_open() .
+                $this->formelement->generateAddCoc() .
+                '<div class="buttons small-12 medium-10 large-10 columns end text-right">' .
+                '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ' .
+                '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>' .
+                form_close();
             $data['form'] = $form;
         }
         $data['breadcrumbs'] = array(
@@ -228,12 +218,14 @@ class Ec extends MY_Controller
         if (!$hasWriteAccess) {
             show_error('No access', 401);
         }
-        $data['titlepage'] = lang('title_entcat') . ': ' . html_escape($coc->getName());
-        $data['subtitlepage'] = lang('title_entcatedit');
+        $data = array(
+            'titlepage' => lang('title_entcat') . ': ' . html_escape($coc->getName()),
+            'subtitlepage' => lang('title_entcatedit')
+        );
 
         if ($this->_edit_submit_validate($entcatId) === true) {
-            $enable = $this->input->post('cenabled');
-            if (!empty($enable) && $enable == 'accept') {
+            $enable = trim($this->input->post('cenabled'));
+            if ($enable === 'accept') {
                 $coc->setAvailable(true);
             } else {
                 $coc->setAvailable(false);
@@ -241,7 +233,7 @@ class Ec extends MY_Controller
             $coc->setName($this->input->post('name'));
             $coc->setUrl($this->input->post('url'));
             $availFor = $this->input->post('availfor');
-            if(in_array($availFor, array('idp','sp','both'), true)){
+            if (in_array($availFor, array('idp', 'sp', 'both'), true)) {
                 $coc->setAvailFor($availFor);
             }
             $allowedattrs = attrsEntCategoryList();
@@ -256,13 +248,11 @@ class Ec extends MY_Controller
         }
         $data['coc_name'] = $coc->getName();
         $this->load->library('formelement');
-        $form = form_open();
-        $form .= $this->formelement->generateEditCoc($coc);
-        $form .= '<div class="buttons large-10 medium-10 small-12 text-right columns end">';
-        $form .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ';
-        $form .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
-        $form .= form_close();
-        $data['form'] = $form;
+        $data['form'] = form_open() .
+            $this->formelement->generateEditCoc($coc) .
+            '<div class="buttons large-10 medium-10 small-12 text-right columns end">' .
+            '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ' .
+            '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>' . form_close();
         $data['breadcrumbs'] = array(
             array('url' => base_url('manage/ec/show'), 'name' => lang('title_entcats')),
             array('url' => '#', 'name' => lang('title_editform'), 'type' => 'current'),
@@ -278,8 +268,7 @@ class Ec extends MY_Controller
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(403)->set_output('access denied');
         }
-        $loggedin = $this->jauth->isLoggedIn();
-        if (!$loggedin) {
+        if (!$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('access denied');
         }
 
@@ -288,6 +277,9 @@ class Ec extends MY_Controller
         if (!$hasWriteAccess) {
             return $this->output->set_status_header(403)->set_output('access denied');
         }
+        /**
+         * @var models\Coc $entcat
+         */
         $entcat = $this->em->getRepository("models\Coc")->findOneBy(array('id' => '' . $entcatId . '', 'type' => 'entcat', 'is_enabled' => false));
         if ($entcat === null) {
             return $this->output->set_status_header(403)->set_output('Registration policy doesnt exist or is not disabled');

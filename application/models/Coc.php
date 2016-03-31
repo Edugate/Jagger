@@ -74,7 +74,7 @@ class Coc
     protected $availfor;
 
     public function __construct() {
-        $this->is_enabled = FALSE;
+        $this->is_enabled = false;
         $this->type = 'entcat';
     }
 
