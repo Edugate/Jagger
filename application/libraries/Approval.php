@@ -49,6 +49,11 @@ class Approval
         return $queue;
     }
 
+    /**
+     * @param \models\Provider $provider
+     * @param $newScopes
+     * @return bool
+     */
     public function applyForScopeChange(models\Provider $provider, $newScopes) {
         $queue = new models\Queue();
         $queue->setRecipient($provider->getId());
@@ -79,11 +84,9 @@ class Approval
         $queue->setToken();
         if($diffFound) {
             $this->em->persist($queue);
+            return true;
         }
-        else {
-            $queue = null;
-        }
-        return $queue;
+        return false;
     }
 
     /**

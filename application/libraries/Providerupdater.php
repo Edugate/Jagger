@@ -1079,8 +1079,10 @@ class Providerupdater
                     }
                 }
                 else {
-                    $this->ci->approval->applyForScopeChange($ent, $newScopesByType);
-                    $this->ci->emailsender->applyForEntityUpdate($ent, $newScopesByType);
+                    $queueApplied = $this->ci->approval->applyForScopeChange($ent, $newScopesByType);
+                    if($queueApplied === true) {
+                        $this->ci->emailsender->applyForEntityUpdate($ent, $newScopesByType);
+                    }
 
                 }
             }
