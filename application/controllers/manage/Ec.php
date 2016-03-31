@@ -37,11 +37,21 @@ class Ec extends MY_Controller
          * @var models\Coc[] $entCategories
          */
         $entCategories = $this->em->getRepository("models\Coc")->findBy(array('type' => 'entcat'));
+        $preDefAvailFor = array(
+            'idp' => 'idp',
+            'sp' => 'sp',
+            'both' => 'idp, sp'
+        );
         $data['rows'] = array();
         if (is_array($entCategories) && count($entCategories) > 0) {
             foreach ($entCategories as $entCat) {
                 $countProviders = $entCat->getProvidersCount();
                 $isEnabled = $entCat->getAvailable();
+                $availFor = $entCat->getAvailFor();
+                $availForStr = 'idp, sp';
+                if(in_array($availFor, $preDefAvailFor)) {
+                    $availForStr = $preDefAvailFor[''.$availFor.''];
+                }
                 $linetxt = '';
                 if ($hasWriteAccess) {
                     $linetxt = '<a href="' . base_url() . 'manage/ec/edit/' . $entCat->getId() . '" ><i class="fi-pencil"></i></a>';
@@ -59,7 +69,7 @@ class Ec extends MY_Controller
                 if (empty($subtype)) {
                     $subtype = '<span class="label alert">' . lang('lbl_missing') . '</span>';
                 }
-                $data['rows'][] = array($entCat->getName(), $subtype, anchor($entCat->getUrl(), $entCat->getUrl(), array('target' => '_blank', 'class' => 'new_window')), $entCat->getDescription(), $lbl, $linetxt);
+                $data['rows'][] = array($entCat->getName(), $subtype, anchor($entCat->getUrl(), $entCat->getUrl(), array('target' => '_blank', 'class' => 'new_window')), html_escape($entCat->getDescription()), $lbl, $availForStr, $linetxt);
             }
         } else {
             $data['error_message'] = lang('rr_noentcatsregistered');
@@ -109,22 +119,24 @@ class Ec extends MY_Controller
 
     private function _add_submit_validate() {
         $this->form_validation->set_rules('name', lang('entcat_displayname'), 'required|trim|cocname_unique');
-        $this->form_validation->set_rules('attrname', lang('rr_attr_name'), 'required|trim|xss_clean');
+        $this->form_validation->set_rules('attrname', lang('rr_attr_name'), 'trim|required');
         $attrname = $this->input->post('attrname');
         $this->form_validation->set_rules('url', lang('entcat_value'), 'required|trim|valid_url|ecUrlInsert[' . $attrname . ']');
-        $this->form_validation->set_rules('description', lang('entcat_description'), 'xss_clean');
-        $this->form_validation->set_rules('cenabled', lang('entcat_enabled'), 'xss_clean');
+        $this->form_validation->set_rules('description', lang('entcat_description'), 'trim');
+        $this->form_validation->set_rules('cenabled', lang('entcat_enabled'), 'trim');
+        $this->form_validation->set_rules('availfor', lang('rravailforenttypelng'), 'trim|required');
         return $this->form_validation->run();
     }
 
     private function _edit_submit_validate($entcatId) {
         $attrname = $this->input->post('attrname');
-        $this->form_validation->set_rules('name', lang('entcat_displayname'), 'required|trim|cocname_unique_update[' . $entcatId . ']');
-        $this->form_validation->set_rules('attrname', lang('rr_attr_name'), 'required|trim');
+        $this->form_validation->set_rules('name', lang('entcat_displayname'), 'trim|required|cocname_unique_update[' . $entcatId . ']');
+        $this->form_validation->set_rules('attrname', lang('rr_attr_name'), 'trim|required');
         $ecUrlUpdateParams = serialize(array('id' => $entcatId, 'subtype' => $attrname));
-        $this->form_validation->set_rules('url', lang('entcat_value'), 'required|trim|valid_url|ecUrlUpdate[' . $ecUrlUpdateParams . ']');
-        $this->form_validation->set_rules('description', lang('entcat_description'), 'xss_clean');
-        $this->form_validation->set_rules('cenabled', lang('entcat_enabled'), 'xss_clean');
+        $this->form_validation->set_rules('url', lang('entcat_value'), 'trim|required|valid_url|ecUrlUpdate[' . $ecUrlUpdateParams . ']');
+        $this->form_validation->set_rules('description', lang('entcat_description'), 'trim');
+        $this->form_validation->set_rules('cenabled', lang('entcat_enabled'), 'trim');
+        $this->form_validation->set_rules('availfor', lang('rravailforenttypelng'), 'trim|required');
         return $this->form_validation->run();
     }
 
@@ -142,16 +154,22 @@ class Ec extends MY_Controller
             show_error('No access', 401);
         }
 
-        if ($this->_add_submit_validate() === TRUE) {
+        if ($this->_add_submit_validate() === true) {
+
             $name = $this->input->post('name');
             $url = $this->input->post('url');
             $cenabled = $this->input->post('cenabled');
             $description = $this->input->post('description');
 
+
             $ncoc = new models\Coc;
             $ncoc->setName($name);
             $ncoc->setUrl($url);
             $ncoc->setType('entcat');
+            $availfor = $this->input->post('availfor');
+            if(in_array($availfor,array('idp','sp','both'))){
+                $ncoc->setAvailFor($availfor);
+            }
             $allowedattrs = attrsEntCategoryList();
             $inputAttrname = $this->input->post('attrname');
             if (in_array($inputAttrname, $allowedattrs)) {
@@ -189,17 +207,16 @@ class Ec extends MY_Controller
     }
 
     public function edit($entcatId) {
-
-        $loggedin = $this->jauth->isLoggedIn();
-        if (!$loggedin) {
+        if (!ctype_digit($entcatId)) {
+            show_error('Not found', 404);
+        }
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
         $this->title = lang('title_entcatedit');
 
-        if (!ctype_digit($entcatId)) {
-            show_error('Not found', 404);
-        }
+
         /**
          * @var models\Coc $coc
          */
@@ -223,6 +240,10 @@ class Ec extends MY_Controller
             }
             $coc->setName($this->input->post('name'));
             $coc->setUrl($this->input->post('url'));
+            $availFor = $this->input->post('availfor');
+            if(in_array($availFor, array('idp','sp','both'), true)){
+                $coc->setAvailFor($availFor);
+            }
             $allowedattrs = attrsEntCategoryList();
             $inputAttrname = $this->input->post('attrname');
             if (in_array($inputAttrname, $allowedattrs)) {

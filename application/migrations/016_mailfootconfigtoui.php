@@ -1,7 +1,7 @@
 <?php
-
-defined('BASEPATH') OR exit('No direct script access allowed');
-
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 class Migration_mailfootconfigtoui extends CI_Migration {
 

@@ -170,14 +170,23 @@ class J_queue
             $result[] = array('name' => lang('rr_provider'), 'value' => $entityid . ' <span class="label alert">' . lang('prov_notexist') . '</span>');
         }
         $entcatid = $queue->getRecipient();
+        /**
+         * @var models\Coc $coc
+         */
         $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $entcatid, 'type' => '' . $type . ''));
 
-        if (empty($coc)) {
+        if ($coc === null) {
             $result[] = array('name' => $typeLabel, 'value' => '<div data-alert class="alert-box alert">' . lang('regpol_notexist') . '</div>');
         } else {
             $lenabled = '';
             if (!$coc->getAvailable()) {
                 $lenabled = '<span class="label alert">' . lang('rr_disabled') . '</span>';
+            }
+            if($type === 'entcat'){
+                $result[] = array(
+                    'name' => lang('attrname'),
+                    'value' => html_escape($coc->getSubtype())
+                );
             }
             $result[] = array('name' => $typeLabel, 'value' => '<span class="label info">' . $coc->getLang() . '</span> ' . $coc->getName() . ': ' . $coc->getUrl() . ' ' . $lenabled);
         }
