@@ -134,7 +134,8 @@ class Formelement
 
     public function NgenerateEntityCategoriesForm(models\Provider $ent, array $ses = null) {
         $result = array();
-        $allowedCategories = attrsEntCategoryList($ent->getType());
+        $entType = $ent->getType();
+        $allowedCategories = attrsEntCategoryList($entType);
         $sessform = (is_null($ses)) ? false : true;
         /**
          * @var  $entCategories models\Coc[]
@@ -142,7 +143,7 @@ class Formelement
         $entCategories = $this->em->getRepository("models\Coc")->findBy(array('type' => 'entcat'));
         $entCategoriesArray = array();
         foreach ($entCategories as $v) {
-            $entCategoriesArray['' . $v->getId() . ''] = array('name' => $v->getName(), 'enabled' => $v->getAvailable(), 'attrname' => $v->getSubtype(), 'value' => $v->getUrl(), 'desc' => $v->getDescription());
+            $entCategoriesArray['' . $v->getId() . ''] = array('name' => $v->getName(), 'enabled' => $v->getAvailable(), 'attrname' => $v->getSubtype(), 'value' => $v->getUrl(), 'availfortype'=>$v->isAvailForEntType($entType),'desc' => $v->getDescription());
         }
         $assignedEntCategories = $ent->getCoc();
         if ($sessform && isset($ses['coc'])) {
@@ -168,7 +169,7 @@ class Formelement
             $is = true;
             if (!isset($v['sel'])) {
                 $is = false;
-                if (!in_array($v['attrname'], $allowedCategories)) {
+                if ($v['availfortype'] !== true) {
                     continue;
                 }
             }
@@ -2732,8 +2733,10 @@ class Formelement
         foreach ($attrsnames as $k) {
             $attrdropdown['' . $k . ''] = $k;
         }
+        $availForDropdown = array('both'=> 'idp, sp','idp' => 'idp','sp' => 'sp');
         $result = '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('entcat_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name')) . '</div></div>';
         $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="attrname" class="inline right">' . lang('rr_attr_name') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('attrname', $attrdropdown, set_value('attrname')) . '</div></div>';
+        $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="availfor" class="inline right">' . lang('rravailforenttypelng') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('availfor', $availForDropdown, set_value('availfor')) . '</div></div>';
         $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_value') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url', '', false)) . '</div></div>';
         $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept') . '</div></div>';
         $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description')) . '</div></div>';
@@ -2747,9 +2750,11 @@ class Formelement
         foreach ($attrsnames as $k) {
             $attrdropdown['' . $k . ''] = $k;
         }
+        $availForDropdown = array('both'=> 'idp, sp','idp' => 'idp','sp' => 'sp');
         $result = '<div class="small-12 columns">' . jGenerateInput(lang('entcat_displayname'), 'name', set_value('name', $coc->getName()), '') . '</div>';
         $result .= '<div class="small-12 columns">' . jGenerateInput(lang('entcat_value'), 'url', set_value('url', $coc->getUrl(), false), '') . '</div>';
         $result .= '<div class="small-12 columns">' . jGenerateDropdown(lang('rr_attr_name'), 'attrname', $attrdropdown, $coc->getSubtype(), '') . '</div>';
+        $result .= '<div class="small-12 columns">' . jGenerateDropdown(lang('rravailforenttypelng'), 'availfor', $availForDropdown, $coc->getAvailFor(), '') . '</div>';
         $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
         $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description', $coc->getDescription())) . '</div></div>';
 

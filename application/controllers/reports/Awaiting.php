@@ -822,8 +822,13 @@ class Awaiting extends MY_Controller
                 $providerToUpdate->setScope('aa',$objData['scope']['new']['aa']);
                 $this->em->persist($providerToUpdate);
 
+                $mailRcpts[] = $queueObj->getCreator()->getEmail();
+                $sbj = '';
+                $body = '';
+                $this->emailsender->addToMailQueue(array('providermodified'),$providerToUpdate, $sbj, $body, $mailRcpts, false);
                 $this->load->library('tracker');
                 $this->tracker->save_track('ent', 'modification', $providerToUpdate->getEntityId(), serialize($changes), false);
+
 
                 $this->em->remove($queueObj);
 
