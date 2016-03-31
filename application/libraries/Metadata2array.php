@@ -502,10 +502,11 @@ class Metadata2array
                     'mdui:DisplayName' => 'displayname',
                     'mdui:PrivacyStatementURL' => 'privacyurl',
                     'mdui:InformationURL' => 'informationurl',
-                    'mdui:Logo' => 'logo'
+                    'mdui:Logo' => 'logo',
+                    'mdui:Keywords' => 'keywords'
                 );
                 foreach ($enode->childNodes as $gnode) {
-                    if (in_array($gnode->nodeName, array('mdui:Description', 'mdui:DisplayName', 'mdui:PrivacyStatementURL', 'mdui:InformationURL'), true)) {
+                    if (in_array($gnode->nodeName, array('mdui:Description', 'mdui:DisplayName', 'mdui:PrivacyStatementURL', 'mdui:InformationURL', 'mdui:Keywords'), true)) {
                         $keynodeName = $tmpMapping['' . $gnode->nodeName . ''];
                         $ext['' . $keynodeName . ''][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => trim($gnode->nodeValue));
                         continue;

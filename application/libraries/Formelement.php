@@ -2135,6 +2135,56 @@ class Formelement
              * end description
              */
             /**
+             * start keywords
+             */
+            $result[] = '';
+            $r = '';
+            $langsdisplaynames = $langs;
+            if (!$sessform && isset($ext['idp']['mdui']['Keywords'])) {
+                foreach ($ext['idp']['mdui']['Keywords'] as $v1) {
+                    $l = $v1->getAttributes();
+                    if (isset($l['xml:lang'])) {
+                        $jlang = $l['xml:lang'];
+                        if (!array_key_exists($jlang, $langs)) {
+                            log_message('error', 'Language code ' . $jlang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
+                            $langtxt = $jlang;
+                        } else {
+                            $langtxt = $langs['' . $jlang . ''];
+                            unset($langsdisplaynames['' . $jlang . '']);
+                        }
+                    } else {
+                        log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
+                        continue;
+                    }
+                    $origval = $v1->getEvalue();
+                    $nval = $origval;
+                    if ($sessform && isset($ses['uii']['idpsso']['keywords']['' . $jlang . ''])) {
+                        $nval = $ses['uii']['idpsso']['keywords']['' . $jlang . ''];
+                        unset($ses['uii']['idpsso']['keywords']['' . $jlang . '']);
+                    }
+                    $currval = set_value('f[uii][idpsso][keywords][' . $jlang . ']', $nval, false);
+                    $r .= '<div class="small-12 columns">';
+                    $r .= $this->_generateLangTextareaWithRemove($langtxt, 'f[uii][idpsso][keywords][' . $jlang . ']', 'keywords', $jlang, $currval, '');
+                    $r .= '</div>';
+                }
+            }
+            if ($sessform && isset($ses['uii']['idpsso']['keywords']) && is_array($ses['uii']['idpsso']['keywords'])) {
+                foreach ($ses['uii']['idpsso']['keywords'] as $key => $value) {
+                    $r .= '<div class="small-12 columns">';
+                    $r .= $this->_generateLangTextareaWithRemove($langs['' . $key . ''], 'f[uii][idpsso][keywords][' . $key . ']', 'keywords', $key, set_value('f[uii][idpsso][keywords][' . $key . ']', $value, false), '');
+                    $r .= '</div>';
+                    unset($langsdisplaynames['' . $key . '']);
+                }
+            }
+            $r .= '<div class="small-12 columns">';
+            $r .= $this->_generateLangAddButton('idpuiikeywordsadd', 'idpuiikeywordslangcode', MY_Controller::$langselect, 'idpadduiikeywords', 'Keywords');
+            $r .= '</div>';
+            $result[] = '<fieldset><legend>Keywords</legend>' . $r . '</fieldset>';
+            $result[] = '';
+            /**
+             * end keywords
+             */
+            /**
              * start helpdesk
              */
             $result[] = '';
@@ -2407,6 +2457,56 @@ class Formelement
             $result[] = '';
             /**
              * end description
+             */
+            /**
+             * start keywords
+             */
+            $result[] = '';
+            $r = '';
+            $langsdisplaynames = $langs;
+            if (!$sessform && isset($ext['sp']['mdui']['Keywords'])) {
+                foreach ($ext['sp']['mdui']['Keywords'] as $v1) {
+                    $l = $v1->getAttributes();
+                    if (isset($l['xml:lang'])) {
+                        $jlang = $l['xml:lang'];
+                        if (!array_key_exists($jlang, $langs)) {
+                            log_message('error', 'Language code ' . $jlang . ' is not allowed for row (extendmetadaa) with id:' . $v1->getId());
+                            $langtxt = $jlang;
+                        } else {
+                            $langtxt = $langs['' . $jlang . ''];
+                            unset($langsdisplaynames['' . $jlang . '']);
+                        }
+                    } else {
+                        log_message('error', 'Language not set for extendmetada row with id:' . $v1->getId());
+                        continue;
+                    }
+                    $origval = $v1->getEvalue();
+                    $nval = $origval;
+                    if ($sessform && isset($ses['uii']['spsso']['keywords']['' . $jlang . ''])) {
+                        $nval = $ses['uii']['spsso']['keywords']['' . $jlang . ''];
+                        unset($ses['uii']['spsso']['keywords']['' . $jlang . '']);
+                    }
+                    $currval = set_value('f[uii][spsso][keywords][' . $jlang . ']', $nval, false);
+                    $r .= '<div class="small-12 columns">';
+                    $r .= $this->_generateLangTextareaWithRemove($langtxt, 'f[uii][spsso][keywords][' . $jlang . ']', 'uiispssokeywords', $jlang, $currval, '');
+                    $r .= '</div>';
+                }
+            }
+            if ($sessform && isset($ses['uii']['spsso']['keywords']) && is_array($ses['uii']['spsso']['keywords'])) {
+                foreach ($ses['uii']['spsso']['keywords'] as $key => $value) {
+                    $r .= '<div class="small-12 columns">';
+                    $r .= $this->_generateLangTextareaWithRemove($langs['' . $key . ''], 'f[uii][spsso][keywords][' . $key . ']', 'uiispssokeywords', $key, set_value('f[uii][spsso][keywords][' . $key . ']', $value, false), '');
+                    $r .= '</div>';
+                    unset($langsdisplaynames['' . $key . '']);
+                }
+            }
+            $r .= '<div class="small-12 columns">';
+            $r .= $this->_generateLangAddButton('spuiikeywordsadd', 'spuiikeywordslangcode', MY_Controller::$langselect, 'spadduiikeywords', 'spadduiikeywords');
+            $r .= '</div>';
+            $result[] = '<fieldset><legend>Keywords</legend>' . $r . '</fieldset>';
+            $result[] = '';
+            /**
+             * end keywords
              */
             /**
              * start privacy url

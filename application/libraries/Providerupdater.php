@@ -883,7 +883,7 @@ class Providerupdater
          */
         if ($entityTypes['idp'] === true) {
 
-            $doFilter = array('t' => array('idp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL'));
+            $doFilter = array('t' => array('idp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL', 'Keywords'));
             $e = $ent->getExtendMetadata()->filter(
                 function (models\ExtendMetadata $entry) use ($doFilter) {
                     return in_array($entry->getType(), $doFilter['t']) && in_array($entry->getNamespace(), $doFilter['n']) && in_array($entry->getElement(), $doFilter['e']);
@@ -905,7 +905,7 @@ class Providerupdater
                 }
             }
 
-            $mduiel = array('displayname' => 'DisplayName', 'desc' => 'Description', 'helpdesk' => 'InformationURL');
+            $mduiel = array('displayname' => 'DisplayName', 'desc' => 'Description', 'helpdesk' => 'InformationURL', 'keywords' => 'Keywords');
             foreach ($mduiel as $elkey => $elvalue) {
                 if (isset($cData['uii']['idpsso']['' . $elkey . '']) && is_array($cData['uii']['idpsso']['' . $elkey . ''])) {
                     $doFilter = array('' . $elvalue . '');
@@ -943,7 +943,7 @@ class Providerupdater
             }
         }
         if ($entityTypes['sp'] === true) {
-            $doFilter = array('t' => array('sp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL'));
+            $doFilter = array('t' => array('sp'), 'n' => array('mdui'), 'e' => array('DisplayName', 'Description', 'InformationURL', 'Keywords'));
             $e = $ent->getExtendMetadata()->filter(
                 function (models\ExtendMetadata $entry) use ($doFilter) {
                     return in_array($entry->getType(), $doFilter['t']) && in_array($entry->getNamespace(), $doFilter['n']) && in_array($entry->getElement(), $doFilter['e']);
@@ -957,7 +957,7 @@ class Providerupdater
                     log_message('error', 'ExentedMetadata element with id:' . $v->getId() . ' doesnt contains xml:lang attr');
                 }
             }
-            $mduiel = array('displayname' => 'DisplayName', 'desc' => 'Description', 'helpdesk' => 'InformationURL');
+            $mduiel = array('displayname' => 'DisplayName', 'desc' => 'Description', 'helpdesk' => 'InformationURL', 'keywords' => 'Keywords');
             foreach ($mduiel as $elkey => $elvalue) {
                 if (isset($cData['uii']['spsso']['' . $elkey . '']) && is_array($cData['uii']['spsso']['' . $elkey . ''])) {
                     $doFilter = array('' . $elvalue . '');

@@ -603,6 +603,7 @@ $lang['rr_detailsfor']              = 'Details for ';
 $lang['rr_displayname']             = 'Display Name';
 $lang['rr_homeorganisationname']    = 'HomeOrg Name';
 $lang['rr_description']             = 'Description';
+$lang['rr_uiikeywords']             = 'Keywords';
 $lang['rr_staticmetadata']          = 'Static Metadata';
 $lang['rr_validto']                 = 'Valid Until';
 $lang['rr_validfrom']               = 'Valid From';

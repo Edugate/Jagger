@@ -2080,6 +2080,7 @@ class Provider
 
         $otherExtends = array(
             'desc' => 'Description',
+            'keywords' => 'Keywords',
             'displayname' => 'DisplayName',
             'privacyurl' => 'PrivacyStatementURL',
             'informationurl' => 'InformationURL'

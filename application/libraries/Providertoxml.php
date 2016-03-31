@@ -244,7 +244,7 @@ class Providertoxml
     }
 
     private function createUIIInfo(\XMLWriter $xml, \models\Provider $ent, $role) {
-        $extarray = array('DisplayName' => array(), 'Description' => array(), 'Logo' => array(), 'InformationURL' => array(), 'PrivacyStatementURL' => array());
+        $extarray = array('DisplayName' => array(), 'Description' => array(), 'Logo' => array(), 'InformationURL' => array(), 'PrivacyStatementURL' => array(), 'Keywords' => array());
         $doFilter = array(
             'elements' => array_keys($extarray),
             'type' => array($role),
@@ -264,7 +264,7 @@ class Providertoxml
         }
         $xml->startElementNs('mdui', 'UIInfo', null);
         $enLang = array();
-        foreach (array('DisplayName', 'Description', 'InformationURL', 'PrivacyStatementURL') as $mduiElement) {
+        foreach (array('DisplayName', 'Description', 'Keywords','InformationURL', 'PrivacyStatementURL') as $mduiElement) {
 
             $enLang['' . $mduiElement . ''] = false;
 

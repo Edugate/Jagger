@@ -981,6 +981,10 @@ class Providerdetails
             $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'DisplayName');
             $d[++$i]['name'] = lang('e_idpservicedesc');
             $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'Description');
+
+            $d[++$i]['name'] = lang('rr_uiikeywords');
+            $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'Keywords');
+
             $d[++$i]['name'] = lang('e_idpserviceinfourl');
             $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'InformationURL');
             $d[++$i]['name'] = lang('e_idpserviceprivacyurl');
@@ -1019,6 +1023,8 @@ class Providerdetails
             $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'DisplayName');
             $d[++$i]['name'] = lang('e_spservicedesc');
             $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'Description');
+            $d[++$i]['name'] = lang('rr_uiikeywords');
+            $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'Keywords');
             $d[++$i]['name'] = lang('e_spserviceprivacyurl');
             $d[$i]['value'] = $this->getUrlsByLang($uiiarray, 'PrivacyStatementURL');
             $d[++$i]['name'] = lang('e_spserviceinfourl');

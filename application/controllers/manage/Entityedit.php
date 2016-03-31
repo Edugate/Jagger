@@ -275,22 +275,35 @@ class Entityedit extends MY_Controller
                 }
             }
 
-            if (isset($y['f']['uii']['idpsso']['displayname']) && is_array($y['f']['uii']['idpsso']['displayname'])) {
-                foreach ($y['f']['uii']['idpsso']['displayname'] as $k => $v) {
-                    $this->form_validation->set_rules('f[uii][idpsso][displayname][' . $k . ']', 'UUI ' . sprintf(lang('lrr_displayname'), $k) . '', 'strip_tags|trim|min_length[3]|max_length[255]');
+            foreach(array('idpsso','spsso') as $vtype) {
+                if (isset($y['f']['uii'][''.$vtype.'']['displayname']) && is_array($y['f']['uii'][''.$vtype.'']['displayname'])) {
+                    foreach ($y['f']['uii'][''.$vtype.'']['displayname'] as $k => $v) {
+                        $this->form_validation->set_rules('f[uii]['.$vtype.'][displayname][' . $k . ']', 'UUI ' . sprintf(lang('lrr_displayname'), $k) . '', 'strip_tags|trim|min_length[3]|max_length[255]');
 
+                    }
+                }
+                if (isset($y['f']['uii'][''.$vtype.'']['desc']) && is_array($y['f']['uii'][''.$vtype.'']['desc'])) {
+                    foreach ($y['f']['uii'][''.$vtype.'']['desc'] as $k => $v) {
+                        $this->form_validation->set_rules('f[uii]['.$vtype.'][desc][' . $k . ']', 'UUI ' . lang('rr_description') . ' ' . lang('in') . ' ' . $k . '', 'trim|min_length[3]|max_length[500]');
+                    }
+                }
+                if (isset($y['f']['uii'][''.$vtype.'']['keywords']) && is_array($y['f']['uii'][''.$vtype.'']['keywords'])) {
+                    foreach ($y['f']['uii'][''.$vtype.'']['keywords'] as $k => $v) {
+                        $this->form_validation->set_rules('f[uii]['.$vtype.'][keywords][' . $k . ']', 'UUI ' . lang('rr_uiikeywords') . ' ' . lang('in') . ' ' . $k . '', 'trim|min_length[3]|max_length[500]');
+                    }
+                }
+                if (isset($y['f']['uii'][''.$vtype.'']['helpdesk']) && is_array($y['f']['uii'][''.$vtype.'']['helpdesk'])) {
+                    foreach ($y['f']['uii'][''.$vtype.'']['helpdesk'] as $k => $v) {
+                        $this->form_validation->set_rules('f[uii]['.$vtype.'][helpdesk][' . $k . ']', 'UUI ' . lang('rr_helpdeskurl') . ' ' . lang('in') . ' ' . $k . '', 'strip_tags|trim|valid_url|min_length[5]|max_length[500]');
+                    }
+                }
+                if (isset($y['f']['uii'][''.$vtype.'']['logo']) && is_array($y['f']['uii'][''.$vtype.'']['logo'])) {
+                    foreach ($y['f']['uii'][''.$vtype.'']['logo'] as $k => $v) {
+                        $this->form_validation->set_rules('f[uii]['.$vtype.'][logo][' . $k . '][url]', 'Logo', 'trim|required|validimageorurl');
+                    }
                 }
             }
-            if (isset($y['f']['uii']['idpsso']['desc']) && is_array($y['f']['uii']['idpsso']['desc'])) {
-                foreach ($y['f']['uii']['idpsso']['desc'] as $k => $v) {
-                    $this->form_validation->set_rules('f[uii][idpsso][desc][' . $k . ']', 'UUI ' . lang('rr_description') . ' ' . lang('in') . ' ' . $k . '', 'trim|min_length[3]|max_length[500]');
-                }
-            }
-            if (isset($y['f']['uii']['idpsso']['helpdesk']) && is_array($y['f']['uii']['idpsso']['helpdesk'])) {
-                foreach ($y['f']['uii']['idpsso']['helpdesk'] as $k => $v) {
-                    $this->form_validation->set_rules('f[uii][idpsso][helpdesk][' . $k . ']', 'UUI ' . lang('rr_helpdeskurl') . ' ' . lang('in') . ' ' . $k . '', 'strip_tags|trim|valid_url|min_length[5]|max_length[500]');
-                }
-            }
+
             if (isset($y['f']['uii']['idpsso']['iphint']) && is_array($y['f']['uii']['idpsso']['iphint'])) {
                 foreach ($y['f']['uii']['idpsso']['iphint'] as $k => $v) {
                     $this->form_validation->set_rules('f[uii][idpsso][iphint][' . $k . ']', 'IPHint', 'trim|valid_ip_with_prefix|min_length[5]|max_length[500]');
@@ -301,11 +314,7 @@ class Entityedit extends MY_Controller
                     $this->form_validation->set_rules('f[uii][idpsso][domainhint][' . $k . ']', 'DomainHint', 'trim|valid_domain|min_length[4]|max_length[500]');
                 }
             }
-             if (isset($y['f']['uii']['idpsso']['logo']) && is_array($y['f']['uii']['idpsso']['logo'])) {
-                foreach ($y['f']['uii']['idpsso']['logo'] as $k => $v) {
-                    $this->form_validation->set_rules('f[uii][idpsso][logo][' . $k . '][url]', 'Logo', 'trim|required|validimageorurl');
-                }
-            }
+
 
             if (array_key_exists('lhelpdesk', $y['f'])) {
                 foreach ($y['f']['lhelpdesk'] as $k => $v) {
@@ -609,7 +618,7 @@ class Entityedit extends MY_Controller
         }
         // uii
         $uiitTypes = array('idpsso', 'spsso');
-        $uiiSubTypes = array('desc', 'logo', 'helpdesk', 'displayname');
+        $uiiSubTypes = array('desc', 'logo', 'helpdesk', 'displayname','keywords');
         foreach ($uiitTypes as $t) {
             if ($t === 'idpsso') {
                 $uiiSubTypes[] = 'iphint';
