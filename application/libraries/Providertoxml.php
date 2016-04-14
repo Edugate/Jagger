@@ -26,7 +26,7 @@ class Providertoxml
     private $logoPrefixUrl;
     private $srvMap;
 
-    function __construct() {
+    public function __construct() {
         $this->ci = &get_instance();
 
         $this->srvMap = array(

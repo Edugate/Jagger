@@ -1,7 +1,7 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 /**
  * ResourceRegistry3
  * 
@@ -19,16 +19,17 @@ if (!defined('BASEPATH'))
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
  */
 class Metadatalocations extends MY_Controller {
-    function __construct() {
+    public function __construct() {
         parent::__construct();
     }
-    function index()
+    public function index()
     {
        $this->load->library('table');
 
         $myLang = MY_Controller::getLang();
         $providerPrefixUrl = base_url('signedmetadata/provider') ;
         $federationPrefixUrl = base_url('signedmetadata/federation') ;
+        $servicePrefixUrl = base_url('metadata/service');
         $tmpProviders = new models\Providers;
         $tmpFederations = new models\Federations;
         $feds = $tmpFederations->getFederations();
@@ -42,26 +43,27 @@ class Metadatalocations extends MY_Controller {
         $farray = array();
         foreach($feds as $fed)
         {
-            $farray[] = array('<a href="'.$federationPrefixUrl.'/'. $fed->getSysname().'/metadata.xml">signed metadata</a>',
-                              '<span title="'.$fed->getName().'">'.html_escape($fed->getName()).'</span>',$fed->getUrn());
+            $farray[] = array('<span title="'.$fed->getName().'">'.html_escape($fed->getName()).'</span>',$fed->getUrn(),'<a target="_blank" href="'.$federationPrefixUrl.'/'. $fed->getSysname().'/metadata.xml" class="button tiny">signed metadata</a>');
         }
         $tarray = array();
         foreach($idps as $idp)
         {
             $nameInLang = $idp->getNameToWebInLang($myLang,'sp');
-            $tarray[] = array('<a href="'.$providerPrefixUrl.'/'. base64url_encode($idp->getEntityId()).'/metadata.xml">signed metadata</a>', '<span title="'.$nameInLang.'">'.$nameInLang.'</span>',$idp->getEntityId());
+            $tarray[] = array('<span title="'.$nameInLang.'">'.$nameInLang.'</span>',html_escape($idp->getEntityId()),'<a target="_blank" href="'.$providerPrefixUrl.'/'. base64url_encode($idp->getEntityId()).'/metadata.xml" class="button tiny">cot</a>','<a target="_blank" href="'.$servicePrefixUrl.'/'. base64url_encode($idp->getEntityId()).'/metadata.xml" class="button tiny">entity</a>');
         }
 
         $sarray = array();
         foreach($sps as $sp)
         {
             $nameInLang = $sp->getNameToWebInLang($myLang,'sp');
-            $sarray[] = array('<a href="'.$providerPrefixUrl.'/'. base64url_encode($sp->getEntityId()).'/metadata.xml">signed metadata</a>', '<span title="'.$nameInLang.'">'.$nameInLang.'<span>',$sp->getEntityId());
+            $sarray[] = array( '<span title="'.$nameInLang.'">'.$nameInLang.'<span>',html_escape($sp->getEntityId()),'<a target="_blank" href="'.$providerPrefixUrl.'/'. base64url_encode($sp->getEntityId()).'/metadata.xml" class="button tiny">cot</a>','<a target="_blank" href="'.$servicePrefixUrl.'/'. base64url_encode($sp->getEntityId()).'/metadata.xml" class="button tiny">entity</a>');
         }
-        $data['farray'] = &$farray;
-        $data['tarray'] = &$tarray;
-        $data['sarray'] = &$sarray;
-        $data['content_view'] = 'metadatalocations_view';
+        $data = array(
+            'farray' => $farray,
+            'tarray'=> $tarray,
+            'sarray' => $sarray,
+            'content_view' => 'metadatalocations_view'
+        );
         $this->load->view('page',$data);
 
     }
