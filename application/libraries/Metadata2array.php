@@ -270,14 +270,17 @@ class Metadata2array
             $entity['type'] = 'SP';
         }
 
-        if ($isSp && isset($entity['details']['spssodescriptor']['nameid']) && is_array($entity['details']['spssodescriptor']['nameid']) && count($entity['details']['spssodescriptor']['nameid']) > 0) {
-            if (in_array('urn:oasis:names:tc:SAML:2.0:nameid-format:persistent', $entity['details']['spssodescriptor']['nameid']) && array_key_exists('persistentId', $this->nameidsattrs)) {
-                $entity['details']['reqattrs'][] = array('name' => $this->nameidsattrs['persistentId'], 'req' => 'True');
-            } elseif (in_array('urn:oasis:names:tc:SAML:2.0:nameid-format:transient', $entity['details']['spssodescriptor']['nameid']) && array_key_exists('transientId', $this->nameidsattrs)) {
+        if($isSp) {
+            if (isset($entity['details']['spssodescriptor']['nameid']) && is_array($entity['details']['spssodescriptor']['nameid']) && count($entity['details']['spssodescriptor']['nameid']) > 0) {
+                if (in_array('urn:oasis:names:tc:SAML:2.0:nameid-format:persistent', $entity['details']['spssodescriptor']['nameid']) && array_key_exists('persistentId', $this->nameidsattrs)) {
+                    $entity['details']['reqattrs'][] = array('name' => $this->nameidsattrs['persistentId'], 'req' => 'True');
+                }
+                if (in_array('urn:oasis:names:tc:SAML:2.0:nameid-format:transient', $entity['details']['spssodescriptor']['nameid']) && array_key_exists('transientId', $this->nameidsattrs)) {
+                    $entity['details']['reqattrs'][] = array('name' => $this->nameidsattrs['transientId'], 'req' => 'True');
+                }
+            } elseif (array_key_exists('transientId', $this->nameidsattrs)) {
                 $entity['details']['reqattrs'][] = array('name' => $this->nameidsattrs['transientId'], 'req' => 'True');
             }
-        } elseif ($isSp && array_key_exists('transientId', $this->nameidsattrs)) {
-            $entity['details']['reqattrs'][] = array('name' => $this->nameidsattrs['transientId'], 'req' => 'True');
         }
         /**
          * check for duplicates

@@ -56,7 +56,7 @@ $foundation = $base_url . 'foundation/';
         '<meta content=\'\' name=\'author\'>' . PHP_EOL .
         '<meta content=\'width=device-width, initial-scale=1.0, user-scalable=0\' name=\'viewport\'>' . PHP_EOL .
         '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/' . $colorTheme . '.css" />' . PHP_EOL .
-        '<script src="' . $base_url . 'js/modernizr.min.9d550bd1.jsi"></script>';
+        '<script src="' . $base_url . 'js/modernizr.min.9d550bd1.js"></script>';
     ?>
 
 </head>
