@@ -26,6 +26,7 @@ class Providerdetails
     protected $idppart = true;
     protected $sppart = true;
     protected $presubtitle;
+    protected $entmenu = array();
 
     public function __construct(array $args) {
         $this->CI = &get_instance();
@@ -203,7 +204,6 @@ class Providerdetails
         /**
          * Federation
          */
-        //$i = 0;
         $d[++$i]['name'] = lang('rr_memberof');
         $federationsString = '';
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
@@ -257,7 +257,7 @@ class Providerdetails
             if ($no_feds > 0 && $hasWriteAccess) {
                 if (!$isLocked) {
                     $manage_membership .= '<div><a href="' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '" class="button tiny alert">' . lang('rr_federationleave') . '</a></div>';
-                    $entmenu[11] = array('name' => lang('rr_federationleave'), 'link' => '' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '', 'class' => '');
+                    $this->entmenu[11] = array('name' => lang('rr_federationleave'), 'link' => '' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '', 'class' => '');
                 } else {
                     $manage_membership .= '<b>' . lang('rr_federationleave') . '</b> ' . $lockicon . ' <br />';
                 }
@@ -265,7 +265,7 @@ class Providerdetails
             if ($hasWriteAccess && (count($membershipNotLeft) < count($all_federations))) {
                 if (!$isLocked) {
                     $manage_membership .= '<div><a href="' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '" class="button tiny">' . lang('rr_federationjoin') . '</a></div>';
-                    $entmenu[10] = array('name' => lang('rr_federationjoin'), 'link' => '' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '', 'class' => '');
+                    $this->entmenu[10] = array('name' => lang('rr_federationjoin'), 'link' => '' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '', 'class' => '');
                 } else {
                     $manage_membership .= '<b>' . lang('rr_federationjoin') . '</b> ' . $lockicon . '<br />';
                 }
@@ -413,7 +413,6 @@ class Providerdetails
         $hasWriteAccess = $this->CI->zacl->check_acl($id, 'write', 'entity', '');
         $hasManageAccess = $this->CI->zacl->check_acl($id, 'manage', 'entity', '');
         // off canvas menu for provider
-        $entmenu = array();
 
         $editLink = '';
 
@@ -427,16 +426,16 @@ class Providerdetails
         $isLocked = $ent->getLocked();
         if (!$hasWriteAccess) {
             $editLink .= makeLabel('noperm', lang('rr_nopermission'), lang('rr_nopermission'));
-            $entmenu[0] = array('name' => '' . lang('rr_nopermission') . '', 'link' => '#', 'class' => 'alert');
+            $this->entmenu[0] = array('name' => '' . lang('rr_nopermission') . '', 'link' => '#', 'class' => 'alert');
         } elseif (!$isLocal) {
             $editLink .= makeLabel('external', lang('rr_externalentity'), lang('rr_external'));
-            $entmenu[0] = array('name' => '' . lang('rr_externalentity') . '', 'link' => '#', 'class' => 'alert');
+            $this->entmenu[0] = array('name' => '' . lang('rr_externalentity') . '', 'link' => '#', 'class' => 'alert');
         } elseif ($isLocked) {
             $editLink .= makeLabel('locked', lang('rr_lockedentity'), lang('rr_lockedentity'));
-            $entmenu[0] = array('name' => '' . lang('rr_lockedentity') . '', 'link' => '#', 'class' => 'alert');
+            $this->entmenu[0] = array('name' => '' . lang('rr_lockedentity') . '', 'link' => '#', 'class' => 'alert');
         } else {
             $editLink .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon button small" id="editprovider" title="edit" >' . lang('rr_edit') . '</a>';
-            $entmenu[0] = array('name' => '' . lang('rr_editentity') . '', 'link' => '' . base_url() . 'manage/entityedit/show/' . $id . '', 'class' => '');
+            $this->entmenu[0] = array('name' => '' . lang('rr_editentity') . '', 'link' => '' . base_url() . 'manage/entityedit/show/' . $id . '', 'class' => '');
             $data['showclearcache'] = true;
         }
         $data['edit_link'] = $editLink;
@@ -906,8 +905,8 @@ class Providerdetails
             if (!$isLocked && $hasWriteAccess && $ent->getLocal()) {
 
                 $mlink = '';
-                $entmenu[20] = array('label' => '' . lang('rr_attributes') . '');
-                $entmenu[21] = array('name' => lang('rr_arpexclist_edit'), 'link' => '' . base_url() . 'manage/arpsexcl/idp/' . $ent->getId() . '', 'class' => '');
+                $this->entmenu[20] = array('label' => '' . lang('rr_attributes') . '');
+                $this->entmenu[21] = array('name' => lang('rr_arpexclist_edit'), 'link' => '' . base_url() . 'manage/arpsexcl/idp/' . $ent->getId() . '', 'class' => '');
                 $d[++$i]['name'] = lang('rr_arpexclist_title') . ' <br />' . $mlink;
                 if (is_array($exc) && count($exc) > 0) {
                     $l = '<ul class="no-bullet">';
@@ -929,10 +928,10 @@ class Providerdetails
          */
         if ($idppart) {
             if ($hasWriteAccess) {
-                $entmenu[20] = array('label' => '' . lang('rr_attributes') . '');
-                $entmenu[23] = array('name' => '' . lang('rr_attributepolicy') . '', 'link' => '' . base_url() . 'manage/attributepolicy/show/' . $id . '', 'class' => '');
+                $this->entmenu[20] = array('label' => '' . lang('rr_attributes') . '');
+                $this->entmenu[23] = array('name' => '' . lang('rr_attributepolicy') . '', 'link' => '' . base_url() . 'manage/attributepolicy/show/' . $id . '', 'class' => '');
                 if (!empty($logoUploadEnabled) && $logoUploadEnabled === true) {
-                    $entmenu[24] = array('name' => '' . lang('rr_logos') . ' <span class="label">deprecated</span>', 'link' => '' . base_url('manage/logomngmt/provider/idp/' . $ent->getId() . ''), 'class' => '');
+                    $this->entmenu[24] = array('name' => '' . lang('rr_logos') . ' <span class="label">deprecated</span>', 'link' => '' . base_url('manage/logomngmt/provider/idp/' . $ent->getId() . ''), 'class' => '');
                 }
             }
 
@@ -958,7 +957,7 @@ class Providerdetails
                 $d[$i]['value'] = anchor(base_url() . 'reports/spmatrix/show/' . $ent->getId(), lang('rr_attrsoverview'), 'class="button small editbutton"');
 
                 if (!empty($logoUploadEnabled) && $logoUploadEnabled === true) {
-                    $entmenu[24] = array('name' => '' . lang('rr_logos') . ' <span class="label">deprecated</span>', 'link' => '' . base_url('manage/logomngmt/provider/sp/' . $ent->getId() . ''), 'class' => '');
+                    $this->entmenu[24] = array('name' => '' . lang('rr_logos') . ' <span class="label">deprecated</span>', 'link' => '' . base_url('manage/logomngmt/provider/sp/' . $ent->getId() . ''), 'class' => '');
                 }
             }
             $requiredAttributes = $ent->getAttributesRequirement();
@@ -1140,7 +1139,7 @@ class Providerdetails
 
         $data['tabs'] = $result;
         Detail::$alerts = $alerts;
-        $data['entmenu'] = $entmenu;
+        $data['entmenu'] = $this->entmenu;
 
         return $data;
     }
