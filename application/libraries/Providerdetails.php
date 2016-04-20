@@ -130,6 +130,157 @@ class Providerdetails
         return $result;
     }
 
+    private function genFedView(\models\Provider $ent){
+        $lockicon = genIcon('locked');
+        $id = $ent->getId();
+        $hasWriteAccess = $this->CI->zacl->check_acl($id, 'write', 'entity', '');
+        $isLocked = $ent->getLocked();
+        $isLocal = $ent->getLocal();
+        $sppart = $this->sppart;
+        $feathide = (array) $this->CI->config->item('feathide');
+        $featdisable = (array) $this->CI->config->item('featdisable');
+
+        $srv_metalink = base_url('metadata/service/' . base64url_encode($ent->getEntityId()) . '/metadata.xml');
+
+        $disable_extcirclemeta = $this->CI->config->item('disable_extcirclemeta');
+        $gearman_enabled = $this->CI->config->item('gearman');
+
+        $i = 0;
+        if (!(isset($feathide['metasonprov']) && $feathide['metasonprov'] === true)) {
+            $d[++$i]['header'] = lang('rr_metadata');
+            $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<i class="fi-arrow-right"></i>', '');
+        }
+        $circleEnabled = !((isset($featdisable['circlemeta']) && $featdisable['circlemeta'] === true) || (isset($feathide['circlemeta']) && $feathide['circlemeta'] === true));
+
+        if ($circleEnabled) {
+
+            if (!$isLocal && !empty($disable_extcirclemeta) && $disable_extcirclemeta === true) {
+                $d[++$i]['name'] = lang('rr_circleoftrust');
+                $d[$i]['value'] = lang('disableexternalcirclemeta');
+                $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
+                $d[$i]['value'] = lang('disableexternalcirclemeta');
+            } else {
+                $srvCircleMetalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
+                $srvCircleMetalinkSigned = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
+
+                $d[++$i]['name'] = lang('rr_circleoftrust');
+                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srvCircleMetalink . '&nbsp;</span>&nbsp; ' . anchor($srvCircleMetalink, '<i class="fi-arrow-right"></i>', 'class=""');
+                $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
+                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srvCircleMetalinkSigned . '&nbsp;</span>&nbsp; ' . anchor_popup($srvCircleMetalinkSigned, '<i class="fi-arrow-right"></i>');
+            }
+        }
+        if ($isLocal && $hasWriteAccess && !empty($gearman_enabled) && $circleEnabled) {
+            $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
+            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner" class="button tiny">' . lang('btn_signmetadata') . '</a>';
+        }
+        $wayfhide = false;
+
+        if ((isset($feathide['discojuice']) && $feathide['discojuice'] === true) || (isset($featdisable['discojuice']) && $featdisable['discojuice'] === true)) {
+            $wayfhide = true;
+        }
+        if ($sppart && !$wayfhide) {
+            $d[++$i]['header'] = 'WAYF';
+            $d[++$i]['name'] = lang('rr_ds_json_url') . ' <div class="dhelp">' . lang('entdswayf') . '</div>';
+
+            $d[$i]['value'] = anchor(base_url() . 'disco/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.json?callback=dj_md_1', lang('rr_link'));
+
+            $tmpwayflist = $ent->getWayfList();
+            if (!empty($tmpwayflist) && is_array($tmpwayflist)) {
+                if (isset($tmpwayflist['white'])) {
+                    if (is_array($tmpwayflist['white'])) {
+                        $discolist = implode('<br />', array_values($tmpwayflist['white']));
+                        $d[++$i]['name'] = lang('rr_ds_white');
+                        $d[$i]['value'] = $discolist;
+                    }
+                } elseif (isset($tmpwayflist['black']) && is_array($tmpwayflist['black']) && count($tmpwayflist['black']) > 0) {
+                    $discolist = implode('<br />', array_values($tmpwayflist['black']));
+                    $d[++$i]['name'] = lang('rr_ds_black');
+                    $d[$i]['value'] = $discolist;
+                }
+            }
+        }
+        /**
+         * Federation
+         */
+        //$i = 0;
+        $d[++$i]['name'] = lang('rr_memberof');
+        $federationsString = '';
+        $all_federations = $this->em->getRepository("models\Federation")->findAll();
+        $no_feds = 0;
+        $membership = $ent->getMembership();
+        $membershipNotLeft = array();
+        $showMetalinks = true;
+
+        $manage_membership = '';
+        if (isset($feathide['metasonprov']) && $feathide['metasonprov'] === true) {
+            $showMetalinks = false;
+        }
+        if (!empty($membership)) {
+            $federationsString = '<ul class="no-bullet">';
+            foreach ($membership as $f) {
+                $joinstate = $f->getJoinState();
+                if ($joinstate === 2) {
+                    continue;
+                }
+                $membershipNotLeft[] = 1;
+                $membershipDisabled = '';
+                if ($f->isDisabled()) {
+                    $membershipDisabled = makeLabel('disabled', lang('membership_inactive'), lang('membership_inactive'));
+                }
+                $membershipBanned = '';
+                if ($f->isBanned()) {
+                    $membershipBanned = makeLabel('disabled', lang('membership_banned'), lang('membership_banned'));
+                }
+                $fedActive = $f->getFederation()->getActive();
+
+                $fedlink = base_url('federations/manage/show/' . base64url_encode($f->getFederation()->getName()));
+
+                if ($showMetalinks) {
+                    $metalink = base_url('metadata/federation/' . $f->getFederation()->getSysname() . '/metadata.xml');
+                    if ($fedActive) {
+                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fi-arrow-right"></i>', 'class=""') . '</li>';
+                    } else {
+                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fi-arrow-right"></i>', 'class=""') . '</li>';
+                    }
+                } else {
+                    if ($fedActive) {
+                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, html_escape($f->getFederation()->getName())) . ' </li>';
+                    } else {
+                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . '</li>';
+                    }
+                }
+            }
+            $federationsString .= '</ul>';
+
+            $no_feds = $membership->count();
+            if ($no_feds > 0 && $hasWriteAccess) {
+                if (!$isLocked) {
+                    $manage_membership .= '<div><a href="' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '" class="button tiny alert">' . lang('rr_federationleave') . '</a></div>';
+                    $entmenu[11] = array('name' => lang('rr_federationleave'), 'link' => '' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '', 'class' => '');
+                } else {
+                    $manage_membership .= '<b>' . lang('rr_federationleave') . '</b> ' . $lockicon . ' <br />';
+                }
+            }
+            if ($hasWriteAccess && (count($membershipNotLeft) < count($all_federations))) {
+                if (!$isLocked) {
+                    $manage_membership .= '<div><a href="' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '" class="button tiny">' . lang('rr_federationjoin') . '</a></div>';
+                    $entmenu[10] = array('name' => lang('rr_federationjoin'), 'link' => '' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '', 'class' => '');
+                } else {
+                    $manage_membership .= '<b>' . lang('rr_federationjoin') . '</b> ' . $lockicon . '<br />';
+                }
+            }
+        }
+        $d[$i]['value'] = '<p>' . $federationsString . '</p>' . '<p>' . $manage_membership . '</p>';
+        if ($no_feds > 0) {
+            $d[++$i]['name'] = '';
+            $d[$i]['value'] = '<a href="' . base_url() . 'providers/detail/showmembers/' . $id . '" id="getmembers"><button type="button" class="savebutton arrowdownicon small secondary">' . lang('showmemb_btn') . '</button></a>';
+
+            $d[++$i]['2cols'] = '<div id="membership"></div>';
+        }
+        return $d;
+    }
+
     private function makeStatusLabels() {
         $ent = $this->ent;
         $entStatus = '';
@@ -241,11 +392,10 @@ class Providerdetails
     public function generateForControllerProvidersDetail() {
 
         $ent = $this->ent;
-        $feathide = (array) $this->CI->config->item('feathide');
-        $featdisable = (array) $this->CI->config->item('featdisable');
+      
         $alerts = array();
 
-        $lockicon = genIcon('locked');
+
         $isStatic = $ent->getStatic();
 
         $params = array(
@@ -462,146 +612,8 @@ class Providerdetails
         /**
          * Metadata urls
          */
-        $d = array();
-        $i = 0;
 
-
-        $srv_metalink = base_url('metadata/service/' . base64url_encode($ent->getEntityId()) . '/metadata.xml');
-
-        $disable_extcirclemeta = $this->CI->config->item('disable_extcirclemeta');
-        $gearman_enabled = $this->CI->config->item('gearman');
-
-        if (!(isset($feathide['metasonprov']) && $feathide['metasonprov'] === true)) {
-            $d[++$i]['header'] = lang('rr_metadata');
-            $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<i class="fi-arrow-right"></i>', '');
-        }
-        $circleEnabled = !((isset($featdisable['circlemeta']) && $featdisable['circlemeta'] === true) || (isset($feathide['circlemeta']) && $feathide['circlemeta'] === true));
-
-        if ($circleEnabled) {
-
-            if (!$isLocal && !empty($disable_extcirclemeta) && $disable_extcirclemeta === true) {
-                $d[++$i]['name'] = lang('rr_circleoftrust');
-                $d[$i]['value'] = lang('disableexternalcirclemeta');
-                $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
-                $d[$i]['value'] = lang('disableexternalcirclemeta');
-            } else {
-                $srvCircleMetalink = base_url() . 'metadata/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
-                $srvCircleMetalinkSigned = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
-
-                $d[++$i]['name'] = lang('rr_circleoftrust');
-                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srvCircleMetalink . '&nbsp;</span>&nbsp; ' . anchor($srvCircleMetalink, '<i class="fi-arrow-right"></i>', 'class=""');
-                $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
-                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srvCircleMetalinkSigned . '&nbsp;</span>&nbsp; ' . anchor_popup($srvCircleMetalinkSigned, '<i class="fi-arrow-right"></i>');
-            }
-        }
-        if ($isLocal && $hasWriteAccess && !empty($gearman_enabled) && $circleEnabled) {
-            $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
-            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner" class="button tiny">' . lang('btn_signmetadata') . '</a>';
-        }
-        $wayfhide = false;
-
-        if ((isset($feathide['discojuice']) && $feathide['discojuice'] === true) || (isset($featdisable['discojuice']) && $featdisable['discojuice'] === true)) {
-            $wayfhide = true;
-        }
-        if ($sppart && !$wayfhide) {
-            $d[++$i]['header'] = 'WAYF';
-            $d[++$i]['name'] = lang('rr_ds_json_url') . ' <div class="dhelp">' . lang('entdswayf') . '</div>';
-
-            $d[$i]['value'] = anchor(base_url() . 'disco/circle/' . base64url_encode($ent->getEntityId()) . '/metadata.json?callback=dj_md_1', lang('rr_link'));
-
-            $tmpwayflist = $ent->getWayfList();
-            if (!empty($tmpwayflist) && is_array($tmpwayflist)) {
-                if (isset($tmpwayflist['white'])) {
-                    if (is_array($tmpwayflist['white'])) {
-                        $discolist = implode('<br />', array_values($tmpwayflist['white']));
-                        $d[++$i]['name'] = lang('rr_ds_white');
-                        $d[$i]['value'] = $discolist;
-                    }
-                } elseif (isset($tmpwayflist['black']) && is_array($tmpwayflist['black']) && count($tmpwayflist['black']) > 0) {
-                    $discolist = implode('<br />', array_values($tmpwayflist['black']));
-                    $d[++$i]['name'] = lang('rr_ds_black');
-                    $d[$i]['value'] = $discolist;
-                }
-            }
-        }
-        /**
-         * Federation
-         */
-        $d[++$i]['name'] = lang('rr_memberof');
-        $federationsString = '';
-        $all_federations = $this->em->getRepository("models\Federation")->findAll();
-        $no_feds = 0;
-        $membership = $ent->getMembership();
-        $membershipNotLeft = array();
-        $showMetalinks = true;
-
-        if (isset($feathide['metasonprov']) && $feathide['metasonprov'] === true) {
-            $showMetalinks = false;
-        }
-        if (!empty($membership)) {
-            $federationsString = '<ul class="no-bullet">';
-            foreach ($membership as $f) {
-                $joinstate = $f->getJoinState();
-                if ($joinstate === 2) {
-                    continue;
-                }
-                $membershipNotLeft[] = 1;
-                $membershipDisabled = '';
-                if ($f->isDisabled()) {
-                    $membershipDisabled = makeLabel('disabled', lang('membership_inactive'), lang('membership_inactive'));
-                }
-                $membershipBanned = '';
-                if ($f->isBanned()) {
-                    $membershipBanned = makeLabel('disabled', lang('membership_banned'), lang('membership_banned'));
-                }
-                $fedActive = $f->getFederation()->getActive();
-
-                $fedlink = base_url('federations/manage/show/' . base64url_encode($f->getFederation()->getName()));
-
-                if ($showMetalinks) {
-                    $metalink = base_url('metadata/federation/' . $f->getFederation()->getSysname() . '/metadata.xml');
-                    if ($fedActive) {
-                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fi-arrow-right"></i>', 'class=""') . '</li>';
-                    } else {
-                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fi-arrow-right"></i>', 'class=""') . '</li>';
-                    }
-                } else {
-                    if ($fedActive) {
-                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, html_escape($f->getFederation()->getName())) . ' </li>';
-                    } else {
-                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . '</li>';
-                    }
-                }
-            }
-            $federationsString .= '</ul>';
-            $manage_membership = '';
-            $no_feds = $membership->count();
-            if ($no_feds > 0 && $hasWriteAccess) {
-                if (!$isLocked) {
-                    $manage_membership .= '<div><a href="' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '" class="button tiny alert">' . lang('rr_federationleave') . '</a></div>';
-                    $entmenu[11] = array('name' => lang('rr_federationleave'), 'link' => '' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '', 'class' => '');
-                } else {
-                    $manage_membership .= '<b>' . lang('rr_federationleave') . '</b> ' . $lockicon . ' <br />';
-                }
-            }
-            if ($hasWriteAccess && (count($membershipNotLeft) < count($all_federations))) {
-                if (!$isLocked) {
-                    $manage_membership .= '<div><a href="' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '" class="button tiny">' . lang('rr_federationjoin') . '</a></div>';
-                    $entmenu[10] = array('name' => lang('rr_federationjoin'), 'link' => '' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '', 'class' => '');
-                } else {
-                    $manage_membership .= '<b>' . lang('rr_federationjoin') . '</b> ' . $lockicon . '<br />';
-                }
-            }
-        }
-        $d[$i]['value'] = '<p>' . $federationsString . '</p>' . '<p>' . $manage_membership . '</p>';
-        if ($no_feds > 0) {
-            $d[++$i]['name'] = '';
-            $d[$i]['value'] = '<a href="' . base_url() . 'providers/detail/showmembers/' . $id . '" id="getmembers"><button type="button" class="savebutton arrowdownicon small secondary">' . lang('showmemb_btn') . '</button></a>';
-
-            $d[++$i]['2cols'] = '<div id="membership"></div>';
-        }
-        $result[] = array('section' => 'federation', 'title' => '' . lang('tabMembership') . '', 'data' => $d);
+        $result[] = array('section' => 'federation', 'title' => '' . lang('tabMembership') . '', 'data' => $this->genFedView($ent));
 
 
         $d = array();
