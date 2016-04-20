@@ -182,7 +182,7 @@ class J_queue
             if (!$coc->getAvailable()) {
                 $lenabled = '<span class="label alert">' . lang('rr_disabled') . '</span>';
             }
-            if($type === 'entcat'){
+            if ($type === 'entcat') {
                 $result[] = array(
                     'name' => lang('attrname'),
                     'value' => html_escape($coc->getSubtype())
@@ -293,12 +293,10 @@ class J_queue
             if (!$isLocal) {
                 $result[] = array('2cols' => '<div data-alert class="alert-box alert" >' . lang('rr_externalentity') . '</div>');
                 $buttons = $this->displayFormsButtons($queue->getId(), true);
-            }
-            elseif ($isLocked){
+            } elseif ($isLocked) {
                 $result[] = array('2cols' => '<div data-alert class="alert-box alert" >' . lang('error_lockednoedit') . '</div>');
                 $buttons = $this->displayFormsButtons($queue->getId(), true);
-            }
-            else {
+            } else {
                 $buttons = $this->displayFormsButtons($queue->getId(), !$approveaccess);
             }
         }

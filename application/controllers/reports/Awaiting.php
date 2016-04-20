@@ -45,9 +45,9 @@ class Awaiting extends MY_Controller
         }
         $this->load->library(array('zacl', 'j_queue'));
         $data = array(
-            'list'          => $this->getQueueList(),
+            'list' => $this->getQueueList(),
             'error_message' => $this->session->flashdata('error_message'),
-            'content_view'  => 'reports/awaiting_list_view'
+            'content_view' => 'reports/awaiting_list_view'
         );
         $this->load->view('reports/awaiting_list_view', $data);
     }
@@ -58,7 +58,7 @@ class Awaiting extends MY_Controller
         if ($cached) {
             return $cached;
         }
-        $this->load->library(array('zacl','j_queue','jqueueaccess'));
+        $this->load->library(array('zacl', 'j_queue', 'jqueueaccess'));
         /**
          * @var  models\Queue[] $queueArray
          */
@@ -92,18 +92,18 @@ class Awaiting extends MY_Controller
             if ($access) {
                 $result['q'][] = array(
                     'issubscription' => 0,
-                    'requester'      => $cUsername,
-                    'requesterCN'    => $cCN,
-                    'idate'          => $q->getCreatedAt(),
-                    'datei'          => $q->getCreatedAt(),
-                    'iname'          => $q->getCN(),
-                    'qid'            => $q->getId(),
-                    'mail'           => $q->getEmail(),
-                    'type'           => $q->getType(),
-                    'action'         => $q->getAction(),
-                    'recipientname'  => $recipientname,
-                    'token'          => $q->getToken(),
-                    'confirmed'      => $q->getConfirm()
+                    'requester' => $cUsername,
+                    'requesterCN' => $cCN,
+                    'idate' => $q->getCreatedAt(),
+                    'datei' => $q->getCreatedAt(),
+                    'iname' => $q->getCN(),
+                    'qid' => $q->getId(),
+                    'mail' => $q->getEmail(),
+                    'type' => $q->getType(),
+                    'action' => $q->getAction(),
+                    'recipientname' => $recipientname,
+                    'token' => $q->getToken(),
+                    'confirmed' => $q->getConfirm()
                 );
 
             }
@@ -114,10 +114,10 @@ class Awaiting extends MY_Controller
 
             foreach ($subscriptions as $s) {
                 $result['s'][] = array(
-                    'subscriber'       => $s->getSubscriber()->getUsername(),
+                    'subscriber' => $s->getSubscriber()->getUsername(),
                     'subscriber_email' => $s->getSubscriber()->getEmail(),
-                    'type'             => lang($s->getType()),
-                    'url'              => base_url('notifications/subscriber/mysubscriptions/' . base64url_encode($s->getSubscriber()->getUsername()))
+                    'type' => lang($s->getType()),
+                    'url' => base_url('notifications/subscriber/mysubscriptions/' . base64url_encode($s->getSubscriber()->getUsername()))
                 );
 
             }
@@ -135,15 +135,14 @@ class Awaiting extends MY_Controller
             $objData->importFromArray($qObject->getData());
             /* build table with details */
             $result = array(
-                'data'         => array(
-                    'provider'      => $this->j_queue->displayRegisterProvider($qObject),
-                    'obj'           => $objData,
+                'data' => array(
+                    'provider' => $this->j_queue->displayRegisterProvider($qObject),
+                    'obj' => $objData,
                     'error_message' => $this->error_message,
-                    'content_view'  => 'reports/awaiting_provider_register_view'
+                    'content_view' => 'reports/awaiting_provider_register_view'
                 ),
                 'content_view' => 'reports/awaiting_provider_register_view'
             );
-            $result['data']['provider'][]['2cols'] = $this->j_queue->displayFormsButtons($qObject->getId());
 
             return $result;
         }
@@ -195,7 +194,7 @@ class Awaiting extends MY_Controller
 
         if ($queueObject === null) {
             return $this->load->view('page', array(
-                'content_view'  => 'error_message',
+                'content_view' => 'error_message',
                 'error_message' => lang('rerror_qid_noexist')
             ));
         }
@@ -203,10 +202,11 @@ class Awaiting extends MY_Controller
         if (!$this->jqueueaccess->hasQAccess($queueObject)) {
             return $this->load->view('page', array(
                 'content_view' => 'nopermission',
-                'error'        => lang('rr_nopermission')
+                'error' => lang('rr_nopermission')
             ));
         }
         $approveaccess = $this->jqueueaccess->hasApproveAccess($queueObject);
+
         $buttons = $this->j_queue->displayFormsButtons($queueObject->getId(), !$approveaccess);
 
         $objType = $queueObject->getObjType();
@@ -215,12 +215,14 @@ class Awaiting extends MY_Controller
 
         if (strcasecmp($objType, 'Provider') == 0) {
             $result = $this->detailProvider($queueObject);
+            $result['data']['provider'][]['2cols'] = $buttons;
+
         } elseif (strcasecmp($objType, 'Federation') == 0) {
             $result = $this->j_queue->detailFederation($queueObject);
         } elseif (strcasecmp($objType, 'User') == 0 && strcasecmp($objAction, 'Create') == 0) {
             $result['data'] = array(
-                'requestdata'   => $this->j_queue->displayRegisterUser($queueObject),
-                'content_view'  => 'reports/awaiting_detail_view',
+                'requestdata' => $this->j_queue->displayRegisterUser($queueObject),
+                'content_view' => 'reports/awaiting_detail_view',
                 'error_message' => $this->error_message
             );
             $result['data']['requestdata'][]['2cols'] = $buttons;
@@ -228,7 +230,7 @@ class Awaiting extends MY_Controller
         } elseif (strcasecmp($objType, 'n') == 0) {
             if (strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'entitycategory') == 0) { // apply for entity category
                 $result['data'] = array(
-                    'requestdata'  => $this->j_queue->displayApplyForEntityCategory($queueObject),
+                    'requestdata' => $this->j_queue->displayApplyForEntityCategory($queueObject),
                     'content_view' => 'reports/awaiting_detail_view',
 
                 );
@@ -236,20 +238,20 @@ class Awaiting extends MY_Controller
 
             } elseif (strcasecmp($objAction, 'apply') == 0 && strcasecmp($recipientType, 'regpolicy') == 0) { // apply for entity category
                 $result['data'] = array(
-                    'requestdata'  => $this->j_queue->displayApplyForRegistrationPolicy($queueObject),
+                    'requestdata' => $this->j_queue->displayApplyForRegistrationPolicy($queueObject),
                     'content_view' => 'reports/awaiting_detail_view'
                 );
                 $result['data']['requestdata'][]['2cols'] = $buttons;
 
             } elseif (strcasecmp($objAction, 'UPDATE') == 0 && strcasecmp($recipientType, 'provider') == 0) {
                 $result['data'] = array(
-                    'requestdata'  => $this->j_queue->displayUpdateProvider($queueObject),
+                    'requestdata' => $this->j_queue->displayUpdateProvider($queueObject),
                     'content_view' => 'reports/awaiting_detail_view');
             }
         } else {
             return $this->load->view('page', array(
                 'content_view' => 'nopermission',
-                'error'        => 'no permission or unkown error',
+                'error' => 'no permission or unkown error',
             ));
         }
 
@@ -454,7 +456,7 @@ class Awaiting extends MY_Controller
             log_message('debug', $message);
             $dataview = array(
                 'error_message' => 'It cannot be approved because it does not exist',
-                'content_view'  => 'error_message'
+                'content_view' => 'error_message'
             );
 
             return $this->load->view('page', $dataview);
@@ -464,7 +466,7 @@ class Awaiting extends MY_Controller
         $recipient = $queueObj->getRecipient();
         $recipienttype = $queueObj->getRecipientType();
         $allowedActionsAndTypes['Create']['User'] = array(
-            'access'      => $this->jqueueaccess->hasApproveAccess($queueObj),
+            'access' => $this->jqueueaccess->hasApproveAccess($queueObj),
             'fnameAction' => 'createUserFromQueue',
         );
         $allowedActionsAndTypes['Create']['IDP'] = array(
@@ -516,7 +518,7 @@ class Awaiting extends MY_Controller
                 if ($storedEntity) {
                     $data = array(
                         'success_message' => 'entity approved',
-                        'content_view'    => 'reports/awaiting_approved_view'
+                        'content_view' => 'reports/awaiting_approved_view'
                     );
 
                     return $this->load->view('page', $data);
@@ -803,30 +805,30 @@ class Awaiting extends MY_Controller
                 log_message('error', __METHOD__ . ' line:' . __LINE__ . ' unkown request');
                 show_error('unknown request', 404);
             }
-        } elseif(strcasecmp($queueAction, 'update') == 0 && $recipienttype === 'provider'){
+        } elseif (strcasecmp($queueAction, 'update') == 0 && $recipienttype === 'provider') {
             // update scope
             /**
              * @var models\Provider $providerToUpdate
              */
-            $providerToUpdate = $this->em->getRepository('models\Provider')->findOneBy(array('id'=>$recipient));
-            if($providerToUpdate === null){
+            $providerToUpdate = $this->em->getRepository('models\Provider')->findOneBy(array('id' => $recipient));
+            if ($providerToUpdate === null) {
                 show_error('Provider not found', 404);
             }
             $providerType = $providerToUpdate->getType();
             $objData = $queueObj->getData();
             $objType = $queueObj->getObjType();
-            if($objType === 'n' &&  isset($objData['scope']['orig']) && isset($objData['scope']['new']) && ($providerType === 'IDP' || $providerType === 'BOTH')){
-                $changes['scope idpsso'] = array('before' => implode(',', $providerToUpdate->getScope('idpsso')) , 'after' => implode(',', $objData['scope']['new']['idpsso']));
-                $changes['scope aa'] = array('before' => implode(',', $providerToUpdate->getScope('aa')) , 'after' => implode(',', $objData['scope']['new']['aa']));
-                $providerToUpdate->setScope('idpsso',$objData['scope']['new']['idpsso']);
-                $providerToUpdate->setScope('aa',$objData['scope']['new']['aa']);
+            if ($objType === 'n' && isset($objData['scope']['orig']) && isset($objData['scope']['new']) && ($providerType === 'IDP' || $providerType === 'BOTH')) {
+                $changes['scope idpsso'] = array('before' => implode(',', $providerToUpdate->getScope('idpsso')), 'after' => implode(',', $objData['scope']['new']['idpsso']));
+                $changes['scope aa'] = array('before' => implode(',', $providerToUpdate->getScope('aa')), 'after' => implode(',', $objData['scope']['new']['aa']));
+                $providerToUpdate->setScope('idpsso', $objData['scope']['new']['idpsso']);
+                $providerToUpdate->setScope('aa', $objData['scope']['new']['aa']);
                 $this->em->persist($providerToUpdate);
 
                 $mailRcpts[] = $queueObj->getCreator()->getEmail();
                 $sbj = 'Request approved';
-                $body = 'Hi,'.PHP_EOL.html_escape($this->jauth->getLoggedinUsername()) .' just approved request sent by '. html_escape($queueObj->getCreator()->getEmail()).PHP_EOL;
-                $body .= ' about  update scope(s) for entityID: '.html_escape($providerToUpdate->getEntityId()).PHP_EOL;
-                $this->emailsender->addToMailQueue(array('grequeststoproviders','providermodified'),$providerToUpdate, $sbj, $body, $mailRcpts, false);
+                $body = 'Hi,' . PHP_EOL . html_escape($this->jauth->getLoggedinUsername()) . ' just approved request sent by ' . html_escape($queueObj->getCreator()->getEmail()) . PHP_EOL;
+                $body .= ' about  update scope(s) for entityID: ' . html_escape($providerToUpdate->getEntityId()) . PHP_EOL;
+                $this->emailsender->addToMailQueue(array('grequeststoproviders', 'providermodified'), $providerToUpdate, $sbj, $body, $mailRcpts, false);
                 $this->load->library('tracker');
                 $this->tracker->save_track('ent', 'modification', $providerToUpdate->getEntityId(), serialize($changes), false);
 
@@ -836,11 +838,11 @@ class Awaiting extends MY_Controller
                 $this->em->flush();
                 $data = array('content_view' => 'reports/awaiting_approved_view', 'success_message' => 'Request has been approved');
 
-               return $this->load->view('page', $data);
+                return $this->load->view('page', $data);
             }
 
         } else {
-            echo $recipienttype . ' '.$queueObjType;
+            echo $recipienttype . ' ' . $queueObjType;
             log_message('error', __METHOD__ . ' line:' . __LINE__ . ' unkown request');
             show_error('unknown request', 404);
         }
