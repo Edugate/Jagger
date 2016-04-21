@@ -42,14 +42,14 @@ class Show_element
     {
         $incount = (int) $count;
         if ($count < $incount) {
-            $incount = 5;
+            $incount = 10;
         }
 
         $tmpTracks = new models\Trackers;
         /**
          * @var models\Trackers[] $tracks
          */
-        $tracks = $tmpTracks->getProviderRequests($idp, $incount);
+        $tracks = $tmpTracks->getProviderReqAndStatus($idp, $incount);
         if (empty($tracks)) {
             return null;
         }
@@ -57,7 +57,7 @@ class Show_element
         $result[] = '<dl class="accordion" data-accordion="requestsList">';
         foreach ($tracks as $t) {
             $det = $t->getDetail();
-            $this->ci->table->set_heading('Request');
+            $this->ci->table->set_heading('Request/Status');
             $this->ci->table->add_row($det);
             $y = $this->ci->table->generate();
             $user = $t->getUser();

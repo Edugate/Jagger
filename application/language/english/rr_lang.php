@@ -330,8 +330,14 @@ $lang['lbl_publichidden']           = 'Hidden on public list';
 $lang['lbl_fvalidonreg']            = 'Enabled on provider registration page';
 $lang['label_text']                 = 'Text';
 $lang['inputforapproval']           = 'any change will be sent for approval';
-$lang['membership_inactive']        = 'membership disabled';
-$lang['membership_banned']        = 'membership banned';
+$lang['membership_inactive']        = 'membership suspended';
+$lang['membership_banned']        = 'administratively suspended';
+$lang['membershibupdated']        = 'The membership status has been updated';
+$lang['btnadmsuspendmemb']  = 'administratively suspend';
+$lang['btnadmactmemb']  = 'administratively reactivate';
+$lang['btntmpsuspendmemb']  = 'temporary suspend';
+$lang['btntmpactmemb']  = 'reactivate';
+
 $lang['provinmeta']                 = 'Provider will be included in Metadata';
 $lang['provexclmeta']               = 'Provider is excluded from Metadata';
 $lang['srvs_excluded_from_arp']      = 'Services excluded from ARP';
@@ -345,7 +351,7 @@ $lang['joinfederation']             = 'Join federation';
 $lang['leavefederation']             = 'Leave federation';
 $lang['menu_actions']                 = 'Actions';
 $lang['rr_action']                    = 'Action';
-
+$lang['needrefreshpage']            = 'You may need to refresh a page';
 $lang['mtmplsbj']                   = 'Mail subject';
 $lang['mtmplbody']                  = 'Mail body';
 $lang['mtmpllang']                  = 'Language';
