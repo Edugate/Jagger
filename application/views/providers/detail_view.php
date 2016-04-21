@@ -11,7 +11,7 @@ echo '<div data-jagger-getmoreajax= "' . base_url() . 'providers/detail/status/'
 
 echo '<div id="prdetails" data-alert class="alert-box info" style="display: none"></div>';
 ?>
-<div class="off-canvas-wrap" data-offcanvas>
+    <div class="off-canvas-wrap" data-offcanvas>
     <div class="inner-wrap">
 
 
@@ -187,4 +187,23 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
     <?php echo '</div>'; //end offcan      ?>
 
     <div class="metadataresult" style="display: none"></div>
+
+<?php
+echo '<div id="updatemembership" class="reveal-modal small" data-reveal>';
+echo '<div class="row message title">';
+
+echo '</div>';
+echo form_open(base_url('manage/entitystate/updatemembership'));
+echo '<input type="hidden" name="updatedata" value="" style="display:none;" />';
+$buttons = array(
+    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<div class="yes button">' . lang('btnupdate') . '</div>'
+);
+echo revealBtnsRow($buttons);
+echo form_close();
+echo '</div>';
+
+
+
+
 

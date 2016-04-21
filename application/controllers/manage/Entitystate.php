@@ -28,15 +28,81 @@ class Entitystate extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $loggedin = $this->jauth->isLoggedIn();
+
         $this->current_site = current_url();
-        if (!$loggedin) {
-            redirect('auth/login', 'location');
-        }
+
+
         $this->tmpProviders = new models\Providers;
         $this->load->library(array('formelement','form_validation','metadatavalidator','zacl'));
         $this->tmpProviders = new models\Providers();
         $this->entity = null;
+    }
+
+    public function updatemembership(){
+        if (!$this->jauth->isLoggedIn()) {
+            return $this->output->set_status_header(401)->set_output('Access denied - not authenticated');
+        }
+        if(!$this->input->is_ajax_request()){
+            return $this->output->set_status_header(401)->set_output('Access denied');
+        }
+        $inputdata = $this->input->post('updatedata');
+        if(empty($inputdata)){
+            return $this->output->set_status_header(401)->set_output('missing input');
+        }
+        $inputInArray = explode('|',$inputdata);
+
+        if(count($inputInArray) == 4)
+        {
+
+            $entID = $inputInArray[0];
+            $fedID = $inputInArray[1];
+            $action = $inputInArray[2];
+            $state = $inputInArray[3];
+            $isValid = (bool) (ctype_digit($entID) && ctype_digit($fedID) && in_array($action,array('ban', 'dis')) && ctype_digit($state));
+            if(!$isValid){
+                return $this->output->set_status_header(401)->set_output('wrong  input');
+            }
+
+
+            if($action === 'ban' && !$this->jauth->isAdministrator()){
+                return $this->output->set_status_header(401)->set_output('Access denied');
+            }
+
+            /**
+             * @var models\FederationMembers $fedMembership
+             */
+            $fedMembership = $this->em->getRepository('models\FederationMembers')->findOneBy(array('provider'=>$entID,'federation'=>$fedID));
+            if($fedMembership === null){
+                 return $this->output->set_status_header(404)->set_output('Memebrship not found');
+            }
+
+            $hasManageAccess = $this->zacl->check_acl($fedMembership->getProvider()->getId(), 'manage', 'entity', '');
+            if(!$hasManageAccess){
+                 return $this->output->set_status_header(401)->set_output('Access denied');
+            }
+            $boolState = (bool) $state;
+            if($action === 'ban'){
+                $fedMembership->setBanned($boolState);
+            }
+            elseif ($action === 'dis'){
+
+                $fedMembership->setDisabled($boolState);
+            }
+            $this->em->persist($fedMembership);
+
+            try {
+                $this->em->flush();
+                return $this->output->set_content_type('application/json')->set_output(json_encode(array('message'=>lang('membershibupdated').'. '.lang('needrefreshpage'))));
+            }
+            catch (Exception $e){
+                log_message('error',__METHOD__.' '.$e);
+
+            }
+
+
+        }
+
+        return $this->output->set_status_header(500)->set_output('unkwonn problem');
     }
 
     private function _submit_validate()
@@ -55,6 +121,9 @@ class Entitystate extends MY_Controller
 
     public function regpolicies($id)
     {
+        if (!$this->jauth->isLoggedIn()) {
+            redirect('auth/login', 'location');
+        }
         if (!ctype_digit($id)) {
             show_error('Incorrect entity id provided', 404);
         }
@@ -141,6 +210,9 @@ class Entitystate extends MY_Controller
 
     public function modify($id)
     {
+        if (!$this->jauth->isLoggedIn()) {
+            redirect('auth/login', 'location');
+        }
         if (!ctype_digit($id)) {
             show_error('Incorrect entity id provided', 404);
         } else {

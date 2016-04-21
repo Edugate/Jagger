@@ -131,15 +131,17 @@ class Providerdetails
         return $result;
     }
 
-    private function genFedView(\models\Provider $ent){
+    private function genFedView(\models\Provider $ent) {
         $lockicon = genIcon('locked');
         $id = $ent->getId();
         $hasWriteAccess = $this->CI->zacl->check_acl($id, 'write', 'entity', '');
+        $hasManageAccess = $this->CI->zacl->check_acl($id, 'manage', 'entity', '');
+        $isAdmin = $this->CI->jauth->isAdministrator();
         $isLocked = $ent->getLocked();
         $isLocal = $ent->getLocal();
         $sppart = $this->sppart;
-        $feathide = (array) $this->CI->config->item('feathide');
-        $featdisable = (array) $this->CI->config->item('featdisable');
+        $feathide = (array)$this->CI->config->item('feathide');
+        $featdisable = (array)$this->CI->config->item('featdisable');
 
         $srv_metalink = base_url('metadata/service/' . base64url_encode($ent->getEntityId()) . '/metadata.xml');
 
@@ -208,6 +210,9 @@ class Providerdetails
         $federationsString = '';
         $all_federations = $this->em->getRepository("models\Federation")->findAll();
         $no_feds = 0;
+        /**
+         * @var models\FederationMembers[] $membership
+         */
         $membership = $ent->getMembership();
         $membershipNotLeft = array();
         $showMetalinks = true;
@@ -219,6 +224,7 @@ class Providerdetails
         if (!empty($membership)) {
             $federationsString = '<ul class="no-bullet">';
             foreach ($membership as $f) {
+                $mngmtBtns = array();
                 $joinstate = $f->getJoinState();
                 if ($joinstate === 2) {
                     continue;
@@ -227,10 +233,25 @@ class Providerdetails
                 $membershipDisabled = '';
                 if ($f->isDisabled()) {
                     $membershipDisabled = makeLabel('disabled', lang('membership_inactive'), lang('membership_inactive'));
+
+                    if ($hasManageAccess) {
+                        $valTmp = $ent->getId() . '|' . $f->getFederation()->getId() . '|dis|0';
+                        $mngmtBtns[] = '<button data-jagger-desc="Reactivate membership" class="tiny revealc" value="' . $valTmp . '">'.lang('btntmpactmemb').'</button>';
+                    }
+                } else if ($hasManageAccess) {
+                    $valTmp = $ent->getId() . '|' . $f->getFederation()->getId() . '|dis|1';
+                    $mngmtBtns[] = '<button data-jagger-desc="Temporary suspend membership without leaving federation" class="alert tiny revealc " value="' . $valTmp . '">'.lang('btntmpsuspendmemb').'</button>';
                 }
                 $membershipBanned = '';
                 if ($f->isBanned()) {
+                    if ($isAdmin) {
+                        $valTmp = $ent->getId() . '|' . $f->getFederation()->getId() . '|ban|0';
+                        $mngmtBtns[] = '<button data-jagger-desc="Reactivate membership" class="tiny revealc" value="' . $valTmp . '">'.lang('btnadmactmemb').'</button>';
+                    }
                     $membershipBanned = makeLabel('disabled', lang('membership_banned'), lang('membership_banned'));
+                } else if ($isAdmin) {
+                    $valTmp = $ent->getId() . '|' . $f->getFederation()->getId() . '|ban|1';
+                    $mngmtBtns[] = '<button data-jagger-desc="Administravely suspend membership without leaving federation" class="tiny revealc alert" value="' . $valTmp . '">'.lang('btnadmsuspendmemb').'</button>';
                 }
                 $fedActive = $f->getFederation()->getActive();
 
@@ -239,9 +260,9 @@ class Providerdetails
                 if ($showMetalinks) {
                     $metalink = base_url('metadata/federation/' . $f->getFederation()->getSysname() . '/metadata.xml');
                     if ($fedActive) {
-                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fi-arrow-right"></i>', 'class=""') . '</li>';
+                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, html_escape($f->getFederation()->getName())) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ': </span><span class="accordionContent"><br /><i>' . $metalink . '</i>&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fi-arrow-right"></i>', 'class=""') . '</li>';
                     } else {
-                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ':</span><span class="accordionContent"><br />' . $metalink . '&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fi-arrow-right"></i>', 'class=""') . '</li>';
+                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ': </span><span class="accordionContent"><br /><i>' . $metalink . '</i>&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fi-arrow-right"></i>', 'class=""') . '</li>';
                     }
                 } else {
                     if ($fedActive) {
@@ -250,6 +271,7 @@ class Providerdetails
                         $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . '</li>';
                     }
                 }
+                $federationsString .= implode(' ', $mngmtBtns);
             }
             $federationsString .= '</ul>';
 
@@ -392,7 +414,7 @@ class Providerdetails
     public function generateForControllerProvidersDetail() {
 
         $ent = $this->ent;
-      
+
         $alerts = array();
 
 
@@ -788,11 +810,10 @@ class Providerdetails
 
             $wantAssertionSigned = $ent->getWantAssertionSigned();
             $d[++$i]['name'] = 'WantAssertionsSigned';
-            if($wantAssertionSigned === true){
+            if ($wantAssertionSigned === true) {
                 $d[$i]['value'] = 'yes';
-            }
-            else {
-                 $d[$i]['value'] = 'no/not set';
+            } else {
+                $d[$i]['value'] = 'no/not set';
             }
 
             $d[++$i]['name'] = lang('rr_supportedprotocols');

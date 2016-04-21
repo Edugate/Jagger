@@ -120,8 +120,7 @@ function nl2br(str, is_xhtml) {
 
 function revealAlert(str, btnval) {
     'use strict';
-    var button = '<div class="row text-right"><button class="small modal-close">' + btnval + '</button></div>';
-    var modal = $('#malert');
+    var button = '<div class="row text-right"><button class="small modal-close">' + btnval + '</button></div>', modal = $('#malert');
     modal.empty().append('<div class="row text-center"><p><h4>' + str + '</h4></p></div>').append(button).foundation('reveal', 'open');
 }
 
@@ -496,7 +495,16 @@ var GINIT = {
                                 out[++o] = '<tr><td colspan="2"><div class="zebramembers">';
                                 nr = 0;
                                 countGroups[entgroupkey] = data[entgroupkey].length;
+                                var entstate;
                                 $.each(data[entgroupkey], function (i, v) {
+                                    entstate = '';
+
+                                    if(v.penabled === false){
+                                        entstate = entstate+'<span class="label alert">disabled</span> ';
+                                    }
+                                    if(v.mdisabled === 1 || v.mbanned === 1){
+                                        entstate = entstate+'<span class="label alert">membership suspended</span> ';
+                                    }
                                     ++nr;
 
                                     if (nr % 2) {
@@ -508,7 +516,7 @@ var GINIT = {
 
                                     out[++o] = '<div class="large-5 column">' + nr + '. <a href="' + preurl + v.pid + '">' + v.pname + '</a></div>';
                                     out[++o] = '<div class="large-5 column">' + v.entityid + '</div>';
-                                    out[++o] = '<div class="large-2 column"></div>';
+                                    out[++o] = '<div class="large-2 column">'+entstate+'</div>';
 
                                     out[++o] = '</div>';
 
@@ -5143,6 +5151,40 @@ $(document).on('click', 'a.updateprefs', function (e) {
     modal.foundation('reveal', 'open');
     return false;
 
+});
+$("#updatemembership").on('click', '.yes', function(e){
+
+    var form = $("#updatemembership").find('form');
+    var url = form.attr('action');
+    var data = form.serializeArray();
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: data,
+        dataType: 'json',
+        success: function(result){
+            if(result.message){
+                revealAlert(result.message,'OK');
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+            revealAlert('<div data-alert class="alert-box alert ">'+jqXHR.responseText+'</div>','OK');
+        }
+    });
+    return false;
+});
+
+$('button.revealc').on('click', function(){
+    var valtopass = $(this).val();
+    var msg = $(this).attr('data-jagger-desc');
+    var modal = $("#updatemembership");
+    var msgdesc = modal.find('div.message').first();
+    if(msgdesc){
+        msgdesc.html(msg);
+    }
+    var updatedata = modal.find('input[name="updatedata"]');
+    updatedata.val(valtopass);
+    modal.foundation('reveal', 'open');
 });
 
 
