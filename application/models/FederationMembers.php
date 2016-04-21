@@ -151,4 +151,17 @@ class FederationMembers
         $this->joinstate = $joinState;
         return $this;
     }
+    
+    public function isBannedToStr(){
+        if($this->isBanned){
+            return 'suspeneded';
+        }
+        return 'active';
+    }
+ public function isActiveToStr(){
+        if($this->isDisabled){
+            return 'suspeneded';
+        }
+        return 'active';
+    }
 }
