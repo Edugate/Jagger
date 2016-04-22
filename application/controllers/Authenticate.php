@@ -90,7 +90,6 @@ class Authenticate extends MY_Controller
     }
 
     public function dologin() {
-        log_message('debug', 'DoLogin');
         $twofactorauthn = $this->config->item('twofactorauthn');
         if ($this->validateDoLogin() !== true) {
             return $this->output->set_status_header(401)->set_output('no ajax');
@@ -104,32 +103,30 @@ class Authenticate extends MY_Controller
             return $this->output->set_content_type('application/json')->set_output(json_encode(array('success' => true, 'result' => 'OK')));
         }
         $userSessionData = $this->session->userdata();
-        if (!empty($userSessionData) && isset($userSessionData['secondfactor']) && isset($userSessionData['partiallogged']) && !empty($twofactorauthn) && isset($userSessionData['username'])) {
-            if ($userSessionData['secondfactor'] === 'duo') {
-                $sig_response = $this->input->post('sig_response');
-                if (!empty($sig_response)) {
-                    $resp = Duo::verifyResponse($this->config->item('duo-ikey'), $this->config->item('duo-skey'), $this->config->item('duo-akey'), $sig_response);
-                    if ($resp !== NULL) {
-                        $this->session->set_userdata('logged', 1);
-                        $finalize = $this->jauth->finalizepartiallogin();
-                        if ($finalize) {
-                            $result = array('success' => true, 'result' => 'OK');
-                        } else {
-                            $result = array('success' => false, 'result' => 'unknown');
-                        }
-                        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
+        if (!empty($userSessionData) && isset($userSessionData['secondfactor']) && isset($userSessionData['partiallogged']) && !empty($twofactorauthn) && isset($userSessionData['username']) && $userSessionData['secondfactor'] === 'duo') {
+            $sig_response = $this->input->post('sig_response');
+            if (!empty($sig_response)) {
+                $resp = Duo::verifyResponse($this->config->item('duo-ikey'), $this->config->item('duo-skey'), $this->config->item('duo-akey'), $sig_response);
+                if ($resp !== NULL) {
+                    $this->session->set_userdata('logged', 1);
+                    $finalize = $this->jauth->finalizepartiallogin();
+                    if ($finalize) {
+                        $result = array('success' => true, 'result' => 'OK');
+                    } else {
+                        $result = array('success' => false, 'result' => 'unknown');
                     }
-                } else {
-                    $html = $this->genDuo();
-                    $result = array('result' => 'secondfactor', 'html' => $html);
                     return $this->output->set_content_type('application/json')->set_output(json_encode($result));
                 }
+            } else {
+                $html = $this->genDuo();
+                $result = array('result' => 'secondfactor', 'html' => $html);
+                return $this->output->set_content_type('application/json')->set_output(json_encode($result));
             }
+
         }
         $this->form_validation->set_rules('username', lang('rr_username'), 'trim|required');
         $this->form_validation->set_rules('password', lang('rr_password'), 'trim|required');
-        $validated = $this->form_validation->run();
-        if ($validated === TRUE) {
+        if ($this->form_validation->run() === true) {
             if ($this->jauth->login($this->input->post('username'), $this->input->post('password'))) {
                 $result = array('success' => true, 'result' => 'OK');
                 if ($this->session->userdata('partiallogged') === 1 && $this->session->userdata('logged') === 0) {
@@ -138,12 +135,10 @@ class Authenticate extends MY_Controller
                 }
                 return $this->output->set_content_type('application/json')->set_output(json_encode($result));
             }
-            $auth_error = '' . lang('error_authn') . '';
+            return $this->output->set_status_header(401)->set_output('' . lang('error_authn') . '');
 
-        } else {
-            $auth_error = '' . lang('error_incorrectinput') . '';
         }
-        return $this->output->set_status_header(401)->set_output($auth_error);
+        return $this->output->set_status_header(401)->set_output('' . lang('error_incorrectinput') . '');
     }
 
 }
