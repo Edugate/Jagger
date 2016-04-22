@@ -89,6 +89,7 @@ class Entitystate extends MY_Controller
 
                     $fedMembership->setBanned($boolState);
                     $this->tracker->save_track(strtolower($fedMembership->getProvider()->getType()), 'membership', $fedMembership->getProvider()->getEntityId(), 'membership with '.$fedMembership->getFederation()->getName().' administratively changed to: ' . $fedMembership->isBannedToStr() , false);
+                    $this->emailsender->membershipStateChanged($fedMembership);
                 }
             }
             elseif ($action === 'dis'){
@@ -97,6 +98,7 @@ class Entitystate extends MY_Controller
                 if($curr !== $boolState) {
                     $fedMembership->setDisabled($boolState);
                     $this->tracker->save_track(strtolower($fedMembership->getProvider()->getType()), 'membership', $fedMembership->getProvider()->getEntityId(), 'membership with '.$fedMembership->getFederation()->getName().' changed to: ' . $fedMembership->isBannedToStr() , false);
+                    $this->emailsender->membershipStateChanged($fedMembership);
                 }
             }
             $this->em->persist($fedMembership);
