@@ -10,7 +10,6 @@ if (!defined('BASEPATH')) {
  * @copyright 2016, HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
-
 class Entitystate extends MY_Controller
 {
 
@@ -32,6 +31,7 @@ class Entitystate extends MY_Controller
         $this->tmpProviders = new models\Providers();
         $this->entity = null;
     }
+    
 
     public function updatemembership() {
         if (!$this->jauth->isLoggedIn()) {
@@ -45,59 +45,55 @@ class Entitystate extends MY_Controller
             return $this->output->set_status_header(401)->set_output('missing input');
         }
         $inputInArray = explode('|', $inputdata);
-
-        if (count($inputInArray) == 4) {
-
-            $entID = $inputInArray[0];
-            $fedID = $inputInArray[1];
-            $action = $inputInArray[2];
-            $state = $inputInArray[3];
-            $isValid = (bool)(ctype_digit($entID) && ctype_digit($fedID) && in_array($action, array('ban', 'dis')) && ctype_digit($state));
-            if (!$isValid) {
-                return $this->output->set_status_header(401)->set_output('wrong  input');
-            }
-            if ($action === 'ban' && !$this->jauth->isAdministrator()) {
-                return $this->output->set_status_header(401)->set_output('Access denied');
-            }
-
-            /**
-             * @var models\FederationMembers $fedMembership
-             */
-            $fedMembership = $this->em->getRepository('models\FederationMembers')->findOneBy(array('provider' => $entID, 'federation' => $fedID));
-            if ($fedMembership === null) {
-                return $this->output->set_status_header(404)->set_output('Memebrship not found');
-            }
-
-            $hasManageAccess = $this->zacl->check_acl($fedMembership->getProvider()->getId(), 'manage', 'entity', '');
-            if (!$hasManageAccess) {
-                return $this->output->set_status_header(401)->set_output('Access denied');
-            }
-            $boolState = (bool)$state;
-            if ($action === 'ban') {
-                $curr = $fedMembership->isBanned();
-                if ($curr !== $boolState) {
-                    $fedMembership->setBanned($boolState);
-                    $this->tracker->save_track(strtolower($fedMembership->getProvider()->getType()), 'membership', $fedMembership->getProvider()->getEntityId(), 'membership with ' . $fedMembership->getFederation()->getName() . ' administratively changed to: ' . $fedMembership->isBannedToStr(), false);
-                    $this->emailsender->membershipStateChanged($fedMembership);
-                }
-            } elseif ($action === 'dis') {
-                $curr = $fedMembership->isDisabled();
-
-                if ($curr !== $boolState) {
-                    $fedMembership->setDisabled($boolState);
-                    $this->tracker->save_track(strtolower($fedMembership->getProvider()->getType()), 'membership', $fedMembership->getProvider()->getEntityId(), 'membership with ' . $fedMembership->getFederation()->getName() . ' changed to: ' . $fedMembership->isBannedToStr(), false);
-                    $this->emailsender->membershipStateChanged($fedMembership);
-                }
-            }
-            $this->em->persist($fedMembership);
-
-            try {
-                $this->em->flush();
-                return $this->output->set_content_type('application/json')->set_output(json_encode(array('message' => lang('membershibupdated') . '. ' . lang('needrefreshpage'))));
-            } catch (Exception $e) {
-                log_message('error', __METHOD__ . ' ' . $e);
-            }
+        if (count($inputInArray) != 4) {
+            return $this->output->set_status_header(401)->set_output('incorrect input');
         }
+
+        $entID = $inputInArray[0];
+        $fedID = $inputInArray[1];
+        $action = $inputInArray[2];
+        $state = $inputInArray[3];
+        $isValid = (bool)(ctype_digit($entID) && ctype_digit($fedID) && in_array($action, array('ban', 'dis')) && ctype_digit($state));
+        if (!$isValid) {
+            return $this->output->set_status_header(401)->set_output('wrong  input');
+        }
+        if ($action === 'ban' && !$this->jauth->isAdministrator()) {
+            return $this->output->set_status_header(401)->set_output('Access denied');
+        }
+
+        /**
+         * @var models\FederationMembers $fedMembership
+         */
+        $fedMembership = $this->em->getRepository('models\FederationMembers')->findOneBy(array('provider' => $entID, 'federation' => $fedID));
+        if ($fedMembership === null) {
+            return $this->output->set_status_header(404)->set_output('Memebrship not found');
+        }
+
+        $hasManageAccess = $this->zacl->check_acl($fedMembership->getProvider()->getId(), 'manage', 'entity', '');
+        if (!$hasManageAccess) {
+            return $this->output->set_status_header(401)->set_output('Access denied');
+        }
+        $boolState = (bool)$state;
+        $currBanned = $fedMembership->isBanned();
+        $currDisabled = $fedMembership->isDisabled();
+        if ($action === 'ban' && ($currBanned !== $boolState)) {
+            $fedMembership->setBanned($boolState);
+            $this->tracker->save_track(strtolower($fedMembership->getProvider()->getType()), 'membership', $fedMembership->getProvider()->getEntityId(), 'membership with ' . $fedMembership->getFederation()->getName() . ' administratively changed to: ' . $fedMembership->isBannedToStr(), false);
+            $this->emailsender->membershipStateChanged($fedMembership);
+        } elseif ($action === 'dis' && ($currDisabled !== $boolState)) {
+            $fedMembership->setDisabled($boolState);
+            $this->tracker->save_track(strtolower($fedMembership->getProvider()->getType()), 'membership', $fedMembership->getProvider()->getEntityId(), 'membership with ' . $fedMembership->getFederation()->getName() . ' changed to: ' . $fedMembership->isBannedToStr(), false);
+            $this->emailsender->membershipStateChanged($fedMembership);
+        }
+        $this->em->persist($fedMembership);
+
+        try {
+            $this->em->flush();
+            return $this->output->set_content_type('application/json')->set_output(json_encode(array('message' => lang('membershibupdated') . '. ' . lang('needrefreshpage'))));
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
+        }
+
 
         return $this->output->set_status_header(500)->set_output('unkwonn problem');
     }
@@ -229,12 +225,12 @@ class Entitystate extends MY_Controller
             'titlepage' => $titleprefix . ': <a href="' . base_url() . 'providers/detail/show/' . $this->entity->getId() . '">' . $titlename . '</a>',
             'subtitlepage' => lang('rr_status_mngmt'),
             'entid' => $id,
-            'current_locked' =>  $this->entity->getLocked(),
+            'current_locked' => $this->entity->getLocked(),
             'current_active' => $this->entity->getActive(),
             'current_extint' => $this->entity->getLocal(),
             'current_publicvisible' => (int)$this->entity->getPublicVisible()
         );
-        
+
         if (strcasecmp($this->entity->getType(), 'SP') == 0) {
             $plist = array('url' => base_url('providers/sp_list/showlist'), 'name' => lang('serviceproviders'));
         } else {
@@ -345,6 +341,7 @@ class Entitystate extends MY_Controller
                 $this->tracker->save_track('idp', 'modification', $this->entity->getEntityId(), serialize($differ), false);
             }
             $this->em->persist($this->entity);
+
             try {
                 $this->em->flush();
                 $data['success_message'] = lang('rr_entstate_updated');
