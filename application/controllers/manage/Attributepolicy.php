@@ -65,17 +65,17 @@ class Attributepolicy extends MY_Controller
         }
         $this->load->library('arpgen');
         $data = array(
-            'breadcrumbs'   => array(
+            'breadcrumbs' => array(
                 array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
                 array('url' => base_url('providers/detail/show/' . $idpid . ''), 'name' => '' . $providerNameInLang . ''),
                 array('url' => '#', 'name' => lang('rr_attributereleasepolicy'), 'type' => 'current'),
             ),
-            'attrdefs'      => $this->arpgen->getAttrDefs(),
-            'arpglobal'     => $this->arpgen->genGlobal($ent),
-            'arpsupport'    => $this->arpgen->getSupportAttributes($ent),
-            'idpid'         => $ent->getId(),
+            'attrdefs' => $this->arpgen->getAttrDefs(),
+            'arpglobal' => $this->arpgen->genGlobal($ent),
+            'arpsupport' => $this->arpgen->getSupportAttributes($ent),
+            'idpid' => $ent->getId(),
             'encodedentity' => base64url_encode($ent->getEntityId()),
-            'content_view'  => 'manage/attributepolicy2_view'
+            'content_view' => 'manage/attributepolicy2_view'
         );
 
         $this->load->view('page', $data);
@@ -83,7 +83,7 @@ class Attributepolicy extends MY_Controller
 
     private function initiateProviderForUpdate($idpid = null) {
         $ent = $this->initiateProvider($idpid);
-        if($ent->getLocked()){
+        if ($ent->getLocked()) {
             throw new Exception('Entity is locked');
         }
         return $ent;
@@ -134,20 +134,20 @@ class Attributepolicy extends MY_Controller
         $policiesDefs = $this->arpgen->genPolicyDefs($ent);
 
         $result = array(
-            'type'        => 'supported',
+            'type' => 'supported',
             'definitions' => array(
                 'columns' => array(lang('attrname'), lang('dfltarpcolname'), lang('rr_action')),
-                'attrs'   => $this->arpgen->getAttrDefs(),
-                'policy'  => array(
-                    '0'    => lang('dropnever'),
-                    '1'    => lang('dropokreq'),
-                    '2'    => lang('dropokreqdes'),
-                    '100'  => lang('dropnotset'),
+                'attrs' => $this->arpgen->getAttrDefs(),
+                'policy' => array(
+                    '0' => lang('dropnever'),
+                    '1' => lang('dropokreq'),
+                    '2' => lang('dropokreqdes'),
+                    '100' => lang('dropnotset'),
                     '1000' => lang('notsupported'))
             ),
-            'data'        => array(
+            'data' => array(
                 'support' => $this->arpgen->getSupportAttributes($ent),
-                'global'  => $this->arpgen->genGlobal($ent)
+                'global' => $this->arpgen->genGlobal($ent)
             ),
         );
 
@@ -240,8 +240,8 @@ class Attributepolicy extends MY_Controller
         $result['definitions']['columns'] = array(lang('attrname'), lang('policy'), lang('reqstatus'), lang('rr_action'));
         $result['definitions']['sps'] = $sps;
         $result['definitions']['req'] = array(
-            '1'   => lang('droprequired'),
-            '2'   => lang('dropdesired'),
+            '1' => lang('droprequired'),
+            '2' => lang('dropdesired'),
             '100' => '',
 
         );
@@ -472,7 +472,7 @@ class Attributepolicy extends MY_Controller
          */
         $fedpolicies = $this->em->getRepository('models\AttributeReleasePolicy')->findBy(
             array(
-                'idp'  => $ent,
+                'idp' => $ent,
                 'type' => array('fed')
             )
         );
