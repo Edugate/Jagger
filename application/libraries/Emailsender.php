@@ -312,7 +312,7 @@ class Emailsender
                 if (is_array($v)) {
                     $rows = '';
                     foreach ($v as $p => $l) {
-                        $rows .= sprintf('%s:' . PHP_EOL . '%s' . PHP_EOL, $p, str_replace('<br />', '\n', $l));
+                        $rows .= sprintf('%s:' . PHP_EOL . '%s' . PHP_EOL, $p, str_replace('<br />', PHP_EOL, $l));
                     }
                 }
                 $body .= sprintf('= %s =' . PHP_EOL . '%s' . PHP_EOL, $k, $rows);
