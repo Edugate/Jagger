@@ -102,7 +102,7 @@ class Ajax extends MY_Controller
             'image/pjpeg',
             'image/png',
             'image/x-png',
-            'image/gif',
+            'image/gif'
         );
         $finfo = new finfo(FILEINFO_MIME_TYPE);
         $mimeType = $finfo->buffer($image);
@@ -244,11 +244,11 @@ class Ajax extends MY_Controller
         $this->em->persist($user);
         try {
             $this->em->flush();
-            return $this->output->set_status_header(200)->set_output('OK');
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
             return $this->output->set_status_header(500)->set_output('problem with saving in db');
         }
+        return $this->output->set_status_header(200)->set_output('OK');
 
     }
 
@@ -293,12 +293,11 @@ class Ajax extends MY_Controller
         }
         try {
             $this->em->flush();
-            return $this->output->set_status_header(200)->set_output('ok');
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' : ' . $e);
             return $this->output->set_status_header(500)->set_output('Database Error');
         }
-
+        return $this->output->set_status_header(200)->set_output('ok');
     }
 
     public function bookfed($entID = null, $action = null)
@@ -341,11 +340,11 @@ class Ajax extends MY_Controller
 
         try {
             $this->em->flush();
-            return $this->output->set_status_header(200)->set_output('ok');
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
             return $this->output->set_status_header(500)->set_output('Internal Server Error');
         }
+        return $this->output->set_status_header(200)->set_output('ok');
 
     }
 

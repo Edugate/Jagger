@@ -49,11 +49,11 @@ class Auth extends MY_Controller
         $fedidentity = $this->session->userdata('fedidentity');
         $newUserData = array(
             'username' => null,
-            'email'    => null,
-            'fname'    => null,
-            'sname'    => null,
-            'type'     => 'federated',
-            'ip'       => $this->input->ip_address()
+            'email' => null,
+            'fname' => null,
+            'sname' => null,
+            'type' => 'federated',
+            'ip' => $this->input->ip_address()
         );
         log_message('debug', __METHOD__ . ' fedregistration in post received' . serialize($this->session->userdata()));
         if (is_array($fedidentity)) {
@@ -111,12 +111,12 @@ class Auth extends MY_Controller
         $nowUtc = new \DateTime('now', new \DateTimeZone('UTC'));
 
         $templateArgs = array(
-            'token'       => $queue->getToken(),
-            'srcip'       => $this->input->ip_address(),
-            'reqemail'    => $newUserData['email'],
+            'token' => $queue->getToken(),
+            'srcip' => $this->input->ip_address(),
+            'reqemail' => $newUserData['email'],
             'requsername' => $newUserData['username'],
             'reqfullname' => $reqfullname,
-            'qurl'        => '' . base_url('reports/awaiting/detail/' . $queue->getToken() . ''),
+            'qurl' => '' . base_url('reports/awaiting/detail/' . $queue->getToken() . ''),
             'datetimeutc' => '' . $nowUtc->format('Y-m-d h:i:s') . ' UTC',
         );
         $mailTemplate = $this->emailsender->feduserRegistrationRequest($templateArgs);
@@ -280,43 +280,51 @@ class Auth extends MY_Controller
         return trim($usernameValue);
     }
 
+    /**
+     * @return mixed|null
+     */
     private function getShibFname() {
         $fnameVarName = $this->config->item('Shib_fname');
-        if (empty($fnameVarName)) {
-            return false;
+        if ($fnameVarName !== null) {
+            $fname = $this->input->server($fnameVarName);
+            if ($fname !== null) {
+                return $fname;
+            }
+            $fname = $this->input->server('REDIRECT_' . $fnameVarName);
+            if ($fname !== null) {
+                return $fname;
+            }
         }
-        if (isset($_SERVER[$fnameVarName])) {
-            return $_SERVER[$fnameVarName];
-        } elseif (isset($_SERVER['REDIRECT_' . $fnameVarName])) {
-            return $_SERVER['REDIRECT_' . $fnameVarName];
-        }
-
-        return false;
+        return null;
     }
 
     private function getShibSname() {
         $snameVarName = $this->config->item('Shib_sname');
-        if (empty($snameVarName)) {
-            return false;
-        }
-        if (isset($_SERVER[$snameVarName])) {
-            return $_SERVER[$snameVarName];
-        } elseif (isset($_SERVER['REDIRECT_' . $snameVarName])) {
-            return $_SERVER['REDIRECT_' . $snameVarName];
+        if ($snameVarName !== null) {
+            $sname = $this->input->server($snameVarName);
+            if ($sname !== null) {
+                return $sname;
+            }
+            $sname = $this->input->server('REDIRECT_' . $snameVarName);
+            if ($sname !== null) {
+                return $sname;
+            }
         }
 
-        return false;
+        return null;
     }
 
     private function getShibMail() {
         $emailVarName = $this->config->item('Shib_mail');
-        if (isset($_SERVER[$emailVarName])) {
-            return $_SERVER[$emailVarName];
-        } elseif (isset($_SERVER['REDIRECT_' . $emailVarName])) {
-            return $_SERVER['REDIRECT_' . $emailVarName];
-        } else {
-            return '';
+        $email = $this->input->server($emailVarName);
+        if ($email !== null) {
+            return $email;
         }
+        $email = $this->input->server('REDIRECT_' . $emailVarName);
+        if ($email !== null) {
+            return $email;
+        }
+        return '';
     }
 
     private function getShibIdp() {
@@ -412,9 +420,10 @@ class Auth extends MY_Controller
     }
 
     public function fedauth($timeoffset = null) {
-        $shibb_valid = $this->getShibIdp();
-        if ($shibb_valid === null) {
-            log_message('error', 'This location should be protected by shibboleth in apache');
+        log_message('debug', __METHOD__ . ' fired');
+        $isShibValid = $this->getShibIdp();
+        if ($isShibValid === null) {
+            log_message('error', __METHOD__ . ':: ' . current_url() . ':: This location should be protected by shibboleth in apache');
             return $this->output->set_status_header(500)->set_output('Internal server error');
         }
         if ($this->jauth->isLoggedIn()) {
@@ -422,7 +431,7 @@ class Auth extends MY_Controller
         }
         $userValue = $this->getShibUsername();
         if ($userValue === '') {
-            log_message('error', __METHOD__.': IdP: ' . $this->getShibIdp() . ' didnt provide username');
+            log_message('error', __METHOD__ . ': IdP: ' . $this->getShibIdp() . ' didnt provide username');
             return $this->output->set_status_header(500)->set_output('Internal server error: missing required attribute in SAML response from Identity Provider');
         }
 
@@ -444,7 +453,7 @@ class Auth extends MY_Controller
             $systemTwoFactor = $this->config->item('twofactorauthn');
             if ($systemTwoFactor === true) {
                 $userSecondFactor = $user->getSecondFactor();
-                $systemAllowed2Factors = (array) $this->config->item('2fengines');
+                $systemAllowed2Factors = (array)$this->config->item('2fengines');
                 if (!empty($userSecondFactor) && in_array($userSecondFactor, $systemAllowed2Factors)) {
                     $this->session->set_userdata('partiallogged', 1);
                     $this->session->set_userdata('secondfactor', $userSecondFactor);
@@ -479,8 +488,15 @@ class Auth extends MY_Controller
             }
             $updateemail = $this->config->item('shibb_updateemail');
             $emailFromIdP = trim($this->getShibMail());
-            if ($updateemail === true && !empty($emailFromIdP)) {
-                $user->setEmail($emailFromIdP);
+            if (filter_var($emailFromIdP, FILTER_VALIDATE_EMAIL)) {
+            }
+            if ($updateemail === true) {
+                if (filter_var($emailFromIdP, FILTER_VALIDATE_EMAIL)) {
+                    $user->setEmail($emailFromIdP);
+                } else {
+                    log_message('warning', __METHOD__ . ':: it looks like system received invalid email address from idp: ' . $emailFromIdP);
+                }
+
             }
             $islogged = $this->session->userdata('logged');
             if (!empty($islogged)) {

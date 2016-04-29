@@ -92,7 +92,7 @@ class Metadata2import
         foreach ($sections as $section => $sectionTitle) {
             if (count($report['provider']['' . $section . '']) > 0) {
                 $structureChanged = true;
-                $body .= $sectionTitle . ':' . PHP_EOL;
+                $body .= PHP_EOL.':: '.$sectionTitle . ' ::' . PHP_EOL;
                 foreach ($report['provider']['' . $section . ''] as $a) {
                     $body .= $a . PHP_EOL;
                 }

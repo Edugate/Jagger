@@ -746,7 +746,7 @@ class Providerupdater
         foreach ($algsMethods as $algKey => $algValue) {
             if (isset($cData['algs']['' . $algKey . '']) && is_array($cData['algs']['' . $algKey . ''])) {
                 if (isset($extendsInArray['ent']['alg']['' . $algValue . ''])) {
-                    foreach ($extendsInArray['ent']['alg']['' . $algValue . ''] as $k => $v) {
+                    foreach ($extendsInArray['ent']['alg']['' . $algValue . ''] as  $v) {
                         $dvalue = $v->getEvalue();
 
                         if (in_array($dvalue, $cData['algs']['' . $algKey . ''])) {

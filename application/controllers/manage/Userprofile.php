@@ -47,9 +47,6 @@ class Userprofile extends MY_Controller
 
 
         $this->form_validation->set_rules('secondf[]', 'second factor', 'trim');
-        $this->form_validation->run();
-
-
         $npassword = $this->input->post('newpassword');
         if ($npassword !== null && $npassword !== '' && $islocal) {
             $this->form_validation->set_rules('confirmnpassword', lang('rr_npasswordconf'), 'trim|required|matches[newpassword]');

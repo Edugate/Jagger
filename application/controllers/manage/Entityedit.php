@@ -32,10 +32,9 @@ class Entityedit extends MY_Controller
     protected $allowedDigestMethods;
     protected $allowedSignMethods;
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
-        $this->load->library(array('curl', 'formelement', 'form_validation', 'approval', 'providertoxml','j_ncache'));
+        $this->load->library(array('curl', 'formelement', 'form_validation', 'approval', 'providertoxml', 'j_ncache'));
         $this->tmpProviders = new models\Providers;
         $this->load->helper(array('shortcodes', 'form'));
         $this->tmpError = '';
@@ -48,8 +47,7 @@ class Entityedit extends MY_Controller
         $this->allowedSignMethods = j_SignatureAlgorithms();
     }
 
-    private function externalValidation($metaid, models\FederationValidator $fedValidator)
-    {
+    private function externalValidation($metaid, models\FederationValidator $fedValidator) {
         $metadataUrl = base_url() . '/metadata/preregister/' . $metaid . '';
         $method = $fedValidator->getMethod();
         $remoteUrl = $fedValidator->getUrl();
@@ -187,8 +185,7 @@ class Entityedit extends MY_Controller
 
     }
 
-    private function submitValidate($id)
-    {
+    private function submitValidate($id) {
         $register = false;
         if (strcmp($id, 'idp') == 0 || strcmp($id, 'sp') == 0 || strcmp($id, 'both') == 0) {
             $register = true;
@@ -198,14 +195,14 @@ class Entityedit extends MY_Controller
         $optValidationsPassed = true;
         $result = false;
         $y = $this->input->post();
-        $staticisdefault = false;
+        $isStaticDefault = false;
         if (isset($y['f'])) {
             $this->form_validation->set_rules('f[usestatic]', 'use metadata', "valid_static[" . base64_encode($this->input->post('f[static]')) . ":::" . $this->input->post('f[entityid]') . " ]");
 
 
             // required if not static is set
             if (isset($y['f']['usestatic']) && $y['f']['usestatic'] === 'accept') {
-                $staticisdefault = true;
+                $isStaticDefault = true;
             }
             if (!$register) {
                 if (in_array('entityid', $this->disallowedParts)) {
@@ -275,31 +272,31 @@ class Entityedit extends MY_Controller
                 }
             }
 
-            foreach(array('idpsso','spsso') as $vtype) {
-                if (isset($y['f']['uii'][''.$vtype.'']['displayname']) && is_array($y['f']['uii'][''.$vtype.'']['displayname'])) {
-                    foreach ($y['f']['uii'][''.$vtype.'']['displayname'] as $k => $v) {
-                        $this->form_validation->set_rules('f[uii]['.$vtype.'][displayname][' . $k . ']', 'UUI ' . sprintf(lang('lrr_displayname'), $k) . '', 'strip_tags|trim|min_length[3]|max_length[255]');
+            foreach (array('idpsso', 'spsso') as $vtype) {
+                if (isset($y['f']['uii']['' . $vtype . '']['displayname']) && is_array($y['f']['uii']['' . $vtype . '']['displayname'])) {
+                    foreach ($y['f']['uii']['' . $vtype . '']['displayname'] as $k => $v) {
+                        $this->form_validation->set_rules('f[uii][' . $vtype . '][displayname][' . $k . ']', 'UUI ' . sprintf(lang('lrr_displayname'), $k) . '', 'strip_tags|trim|min_length[3]|max_length[255]');
 
                     }
                 }
-                if (isset($y['f']['uii'][''.$vtype.'']['desc']) && is_array($y['f']['uii'][''.$vtype.'']['desc'])) {
-                    foreach ($y['f']['uii'][''.$vtype.'']['desc'] as $k => $v) {
-                        $this->form_validation->set_rules('f[uii]['.$vtype.'][desc][' . $k . ']', 'UUI ' . lang('rr_description') . ' ' . lang('in') . ' ' . $k . '', 'trim|min_length[3]|max_length[500]');
+                if (isset($y['f']['uii']['' . $vtype . '']['desc']) && is_array($y['f']['uii']['' . $vtype . '']['desc'])) {
+                    foreach ($y['f']['uii']['' . $vtype . '']['desc'] as $k => $v) {
+                        $this->form_validation->set_rules('f[uii][' . $vtype . '][desc][' . $k . ']', 'UUI ' . lang('rr_description') . ' ' . lang('in') . ' ' . $k . '', 'trim|min_length[3]|max_length[500]');
                     }
                 }
-                if (isset($y['f']['uii'][''.$vtype.'']['keywords']) && is_array($y['f']['uii'][''.$vtype.'']['keywords'])) {
-                    foreach ($y['f']['uii'][''.$vtype.'']['keywords'] as $k => $v) {
-                        $this->form_validation->set_rules('f[uii]['.$vtype.'][keywords][' . $k . ']', 'UUI ' . lang('rr_uiikeywords') . ' ' . lang('in') . ' ' . $k . '', 'trim|min_length[3]|max_length[500]');
+                if (isset($y['f']['uii']['' . $vtype . '']['keywords']) && is_array($y['f']['uii']['' . $vtype . '']['keywords'])) {
+                    foreach ($y['f']['uii']['' . $vtype . '']['keywords'] as $k => $v) {
+                        $this->form_validation->set_rules('f[uii][' . $vtype . '][keywords][' . $k . ']', 'UUI ' . lang('rr_uiikeywords') . ' ' . lang('in') . ' ' . $k . '', 'trim|min_length[3]|max_length[500]');
                     }
                 }
-                if (isset($y['f']['uii'][''.$vtype.'']['helpdesk']) && is_array($y['f']['uii'][''.$vtype.'']['helpdesk'])) {
-                    foreach ($y['f']['uii'][''.$vtype.'']['helpdesk'] as $k => $v) {
-                        $this->form_validation->set_rules('f[uii]['.$vtype.'][helpdesk][' . $k . ']', 'UUI ' . lang('rr_helpdeskurl') . ' ' . lang('in') . ' ' . $k . '', 'strip_tags|trim|valid_url|min_length[5]|max_length[500]');
+                if (isset($y['f']['uii']['' . $vtype . '']['helpdesk']) && is_array($y['f']['uii']['' . $vtype . '']['helpdesk'])) {
+                    foreach ($y['f']['uii']['' . $vtype . '']['helpdesk'] as $k => $v) {
+                        $this->form_validation->set_rules('f[uii][' . $vtype . '][helpdesk][' . $k . ']', 'UUI ' . lang('rr_helpdeskurl') . ' ' . lang('in') . ' ' . $k . '', 'strip_tags|trim|valid_url|min_length[5]|max_length[500]');
                     }
                 }
-                if (isset($y['f']['uii'][''.$vtype.'']['logo']) && is_array($y['f']['uii'][''.$vtype.'']['logo'])) {
-                    foreach ($y['f']['uii'][''.$vtype.'']['logo'] as $k => $v) {
-                        $this->form_validation->set_rules('f[uii]['.$vtype.'][logo][' . $k . '][url]', 'Logo', 'trim|required|validimageorurl');
+                if (isset($y['f']['uii']['' . $vtype . '']['logo']) && is_array($y['f']['uii']['' . $vtype . '']['logo'])) {
+                    foreach ($y['f']['uii']['' . $vtype . '']['logo'] as $k => $v) {
+                        $this->form_validation->set_rules('f[uii][' . $vtype . '][logo][' . $k . '][url]', 'Logo', 'trim|required|validimageorurl');
                     }
                 }
             }
@@ -446,7 +443,7 @@ class Entityedit extends MY_Controller
                             $this->tmpError = 'Not unique indexes found for ACS';
                             $optValidationsPassed = false;
                         }
-                        if (count($acsurls) < 1 && empty($staticisdefault)) {
+                        if (count($acsurls) < 1 && empty($isStaticDefault)) {
 
                             $this->tmpError = lang('rr_acsurlatleastone');
                             $optValidationsPassed = false;
@@ -549,7 +546,7 @@ class Entityedit extends MY_Controller
             $result = $this->form_validation->run();
             if (strcasecmp($this->type, 'SP') != 0) {
 
-                if (empty($idpssoSrvsLocations) && empty($aaSrvsLocations) && !$staticisdefault) {
+                if (empty($idpssoSrvsLocations) && empty($aaSrvsLocations) && !$isStaticDefault) {
                     $this->tmpError = lang('errmissssoaasrvs');
                     return false;
                 }
@@ -576,8 +573,7 @@ class Entityedit extends MY_Controller
         return ($result && $optValidationsPassed);
     }
 
-    private function saveToDraft($id, $data)
-    {
+    private function saveToDraft($id, $data) {
         $attrs1 = array('lname', 'ldisplayname', 'lhelpdesk', 'coc');
         foreach ($attrs1 as $a1) {
             if (isset($data['' . $a1 . ''])) {
@@ -618,7 +614,7 @@ class Entityedit extends MY_Controller
         }
         // uii
         $uiitTypes = array('idpsso', 'spsso');
-        $uiiSubTypes = array('desc', 'logo', 'helpdesk', 'displayname','keywords');
+        $uiiSubTypes = array('desc', 'logo', 'helpdesk', 'displayname', 'keywords');
         foreach ($uiitTypes as $t) {
             if ($t === 'idpsso') {
                 $uiiSubTypes[] = 'iphint';
@@ -668,20 +664,17 @@ class Entityedit extends MY_Controller
         $this->session->set_userdata($n, $data);
     }
 
-    private function getFromDraft($id)
-    {
+    private function getFromDraft($id) {
         $n = 'entform' . $id;
         return $this->session->userdata($n);
     }
 
-    private function discardDraft($id)
-    {
+    private function discardDraft($id) {
         $n = 'entform' . $id;
         $this->session->unset_userdata($n);
     }
 
-    private function checkPermissions($id)
-    {
+    private function checkPermissions($id) {
         $has_write_access = $this->zacl->check_acl($id, 'write', 'entity');
 
         if (!$has_write_access) {
@@ -690,33 +683,27 @@ class Entityedit extends MY_Controller
         }
         return true;
     }
-    private function notifyOnChange(\models\Provider $ent)
-    {
+
+    private function notifyOnChange(\models\Provider $ent) {
 
         $tracker = null;
         $unitInsertCollection = $this->em->getUnitOfWork()->getScheduledEntityInsertions();
-        foreach($unitInsertCollection as $objToInsert)
-        {
-            if($objToInsert instanceof models\Tracker)
-            {
+        foreach ($unitInsertCollection as $objToInsert) {
+            if ($objToInsert instanceof models\Tracker) {
 
-                if($objToInsert->getResourceType() === 'ent' && $objToInsert->getSubType() === 'modification')
-                {
+                if ($objToInsert->getResourceType() === 'ent' && $objToInsert->getSubType() === 'modification') {
                     $tracker = $objToInsert;
                     break;
                 }
             }
         }
-        if(!empty($tracker))
-        {
-            $this->emailsender->providerIsModified($ent,$tracker);
+        if (!empty($tracker)) {
+            $this->emailsender->providerIsModified($ent, $tracker);
         }
     }
 
-    public function show($id)
-    {
-        if(!ctype_digit($id))
-        {
+    public function show($id) {
+        if (!ctype_digit($id)) {
             show_404();
         }
         if (!$this->jauth->isLoggedIn()) {
@@ -759,7 +746,8 @@ class Entityedit extends MY_Controller
         if ($this->input->post('discard')) {
             $this->discardDraft($id);
             redirect(base_url('providers/detail/show/' . $id . ''), 'location');
-        } elseif ($this->submitValidate($id) === true) {
+        }
+        if ($this->submitValidate($id) === true) {
             $y = $this->input->post('f');
             $submittype = $this->input->post('modify');
             $this->saveToDraft($id, $y);
@@ -780,11 +768,9 @@ class Entityedit extends MY_Controller
                             $this->j_ncache->cleanMcirclceMeta($id);
                             $this->j_ncache->cleanEntityStatus($id);
                             $showsuccess = true;
-                        }
-                        catch(Exception $exception)
-                        {
-                            log_message('error',__METHOD__.' '.$exception);
-                            show_error('Internal server error',500);
+                        } catch (Exception $exception) {
+                            log_message('error', __METHOD__ . ' ' . $exception);
+                            show_error('Internal server error', 500);
                         }
                     }
                 }
@@ -843,15 +829,13 @@ class Entityedit extends MY_Controller
     /**
      * @return bool
      */
-    private function isFromSimpleRegistration()
-    {
+    private function isFromSimpleRegistration() {
         $fromSimpleMode = $this->input->post('advanced');
         return (!empty($fromSimpleMode) && strcmp($fromSimpleMode, 'advanced') == 0);
 
     }
 
-    public function register($t = null)
-    {
+    public function register($t = null) {
         MY_Controller::$menuactive = 'reg';
 
         $data = array(
@@ -873,15 +857,14 @@ class Entityedit extends MY_Controller
                 array('url' => '#', 'name' => lang('rr_idp_register_title'), 'type' => 'current'),
 
             );
-        } elseif (strcmp($t, 'sp') == 0){
+        } elseif (strcmp($t, 'sp') == 0) {
             $ent->setType('SP');
             $data['titlepage'] = lang('rr_sp_register_title');
             $data['breadcrumbs'] = array(
                 array('url' => '#', 'name' => lang('rr_sp_register_title'), 'type' => 'current'),
 
             );
-        }
-        else {
+        } else {
             $ent->setType('BOTH');
             $data['titlepage'] = lang('rr_idpsp_register_title');
             $data['breadcrumbs'] = array(
@@ -919,7 +902,7 @@ class Entityedit extends MY_Controller
             $data['federations']['none'] = lang('noneatthemoment');
             foreach ($fedCollection as $key) {
                 $keyName = $key->getName();
-                $data['federations'][''.$keyName.''] = $keyName;
+                $data['federations']['' . $keyName . ''] = $keyName;
             }
         }
 
@@ -1007,11 +990,12 @@ class Entityedit extends MY_Controller
         } elseif ($this->input->post('discard')) {
             $this->discardDraft($t);
             $redirtype = strtolower($t);
-            if($redirtype === 'both'){
+            if ($redirtype === 'both') {
                 $redirtype = 'idpsp';
             }
             redirect(base_url() . 'providers/' . $redirtype . '_registration', 'location');
-        } elseif ($this->submitValidate($t) === true) {
+        }
+        if ($this->submitValidate($t) === true) {
             $y = $this->input->post('f');
             $submittype = $this->input->post('modify');
             if ($submittype === 'modify') {
@@ -1116,14 +1100,13 @@ class Entityedit extends MY_Controller
                                 $q->addSP($convertedToArray);
                                 $mailTemplateGroup = 'spregresquest';
                                 $notificationGroup = 'gspregisterreq';
-                            }
-                            else{
+                            } else {
                                 $q->addBOTH($convertedToArray);
                                 /**
                                  * @todo add templeate for IDP/SP registration
                                  */
                                 $mailTemplateGroup = 'spregresquest';
-                                $notificationGroup = array('gspregisterreq','gidpregisterreq');
+                                $notificationGroup = array('gspregisterreq', 'gidpregisterreq');
                             }
                             if (empty($contactMail)) {
                                 $contactMail = $this->input->post('f[primarycnt][mail]');
@@ -1166,7 +1149,7 @@ class Entityedit extends MY_Controller
                                 $messageTemplate = $this->emailsender->providerRegRequest($ttype, $messageTemplateParams);
                             }
                             if (!empty($messageTemplate)) {
-                                $notifGroups = (array) $notificationGroup;
+                                $notifGroups = (array)$notificationGroup;
                                 array_push($notifGroups, 'greqisterreq');
                                 $this->emailsender->addToMailQueue($notifGroups, null, $messageTemplate['subject'], $messageTemplate['body'], array(), FALSE);
                             }
@@ -1202,8 +1185,7 @@ class Entityedit extends MY_Controller
         $this->load->view('page', $data);
     }
 
-    private function genTabs(\models\Provider $ent, $entsession, $register = false)
-    {
+    private function genTabs(\models\Provider $ent, $entsession, $register = false) {
         $tabs = array(
             array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->providerformelements->generateGeneral()),
             array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->formelement->NgenerateContactsForm($ent, $entsession)),
@@ -1233,8 +1215,7 @@ class Entityedit extends MY_Controller
         return $tabs;
     }
 
-    function registersuccess()
-    {
+    function registersuccess() {
 
         $data['content_view'] = 'register_success';
         $this->load->view('page', $data);
