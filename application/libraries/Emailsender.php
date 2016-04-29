@@ -180,10 +180,15 @@ class Emailsender
         }
         $alreadyMailTo = array_unique($alreadyMailTo, SORT_STRING);
         foreach ($alreadyMailTo as $mailto) {
+            if (!filter_var($mailto, FILTER_VALIDATE_EMAIL)) {
+                log_message('error',__METHOD__.' incorrect email found "'.$mailto.'" - please check subscription and user table for incorrect email');
+                continue;
+            }
             $m = new models\MailQueue();
             $m->setSubject($subject);
             $m->setBody($body);
             $m->setDeliveryType('mail');
+
             $m->setRcptto($mailto);
             $this->em->persist($m);
         }
@@ -192,11 +197,8 @@ class Emailsender
         if ($sync === true) {
             try {
                 $this->em->flush();
-
-                return true;
             } catch (Exception $e) {
                 log_message('error', __METHOD__ . ' ' . $e);
-
                 return false;
             }
         }
