@@ -56,26 +56,22 @@ class Reports extends MY_Controller
          * @var \models\Provider[] $providers
          */
         $tmpProviders = new models\Providers();
-        if($param === 'localidp'){
-            $providers =  $tmpProviders->getLocalProvidersPartialWithCerts('IDP');
-        }
-        elseif($param === 'localsp'){
-            $providers =  $tmpProviders->getLocalProvidersPartialWithCerts('SP');
-        }
-        elseif($param === 'extsp'){
-            $providers =  $tmpProviders->getExtProvidersPartialWithCerts('SP');
-        }
-        elseif($param === 'extidp'){
-            $providers =  $tmpProviders->getExtProvidersPartialWithCerts('IDP');
-        }
-        else {
+        if ($param === 'localidp') {
+            $providers = $tmpProviders->getLocalProvidersPartialWithCerts('IDP');
+        } elseif ($param === 'localsp') {
+            $providers = $tmpProviders->getLocalProvidersPartialWithCerts('SP');
+        } elseif ($param === 'extsp') {
+            $providers = $tmpProviders->getExtProvidersPartialWithCerts('SP');
+        } elseif ($param === 'extidp') {
+            $providers = $tmpProviders->getExtProvidersPartialWithCerts('IDP');
+        } else {
             return $this->output->set_status_header(401)->set_output('The type of entities has not been specified');
         }
         $this->load->library('jalert');
         $result = array();
-        foreach($providers as $provider){
-            $alert  = $this->jalert->genCertsAlerts($provider) ;
-            if(count($alert) > 0) {
+        foreach ($providers as $provider) {
+            $alert = $this->jalert->genCertsAlerts($provider);
+            if (count($alert) > 0) {
                 $result[] = array(
                     'id' => $provider->getId(),
                     'entityid' => html_escape($provider->getEntityId()),
@@ -85,7 +81,7 @@ class Reports extends MY_Controller
             }
 
         }
-        return $this->output->set_content_type('application/json')->set_output(json_encode(array('definitions'=>array('baseurl'=>base_url()),'data'=>$result)));
+        return $this->output->set_content_type('application/json')->set_output(json_encode(array('definitions' => array('baseurl' => base_url()), 'data' => $result)));
 
     }
 
@@ -94,27 +90,34 @@ class Reports extends MY_Controller
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
         if (!$this->jauth->isLoggedIn()) {
-
             return $this->output->set_status_header(401)->set_output('Session Lost');
         }
         if (!$this->jauth->isAdministrator()) {
-            return $this->output->set_status_header(401)->set_output('No perm');
+            return $this->output->set_status_header(401)->set_output('No permission');
         }
 
-        $currentVersion = Doctrine\ORM\Version::VERSION;
-        $minRequiredVersion = '2.4.8';
-        $compared = Doctrine\ORM\Version::compare($minRequiredVersion);
-        $minphpversion = version_compare(PHP_VERSION, '5.5.0', '>=');
-        if ($compared > 0 && $minphpversion) {
-            echo '<div class="warning alert-box" data-alert>' . lang('rr_doctrinever') . ': ' . $currentVersion . '</div>';
-            echo '<div class="info alert-box" data-alert>' . lang('rr_mimumreqversion') . ': ' . $minRequiredVersion . ' - Please use <b>composer</b> tool to upgrade it to required version</div>';
+        $doctrineCurrentVer = Doctrine\ORM\Version::VERSION;
+        $doctrineReqVer = '2.4.8';
+        $doctrineCompared = Doctrine\ORM\Version::compare($doctrineReqVer);
+        $phpMinVersion = version_compare(PHP_VERSION, '5.5.0', '>=');
+
+        $ciMinVersion = version_compare(CI_VERSION, '3.0.6', '>=');
+
+        if ($doctrineCompared > 0 && $phpMinVersion) {
+            echo '<div class="warning alert-box" data-alert>' . lang('rr_doctrinever') . ': ' . $doctrineCurrentVer . '</div>';
+            echo '<div class="info alert-box" data-alert>' . lang('rr_mimumreqversion') . ': ' . $doctrineReqVer . ' - Please use <b>composer</b> tool to upgrade it to required version</div>';
         } else {
-            echo '<div class="success alert-box" data-alert>' . lang('rr_doctrinever') . ': ' . $currentVersion . ' : ' . lang('rr_meetsminimumreq') . '</div>';
+            echo '<div class="success alert-box" data-alert>' . lang('rr_doctrinever') . ': ' . $doctrineCurrentVer . ' : ' . lang('rr_meetsminimumreq') . '</div>';
         }
-        if (!$minphpversion) {
+        if (!$phpMinVersion) {
             echo '<div class="alert alert-box" data-alert>Installed PHP VERSION: ' . PHP_VERSION . ' : ' . lang('rr_mimumreqversion') . ' 5.5.x.</div>';
         } else {
             echo '<div class="success alert-box" data-alert>Installed PHP VERSION: ' . PHP_VERSION . ' : ' . lang('rr_meetsminimumreq') . '</div>';
+        }
+        if (!$ciMinVersion) {
+            echo '<div class="alert alert-box" data-alert>Installed CI VERSION: ' . CI_VERSION . ' : ' . lang('rr_mimumreqversion') . ' 3.0.7.</div>';
+        } else {
+            echo '<div class="success alert-box" data-alert>Installed CI VERSION: ' . CI_VERSION . ' : ' . lang('rr_meetsminimumreq') . '</div>';
         }
 
     }
