@@ -101,8 +101,6 @@ class Reports extends MY_Controller
         $doctrineCompared = Doctrine\ORM\Version::compare($doctrineReqVer);
         $phpMinVersion = version_compare(PHP_VERSION, '5.5.0', '>=');
 
-        $ciMinVersion = version_compare(CI_VERSION, '3.0.6', '>=');
-
         if ($doctrineCompared > 0 && $phpMinVersion) {
             echo '<div class="warning alert-box" data-alert>' . lang('rr_doctrinever') . ': ' . $doctrineCurrentVer . '</div>';
             echo '<div class="info alert-box" data-alert>' . lang('rr_mimumreqversion') . ': ' . $doctrineReqVer . ' - Please use <b>composer</b> tool to upgrade it to required version</div>';
@@ -114,10 +112,17 @@ class Reports extends MY_Controller
         } else {
             echo '<div class="success alert-box" data-alert>Installed PHP VERSION: ' . PHP_VERSION . ' : ' . lang('rr_meetsminimumreq') . '</div>';
         }
-        if (!$ciMinVersion) {
-            echo '<div class="alert alert-box" data-alert>Installed CI VERSION: ' . CI_VERSION . ' : ' . lang('rr_mimumreqversion') . ' 3.0.7.</div>';
-        } else {
-            echo '<div class="success alert-box" data-alert>Installed CI VERSION: ' . CI_VERSION . ' : ' . lang('rr_meetsminimumreq') . '</div>';
+
+        if(defined('CI_VERSION')) {
+            $ciMinVersion = version_compare(CI_VERSION, '3.0.6', '>=');
+            if (!$ciMinVersion) {
+                echo '<div class="alert alert-box" data-alert>Installed CI VERSION: ' . CI_VERSION . ' : ' . lang('rr_mimumreqversion') . ' 3.0.6.</div>';
+            } else {
+                echo '<div class="success alert-box" data-alert>Installed CI VERSION: ' . CI_VERSION . ' : ' . lang('rr_meetsminimumreq') . '</div>';
+            }
+        }
+        else {
+            echo '<div class="alert alert-box" data-alert>Cannot recognize installed CI VERSION</div>';
         }
 
     }
