@@ -68,7 +68,7 @@ class Arp extends MY_Controller
             $xml = $this->arpgen->genXMLv3($ent);
         }
         else {
-            $xml = $this->arpgen->genXML($ent, $version);
+            $xml = $this->arpgen->genXML($ent);
         }
         $result = $xml->outputMemory();
         $lastUpdated = time();
