@@ -392,7 +392,6 @@ class Attributepolicy extends MY_Controller
 
     public function addattrentcat($idpid = null) {
 
-
         try {
             $this->initiateAjaxAccess($idpid);
             $ent = $this->initiateProviderForUpdate($idpid);
@@ -427,17 +426,14 @@ class Attributepolicy extends MY_Controller
             $findPolicy->setPolicy($policy);
         }
         $this->em->persist($findPolicy);
-
         try {
             $this->em->flush();
-
-            return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
 
             return $this->output->set_status_header(500)->set_output('Internal Server Error');
         }
-
+        return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
 
     }
 
@@ -450,13 +446,6 @@ class Attributepolicy extends MY_Controller
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
-        $result['type'] = 'federation';
-        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => lang('notsupported'));
-        $result['definitions']['columns'] = array(lang('attrname'), lang('policy'), lang('reqstatus'), lang('rr_action'));
-        $result['definitions']['lang']['federation'] = lang('rr_federation');
-        $result['definitions']['lang']['unsupported'] = lang('notsupported');
-        $result['data']['support'] = $this->arpgen->getSupportAttributes($ent);
-        $result['data']['global'] = $this->arpgen->genGlobal($ent);
 
         /**
          * @var $allFeds models\Federation[]
@@ -487,21 +476,49 @@ class Attributepolicy extends MY_Controller
             $fedpoliciesByRequester[$fedpolicy->getRequester()][$fedpolicy->getAttribute()->getId()] = $fedpolicy->getPolicy();
         }
 
-
-        $result['definitions']['feds'] = $allFederations;
-        $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
-        $result['data']['fedpols'] = $fedpoliciesByRequester;
-
         $activeFederation = $this->arpgen->getActiveFederations($ent);
 
-        $result['data']['activefeds'] = $activeFederation;
+        $result = array(
+            'type' => 'federation',
+            'definitions' => array(
+                'policy' => array(
+                    '0' => lang('dropnever'),
+                    '1' => lang('dropokreq'),
+                    '2' => lang('dropokreqdes'),
+                    '100' => lang('dropnotset'),
+                    '1000' => lang('notsupported')
+                ),
+                'columns' => array(
+                    lang('attrname'),
+                    lang('policy'),
+                    lang('reqstatus'),
+                    lang('rr_action')
+                ),
+                'lang' => array(
+                    'federation' => lang('rr_federation'),
+                    'unsupported' => lang('notsupported')
+                ),
+                'statusstr' => array(
+                    'inactive' => 'inactive'
+                ),
+                'feds' => $allFederations,
+                'attrs' => $this->arpgen->getAttrDefs()
+            ),
+            'data' => array(
+                'support' => $this->arpgen->getSupportAttributes($ent),
+                'global' => $this->arpgen->genGlobal($ent),
+                'fedpols' => $fedpoliciesByRequester,
+                'activefeds' => $activeFederation
+            )
+        );
+
+
         foreach ($activeFederation as $fid) {
             if (!array_key_exists($fid, $result['data']['fedpols'])) {
                 $result['data']['fedpols'][$fid] = array();
             }
         }
 
-        $result['definitions']['statusstr']['inactive'] = 'inactive';
 
         $this->em->flush();
 
@@ -529,13 +546,12 @@ class Attributepolicy extends MY_Controller
         }
         try {
             $this->em->flush();
-
-            return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
 
             return $this->output->set_status_header(500)->set_output('Internal server error');
         }
+        return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
 
     }
 
@@ -592,13 +608,12 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->em->flush();
-
-            return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
 
             return $this->output->set_status_header(500)->set_output('Internal server error');
         }
+        return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
 
     }
 
@@ -651,13 +666,12 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->em->flush();
-
-            return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
 
             return $this->output->set_status_header(500)->set_output('Internal Server Error');
         }
+        return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
     }
 
     public function updateattrfed($idpid = null) {
@@ -708,7 +722,6 @@ class Attributepolicy extends MY_Controller
             $this->em->flush();
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
-
             return $this->output->set_status_header(500)->set_output('Internal Server Error');
         }
 
@@ -814,19 +827,17 @@ class Attributepolicy extends MY_Controller
 
         try {
             $this->em->flush();
-
-            return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
 
             return $this->output->set_status_header(500)->set_output('Internal Server Error');
         }
+        return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => 'success')));
 
     }
 
 
     public function getcustomsp($idpid = null) {
-
 
         try {
             $this->initiateAjaxAccess($idpid);
