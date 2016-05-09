@@ -1,6 +1,7 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 class Spmatrix extends MY_Controller
 {
@@ -9,7 +10,7 @@ class Spmatrix extends MY_Controller
      */
     private $tmp_providers;
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->tmp_providers = new models\Providers;
@@ -28,7 +29,7 @@ class Spmatrix extends MY_Controller
          * @var $sp models\Provider
          */
         $sp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id));
-        if (empty($sp)) {
+        if ($sp === null) {
             show_404();
         }
 
@@ -37,7 +38,6 @@ class Spmatrix extends MY_Controller
         $hasWriteAccess = $this->zacl->check_acl($sp->getId(), 'write', 'entity', '');
         if (!$hasWriteAccess) {
             show_error('Permission denied', 403);
-            return;
         }
         $myLang = MY_Controller::getLang();
         $titlename = $sp->getNameToWebInLang($myLang, $sp->getType());
@@ -54,7 +54,7 @@ class Spmatrix extends MY_Controller
                 array('url' => '#', 'name' => lang('rr_arpoverview'), 'type' => 'current'),
             )
         );
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
 
     }
 
@@ -63,32 +63,24 @@ class Spmatrix extends MY_Controller
         $loggedin = $this->jauth->isLoggedIn();
         $isAjax = $this->input->is_ajax_request();
         if (!$loggedin || !$isAjax) {
-            set_status_header(403);
-            echo 'no perm';
-            return;
+            return $this->output->set_status_header(403)->set_output('no permission');
         }
         if (empty($id) || !ctype_digit($id)) {
-            set_status_header(404);
-            echo 'no found';
-            return;
+            return $this->output->set_status_header(404)->set_output('not found');
         }
         /**
          * @var $sp models\Provider
          */
         $sp = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $id));
-        if (empty($sp)) {
-            set_status_header(404);
-            echo 'no found';
-            return;
+        if ($sp === null) {
+            return $this->output->set_status_header(404)->set_output('not found');
         }
 
         $spEntityId = $sp->getEntityId();
         $this->load->library('zacl');
         $hasWriteAccess = $this->zacl->check_acl($sp->getId(), 'write', 'entity', '');
         if (!$hasWriteAccess) {
-            set_status_header(403);
-            echo 'Permission denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Permission Denied');
         }
         $myLang = MY_Controller::getLang();
         $titlename = $sp->getNameToWebInLang($myLang, $sp->getType());

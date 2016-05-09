@@ -1,6 +1,7 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 /**
  * ResourceRegistry3
  *
@@ -24,7 +25,7 @@ if (!defined('BASEPATH'))
 class Regpolicy extends MY_Controller
 {
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
 
@@ -92,7 +93,7 @@ class Regpolicy extends MY_Controller
 
 
         $data['content_view'] = 'manage/regpol_show_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
 
     }
 
@@ -174,7 +175,7 @@ class Regpolicy extends MY_Controller
             array('url'=>'#','name'=>lang('title_addregpol'),'type'=>'current'),
         );
         $data['content_view'] = 'manage/regpol_add_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     public function edit($id)
@@ -189,7 +190,6 @@ class Regpolicy extends MY_Controller
 
         if (empty($id) || !ctype_digit($id)) {
             show_error('Not found', 404);
-            return;
         }
         /**
          * @var $coc models\Coc
@@ -197,12 +197,10 @@ class Regpolicy extends MY_Controller
         $coc = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $id, 'type' => 'regpol'));
         if (empty($coc)) {
             show_error('Not found', 404);
-            return;
         }
         $has_write_access = $this->zacl->check_acl('regpol', 'write', 'default', '');
         if (!$has_write_access) {
             show_error('No access', 401);
-            return;
         }
         $data = array(
             'titlepage'=>lang('title_regpol') . ': ' . html_escape($coc->getName()),
@@ -236,11 +234,11 @@ class Regpolicy extends MY_Controller
         );
         $data['form'] = $f;
         $data['content_view'] = 'manage/regpol_edit_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
 
     }
 
-    function getMembers($regpolid)
+    public function getMembers($regpolid)
     {
         if(!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn())
         {

@@ -319,17 +319,9 @@ class Arpgen
         return $members;
     }
 
-    public function genXML(\models\Provider $idp, $version = null) {
-        if ($version === null) {
-            $version = 2;
-        }
+    public function genXML(\models\Provider $idp) {
+        $entcatRuleTxt = 'saml:AttributeRequesterEntityAttributeExactMatch';
 
-        // difference for shibboleth ver 2.x and ver 3.x
-        if ($version === 2) {
-            $entcatRuleTxt = 'saml:AttributeRequesterEntityAttributeExactMatch';
-        } else {
-            $entcatRuleTxt = 'saml:EntityAttributeExactMatch';
-        }
         $policy = $this->genPolicyDefs($idp);
 
         $xml = $this->createXMLHead();
@@ -337,11 +329,12 @@ class Arpgen
         $comment = PHP_EOL . '
 			Experimental verion Attribute Release Policy for ' . $idp->getEntityId() . PHP_EOL . '
                         generated on ' . date('D M j G:i:s T Y') . PHP_EOL . '
-                        compatible with shibboleth idp version: ' . $version . '.x
+                        compatible with shibboleth idp version: 2.x
 			' . PHP_EOL;
 
 
         $xml->startElementNs('afp', 'AttributeFilterPolicyGroup', 'urn:mace:shibboleth:2.0:afp');
+
         $xml->startAttribute('id');
         $xml->text('policy');
         $xml->endAttribute();
@@ -350,17 +343,15 @@ class Arpgen
         $xml->startAttributeNs('xsi', 'schemaLocation', 'http://www.w3.org/2001/XMLSchema-instance');
         $xml->text('urn:mace:shibboleth:2.0:afp classpath:/schema/shibboleth-2.0-afp.xsd urn:mace:shibboleth:2.0:afp:mf:basic classpath:/schema/shibboleth-2.0-afp-mf-basic.xsd urn:mace:shibboleth:2.0:afp:mf:saml classpath:/schema/shibboleth-2.0-afp-mf-saml.xsd');
         $xml->endAttribute();
-        $xml->startAttribute('xmlns');
-        $xml->text('urn:mace:shibboleth:2.0:afp');
-        $xml->endAttribute();
-
-        $xml->startAttribute('xmlns:basic');
-        $xml->text('urn:mace:shibboleth:2.0:afp:mf:basic');
-        $xml->endAttribute();
-
-        $xml->startAttribute('xmlns:saml');
-        $xml->text('urn:mace:shibboleth:2.0:afp:mf:saml');
-        $xml->endAttribute();
+        foreach (array(
+                     'xmlns' => 'urn:mace:shibboleth:2.0:afp',
+                     'xmlns:basic' => 'urn:mace:shibboleth:2.0:afp:mf:basic',
+                     'xmlns:saml' => 'urn:mace:shibboleth:2.0:afp:mf:saml'
+                 ) as $k => $v) {
+            $xml->startAttribute('' . $k . '');
+            $xml->text('' . $v . '');
+            $xml->endAttribute();
+        }
 
 
         $xml->writeComment($comment);
@@ -555,10 +546,25 @@ class Arpgen
         return $xml;
     }
 
+    /**
+     * @param XMLWriter $xml
+     * @param array $attrs
+     * @return XMLWriter
+     */
+    private function setElementAttrs(\XMLWriter $xml, array $attrs) {
+
+        foreach ($attrs as $k => $v) {
+            $xml->startAttribute($k);
+            $xml->text($v);
+            $xml->endAttribute();
+        }
+        return $xml;
+    }
+
     public function genXMLv3(\models\Provider $idp) {
 
 
-        // difference for shibboleth ver 2.x and ver 3.x
+        //ver 3.x
 
         $entcatRuleTxt = 'EntityAttributeExactMatch';
 
@@ -574,28 +580,17 @@ class Arpgen
 
 
         $xml->startElement('AttributeFilterPolicyGroup');
-        $xml->startAttribute('id');
-        $xml->text('policy');
-        $xml->endAttribute();
-        $xml->startAttribute('xmlns');
-        $xml->text('urn:mace:shibboleth:2.0:afp');
-        $xml->endAttribute();
-        $xml->startAttribute('xmlns:basic');
-        $xml->text('urn:mace:shibboleth:2.0:afp:mf:basic');
-        $xml->endAttribute();
-        $xml->startAttribute('xmlns:afp');
-        $xml->text('urn:mace:shibboleth:2.0:afp');
-        $xml->endAttribute();
-        $xml->startAttribute('xmlns:saml');
-        $xml->text('urn:mace:shibboleth:2.0:afp:mf:saml');
-        $xml->endAttribute();
-        $xml->startAttribute('xmlns:xsi');
-        $xml->text('http://www.w3.org/2001/XMLSchema-instance');
-        $xml->endAttribute();
 
-        $xml->startAttribute('xsi:schemaLocation');
-        $xml->text('urn:mace:shibboleth:2.0:afp http://shibboleth.net/schema/idp/shibboleth-afp.xsd');
-        $xml->endAttribute();
+        $attrsE = array(
+            'id' => 'policy',
+            'xmlns' => 'urn:mace:shibboleth:2.0:afp',
+            'xmlns:basic' => 'urn:mace:shibboleth:2.0:afp:mf:basic',
+            'xmlns:afp' => 'urn:mace:shibboleth:2.0:afp',
+            'xmlns:saml' => 'urn:mace:shibboleth:2.0:afp:mf:saml',
+            'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+            'xsi:schemaLocation' => 'urn:mace:shibboleth:2.0:afp http://shibboleth.net/schema/idp/shibboleth-afp.xsd'
+        );
+        $xml = $this->setElementAttrs($xml, $attrsE);
 
 
         $xml->writeComment($comment);
@@ -623,12 +618,14 @@ class Arpgen
             $xml->startAttributeNs('xsi', 'type', null);
             $xml->text($entcatRuleTxt);
             $xml->endAttribute();
+
             $xml->startAttribute('attributeName');
             $xml->text($policy['definitions']['ec'][$lkey]['name']);
             $xml->endAttribute();
             $xml->startAttribute('attributeValue');
             $xml->text($policy['definitions']['ec'][$lkey]['value']);
             $xml->endAttribute();
+
             $xml->endElement();
 
 
@@ -706,6 +703,7 @@ class Arpgen
             }
             $xml->writeComment('Requester: ' . $spdets['entityid'] . '');
             $xml->startElement('AttributeFilterPolicy');
+
             $xml->startAttribute('id');
             $xml->text($spdets['entityid']);
             $xml->endAttribute();
@@ -737,15 +735,11 @@ class Arpgen
                                 $xml->endAttribute();
                                 foreach ($values as $singleValue) {
                                     $xml->startElement('Rule');
-                                    $xml->startAttribute('xsi:type');
-                                    $xml->text('Value');
-                                    $xml->endAttribute();
-                                    $xml->startAttribute('value');
-                                    $xml->text($singleValue);
-                                    $xml->endAttribute();
-                                    $xml->startAttribute('ignoreCase');
-                                    $xml->text('true');
-                                    $xml->endAttribute();
+                                    $xml = $this->setElementAttrs($xml, array(
+                                        'xsi:type' => 'Value',
+                                        'value' => $singleValue,
+                                        'ignoreCase' => 'true'
+                                    ));
                                     $xml->endElement();
                                 }
                             } else {

@@ -165,7 +165,7 @@ class Userprofile extends MY_Controller
 
 
         if ($this->validate($user) !== true) {
-            $this->load->view('page', $data);
+            $this->load->view(MY_Controller::$page, $data);
         } else {
 
             $fname = $this->input->post('fname');
@@ -250,7 +250,7 @@ class Userprofile extends MY_Controller
                     'target' => base_url('manage/users/show/' . base64url_encode($user->getUsername())),
                     'msg' => 'Updated'
                 );
-                $this->load->view('page', $data2);
+                $this->load->view(MY_Controller::$page, $data2);
             } catch (Exception $e) {
                 log_message('error', __METHOD__ . ' ' . $e);
                 show_error('Interlan', 500);

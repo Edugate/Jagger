@@ -37,7 +37,7 @@ class Addontools extends MY_Controller
             array('url' => '#', 'name' => lang('rrtools'), 'type' => 'current'),
 
         );
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     public function msgdecoder()
@@ -95,7 +95,7 @@ class Addontools extends MY_Controller
 
         $data['titlepage'] = 'SAML decoder';
         $data['content_view'] = 'tools/msgdecoder_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
 

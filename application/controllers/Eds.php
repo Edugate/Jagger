@@ -1,16 +1,16 @@
 <?php 
 class Eds extends MY_Controller {
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         parse_str($_SERVER['QUERY_STRING'], $_GET);
       
     }
-    function index()
+    public function index()
     {
         $data['content_view'] = 'eds_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
 }

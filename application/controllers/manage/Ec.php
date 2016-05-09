@@ -13,7 +13,7 @@ if (!defined('BASEPATH')) {
 class Ec extends MY_Controller
 {
 
-    function __construct() {
+    public function __construct() {
         parent::__construct();
         $this->load->helper('form');
         $this->load->library('form_validation');
@@ -83,10 +83,10 @@ class Ec extends MY_Controller
             array('url' => '#', 'name' => lang('entcats_menulink'), 'type' => 'current'),
         );
         $data['content_view'] = 'manage/coc_show_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
-    function getMembers($ecid) {
+    public function getMembers($ecid) {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Access denied');
         }
@@ -193,7 +193,7 @@ class Ec extends MY_Controller
             array('url' => '#', 'name' => lang('title_addentcat'), 'type' => 'current'),
         );
         $data['content_view'] = 'manage/coc_add_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     public function edit($entcatId) {
@@ -258,7 +258,7 @@ class Ec extends MY_Controller
             array('url' => '#', 'name' => lang('title_editform'), 'type' => 'current'),
         );
         $data['content_view'] = 'manage/coc_edit_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     public function remove($entcatId = null) {

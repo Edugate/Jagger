@@ -249,7 +249,7 @@ class Accessmanage extends MY_Controller
         $data['content_view'] = 'manage/accessmanage_view';
         $data['fedlink'] = base_url() . 'federations/manage/show/' . base64url_encode($federation->getName());
         $data['titlepage'] = lang('rr_federation') . ' ' . lang('rr_accessmngmt') . ': ' . anchor($data['fedlink'], $data['resourcename']);
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     public function entity($id) {
@@ -281,7 +281,7 @@ class Accessmanage extends MY_Controller
         $data['resourcetype'] = 'entity';
         $data['resourceid'] = $id;
         $data['content_view'] = 'manage/accessmanage_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
 
 
     }

@@ -75,7 +75,7 @@ class Timelines extends MY_Controller {
             array('url'=>'#','type'=>'current','name'=>lang('rr_progressforfed'))
 
         );
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
 }

@@ -162,7 +162,7 @@ class Joinfed extends MY_Controller
 
                     $data['content_view'] = 'manage/joinfederation_view';
                     $data['success_message'] = lang('confirmreqsuccess');
-                    return $this->load->view('page', $data);
+                    return $this->load->view(MY_Controller::$page, $data);
                 }
 
 
@@ -181,11 +181,11 @@ class Joinfed extends MY_Controller
                 $data['feds_dropdown'] =  $feds_dropdown;
                 $data['showform'] = true;
                 $data['content_view'] = 'manage/joinfederation_view';
-                $this->load->view('page', $data);
+                $this->load->view(MY_Controller::$page, $data);
             } else {
                 $data['error_message'] = lang('cantjoinnonefound');
                 $data['content_view'] = 'manage/joinfederation_view';
-                $this->load->view('page', $data);
+                $this->load->view(MY_Controller::$page, $data);
 
             }
         }

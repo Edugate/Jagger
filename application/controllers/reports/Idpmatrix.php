@@ -1,6 +1,7 @@
 <?php
-
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 /**
  * ResourceRegistry3
  *
@@ -20,55 +21,52 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Idpmatrix extends MY_Controller
 {
 
-	private $tmp_providers;
+    private $tmp_providers;
 
-	function __construct()
-	{
-		parent::__construct();
-		$this->load->helper('url');
-		$this->load->library('table');
-		$this->load->library('arp_generator');
-		$this->tmp_providers = new models\Providers;
-		$this->logo_basepath = $this->config->item('rr_logouriprefix');
-		$this->logo_baseurl = $this->config->item('rr_logobaseurl');
-		if (empty($this->logo_baseurl)) {
-			$this->logo_baseurl = base_url();
-		}
-		$this->logo_url = $this->logo_baseurl . $this->logo_basepath;
-	}
+    public function __construct() {
+        parent::__construct();
+        $this->load->helper('url');
+        $this->load->library('table');
+        $this->load->library('arp_generator');
+        $this->tmp_providers = new models\Providers;
+        $this->logo_basepath = $this->config->item('rr_logouriprefix');
+        $this->logo_baseurl = $this->config->item('rr_logobaseurl');
+        if (empty($this->logo_baseurl)) {
+            $this->logo_baseurl = base_url();
+        }
+        $this->logo_url = $this->logo_baseurl . $this->logo_basepath;
+    }
 
-	public function getArpData($idpid)
-	{
-		if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
+    public function getArpData($idpid) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
-		}
-		$this->load->library('zacl');
+        }
+        $this->load->library('zacl');
         /**
          * @var $idp models\Provider
          */
-		$idp = $this->tmp_providers->getOneIdpById($idpid);
-		if (empty($idp)) {
+        $idp = $this->tmp_providers->getOneIdpById($idpid);
+        if (empty($idp)) {
             return $this->output->set_status_header(404)->set_output('IdP not found');
         }
-		$has_read_access = $this->zacl->check_acl($idpid, 'read', 'entity', '');
-		if (!$has_read_access) {
+        $has_read_access = $this->zacl->check_acl($idpid, 'read', 'entity', '');
+        if (!$has_read_access) {
             return $this->output->set_status_header(403)->set_output('Access Denied');
-		}
+        }
         /**
          * @var $attrs models\Attribute[]
          */
-		$attrs = $this->em->getRepository("models\Attribute")->findAll();
-		foreach ($attrs as $a) {
-			$attrdefs[$a->getName()] = $a->getId();
-			$attrlist[$a->getName()] = 0;
-		}
-		$attrdedsCopy = $attrdefs;
-		$returnArray = TRUE;
-		$arparray['policies'] = $this->arp_generator->arpToXML($idp, $returnArray);
-		if (is_null($arparray['policies'])) {
-			$arparray['policies'] = array();
-		}
-        else {
+        $attrs = $this->em->getRepository("models\Attribute")->findAll();
+        foreach ($attrs as $a) {
+            $attrdefs[$a->getName()] = $a->getId();
+            $attrlist[$a->getName()] = 0;
+        }
+        $attrdedsCopy = $attrdefs;
+        $returnArray = true;
+        $arparray['policies'] = $this->arp_generator->arpToXML($idp, $returnArray);
+        if (is_null($arparray['policies'])) {
+            $arparray['policies'] = array();
+        } else {
             foreach ($arparray['policies'] as $p) {
                 foreach ($p['attributes'] as $k => $v) {
                     unset($attrdedsCopy['' . $k . '']);
@@ -79,72 +77,72 @@ class Idpmatrix extends MY_Controller
             }
         }
 
-		$attrdefsLeft = array_diff_key($attrdefs, $attrdedsCopy);
-		ksort($attrdefsLeft);
-		ksort($attrlist);
-		$arparray['total'] = count($arparray['policies']);
-		$arparray['attributes'] = $attrdefsLeft;
-		$arparray['attrlist'] = $attrlist;
-		if ($arparray['total'] == 0) {
-			$arparray['message'] = lang('errormatrixnoattrsormembers');
-		}
-		return $this->output->set_content_type('application/json')->set_output(json_encode($arparray));
-	}
+        $attrdefsLeft = array_diff_key($attrdefs, $attrdedsCopy);
+        ksort($attrdefsLeft);
+        ksort($attrlist);
+        $arparray['total'] = count($arparray['policies']);
+        $arparray['attributes'] = $attrdefsLeft;
+        $arparray['attrlist'] = $attrlist;
+        if ($arparray['total'] == 0) {
+            $arparray['message'] = lang('errormatrixnoattrsormembers');
+        }
 
-	public function show($idpid)
-	{
-		if (empty($idpid) || !ctype_digit($idpid)) {
-			show_error('Wrong or empty id', 404);
-		}
-		if ($this->jauth->isLoggedIn()) {
-			$this->session->set_userdata(array('currentMenu' => 'awaiting'));
-			$this->load->library('zacl');
-		} else {
-			redirect('auth/login', 'location');
-		}
-		$idp = $this->tmp_providers->getOneIdpById($idpid);
-		if (empty($idp)) {
-			show_error('Identity Provider not found', 404);
-		}
+        return $this->output->set_content_type('application/json')->set_output(json_encode($arparray));
+    }
+
+    public function show($idpid) {
+        if (empty($idpid) || !ctype_digit($idpid)) {
+            show_error('Wrong or empty id', 404);
+        }
+        if ($this->jauth->isLoggedIn()) {
+            $this->session->set_userdata(array('currentMenu' => 'awaiting'));
+            $this->load->library('zacl');
+        } else {
+            redirect('auth/login', 'location');
+        }
+        $idp = $this->tmp_providers->getOneIdpById($idpid);
+        if (empty($idp)) {
+            show_error('Identity Provider not found', 404);
+        }
         $myLang = MY_Controller::getLang();
 
-		$has_read_access = $this->zacl->check_acl($idpid, 'read', 'entity', '');
-		$has_write_access = $this->zacl->check_acl($idpid, 'write', 'entity', '');
-		if (!$has_read_access) {
-			$data['content_view'] = 'nopermission';
-			$data['error'] = lang('rr_noidpaccess');
-			$this->load->view('page', $data);
-			return;
-		}
+        $has_read_access = $this->zacl->check_acl($idpid, 'read', 'entity', '');
+        $has_write_access = $this->zacl->check_acl($idpid, 'write', 'entity', '');
+        if (!$has_read_access) {
+            $data['content_view'] = 'nopermission';
+            $data['error'] = lang('rr_noidpaccess');
+            return $this->load->view(MY_Controller::$page, $data);
+            
+        }
         $data = array(
             'has_write_access' => $has_write_access,
-            'excluded' => $idp->getExcarps(),
-            'idpname' => $idp->getNameToWebInLang($myLang, 'IDP'),
-            'idpid' => $idp->getId(),
-            'entityid' => $idp->getEntityId(),
+            'excluded'         => $idp->getExcarps(),
+            'idpname'          => $idp->getNameToWebInLang($myLang, 'IDP'),
+            'idpid'            => $idp->getId(),
+            'entityid'         => $idp->getEntityId(),
         );
 
-		$extends = $idp->getExtendMetadata();
-		if (count($extends) > 0) {
-			foreach ($extends as $ex) {
-				$el = $ex->getElement();
-				if ($el === 'Logo') {
-					$data['providerlogourl'] = $ex->getLogoValue();
-					break;
-				}
-			}
-		}
-		$data['titlepage'] = lang('identityprovider') . ': ' . anchor('' . base_url() . 'providers/detail/show/' . $data['idpid'], $data['idpname']) . '<br />' . $data['entityid'];
-		$data['subtitlepage'] = lang('rr_arpoverview');
-		$data['breadcrumbs'] = array(
-            array('url'=>base_url('providers/idp_list/showlist'),'name'=>lang('identityproviders')),
-			array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . html_escape($data['idpname']) . ''),
-			array('url' => '#', 'name' => lang('rr_arpoverview'), 'type' => 'current'),
+        $extends = $idp->getExtendMetadata();
+        if (count($extends) > 0) {
+            foreach ($extends as $ex) {
+                $el = $ex->getElement();
+                if ($el === 'Logo') {
+                    $data['providerlogourl'] = $ex->getLogoValue();
+                    break;
+                }
+            }
+        }
+        $data['titlepage'] = lang('identityprovider') . ': ' . anchor('' . base_url() . 'providers/detail/show/' . $data['idpid'], $data['idpname']) . '<br />' . $data['entityid'];
+        $data['subtitlepage'] = lang('rr_arpoverview');
+        $data['breadcrumbs'] = array(
+            array('url' => base_url('providers/idp_list/showlist'), 'name' => lang('identityproviders')),
+            array('url' => base_url('providers/detail/show/' . $idp->getId() . ''), 'name' => '' . html_escape($data['idpname']) . ''),
+            array('url' => '#', 'name' => lang('rr_arpoverview'), 'type' => 'current'),
 
 
-		);
-		$data['content_view'] = 'reports/idpmatrix_show_view';
-		$this->load->view('page', $data);
-	}
+        );
+        $data['content_view'] = 'reports/idpmatrix_show_view';
+        $this->load->view(MY_Controller::$page, $data);
+    }
 
 }

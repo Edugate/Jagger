@@ -55,7 +55,7 @@ class Fedregistration extends MY_Controller
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rrerror_noperm_regfed');
         }
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     public function submit() {
@@ -68,7 +68,7 @@ class Fedregistration extends MY_Controller
         if (!$access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rrerror_noperm_regfed');
-            $this->load->view('page', $data);
+            $this->load->view(MY_Controller::$page, $data);
 
         }
         $fedname = $this->input->post('fedname');
@@ -122,7 +122,7 @@ class Fedregistration extends MY_Controller
         $this->em->flush();
         $data['success'] = lang('rr_fed_req_sent');
         $data['content_view'] = 'federation/success_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     private function _submit_validate() {

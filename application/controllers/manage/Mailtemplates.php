@@ -110,7 +110,7 @@ class Mailtemplates extends MY_Controller
         if ($this->submitValidate($data['newtmpl']) !== true) {
             $data['content_view'] = 'manage/mailtemplatesedit_view';
 
-            return $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         }
 
         $nmsgenabled = $this->input->post('msgenabled');
@@ -144,7 +144,7 @@ class Mailtemplates extends MY_Controller
         try {
             $this->em->flush();
             $data['content_view'] = 'manage/mailtemplateseditsuccess_view';
-            $this->load->view('page', $data);
+            $this->load->view(MY_Controller::$page, $data);
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
             show_error(500, 'Internal server error');
@@ -177,7 +177,7 @@ class Mailtemplates extends MY_Controller
             array('url' => '#', 'name' => lang('rr_administration'), 'type' => 'unavailable'),
             array('url' => base_url('manage/mailtemplates/showlist'), 'name' => lang('title_mailtemplates'), 'type' => 'current'),
         );
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
 }

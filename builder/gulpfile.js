@@ -37,7 +37,8 @@ gulp.task('concat', function () {
     .pipe(addsrc.append('bower_components/foundation/js/foundation.js'))
     .pipe(addsrc.append('bower_components/Chart.js/Chart.js'))
     .pipe(addsrc.append('bower_components/select2/dist/js/select2.js'))
-    .pipe(addsrc.append('src/js/datatables.js'))
+    .pipe(addsrc.append('src/js/dataTables/datatables.js'))
+    .pipe(addsrc.append('src/js/dataTables/dataTables.foundation.js'))
     .pipe(concat('thirdpartylibs.min.js',{newLine: '\r\n'}))
     .pipe(uglify())
     .pipe(gulp.dest('build/minified/'));

@@ -1,37 +1,39 @@
 <?php
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
-if (!defined('BASEPATH')) exit('No direct script access allowed');
-
+/**
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2016, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
+ */
 class Spage extends MY_Controller
 {
 
     protected $isEnabled;
 
-    function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $this->load->helper('form');
-        $this->load->library(array('form_validation','table'));
+        $this->load->library(array('form_validation', 'table'));
         $t = $this->config->item('pageeditor');
         $this->isEnabled = TRUE;
-        if ($t === FALSE)
-        {
-           $this->isEnabled = FALSE;
+        if ($t === false) {
+            $this->isEnabled = FALSE;
         }
         MY_Controller::$menuactive = 'admins';
     }
 
-    public function showall()
-    {
-        if (!$this->jauth->isLoggedIn())
-        {
+    public function showall() {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $isAdmin = $this->jauth->isAdministrator();
-        if (!$isAdmin)
-        {
+        if (!$isAdmin) {
             show_error('Permission denied', 403);
-            return;
         }
         $data['addbtn'] = $this->isEnabled;
         $articles = $this->em->getRepository("models\Staticpage")->findAll();
@@ -41,145 +43,108 @@ class Spage extends MY_Controller
         $data['titlepage'] = lang('title_listspages');
         $data['rowsHeading'] = array(lang('rr_title'), lang('rr_category'), lang('rr_enabled'), lang('lbl_spageanonaccess'), lang('rr_pagecode'), '');
         $frontpage = false;
-        foreach ($articles as $a)
-        {
-            if ($a->getPublic())
-            {
+        foreach ($articles as $a) {
+            if ($a->getPublic()) {
                 $p = $yes;
-            }
-            else
-            {
+            } else {
                 $p = $no;
             }
-            if ($a->getEnabled())
-            {
+            if ($a->getEnabled()) {
                 $e = $yes;
-            }
-            else
-            {
+            } else {
                 $e = $no;
             }
-            if ($this->isEnabled)
-            {
+            if ($this->isEnabled) {
                 $editlink = '<a href="' . base_url() . 'manage/spage/editarticle/' . $a->getName() . '" ><span class="fi-pencil"></span></a>';
-            }
-            else
-            {
+            } else {
                 $editlink = '';
             }
             $code = $a->getName();
-            if(strcasecmp($code, 'front_page')==0)
-            {
+            if (strcasecmp($code, 'front_page') == 0) {
                 $frontpage = true;
             }
             $stitle = $a->getTitle();
-            if(empty($stitle))
-            {
+            if (empty($stitle)) {
                 $stitle = lang('rr_notitle');
             }
             $rows[] = array(
-                '<a href="'.base_url().'p/page/'.$a->getName().'">'.$stitle.'</a>', $a->getCategory(), $e, $p, $a->getName(), $editlink
+                '<a href="' . base_url() . 'p/page/' . $a->getName() . '">' . $stitle . '</a>', $a->getCategory(), $e, $p, $a->getName(), $editlink
             );
         }
-        $data['rows'] = &$rows;     
-        if(!$frontpage)
-        {
+        $data['rows'] = &$rows;
+        if (!$frontpage) {
             $data['msg1'] = lang('missingfrontpage');
-            $data['msg2'] = lang('createpcode');    
+            $data['msg2'] = lang('createpcode');
         }
+        $data['breadcrumbs'] = array(
+            array('url' => base_url(), 'name' => lang('rr_administration'), 'type' => 'unavailable'),
+            array('url' => base_url('#'), 'name' => lang('rr_articlesmngmt'), 'type' => 'current'),
+        );
         $data['content_view'] = 'manage/spageshowall_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
-    public function editArticle($pcode)
-    {
+    public function editArticle($pcode) {
         $pcode = trim($pcode);
         $loggedin = $this->jauth->isLoggedIn();
-        if (!$loggedin)
-        {
+        if (!$loggedin) {
             redirect('auth/login', 'location');
         }
         $isAdmin = $this->jauth->isAdministrator();
-        if (!$isAdmin)
-        {
+        if (!$isAdmin) {
             show_error('Permission denied', 403);
-            return;
         }
-        if (!$this->isEnabled)
-        {
+        if (!$this->isEnabled) {
             show_error('Feature is not enabled', 403);
-            return;
         }
         $newArticle = false;
-        if (strcmp($pcode, 'new') != 0)
-        {
+        if (strcmp($pcode, 'new') != 0) {
             $article = $this->em->getRepository("models\Staticpage")->findOneBy(array('pcode' => $pcode));
-            if (empty($article))
-            {
+            if (empty($article)) {
                 show_error('Not found', 404);
-                return;
             }
-        }
-        else
-        {
+        } else {
             $newArticle = true;
         }
 
-        if ($this->submitValidate($pcode))
-        {
-            if ($newArticle)
-            {
+        if ($this->submitValidate($pcode)) {
+            if ($newArticle) {
                 $article = new models\Staticpage;
                 $article->setName($this->input->post('acode'));
             }
-            $content = strip_tags($this->input->post('acontent'),'<p><img><a><b><i><strong><table><tbody><th><tr><td><h1><h2><h3><h4><h5><h6><em><s><ol><ul><li><blockquote><pre><hr><div><span><br>');
+            $content = strip_tags($this->input->post('acontent'), '<p><img><a><b><i><strong><table><tbody><th><tr><td><h1><h2><h3><h4><h5><h6><em><s><ol><ul><li><blockquote><pre><hr><div><span><br>');
             $contentTitle = $this->input->post('atitle');
             $isEnabled = $this->input->post('aenabled');
             $category = $this->input->post('acategory');
-            if (!empty($isEnabled) && strcmp($isEnabled, '1') == 0)
-            {
+            if (!empty($isEnabled) && strcmp($isEnabled, '1') == 0) {
                 $article->setEnabled(true);
-            }
-            else
-            {
+            } else {
                 $article->setEnabled(false);
             }
             $isPublic = $this->input->post('apublic');
-            if (!empty($isPublic) && strcmp($isPublic, '1') == 0)
-            {
+            if (!empty($isPublic) && strcmp($isPublic, '1') == 0) {
                 $article->setPublic(true);
-            }
-            else
-            {
+            } else {
                 $article->setPublic(false);
             }
             $article->setCategory($category);
             $article->setContent($content);
             $article->setTitle($contentTitle);
             $this->em->persist($article);
-            try
-            {
-                if ($newArticle)
-                {
+            try {
+                if ($newArticle) {
                     $data['successmsg'] = 'Page ' . $pcode . ' has been created';
-                }
-                else
-                {
+                } else {
                     $data['successmsg'] = 'Page ' . $pcode . ' has been updated';
                 }
                 $data['content_view'] = 'manage/spageedit_success_view';
                 $this->em->flush();
-                $this->load->view('page', $data);
-                return;
-            }
-            catch (Exception $e)
-            {
+                return $this->load->view(MY_Controller::$page, $data);
+            } catch (Exception $e) {
                 show_error('Error', 500);
-                return;
             }
         }
-        if ($newArticle)
-        {
+        if ($newArticle) {
             $data['newarticle'] = true;
             $data['titlecontent'] = '';
             $data['category'] = '';
@@ -188,8 +153,7 @@ class Spage extends MY_Controller
         }
 
         $data['textcontent'] = '';
-        if (!empty($article))
-        {
+        if (!empty($article)) {
             $data['textcontent'] = $article->getContent();
             $data['titlecontent'] = $article->getTitle();
             $data['category'] = $article->getCategory();
@@ -197,7 +161,7 @@ class Spage extends MY_Controller
             $data['public'] = $article->getPublic();
         }
         $data['attrname'] = 'acontent';
-        $data['jsAddittionalFiles'][] = '//cdn.ckeditor.com/4.4.4/full/ckeditor.js';
+        $data['jsAddittionalFiles'][] = '//cdn.ckeditor.com/4.5.8/full/ckeditor.js';
         $data['rawJs'][] = "
 
 CKEDITOR.replace('acontent',{
@@ -205,16 +169,18 @@ CKEDITOR.replace('acontent',{
  removePlugins: 'forms',
 
 } );";
-
+        $data['breadcrumbs'] = array(
+            array('url' => base_url(), 'name' => lang('rr_administration'), 'type' => 'unavailable'),
+            array('url' => base_url('manage/spage/showall'), 'name' => lang('rr_articlesmngmt')),
+            array('url' => base_url('#'), 'name' => lang('rr_edit'), 'type' => 'current')
+        );
         $data['content_view'] = 'manage/spageedit_view';
 
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
-    private function submitValidate($pcode)
-    {
-        if (strcmp($pcode, 'new') == 0)
-        {
+    private function submitValidate($pcode) {
+        if (strcmp($pcode, 'new') == 0) {
             $this->form_validation->set_rules('acode', 'Article code', 'required|trim|xss_clean|min_length[1]|max_length[25]|no_white_spaces|spage_unique');
         }
         $this->form_validation->set_rules('acontent', 'contenti', 'required|trim|min_length[1]');

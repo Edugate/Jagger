@@ -1,6 +1,7 @@
 <?php
-
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 /**
  * ResourceRegistry3
  *
@@ -20,8 +21,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Translator extends MY_Controller
 {
 
-    function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
@@ -34,27 +34,26 @@ class Translator extends MY_Controller
         $this->title = lang('title_translator');
     }
 
-    private function _submit_validate($inputs)
-    {
+    private function _submit_validate($inputs) {
         foreach ($inputs as $val) {
             $this->form_validation->set_rules('lang[' . $val . ']', 'input "' . $val . '"', 'required|trim');
         }
+
         return $this->form_validation->run();
     }
 
-    private function checkPermission($langto)
-    {
+    private function checkPermission($langto) {
         $username = $this->jauth->getLoggedinUsername();
         $translator = $this->config->item('translator_access');
         if (!empty($translator) && is_array($translator) && isset($translator[$langto]) && strcasecmp($translator[$langto], $username) == 0) {
             return true;
         }
         log_message('warning', __METHOD__ . ' no acccess to translate to lang:' . $langto . '. Possible reason: no entry in config file: translator_access[' . $langto . '][' . $username . ']');
+
         return false;
     }
 
-    public function tolanguage($l)
-    {
+    public function tolanguage($l) {
 
         $this->lang->is_loaded = array();
         $this->lang->language = array();
@@ -80,6 +79,7 @@ class Translator extends MY_Controller
         $isAccess = $this->checkPermission($langto);
         if (!$isAccess) {
             show_error('No access', 403);
+
             return;
         }
         $this->lang->load('rr', $langto);
@@ -93,7 +93,7 @@ class Translator extends MY_Controller
         }
 
 
-        if ($this->_submit_validate($inputs) === TRUE) {
+        if ($this->_submit_validate($inputs) === true) {
             $lang = $this->input->post('lang');
             $output = '<?php ' . PHP_EOL;
             $y = '';
@@ -107,25 +107,26 @@ class Translator extends MY_Controller
             } else {
                 echo 'File written!';
             }
+
             return;
         }
 
 
         $data = array(
-            'merger' => $merger,
-            'subtitlepage' => 'en <i class="fi-arrow-right"></i> ' . html_escape($langto),
-            'titlepage' => 'Translator',
-            'breadcrumbs' => array(
+            'merger'        => $merger,
+            'subtitlepage'  => 'en <i class="fi-arrow-right"></i> ' . html_escape($langto),
+            'titlepage'     => 'Translator',
+            'breadcrumbs'   => array(
                 array('url' => '#', 'name' => lang('rr_administration'), 'type' => 'unavailable'),
                 array('url' => '#', 'name' => 'Translation: from en to ' . html_escape($langto), 'type' => 'current'),
             ),
-            'content_view' => 'manage/translator_view',
+            'content_view'  => 'manage/translator_view',
             'error_message' => validation_errors('<div>', '</div>'),
-            'syswarning'=>$syswarning,
+            'syswarning'    => $syswarning,
         );
 
 
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
 }

@@ -47,8 +47,7 @@ class Attrrequirement extends MY_Controller
         if (!$hasWriteAccess) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_noperm_mngtattrforfed') . ': ' . $fed->getName();
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view(MY_Controller::$page, $data);
         }
         log_message('debug', 'preparing for federation: ' . $fed->getName());
 
@@ -84,7 +83,7 @@ class Attrrequirement extends MY_Controller
         $data['titlepage'] = lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . $data['fed_encoded'] . '">' . $data['fed_name'] . '</a>';
         $data['subtitlepage'] = lang('rr_requiredattributes');
         $data['head'] = lang('rr_attributerequirements') . ': ' . $fed->getName();
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
 
@@ -135,7 +134,7 @@ class Attrrequirement extends MY_Controller
 
         if (!$hasWriteAccess) {
             $data = array('content_view' => 'nopermission', 'error' => '' . lang('rr_noperm_mngtattrforfed') . ': ' . $f->getName() . '');
-            $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         }
         if ($attr && $status && in_array($action, array('Add', 'Modify', 'Remove'))) {
             if ($action === 'Add') {

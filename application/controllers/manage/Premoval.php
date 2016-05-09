@@ -74,12 +74,12 @@ class Premoval extends MY_Controller
         if ($isEnabled || !$rmaccess) {
             $data['error_message'] = lang('rr_noperm');
             $data['showform'] = false;
-            return $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         }
 
         if ($this->_submitValidate() !== true) {
             $data['showform'] = true;
-            return $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         }
 
 
@@ -87,7 +87,7 @@ class Premoval extends MY_Controller
         if ($entitytoremove !== $entityID) {
             $data['error_message'] = 'entityID you filled didn\'t match provider\'s entityID';
             $data['showform'] = true;
-            return $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         }
 
         $federations = $provider->getFederations();
@@ -107,7 +107,7 @@ class Premoval extends MY_Controller
         $this->em->flush();
         $data['success_message'] = lang('rr_provider') . ' ' . $data['entityid'] . ' ' . lang('rr_hasbeenremoved');
         $data['showform'] = false;
-        return $this->load->view('page', $data);
+        return $this->load->view(MY_Controller::$page, $data);
 
 
     }

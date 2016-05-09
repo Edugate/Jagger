@@ -32,7 +32,7 @@ class Awaitinglist extends MY_Controller
                 array('url' => '#', 'name' => lang('rr_listawaiting'), 'type' => 'current'),
             )
         );
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
 }
