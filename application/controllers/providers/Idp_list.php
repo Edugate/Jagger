@@ -39,7 +39,7 @@ class Idp_list extends MY_Controller
         if (!$hasReadAccess) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rerror_nopermtolistidps');
-            return $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         }
 
         $data['entitytype'] = 'idp';
@@ -49,7 +49,7 @@ class Idp_list extends MY_Controller
             array('url' => '#', 'name' => lang('identityproviders'), 'type' => 'current'),
         );
         $data['content_view'] = 'providers/idpListV2';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
 
     }
 

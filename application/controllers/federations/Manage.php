@@ -59,7 +59,7 @@ class Manage extends MY_Controller
                 array('url' => base_url('federations/manage'), 'name' => lang('rr_federations'), 'type' => 'current')
             ),
         );
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     private function getMembers(models\Federation $federation, $lang) {
@@ -293,7 +293,7 @@ class Manage extends MY_Controller
 
 
         if (!$access['hasReadAccess'] && ($federation->getPublic() === false)) {
-            return $this->load->view('page', array(
+            return $this->load->view(MY_Controller::$page, array(
                 'content_view' => 'nopermission',
                 'error'        => lang('rrerror_noperm_viewfed'),
                 'breadcrumbs'  => array(
@@ -431,7 +431,7 @@ class Manage extends MY_Controller
         $data['result']['fvalidators'] = array_merge($data['result']['fvalidators'], $this->genValidators($federation, $canEdit));
 
 
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     private function inviteSubmitValidate() {
@@ -526,7 +526,7 @@ class Manage extends MY_Controller
             'content_view' => 'federation/invite_provider_view',
         );
         $data = array_merge($data, $data2merge);
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     public function removeprovider($encodedFedName) {
@@ -647,7 +647,7 @@ class Manage extends MY_Controller
         }
         $data = array_merge($data, $data2merge);
 
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     /**

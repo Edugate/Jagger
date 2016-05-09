@@ -35,9 +35,10 @@ class Dashboard extends MY_Controller
         }
         if ($currentVersion < $targetVersion) {
             return false;
-        } else {
-            return true;
         }
+
+        return true;
+
     }
 
 
@@ -55,12 +56,13 @@ class Dashboard extends MY_Controller
         if ($frontpage !== null) {
             $data = array(
                 'pcontent' => jaggerTagsReplacer($frontpage->getContent()),
-                'ptitle' => $frontpage->getTitle(),
+                'ptitle'   => $frontpage->getTitle(),
             );
             $this->title = $frontpage->getTitle();
         }
         $data['content_view'] = 'staticpages_view';
-        return $this->load->view('page', $data);
+
+        return $this->load->view(MY_Controller::$page, $data);
     }
 
     public function index() {
@@ -88,7 +90,8 @@ class Dashboard extends MY_Controller
             $this->title = lang('title_accessdenied');
             $data['error'] = lang('rerror_nopermviewpage');
             $data['content_view'] = 'nopermission';
-            return $this->load->view('page', $data);
+
+            return $this->load->view(MY_Controller::$page, $data);
         }
         if ($this->jauth->isAdministrator()) {
             $isnotified = $this->session->userdata('alertnotified');
@@ -109,15 +112,15 @@ class Dashboard extends MY_Controller
 
         $bookmarList = $this->genBookmarkList();
         $data2 = array(
-            'idp' => $bookmarList['idp'],
-            'sp' => $bookmarList['sp'],
-            'feds' => $bookmarList['feds'],
-            'titlepage' => lang('quick_access'),
+            'idp'          => $bookmarList['idp'],
+            'sp'           => $bookmarList['sp'],
+            'feds'         => $bookmarList['feds'],
+            'titlepage'    => lang('quick_access'),
             'content_view' => 'default_body'
         );
         $data = array_merge($data, $data2);
 
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
 
     }
 
@@ -131,12 +134,12 @@ class Dashboard extends MY_Controller
             $userObj = $this->em->getRepository("models\User")->findOneBy(array('username' => $curUser));
             $board = $userObj->getBookmarks();
         }
-        $result = array('idp'=>array(),'sp'=>array(),'feds'=>array());
+        $result = array('idp' => array(), 'sp' => array(), 'feds' => array());
         $feds = array();
         $baseurl = base_url();
-        foreach(array('idp','sp') as $part){
+        foreach (array('idp', 'sp') as $part) {
             if (array_key_exists($part, $board) && is_array($board[$part])) {
-                foreach ($board[''.$part.''] as $key => $value) {
+                foreach ($board['' . $part . ''] as $key => $value) {
                     $result[$part][$key] = '<a href="' . $baseurl . 'providers/detail/show/' . $key . '">' . $value['name'] . '</a><br /> <small>' . $value['entity'] . '</small>';
                 }
             }

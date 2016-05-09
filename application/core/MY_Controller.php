@@ -58,6 +58,7 @@ class MY_Controller extends CI_Controller
     public static $langselect = array();
     public static $menuactive;
     protected static $currLang = 'en';
+    protected static $page = 'page';
     private static $langs;
     public $title;
     public $globalerrors = array();
@@ -86,6 +87,10 @@ class MY_Controller extends CI_Controller
             'pt' => array('path' => 'pt', 'val' => 'português'),
             'sr' => array('path' => 'sr', 'val' => 'srpski')
         );
+        $altPage = $this->config->item('landpage');
+        if($altPage !== null){
+            self::$page = $altPage;
+        }
         /**
          * @var null|array $additionalLangs
          */

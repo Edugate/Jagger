@@ -1,6 +1,7 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 /**
  * ResourceRegistry3
  * 
@@ -23,7 +24,7 @@ class Setup extends MY_Controller {
     protected $em;
     protected $member_role;
 
-    function __construct() {
+    public function __construct() {
         parent::__construct();
         $this->em = $this->doctrine->em;
         
@@ -43,7 +44,7 @@ class Setup extends MY_Controller {
         $data['titlepage'] = 'JAGGER (Federation management tool) Setup'; 
         $this->load->helper('form');
         $data['content_view'] = 'setup_view';
-        $this->load->view('page',$data);
+        $this->load->view(MY_Controller::$page,$data);
     }
     private function _submit_validate()
     {
@@ -79,7 +80,7 @@ class Setup extends MY_Controller {
         $this->em->flush();
         $data['content_view'] = 'setup_view';
         $data['message'] = 'Done! Don\'t forget to disable "setup allowed" in config file';
-        $this->load->view('page',$data);
+        $this->load->view(MY_Controller::$page,$data);
         }
         else
         {

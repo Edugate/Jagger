@@ -264,7 +264,7 @@ class Auth extends MY_Controller
         $this->data['title'] = lang('authn_form');
         $this->data['showloginform'] = true;
         $this->data['content_view'] = 'auth/empty_view';
-        $this->load->view('page', $this->data);
+        $this->load->view(MY_Controller::$page, $this->data);
 
     }
 
@@ -530,7 +530,7 @@ class Auth extends MY_Controller
                 $this->session->set_userdata(array('fedidentity' => $fedidentity));
                 $data['content_view'] = 'feduserregister_view';
 
-                return $this->load->view('page', $data);
+                return $this->load->view(MY_Controller::$page, $data);
             } else {
 
                 $attrs = array('username' => $userValue, 'mail' => $emailVarName, 'fname' => $fnameVarName, 'sname' => $snameVarName);

@@ -15,7 +15,7 @@ class Spage extends MY_Controller
 
     protected $isEnabled;
 
-    function __construct() {
+    public function __construct() {
         parent::__construct();
         $this->load->helper('form');
         $this->load->library(array('form_validation', 'table'));
@@ -81,7 +81,7 @@ class Spage extends MY_Controller
             array('url' => base_url('#'), 'name' => lang('rr_articlesmngmt'), 'type' => 'current'),
         );
         $data['content_view'] = 'manage/spageshowall_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     public function editArticle($pcode) {
@@ -139,7 +139,7 @@ class Spage extends MY_Controller
                 }
                 $data['content_view'] = 'manage/spageedit_success_view';
                 $this->em->flush();
-                return $this->load->view('page', $data);
+                return $this->load->view(MY_Controller::$page, $data);
             } catch (Exception $e) {
                 show_error('Error', 500);
             }
@@ -176,7 +176,7 @@ CKEDITOR.replace('acontent',{
         );
         $data['content_view'] = 'manage/spageedit_view';
 
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     private function submitValidate($pcode) {

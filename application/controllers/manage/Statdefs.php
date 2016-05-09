@@ -197,7 +197,7 @@ class Statdefs extends MY_Controller
             $data['content_view'] = 'manage/statdef_detail.php';
 
         }
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
 
     }
 
@@ -436,7 +436,7 @@ class Statdefs extends MY_Controller
 
 
         if ($this->newStatDefSubmitValidate() !== true) {
-            return $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         }
         $this->updateStatDefinition($provider, $statDefinition);
         $this->em->persist($statDefinition);
@@ -444,7 +444,7 @@ class Statdefs extends MY_Controller
         $data['message'] = lang('updated');
         $data['providerid'] = $provider->getId();
         $data['content_view'] = 'manage/updatestatdefsuccess';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
 
     }
 
@@ -559,7 +559,7 @@ class Statdefs extends MY_Controller
         $data['workersdescriptions'] = $workersdescriptions;
 
         if ($this->newStatDefSubmitValidate() !== true) {
-            return $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         }
         $nStatDef = new models\ProviderStatsDef;
         $this->updateStatDefinition($provider,$nStatDef);
@@ -568,7 +568,7 @@ class Statdefs extends MY_Controller
         $this->em->flush();
         $data['content_view'] = 'manage/newstatdefsuccess';
         $data['message'] = lang('stadefadded');
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
 
 
     }

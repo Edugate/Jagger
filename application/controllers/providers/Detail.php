@@ -171,7 +171,7 @@ class Detail extends MY_Controller
         if (!$hasReadAccess) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_nospaccess');
-            return $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         }
 
         $data = $this->providerdetails->generateForControllerProvidersDetail();
@@ -196,7 +196,7 @@ class Detail extends MY_Controller
             array('url' => '#', 'name' => '' . $data['name'] . '', 'type' => 'current'),
 
         );
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     public function showmembers($providerid) {

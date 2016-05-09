@@ -1,7 +1,7 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 /**
  * ResourceRegistry3
  * 
@@ -275,7 +275,7 @@ class Fvalidatoredit extends MY_Controller {
                 $data['successMsg'] = lang('fvalidupdatesuccess');
             }
 
-            $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         } elseif (!empty($postAction) && strcmp($postAction, 'remove') == 0 && !empty($fvalidator))
         {
             $data['successMsg'] = 'Validator removed';
@@ -285,7 +285,7 @@ class Fvalidatoredit extends MY_Controller {
             $data['content_view'] = 'manage/fvalidator_edit_success';
             $data['titlepage'] = lang('rr_federation').': '.anchor($data['federationlink'],$data['federationname']);
             $data['subtitlepage'] = lang('title_fedvalidator');
-            $this->load->view('page', $data);
+            $this->load->view(MY_Controller::$page, $data);
         } else
         {
             if (!empty($fvalidator))
@@ -324,7 +324,7 @@ class Fvalidatoredit extends MY_Controller {
             $data['content_view'] = 'manage/fvalidator_edit_view';
             $data['titlepage'] = lang('rr_federation').': '.anchor($data['federationlink'],$data['federationname']);
             $data['subtitlepage'] = lang('title_fedvalidator');
-            $this->load->view('page', $data);
+            $this->load->view(MY_Controller::$page, $data);
         }
     }
 

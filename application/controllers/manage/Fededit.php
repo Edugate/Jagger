@@ -1,7 +1,7 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 /**
  * ResourceRegistry3
  *
@@ -22,8 +22,7 @@ class Fededit extends MY_Controller
 {
     public $fedid;
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
@@ -36,8 +35,7 @@ class Fededit extends MY_Controller
         MY_Controller::$menuactive = 'fed';
     }
 
-    private function _submit_validate()
-    {
+    private function _submit_validate() {
         $fedid = null;
         if (!empty($this->fedid)) {
             $fedid = $this->fedid;
@@ -53,7 +51,7 @@ class Fededit extends MY_Controller
         $this->form_validation->set_rules('ispublic', lang('rr_isfedpublic'), 'strip_tags|trim|max_length[10]');
         $this->form_validation->set_rules('lexport', lang('rr_lexport_enabled'), 'strip_tags|trim|max_length[10]');
         $this->form_validation->set_rules('publisher', lang('rr_fed_publisher'), 'strip_tags|trim|max_length[500]');
-        $this->form_validation->set_rules('publisherexport', lang('rr_fed_publisher').' export', 'strip_tags|trim|max_length[500]');
+        $this->form_validation->set_rules('publisherexport', lang('rr_fed_publisher') . ' export', 'strip_tags|trim|max_length[500]');
         $this->form_validation->set_rules('digestmethod', lang('digestmethodsign'), 'trim|matches_inarray[' . serialize($allowedDigests) . ']');
         $this->form_validation->set_rules('digestmethodext', lang('digestmethodexportsign'), 'trim|matches_inarray[' . serialize($allowedDigests) . ']');
         $this->form_validation->set_rules('usealtmeta', lang('metaalturlinput') . ' radio', 'strip_tags|trim|required');
@@ -65,8 +63,7 @@ class Fededit extends MY_Controller
         return $this->form_validation->run();
     }
 
-    public function show($fedid)
-    {
+    public function show($fedid) {
         if (!ctype_digit($fedid)) {
             show_error(lang('wrongarggiven'), 403);
         }
@@ -114,9 +111,9 @@ class Fededit extends MY_Controller
                 show_error('Incorrect post', 403);
             }
             if (!empty($usealtmeta) && strcasecmp($usealtmeta, 'ext') == 0) {
-                $fed->setAltMetaUrlEnabled(TRUE);
+                $fed->setAltMetaUrlEnabled(true);
             } else {
-                $fed->setAltMetaUrlEnabled(FALSE);
+                $fed->setAltMetaUrlEnabled(false);
             }
 
             $fed->setDescriptorId($descid);
@@ -131,10 +128,10 @@ class Fededit extends MY_Controller
             }
 
             if ($lexport === 'accept') {
-                $fed->setLocalExport(TRUE);
+                $fed->setLocalExport(true);
 
             } elseif (empty($lexport)) {
-                $fed->setLocalExport(FALSE);
+                $fed->setLocalExport(false);
             }
             $fed->setPublisher($publisher);
             $fed->setPublisherExport($publisherexport);
@@ -179,7 +176,7 @@ class Fededit extends MY_Controller
         }
         $data['subtitlepage'] = lang('rr_fededitform') . '';
         $data['content_view'] = 'manage/fededit_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
 
     }
 

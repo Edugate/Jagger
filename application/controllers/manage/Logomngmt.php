@@ -1,6 +1,7 @@
 <?php
-
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 /**
  * Jagger
  *
@@ -383,7 +384,7 @@ class Logomngmt extends MY_Controller
         $data['provider_detail']['id'] = $provider->getId();
         $data['provider_detail']['entityid'] = $provider->getEntityId();
         $data['provider_detail']['type'] = $type;
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
 }

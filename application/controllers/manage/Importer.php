@@ -66,7 +66,7 @@ class Importer extends MY_Controller
                 'types' => array('' => lang('rr_pleaseselect'), 'idp' => lang('identityproviders'), 'sp' => lang('serviceproviders'), 'all' => lang('allentities')),
             );
         }
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     public function submit()
@@ -196,7 +196,7 @@ class Importer extends MY_Controller
                 $data['success_details'] = $this->globalnotices['metadataimportmessage'];
             }
             $data['content_view'] = 'manage/import_metadata_success_view';
-            return $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         } else {
             return $this->index();
         }
@@ -246,7 +246,7 @@ class Importer extends MY_Controller
         $this->xmlbody = $this->curl->simple_get('' . $metadataurl . '', array(), $curloptions);
         if (empty($this->xmlbody)) {
             $this->otherErrors[] = $this->curl->error_string;
-            return FALSE;
+            return false;
         }
         libxml_use_internal_errors(true);
         $this->xmlDOM = new \DOMDocument();

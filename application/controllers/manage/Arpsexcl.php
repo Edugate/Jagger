@@ -1,6 +1,7 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 /**
  * ResourceRegistry3
  *
@@ -64,7 +65,7 @@ class Arpsexcl extends MY_Controller
                 ),
             );
 
-            return $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         }
         $isLocal = $idp->getLocal();
         if (!$isLocal) {
@@ -77,7 +78,7 @@ class Arpsexcl extends MY_Controller
                 array('url' => '#', 'name' => lang('rr_arpexcl1'), 'type' => 'current'),
 
             );
-            return $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         }
         if ($this->_submit_validate() === true) {
             $excarray = $this->input->post('exc');
@@ -123,7 +124,7 @@ class Arpsexcl extends MY_Controller
             )
         );
 
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
 
     }
 

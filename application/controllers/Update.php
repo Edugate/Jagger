@@ -1,9 +1,10 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 class Update extends MY_Controller {
-    function __construct()
+    public function __construct()
     {
        parent::__construct();
        $loggedin = $this->jauth->isLoggedIn();
@@ -17,11 +18,11 @@ class Update extends MY_Controller {
 
     }
 
-    function upgrade()
+    public function upgrade()
     {
         $data['error'] = anchor(base_url().'smanage/reports','Go to new location');
         $data['content_view'] = 'nopermission';
-        $this->load->view('page',$data);
+        $this->load->view(MY_Controller::$page,$data);
     }
        
 }

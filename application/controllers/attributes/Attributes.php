@@ -76,7 +76,7 @@ class Attributes extends MY_Controller
             $data['content_view'] = 'attribute_add_view';
 
         }
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     public function show() {
@@ -106,7 +106,7 @@ class Attributes extends MY_Controller
         );
         $data['attributes'] = $dataRows;
         $data['content_view'] = 'attribute_list_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
 }

@@ -64,7 +64,7 @@ class Metadatalocations extends MY_Controller {
             'sarray' => $sarray,
             'content_view' => 'metadatalocations_view'
         );
-        $this->load->view('page',$data);
+        $this->load->view(MY_Controller::$page,$data);
 
     }
 }

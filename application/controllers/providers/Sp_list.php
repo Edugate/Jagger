@@ -40,8 +40,8 @@ class Sp_list extends MY_Controller
         if (!$has_read_access) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rerror_nopermtolistidps');
-            $this->load->view('page', $data);
-            return;
+            return $this->load->view(MY_Controller::$page, $data);
+
         }
 
         $data['entitytype'] = 'sp';
@@ -53,7 +53,7 @@ class Sp_list extends MY_Controller
         );
 
         $data['content_view'] = 'providers/spListV2';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
 
     }
 

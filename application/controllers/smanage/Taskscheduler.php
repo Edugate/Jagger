@@ -149,7 +149,7 @@ class Taskscheduler extends MY_Controller
 
             $data['content_view'] = 'smanage/taskupdatesuccess_view';
 
-            $this->load->view('page', $data);
+            $this->load->view(MY_Controller::$page, $data);
 
 
         } else {
@@ -184,7 +184,7 @@ class Taskscheduler extends MY_Controller
             array('url' => base_url('smanage/taskscheduler/tasklist'), 'name' => lang('tasks_menulink')),
             array('url' => '#', 'name' => $title, 'type' => 'current')
         );
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
 
     }
 
@@ -193,15 +193,13 @@ class Taskscheduler extends MY_Controller
         $featureEnabled = $this->config->item('featenable');
         if (!isset($featureEnabled['tasks']) || $featureEnabled['tasks'] !== TRUE) {
             show_error('Feature is not enabled', 403);
-            return;
         } else {
             if (!$this->jauth->isLoggedIn()) {
                 redirect('auth/login', 'location');
                 return;
             }
             if (!$this->jauth->isAdministrator()) {
-                show_error('no permission', 403);
-                return;
+                show_error('no permission', 403);;
             }
         }
         $this->title = lang('title_tasks');
@@ -267,7 +265,7 @@ class Taskscheduler extends MY_Controller
             'content_view' => 'smanage/tasklist_view',
         );
 
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
 
 
     }

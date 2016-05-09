@@ -300,7 +300,7 @@ class Users extends MY_Controller
         $isAdmin = $this->jauth->isAdministrator();
         $hasReadAccess = $this->zacl->check_acl('u_' . $user->getId(), 'read', 'user', '');
         if (!($hasReadAccess || $isOwner)) {
-            return $this->load->view('page', array('error' => lang('error403'), 'content_view' => 'nopermission'));
+            return $this->load->view(MY_Controller::$page, array('error' => lang('error403'), 'content_view' => 'nopermission'));
         }
         $accessListUsers = $this->zacl->check_acl('', 'read', 'user', '');
 
@@ -364,7 +364,7 @@ class Users extends MY_Controller
             $data['sideicons'][] = '<a href="' . base_url('manage/userprofile/edit') . '"><i class="fi-pencil"></i></a>';
         }
 
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
 
@@ -377,7 +377,7 @@ class Users extends MY_Controller
         if (!$access) {
             $data['error'] = lang('error403');
             $data['content_view'] = 'nopermission';
-            $this->load->view('page', $data);
+            $this->load->view(MY_Controller::$page, $data);
 
             return;
         }
@@ -418,7 +418,7 @@ class Users extends MY_Controller
             'userlist'     => $usersList,
             'content_view' => 'manage/userlist_view'
         );
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     private function removeSubmitValidate() {

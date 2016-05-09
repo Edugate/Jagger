@@ -1,7 +1,7 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 /**
  * ResourceRegistry3
  * 
@@ -69,7 +69,7 @@ class Fedcategory extends MY_Controller {
                 $this->em->flush();
                 $data['content_view'] = 'manage/fedcatnew_success';
                 $data['success_message'] = lang('newfedcatadded');
-                $this->load->view('page',$data);
+                $this->load->view(MY_Controller::$page,$data);
                 
             }
         }
@@ -77,7 +77,7 @@ class Fedcategory extends MY_Controller {
         {
            $data['titlepage'] = lang('newfedcategory');
            $data['content_view'] = 'manage/fedcatnew_view';
-           $this->load->view('page',$data);
+           $this->load->view(MY_Controller::$page,$data);
 
         }
  
@@ -157,7 +157,7 @@ class Fedcategory extends MY_Controller {
                 $this->em->flush();
                 $data['success_message'] = 'Federation category has been removed';
                 $data['content_view'] = 'manage/fedcatremoved_view';
-                return $this->load->view('page',$data);
+                return $this->load->view(MY_Controller::$page,$data);
             }
         }
 
@@ -182,7 +182,7 @@ class Fedcategory extends MY_Controller {
 
         $data['multi'] = $mult;
         $data['content_view'] = 'manage/fedcatedit_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     public function show($cat = NULL)
@@ -232,7 +232,7 @@ class Fedcategory extends MY_Controller {
         $data['titlepage'] = lang('rrfedcatslist');
         $data['result'] = $result;
         $data['content_view'] = 'manage/fedcategory_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
 }

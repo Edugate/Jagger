@@ -60,11 +60,11 @@ class Oidcauth extends MY_Controller
             $this->checkGlobal();
         } catch (Exception $e) {
             $error_message = $e->getMessage();
-            return $this->load->view('page', array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
+            return $this->load->view(MY_Controller::$page, array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
         if ($this->jauth->isLoggedIn()) {
             $error_message = 'Already authenticated';
-            return $this->load->view('page', array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
+            return $this->load->view(MY_Controller::$page, array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
 
         $sessIssuer = $this->session->userdata('joidc_issuer');
@@ -87,12 +87,12 @@ class Oidcauth extends MY_Controller
             $claims = $client->authenticate();
         } catch (Exception $e) {
             $error_message = $e->getMessage();
-            return $this->load->view('page', array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
+            return $this->load->view(MY_Controller::$page, array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
 
         if (!isset($claims['sub'])) {
             $error_message = 'Missing required claim "sub" from Authorization Server';
-            return $this->load->view('page', array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
+            return $this->load->view(MY_Controller::$page, array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
         log_message('debug','CLAIMS: '.serialize($claims));
         $username = (string)$claims['sub'] . '@' . $claims['iss'];
@@ -187,7 +187,7 @@ class Oidcauth extends MY_Controller
                 $fedidentity = array('fedusername' => $username, 'fedfname' => $fname, 'fedsname' => $sname, 'fedemail' => $email);
                 $this->session->set_userdata(array('fedidentity' => $fedidentity));
                 $data['content_view'] = 'feduserregister_view';
-                return $this->load->view('page', $data);
+                return $this->load->view(MY_Controller::$page, $data);
             } else {
 
                 $attrs = array('username' => $username, 'mail' => $email, 'fname' => $fname, 'sname' => $sname);

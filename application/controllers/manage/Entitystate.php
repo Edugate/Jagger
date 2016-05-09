@@ -89,13 +89,14 @@ class Entitystate extends MY_Controller
 
         try {
             $this->em->flush();
-            return $this->output->set_content_type('application/json')->set_output(json_encode(array('message' => lang('membershibupdated') . '. ' . lang('needrefreshpage'))));
+
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
+            return $this->output->set_status_header(500)->set_output('unkwonn problem');
         }
+        return $this->output->set_content_type('application/json')->set_output(json_encode(array('message' => lang('membershibupdated') . '. ' . lang('needrefreshpage'))));
 
 
-        return $this->output->set_status_header(500)->set_output('unkwonn problem');
     }
 
     private function _submit_validate() {
@@ -164,7 +165,7 @@ class Entitystate extends MY_Controller
         if (!$_POST) {
             $data['r'] = $this->formelement->NgenerateRegistrationPolicies($this->entity);
             $data['content_view'] = 'manage/entityedit_regpolicies';
-            return $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         }
 
         $p = $this->input->post('entregpolform');
@@ -189,7 +190,7 @@ class Entitystate extends MY_Controller
                 } elseif (count($this->globalnotices) == 0) {
                     $this->globalnotices[] = lang('requestsentforapproval');
                 }
-                $this->load->view('page', $data);
+                $this->load->view(MY_Controller::$page, $data);
             } catch (Exception $e) {
                 log_message('error', __METHOD__ . ' ' . $e);
                 show_error('Internal server error', 500);
@@ -379,7 +380,7 @@ class Entitystate extends MY_Controller
         $data['current_validfromdate'] = $validfromdate;
         $data['current_validfromtime'] = $validfromtime;
         $data['content_view'] = 'manage/entitystate_form_view';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
 }

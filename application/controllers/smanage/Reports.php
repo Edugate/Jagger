@@ -39,7 +39,7 @@ class Reports extends MY_Controller
             array('url' => '#', 'name' => lang('rr_administration'), 'type' => 'unavailable'),
             array('url' => '#', 'name' => lang('title_sysreports'), 'type' => 'current'),
         );
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     public function expiredcerts($param = null) {

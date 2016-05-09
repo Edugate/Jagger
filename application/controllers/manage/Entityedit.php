@@ -795,7 +795,7 @@ class Entityedit extends MY_Controller
         if (!empty($showsuccess)) {
             $data['success_message'] = lang('updated');
             $data['content_view'] = 'manage/entityedit_success_view';
-            return $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
 
         }
         /**
@@ -823,7 +823,7 @@ class Entityedit extends MY_Controller
             array('url' => '#', 'name' => lang('rr_edit'), 'type' => 'current'),
 
         );
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     /**
@@ -1182,7 +1182,7 @@ class Entityedit extends MY_Controller
 
         $data['menutabs'] = $this->genTabs($ent, $entsession, true);
         $data['content_view'] = 'manage/entityedit_view.php';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     private function genTabs(\models\Provider $ent, $entsession, $register = false) {
@@ -1215,10 +1215,10 @@ class Entityedit extends MY_Controller
         return $tabs;
     }
 
-    function registersuccess() {
+    public function registersuccess() {
 
         $data['content_view'] = 'register_success';
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
 }

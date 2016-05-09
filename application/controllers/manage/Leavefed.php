@@ -1,6 +1,7 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 /**
  * ResourceRegistry3
  *
@@ -21,7 +22,7 @@ class Leavefed extends MY_Controller
 {
 
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $loggedin = $this->jauth->isLoggedIn();
@@ -136,12 +137,12 @@ class Leavefed extends MY_Controller
                     $data['error_message'] = 'Unknown error occured';
                 }
                 $data['content_view'] = 'manage/leavefederation_view';
-                return $this->load->view('page', $data);
+                return $this->load->view(MY_Controller::$page, $data);
 
             } else {
                 $data['error_message'] = lang('rr_youleftfed');
                 $data['content_view'] = 'manage/leavefederation_view';
-                return $this->load->view('page', $data);
+                return $this->load->view(MY_Controller::$page, $data);
 
 
             }
@@ -153,7 +154,7 @@ class Leavefed extends MY_Controller
                 $data['error_message'] = lang('cantleavefednonefound');
             }
             $data['content_view'] = 'manage/leavefederation_view';
-            $this->load->view('page', $data);
+            $this->load->view(MY_Controller::$page, $data);
 
         }
     }

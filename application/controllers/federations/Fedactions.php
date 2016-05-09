@@ -98,7 +98,7 @@ class Fedactions extends MY_Controller
         if (!$hasAddbulkAccess) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_noperm');
-            return $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         }
         $data['federation_name'] = $federation->getName();
         $data['federation_urn'] = $federation->getUrn();
@@ -138,7 +138,7 @@ class Fedactions extends MY_Controller
             array('url' => base_url('federations/manage/show/' . $data['fed_encoded'] . ''), 'name' => html_escape($federation->getName())),
             array('url' => base_url('#'), 'name' => $data['subtitlepage'], 'type' => 'current'),
         );
-        $this->load->view('page', $data);
+        $this->load->view(MY_Controller::$page, $data);
     }
 
     public function bulkaddsubmit() {
@@ -159,7 +159,7 @@ class Fedactions extends MY_Controller
         $hasAddbulkAccess = $this->zacl->check_acl('f_' . $federation->getId(), 'addbulk', 'federation', '');
         if (!$hasAddbulkAccess) {
             $data = array('content_view' => 'nopermission', 'error' => lang('rr_noperm'));
-            return $this->load->view('page', $data);
+            return $this->load->view(MY_Controller::$page, $data);
         }
         /**
          * @var models\Provider[] $existingMembers
