@@ -51,7 +51,13 @@ class Emailsender
          * @var $subscribers models\NotificationList[]
          */
         $subscribers = $this->em->getRepository("models\NotificationList")->findBy(
-            array('type' => $fnlNotiftypes, 'is_enabled' => true, 'is_approved' => true, 'notificationtype' => 'mail'));
+            array(
+                'type' => $fnlNotiftypes,
+                'is_enabled' => true,
+                'is_approved' => true,
+                'notificationtype' => 'mail'
+            )
+        );
 
         $alreadyMailTo = array();
 
@@ -60,7 +66,9 @@ class Emailsender
 
             if ($type === 'systemnotifications') {
                 $alreadyMailTo[] = $s->getRcpt();
-            } elseif ($type === 'joinfedreq') {
+                continue;
+            }
+            if ($type === 'joinfedreq') {
                 if (empty($obj)) {
                     continue;
                 }
@@ -177,7 +185,7 @@ class Emailsender
             if (!filter_var($mailto, FILTER_VALIDATE_EMAIL)) {
                 log_message('error', 'EMAIL ' . __METHOD__ . ' incorrect email found "' . $mailto . '" - please check subscription and user table for incorrect email');
             } else {
-                log_message('debug', 'EMAIL ' . __METHOD__ . ' preparing email for "' . $mailto . '"');
+                log_message('debug', 'EMAIL ' . __METHOD__ . ' prep mail for "' . $mailto . '"');
                 $m = new models\MailQueue();
                 $m->setSubject($subject);
                 $m->setBody($body);
@@ -315,7 +323,7 @@ class Emailsender
                 $body .= sprintf('= %s =' . PHP_EOL . '%s' . PHP_EOL, $k, $rows);
             }
 
-            $this->addToMailQueue('fedmembersmodified', $federations, 'Provider has been modified', $body, false);
+            $this->addToMailQueue('fedmembersmodified', $federations, 'Federation member has been modified', $body, false);
             $this->addToMailQueue('providermodified', $ent, 'Provider has been modified', $body, false);
         }
 
