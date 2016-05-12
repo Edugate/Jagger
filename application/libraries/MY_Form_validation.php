@@ -346,12 +346,12 @@ class MY_form_validation extends CI_form_validation
 
     public function attribute_unique($value, $name) {
         $attr = $this->em->getRepository("models\Attribute")->findOneBy(array('' . $name . '' => $value));
-        if (empty($attr)) {
-            return true;
-        }
-        $this->set_message('attribute_unique', '%s: already exists in the system');
+        if ($attr !== null) {
+            $this->set_message('attribute_unique', '%s: already exists in the system');
 
-        return false;
+            return false;
+        }
+        return true;
 
     }
 

@@ -60,7 +60,7 @@ class Attribute
     /**
      * @Column(type="boolean", nullable=false )
      */
-    protected $inmetadata = TRUE;
+    protected $inmetadata = true;
 
     /**
      * @Column(type="text", nullable=true)
