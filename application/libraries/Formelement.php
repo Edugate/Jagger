@@ -1093,6 +1093,8 @@ class Formelement
             $result[] = '';
             if (in_array('scope', $this->disallowedparts)) {
                 $result[] = jGenerateInputReadonly(lang('rr_scope'), 'f[scopes][idpsso]', $scopessovalue, '');
+            } elseif (empty($entid)) {
+                $result[] = jGenerateInput(lang('rr_scope'), 'f[scopes][idpsso]', $scopessovalue, '');
             } else {
                 $result[] = jGenerateInput(lang('rr_scope') . ' <span class="label secondary">' . lang('inputforapproval') . '</span>', 'f[scopes][idpsso]', $scopessovalue, '');
             }
@@ -1252,6 +1254,8 @@ class Formelement
             $scopeaavalue = set_value('f[scopes][aa]', $sesscope['aa'], false);
             if (in_array('scope', $this->disallowedparts)) {
                 $result[] = jGenerateInputReadonly(lang('rr_scope'), 'f[scopes][aa]', $scopeaavalue, '');
+            } elseif (empty($entid)) {
+                $result[] = jGenerateInput(lang('rr_scope'), 'f[scopes][aa]', $scopeaavalue, '');
             } else {
                 $result[] = jGenerateInput(lang('rr_scope') . ' <span class="label secondary">' . lang('inputforapproval') . '</span>', 'f[scopes][aa]', $scopeaavalue, '');
             }

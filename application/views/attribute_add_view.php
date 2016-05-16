@@ -16,6 +16,7 @@ echo form_input(array(
      'max-length'=>'128',
      'class'=>'required' 
     ));
+echo '<div class="dhelp" style="width: auto">'.lang('attrname').': is used as an attribute id in attribute release policy</div>';
 echo '</div>';
 echo '</div>';
 

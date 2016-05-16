@@ -29,7 +29,8 @@ class Attributes extends MY_Controller
     private function addSubmitValidate() {
         $this->form_validation->set_rules('attrname', lang('attrname'), 'trim|required|min_length[1]|max_length[128]|xss_clean|no_white_spaces|attribute_unique[name]');
         $this->form_validation->set_rules('attroidname', lang('attrsaml2'), 'trim|required|min_length[1]|max_length[128]|xss_clean|no_white_spaces|attribute_unique[oid]');
-        $this->form_validation->set_rules('attrurnname', lang('attrsaml1'), 'trim|required|min_length[3]|max_length[128]|xss_clean|no_white_spaces|attribute_unique[urn]');
+
+        $this->form_validation->set_rules('attrurnname', lang('attrsaml1'), 'trim|min_length[3]|max_length[128]|xss_clean|no_white_spaces|attribute_unique[urn]');
         $this->form_validation->set_rules('attrfullname', lang('attrfullname'), 'trim|required|min_length[3]|max_length[128]|xss_clean|attribute_unique[fullname]');
         $this->form_validation->set_rules('description', lang('rr_description'), 'trim|required|min_length[3]|max_length[128]|xss_clean');
 
@@ -60,7 +61,9 @@ class Attributes extends MY_Controller
             $attr->setName($attrname);
             $attr->setFullname($attrfullname);
             $attr->setOid($attroid);
+         
             $attr->setUrn($attrurn);
+
             $attr->setDescription($description);
             $attr->setShowInmetadata(true);
             $this->em->persist($attr);
