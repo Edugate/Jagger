@@ -1,11 +1,79 @@
 <?php
 
 
+function generateTopBar($a) {
+    $html[] = '<div data-sticky-container>
+    <div class="title-bar" data-responsive-toggle="topbar-menu" data-hide-for="medium" data-sticky>
+        <button class="menu-icon" type="button" data-toggle></button>
+        <div class="title-bar-title">Menu</div>
+    </div>
+    <div id="topbar-menu" class="top-bar stacked-for-large" data-sticky data-options="marginTop:0;">';
+    if (isset($a['logo'])) {
+
+        $html[] = '<div class="title-bar-left" ><div class="logo-wrapper hide-for-small-only" >' .
+            '<span class="top-bar-title logo" ><a href = "' . $a['logo']['link'] . '" class="sitelogo" ><img src = "' . $a['logo']['img'] . '" alt = "Logo" /></a ></span >'.
+            '</div ></div >';
+    }
+    $html[] = '<div class="title-bar-left">';
+    if (isset($a['left'])) {
+        $r = generateTopBarElements($a['left'], 'left');
+        array_push($html, $r);
+
+    }
+
+    // topleft
+
+    $html[] = '</div>';
+
+    $html[] = '<div class="top-bar-right">';
+    // top-tright elements
+
+    if (isset($a['right'])) {
+        $r = generateTopBarElements($a['right'], 'right');
+        array_push($html, $r);
+    }
+
+    $html[] = '</div>';
+
+    $html[] = '</div>';
+
+
+    return implode('', $html);
+
+}
+
+function generateTopBarElements($b, $position, $top = true) {
+    $r = '';
+    if ($top === true) {
+        $r .= '<ul class="dropdown menu align-' . $position . '" data-dropdown-menu>';
+    } else {
+        $r .= '<ul class="menu vertical">';
+    }
+    foreach ($b as $v) {
+        $linkclass = isset($v['linkprop']) ? $v['linkprop'] : '';
+        $href = isset($v['link']) ? ' href="'.$v['link'].'" ' : ' ';
+        $elementActive = '';
+        if(isset($v['active']) && $v['active'] === true){
+            $elementActive = ' class="active" ';
+        }
+        $r .= '<li '.$elementActive.'><a  '.$href.' '.$linkclass.'>' . $v['name'] . '</a>';
+        if (isset($v['sub']) && is_array($v['sub'])) {
+            $r .= generateTopBarElements($v['sub'], $position, false);
+        }
+        $r .= '</li>';
+    }
+    $r .= '</ul>';
+
+    return $r;
+
+}
+
+
 function jaggerDisplayDateTimeByOffset(\DateTime $dateTime, $timeOffset, $outFormat = 'Y-m-d H:i:s') {
     if ($timeOffset >= 0) {
-        $result = date(''.$outFormat.'', $dateTime->format('U') + abs($timeOffset));
+        $result = date('' . $outFormat . '', $dateTime->format('U') + abs($timeOffset));
     } else {
-        $result = date(''.$outFormat.'', $dateTime->format('U') - abs($timeOffset));
+        $result = date('' . $outFormat . '', $dateTime->format('U') - abs($timeOffset));
     }
 
     return $result;

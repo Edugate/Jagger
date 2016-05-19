@@ -34,9 +34,9 @@ if ($fedloginbtn === null) {
 
 
 if ($fedenabled || $oidcEnabled) {
-    echo '<div id="loginform" class="row reveal-modal medium" data-reveal>';
+    echo '<div id="loginform" class="row reveal medium" data-reveal>';
 
-    echo '<div id="loginresponse" class="alert-box alert hidden" ></div>';
+    echo '<div id="loginresponse" class="callout alert hidden" ></div>';
 
     echo '<div class="large-6 columns">';
     echo form_open($base . 'authenticate/dologin');
@@ -47,12 +47,12 @@ if ($fedenabled || $oidcEnabled) {
     echo '<div class="medium-3 columns medium-text-right"> <label for="username" class="inline">' . lang('rr_username') . '</label> </div> <div class="medium-9 columns"> 
              <input type="text" id="username" name="username"></div>';
     echo '</div>';
-    echo '<div class="row passwordrow hidden" >';
+    echo '<div class="row passwordrow" >';
     echo '<div class="medium-3 columns medium-text-right"> <label for="password" class="inline">' . lang('rr_password') . '</label> </div> <div class="medium-9 columns"> 
-             <input type="password" id="password" name="password" ><div id="capswarn" class="hidden"><small class="error" >' . lang('rr_capslockon') . '</small></div></div>';
+             <input type="password" id="password" name="password" ><div id="capswarn" class="hidden"><div class="callout alert small" >' . lang('rr_capslockon') . '</div></div></div>';
     echo '</div>';
     echo '<div class="row">';
-    echo '<div class="small-12 large-9 end columns large-push-3 small-text-center large-text-left"><button type="submit" class="button small">' . lang('loginsubmit') . '</button></div>';
+    echo '<div class="small-12 large-9 end columns large-push-3 small-text-center large-text-left"><button type="submit" class="button">' . lang('loginsubmit') . '</button></div>';
     echo '</div>';
     echo '<div class="row secondfactorrow hidden">';
 
@@ -76,17 +76,19 @@ if ($fedenabled || $oidcEnabled) {
             if(array_key_exists('btnclass',$oidcOp)){
                 $btnClass = $oidcOp['btnclass'];
             }
-            echo '<a href="'.base_url('oidcauth/authn').'" class="button oidclink tiny split '.$btnClass.'" data-jagger-oidc="'.$key.'"><span></span>'.$oidcOp['name'].'</a>';
+            echo '<a href="'.base_url('oidcauth/authn').'" class="button oidclink  split '.$btnClass.'" data-jagger-oidc="'.$key.'"><span></span>'.$oidcOp['name'].'</a>';
         }
         echo '</div>';
 
     }
     echo '</div>';
-    echo '<a id="resetloginform" class="close-reveal-modal small  has-tip" data-tooltip aria-haspopup="true"  title="Close and reset form">&#215;</a>';
 
+ echo ' <button  id="resetloginform" class="close-button" data-close aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>';
     echo '</div>';
 } else {
-    echo '<div id="loginform" class="reveal-modal row small" data-reveal>';
+    echo '<div id="loginform" class="reveal row small" data-reveal>';
     $column_class = 'large-12';
     echo '<div id="loginresponse" class="alert-box alert" style="display: none"></div>';
     echo '<div class="' . $column_class . ' columns">';
@@ -102,11 +104,15 @@ if ($fedenabled || $oidcEnabled) {
     echo '</div>';
     echo '<div class="large-12 columns">';
     echo '<div class="small-3 columns"></div>';
-    echo '<div class="small-9 columns"><button type="submit" class="button small">' . lang('loginsubmit') . '</button></div>';
+    echo '<div class="small-9 columns"><button type="submit" class="button">' . lang('loginsubmit') . '</button></div>';
     echo '</div>';
     echo form_close();
     echo '</div>';
-    echo '<a id="resetloginform" class="close-reveal-modal small  has-tip" data-tooltip aria-haspopup="true"  title="Close and reset form">&#215;</a>';
+
+    echo ' <button  id="resetloginform" class="close-button" data-close aria-label="Close reveal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>';
+
     echo '<div class="small-12 column"><iframe id="duo_iframe" width="620" height="330" frameborder="0"></iframe></div>';
     echo '</div>';
 }

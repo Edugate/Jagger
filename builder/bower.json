@@ -10,6 +10,8 @@
     "Chart.js": "1.0.2",
     "select2": "4.0.1",
     "datatables": "1.10.10",
-    "datatables-plugins": "1.10.10"
+    "datatables-plugins": "1.10.10",
+    "underscore": "1.8.3",
+    "font-awesome": "*"
   }
 }

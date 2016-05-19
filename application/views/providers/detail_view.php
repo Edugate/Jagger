@@ -36,25 +36,25 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
         ?>
 
         <div id="providertabsi">
-            <ul class="tabs" data-tab>
+            <ul class="tabs" data-tabs id="providerdetail-tabs">
                 <?php
                 $activetab = 'general';
                 $tset = false;
 
-                echo '<li class="tab-title" >
+                echo '<li class="tabs-title" >
         <a class="left-off-canvas-toggle" href="#none"><img src="' . base_url() . 'images/jicons/appbar.cog.png" style="height: 20px"/></a>
       </li>';
                 foreach ($tabs as $t) {
                     if ($tset || ($t['section'] !== $activetab)) {
-                        echo '<li class="tab-title">';
+                        echo '<li class="tabs-title">';
                     } else {
-                        echo '<li class="tab-title active">';
+                        echo '<li class="tabs-title is-active">';
                         $tset = true;
                     }
                     echo '<a href="#' . $t['section'] . '">' . $t['title'] . '</a>';
                     echo '</li>';
                 }
-                echo '<li class="tab-title">';
+                echo '<li class="tabs-title">';
                 echo '<a href="#providerlogtab">' . lang('tabLogs') . '/' . lang('tabStats') . '</a>';
                 echo '</li>';
                 ?>
@@ -62,7 +62,7 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
             <?php
             reset($tabs);
             $tmpl = array('table_open' => '<table id="detailsnosort" class="zebra">');
-            echo '<div class="tabs-content">';
+            echo '<div class="tabs-content" data-tabs-content="providerdetail-tabs">';
             $tset = false;
             foreach ($tabs as $t) {
                 if (isset($t['data'])) {
@@ -93,15 +93,15 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
                         }
                     }
                     if ($tset || ($t['section'] !== $activetab)) {
-                        echo '<div id="' . $t['section'] . '" class="content nopadding">';
+                        echo '<div id="' . $t['section'] . '" class="tabs-panel nopadding">';
                     } else {
-                        echo '<div id="' . $t['section'] . '" class="content active nopadding">';
+                        echo '<div id="' . $t['section'] . '" class="tabs-panel is-active nopadding">';
                         $tset = true;
                     }
                     echo $this->table->generate();
                     $this->table->clear();
                 } elseif (!empty($t['subtab'])) {
-                    echo '<div id="' . $t['section'] . '" class="content nopadding subtab">';
+                    echo '<div id="' . $t['section'] . '" class="tabs-panel nopadding subtab">';
                     $d = $t['subtab'];
                     echo '<ul class="tabs subtab" data-tab>';
                     $tact = true;
@@ -118,7 +118,7 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
 
                     echo '</ul>';
                     $tmpl = array('table_open' => '<table id="detailsnosort" class="zebra">');
-                    echo '<div class="tabs-content subtab">';
+                    echo '<div class="tabs-panel subtab">';
                     $tact = true;
                     foreach ($d as $key => $v) {
                         if (is_array($v['data'])) {

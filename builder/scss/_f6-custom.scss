@@ -1,0 +1,78 @@
+$topbar-background: "#0A0A0A";
+$topbar-submenu-background: $topbar-background;
+
+.no-js {
+  @include breakpoint(small only) {
+    .top-bar {
+      display: none;
+    }
+  }
+
+  @include breakpoint(medium) {
+    .title-bar {
+      display: none;
+    }
+  }
+}
+#topbar-menu{
+ background-color: #0A0A0A;
+ // background-color: red;
+}
+.top-bar {
+  width: 100%;
+  z-index: 10;
+  transition: height .25s ease;
+  height: 4.5em;
+}
+
+.top-bar .top-bar-right, .top-bar .top-bar-left {
+  transition: padding-top .25s ease;
+ // padding-top: 1.4em;
+}
+
+.top-bar.shrink {
+  height: 3em;
+}
+
+.top-bar.shrink .top-bar-right, .top-bar.shrink .top-bar-left {
+  padding-top: 0em;
+}
+
+.top-bar .dropdown.menu li {
+  float: left;
+}
+
+.top-bar .dropdown.menu .is-dropdown-submenu {
+  border: none;
+  background-color: #0A0A0A;
+ //background-color: red;
+}
+
+#root {
+  margin-top: 2em;
+}
+
+
+
+/* Medium-Up Navigation */
+
+@media only screen and (min-width: 40rem) {
+  .logo-wrapper {
+    position: relative;
+    .logo {
+      width: 118px;
+      height: 92px;
+      top: -6px;
+      margin-left: 2px;
+    }
+  }
+
+}
+
+.hidden {
+  display: none;
+
+}
+
+
+
