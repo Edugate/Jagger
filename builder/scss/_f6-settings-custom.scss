@@ -1,0 +1,49 @@
+
+$topbar-background: #0A0A0A;
+$topbar-submenu-background: $topbar-background;
+$topbar-title-spacing: 1rem;
+$topbar-input-width: 200px;
+$topbar-unstack-breakpoint: medium;
+
+
+$footer-background: #0A0A0A;
+$footer-text: $white;
+
+$jagger-selected-bgcolor: #074e68;
+$jagger-selected-color: #fff;
+
+@if variable-exists(j-side-icon-bg) {
+  $final-side-icon-bg: $j-side-icon-bg;
+} @else {
+  $final-side-icon-bg-final: $primary-color;
+}
+
+@if variable-exists(j-side-icon-font-color) {
+  $final-side-icon-font-color: $j-side-icon-font-color;
+} @else {
+  $final-side-icon-font-color: white;
+}
+
+@if variable-exists(jagger-selected-bgcolor) {
+  $final-jagger-selected-bgcolor: $jagger-selected-bgcolor;
+} @else {
+  $final-jagger-selected-bgcolor: #5897fb;
+}
+
+@if variable-exists(jagger-selected-color) {
+  $final-jagger-selected-color: $jagger-selected-color;
+} @else {
+  $final-jagger-selected-color: #fff;
+}
+
+$facebook-color: #3b5998;
+$twitter-color: #55acee;
+$google-color: #d50f25;
+$fedlogin-color: $primary-color;
+$icon-size: 2rem;
+
+// TABS
+$tab-background: $black;
+$tab-background-active: lighten($black,20%);
+
+$tab-background-second-level: lighten($black,10%);

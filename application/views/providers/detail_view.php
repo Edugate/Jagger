@@ -1,6 +1,6 @@
 <?php
 if (!empty($alerts) && is_array($alerts) && count($alerts) > 0) {
-    echo '<div  data-alert class="alert-box warning" >';
+    echo '<div  class="callout warning" >';
     foreach ($alerts as $v) {
         echo '<div>' . $v . '</div>';
     }
@@ -9,16 +9,16 @@ if (!empty($alerts) && is_array($alerts) && count($alerts) > 0) {
 
 echo '<div data-jagger-getmoreajax= "' . base_url() . 'providers/detail/status/' . $entid . '" data-jagger-response-msg="prdetails" data-jagger-refreshurl="' . base_url() . 'providers/detail/status/' . $entid . '/1"></div>';
 
-echo '<div id="prdetails" data-alert class="alert-box info" style="display: none"></div>';
+echo '<div id="prdetails" class="callout warning hidden" ></div>';
 ?>
-    <div class="off-canvas-wrap" data-offcanvas>
-    <div class="inner-wrap">
+<div class="off-canvas-wrapper">
+    <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
 
 
         <!-- Off Canvas Menu -->
         <?php
-        echo '<aside class="left-off-canvas-menu">';
-        echo '<ul class="off-canvas-list">';
+        echo '<aside class="off-canvas position-left" id="offCanvas" data-off-canvas>';
+        echo '<ul class="vertical menu">';
         echo '<li><label>' . lang('menu_actions') . '</label></li>';
         ksort($entmenu);
         foreach ($entmenu as $v) {
@@ -35,15 +35,16 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
         echo '</aside>';
         ?>
 
-        <div id="providertabsi">
+        <div id="providertabsi" class="off-canvas-content" data-off-canvas-content>
+
+
+
+
             <ul class="tabs" data-tabs id="providerdetail-tabs">
+                <li class="tabks-title" style="float: left;padding: 1.25rem 1.5rem; line-height: 1;font-size: 0.75rem;"><a href="#"  data-toggle="offCanvas"><i class="fi-indent-more"></i></a></li>
                 <?php
                 $activetab = 'general';
                 $tset = false;
-
-                echo '<li class="tabs-title" >
-        <a class="left-off-canvas-toggle" href="#none"><img src="' . base_url() . 'images/jicons/appbar.cog.png" style="height: 20px"/></a>
-      </li>';
                 foreach ($tabs as $t) {
                     if ($tset || ($t['section'] !== $activetab)) {
                         echo '<li class="tabs-title">';
@@ -103,14 +104,15 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
                 } elseif (!empty($t['subtab'])) {
                     echo '<div id="' . $t['section'] . '" class="tabs-panel nopadding subtab">';
                     $d = $t['subtab'];
-                    echo '<ul class="tabs subtab" data-tab>';
+
+                    echo '<ul class="tabs subtab" data-tabs id="sub-' . $t['section'] . '">';
                     $tact = true;
                     foreach ($d as $key => $dv) {
                         if ($tact && $key != 1) {
-                            echo '<li class="tab-title active">';
+                            echo '<li class="tabs-title active">';
                             $tact = false;
                         } else {
-                            echo '<li class="tab-title">';
+                            echo '<li class="tabs-title">';
                         }
                         echo '<a href="#' . $dv['section'] . '">' . $dv['title'] . '</a>';
                         echo '</li>';
@@ -118,7 +120,7 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
 
                     echo '</ul>';
                     $tmpl = array('table_open' => '<table id="detailsnosort" class="zebra">');
-                    echo '<div class="tabs-panel subtab">';
+                    echo '<div class="tabs-content" data-tabs-content="sub-' . $t['section'] . '">';
                     $tact = true;
                     foreach ($d as $key => $v) {
                         if (is_array($v['data'])) {
@@ -147,10 +149,10 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
                                 }
                             }
                             if ($tact && $key != 1) {
-                                echo '<div id="' . $v['section'] . '" class="content nopadding active">';
+                                echo '<div id="' . $v['section'] . '" class="tabs-panel nopadding active">';
                                 $tact = false;
                             } else {
-                                echo '<div id="' . $v['section'] . '" class="content nopadding">';
+                                echo '<div id="' . $v['section'] . '" class="tabs-panel nopadding">';
                             }
                             if ($key != 1) {
                                 echo $this->table->generate();
@@ -159,10 +161,10 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
                             echo '</div>';
                         } else {
                             if ($tact && $key != 1) {
-                                echo '<div id="' . $v['section'] . '" class="content nopadding active">';
+                                echo '<div id="' . $v['section'] . '" class="tabs-panel nopadding active">';
                                 $tact = false;
                             } else {
-                                echo '<div id="' . $v['section'] . '" class="content nopadding">';
+                                echo '<div id="' . $v['section'] . '" class="tabs-panel nopadding">';
                             }
 
                             echo $v['data'];
@@ -188,22 +190,19 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
 
     <div class="metadataresult" style="display: none"></div>
 
-<?php
-echo '<div id="updatemembership" class="reveal-modal small" data-reveal>';
-echo '<div class="row message title">';
+    <?php
+    echo '<div id="updatemembership" class="reveal-modal small" data-reveal>';
+    echo '<div class="row message title">';
 
-echo '</div>';
-echo form_open(base_url('manage/entitystate/updatemembership'));
-echo '<input type="hidden" name="updatedata" value="" style="display:none;" />';
-$buttons = array(
-    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
-    '<div class="yes button">' . lang('btnupdate') . '</div>'
-);
-echo revealBtnsRow($buttons);
-echo form_close();
-echo '</div>';
-
-
-
+    echo '</div>';
+    echo form_open(base_url('manage/entitystate/updatemembership'));
+    echo '<input type="hidden" name="updatedata" value="" style="display:none;" />';
+    $buttons = array(
+        '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+        '<div class="yes button">' . lang('btnupdate') . '</div>'
+    );
+    echo revealBtnsRow($buttons);
+    echo form_close();
+    echo '</div>';
 
 

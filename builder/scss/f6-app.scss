@@ -1,6 +1,7 @@
 @charset 'utf-8';
 
 @import 'f6-settings';
+@import "f6-settings-custom";
 @import 'foundation';
 @import 'motion-ui';
 @import 'foundation-icons';
@@ -50,4 +51,6 @@
 @include motion-ui-transitions;
 @include motion-ui-animations;
 
+@import "select2";
+@import "_dataTables.foundation";
 @import "f6-custom";
