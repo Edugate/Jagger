@@ -29,7 +29,7 @@ if (!empty($list))
             $confirm = lang('rr_no');
         }
         $cdate = $q['idate'];
-        $detail = anchor(''.base_url('reports/awaiting/detail/'.$q['token'].'').'', '<i class="fi-arrow-right"></i>');
+        $detail = anchor(''.base_url('reports/awaiting/detail/'.$q['token'].'').'', '<i class="fa fa-arrow-right"></i>');
         $this->table->add_row($q['idate'], $q['requesterCN'] ." (". $q['requester'] .")", $q['type'] . " - " . $q['action'], $q['mail'], $q['iname'], $confirm, $detail);
     }
     echo $this->table->generate();
@@ -43,7 +43,7 @@ if (!empty($list))
         
         foreach ($list['s'] as $s)
         {
-          $this->table->add_row( $s['subscriber'] ,$s['type'],'<a href="'.base_url().'notifications/subscriber/mysubscriptions/'.base64url_encode($s['subscriber']).'"><i class="fi-arrow-right"></i></a>');
+          $this->table->add_row( $s['subscriber'] ,$s['type'],'<a href="'.base_url().'notifications/subscriber/mysubscriptions/'.base64url_encode($s['subscriber']).'"><i class="fa fa-arrow-right"></i></a>');
         }
         echo $this->table->generate();
     $this->table->clear();

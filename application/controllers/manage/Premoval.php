@@ -62,7 +62,7 @@ class Premoval extends MY_Controller
             'providerid' => $pid,
             'providernameinlang' => $providernameinlang,
             'providerurl' => base_url('providers/detail/show/' . $pid . ''),
-            'link' => anchor(base_url('providers/detail/show/' . $pid . ''), '<i class="fi-arrow-right"></i>'),
+            'link' => anchor(base_url('providers/detail/show/' . $pid . ''), '<i class="fa fa-arrow-right"></i>'),
             'breadcrumbs' => array(
                 $plist,
                 array('url' => base_url('providers/detail/show/' . $pid . ''), 'name' => '' . html_escape($providernameinlang) . ''),

@@ -31,12 +31,12 @@ if(!empty($sessform))
 
 
 ?>
-    <ul class="tabs" data-tab>
+    <ul class="tabs" data-tabs id="entityedittabs">
         <?php
         $active = false;
         if(!empty($registerForm))
         {
-           echo '<li class="tab-title active"><a href="#general">'.lang('tabgeneral').'</a></li>';
+           echo '<li class="tabs-title is-active"><a href="#general">'.lang('tabgeneral').'</a></li>';
            $active = true;
 
         }
@@ -44,26 +44,26 @@ if(!empty($sessform))
         {
             if(!$active && $m['id'] === 'organization')
             {
-                echo '<li class="tab-title active"><a href="#' . $m['id'] . '">' . $m['value'] . '</a></li>';
+                echo '<li class="tabs-title is-active"><a href="#' . $m['id'] . '">' . $m['value'] . '</a></li>';
                 $active = true;
             }
             else
             {
-                echo '<li class="tab-title"><a href="#' . $m['id'] . '">' . $m['value'] . '</a></li>';
+                echo '<li class="tabs-title"><a href="#' . $m['id'] . '">' . $m['value'] . '</a></li>';
             }
             
         }
         ?>
     </ul>
 
-<div class="tabs-content">
+<div class="tabs-content" data-tabs-content="entityedittabs" >
     <?php
 
 
     $active=false;
     if(!empty($registerForm))
     {
-        echo '<div id="general" class="content tabgroup active">';
+        echo '<div id="general" class="tabs-panel tabgroup is-active">';
         $active = true;
 
         /**
@@ -134,12 +134,12 @@ if(!empty($sessform))
     {
         if(!$active && $m['id'] === 'organization')
         {
-           echo '<div id="' . $m['id'] . '" class="content tabgroup active">';
+           echo '<div id="' . $m['id'] . '" class="tabs-panel tabgroup is-active">';
            $active = true;
         }
         else
         {
-           echo '<div id="' . $m['id'] . '" class="content tabgroup">';
+           echo '<div id="' . $m['id'] . '" class="tabs-panel tabgroup">';
 
         }
          

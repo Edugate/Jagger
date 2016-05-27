@@ -41,7 +41,7 @@ echo '<div id="prdetails" class="callout warning hidden" ></div>';
 
 
             <ul class="tabs" data-tabs id="providerdetail-tabs">
-                <li class="tabks-title" style="float: left;padding: 1.25rem 1.5rem; line-height: 1;font-size: 0.75rem;"><a href="#"  data-toggle="offCanvas"><i class="fi-indent-more"></i></a></li>
+                <li class="pseudo-tabs-title" style="float: left;padding: 1.25rem 1.5rem; line-height: 1;font-size: 0.75rem;"><a href="#"  data-toggle="offCanvas"><i class="fi-indent-more"></i></a></li>
                 <?php
                 $activetab = 'general';
                 $tset = false;
@@ -109,7 +109,7 @@ echo '<div id="prdetails" class="callout warning hidden" ></div>';
                     $tact = true;
                     foreach ($d as $key => $dv) {
                         if ($tact && $key != 1) {
-                            echo '<li class="tabs-title active">';
+                            echo '<li class="tabs-title is-active">';
                             $tact = false;
                         } else {
                             echo '<li class="tabs-title">';
@@ -149,7 +149,7 @@ echo '<div id="prdetails" class="callout warning hidden" ></div>';
                                 }
                             }
                             if ($tact && $key != 1) {
-                                echo '<div id="' . $v['section'] . '" class="tabs-panel nopadding active">';
+                                echo '<div id="' . $v['section'] . '" class="tabs-panel nopadding is-active">';
                                 $tact = false;
                             } else {
                                 echo '<div id="' . $v['section'] . '" class="tabs-panel nopadding">';
@@ -161,7 +161,7 @@ echo '<div id="prdetails" class="callout warning hidden" ></div>';
                             echo '</div>';
                         } else {
                             if ($tact && $key != 1) {
-                                echo '<div id="' . $v['section'] . '" class="tabs-panel nopadding active">';
+                                echo '<div id="' . $v['section'] . '" class="tabs-panel nopadding is-active">';
                                 $tact = false;
                             } else {
                                 echo '<div id="' . $v['section'] . '" class="tabs-panel nopadding">';
@@ -177,7 +177,7 @@ echo '<div id="prdetails" class="callout warning hidden" ></div>';
                 echo '</div>';
             }
             // logs tab reveal //
-            echo '<div id="providerlogtab" class="content" data-reveal-ajax-tab="' . base_url() . 'providers/detail/showlogs/' . $entid . '">';
+            echo '<div id="providerlogtab" class="tabs-panel" data-reveal-ajax-tab="' . base_url() . 'providers/detail/getlogs/' . $entid . '">';
             echo '</div>';
             // end logs
             echo '</div>';

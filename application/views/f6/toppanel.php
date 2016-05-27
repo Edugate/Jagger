@@ -24,18 +24,32 @@ $topbarArray['left']= array(
 $topbarArray['right'][] = array(
     'name'     => strtoupper($myLang),
     'link'     => null,
-    'linkprop' => ' class="button"  data-open="languageset"',
+    'linkprop' => '  data-open="languageset"',
     'sub'      => null
 );
 if ($loggedin) {
     $topbarArray['right'][] = array(
-        'name' => '<span id="qcounter" class="alert  badge" data-jagger-src="' . $base_url . 'reports/awaiting/dashz">0</span>',
-        'link' => '' . $base_url . 'reports/awaitinglist'
+        'name' => '<i  class="fa fa-flag-o"></i><sup id="qcounter" data-jagger-src="' . $base_url . 'reports/awaiting/dashz">0</sup>',
+        'link' => '' . $base_url . 'reports/awaitinglist',
     );
+
     $topbarArray['right'][] = array(
-        'name'     => lang('btnlogout'),
-        'link'     => '' . $base_url . 'auth/logout',
-        'linkprop' => 'class="button alert logoutbutton userlogout" jagger-data-logout="' . $shibLogoutUri . '"'
+        'name' => '<i class="fa fa-user"></i>',
+        'sub' => array(
+            array(
+                'name' => '<i class="fa fa-cog"></i>',
+                'link' => '' . $base_url . 'manage/users/show/'.base64url_encode($user)
+            ),
+            array(
+                'name' => '<i class="fa fa-envelope"></i>',
+                'link' => '' . $base_url . 'notifications/subscriber/mysubscriptions/'.base64url_encode($user)
+            ),
+            array(
+                'name' => '<i class="fa fa-sign-out alert red error"></i>',
+                'link' => '' . $base_url . 'auth/logout',
+                'linkprop' => 'style="color: red" class="logoutbutton userlogout" jagger-data-logout="' . $shibLogoutUri . '"'
+            ),
+        ),
     );
 
     $adminSubmenu = array(
@@ -157,89 +171,17 @@ if ($loggedin) {
         $topbarArray['right'][] = array(
             'name'     => lang('toploginbtn'),
             'link'     => $base_url . 'authenticate/getloginform',
-            'linkprop' => 'class="button alert autoclick" id="loginbtn"'
+            'linkprop' => 'class="button  small alert autoclick" id="loginbtn"'
         );
 
     } else {
         $topbarArray['right'][] = array(
             'name'     => lang('toploginbtn'),
             'link'     => $base_url . 'authenticate/getloginform',
-            'linkprop' => ' class="button alert" id="loginbtn"'
+            'linkprop' => ' class="button  small alert" id="loginbtn"'
         );
     }
 }
 
 
 echo generateTopBar($topbarArray);
-
-
-$y = '
-<div data-sticky-container>
-    <div class="title-bar" data-responsive-toggle="topbar-menu" data-hide-for="medium" data-sticky>
-        <button class="menu-icon" type="button" data-toggle></button>
-        <div class="title-bar-title">Menu</div>
-    </div>
-
-    <div id="topbar-menu" class="top-bar" data-sticky data-options="marginTop:0;">
-
-
-        <div class="title-bar-left">
-
-            <div class="logo-wrapper hide-for-small-only">
-
-
-                
-                <span class="top-bar-title logo"><a href="' . $homeUrl . '" class="sitelogo"><img src="' . $logoSrc . '" alt="Logo"/></a></span>;
-                
-
-
-            </div>
-
-
-        </div>
-        <div class="top-bar-right">
-            <ul class="dropdown menu align-right" data-dropdown-menu>
-                <li>
-                    <a>Item 1</a>
-                    <ul class="menu">
-                        <li><a href="#">Item 1A</a></li>
-                        <li>
-                            <a href="#">Item 1B</a>
-                            <ul class="menu">
-                                <li><a href="#">Item 1B i</a></li>
-                                <li><a href="#">Item 1B ii</a></li>
-                                <li>
-                                    <a href="#">Item 1B iii</a>
-                                    <ul class="menu">
-                                        <li><a href="#">Item 1B iii alpha</a></li>
-                                        <li><a href="#">Item 1B iii omega</a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a href="#">Item 1B iv</a>
-                                    <ul class="menu">
-                                        <li><a href="#">Item 1B iv alpha</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                        <li><a href="#">Item 1C</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="#">Item 2</a>
-                    <ul class="menu">
-                        <li><a href="#">Item 2A</a></li>
-                        <li><a href="#">Item 2B</a></li>
-                    </ul>
-                </li>
-                <li><a href="#">Item 3</a></li>
-                <li><a href="#">Item 4</a></li>
-            </ul>
-
-
-        </div>
-    </div>
-</div>';
-
-

@@ -152,7 +152,7 @@ class Providerdetails
         if (!(isset($feathide['metasonprov']) && $feathide['metasonprov'] === true)) {
             $d[++$i]['header'] = lang('rr_metadata');
             $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<i class="fi-arrow-right"></i>', '');
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<i class="fa fa-arrow-right"></i>', '');
         }
         $circleEnabled = !((isset($featdisable['circlemeta']) && $featdisable['circlemeta'] === true) || (isset($feathide['circlemeta']) && $feathide['circlemeta'] === true));
 
@@ -168,9 +168,9 @@ class Providerdetails
                 $srvCircleMetalinkSigned = base_url() . 'signedmetadata/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml';
 
                 $d[++$i]['name'] = lang('rr_circleoftrust');
-                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srvCircleMetalink . '&nbsp;</span>&nbsp; ' . anchor($srvCircleMetalink, '<i class="fi-arrow-right"></i>', 'class=""');
+                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srvCircleMetalink . '&nbsp;</span>&nbsp; ' . anchor($srvCircleMetalink, '<i class="fa fa-arrow-right"></i>', 'class=""');
                 $d[++$i]['name'] = lang('rr_circleoftrust') . '<i>(' . lang('signed') . ')</i>';
-                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srvCircleMetalinkSigned . '&nbsp;</span>&nbsp; ' . anchor_popup($srvCircleMetalinkSigned, '<i class="fi-arrow-right"></i>');
+                $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srvCircleMetalinkSigned . '&nbsp;</span>&nbsp; ' . anchor_popup($srvCircleMetalinkSigned, '<i class="fa fa-arrow-right"></i>');
             }
         }
         if ($isLocal && $hasWriteAccess && !empty($gearman_enabled) && $circleEnabled) {
@@ -260,9 +260,9 @@ class Providerdetails
                 if ($showMetalinks) {
                     $metalink = base_url('metadata/federation/' . $f->getFederation()->getSysname() . '/metadata.xml');
                     if ($fedActive) {
-                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, html_escape($f->getFederation()->getName())) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ': </span><span class="accordionContent"><br /><i>' . $metalink . '</i>&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fi-arrow-right"></i>', 'class=""') . '</li>';
+                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, html_escape($f->getFederation()->getName())) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ': </span><span class="accordionContent"><br /><i>' . $metalink . '</i>&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fa fa-arrow-right"></i>', 'class=""') . '</li>';
                     } else {
-                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ': </span><span class="accordionContent"><br /><i>' . $metalink . '</i>&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fi-arrow-right"></i>', 'class=""') . '</li>';
+                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ': </span><span class="accordionContent"><br /><i>' . $metalink . '</i>&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fa fa-arrow-right"></i>', 'class=""') . '</li>';
                     }
                 } else {
                     if ($fedActive) {
@@ -919,7 +919,7 @@ class Providerdetails
             $encoded_entityid = base64url_encode($ent->getEntityId());
             $arp_url = base_url() . 'arp/format2/' . $encoded_entityid . '/arp.xml';
             $d[++$i]['name'] = lang('rr_individualarpurl');
-            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_arpurl') . '</span><span class="accordionContent"><br />' . $arp_url . '&nbsp;</span>&nbsp;' . anchor_popup($arp_url, '<i class="fi-arrow-right"></i>');
+            $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_arpurl') . '</span><span class="accordionContent"><br />' . $arp_url . '&nbsp;</span>&nbsp;' . anchor_popup($arp_url, '<i class="fa fa-arrow-right"></i>');
             //
 
             $exc = $ent->getExcarps();
@@ -1127,9 +1127,9 @@ class Providerdetails
         $i = 0;
         if ($hasManageAccess) {
             $d[++$i]['name'] = lang('rr_managestatus');
-            $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' ' . anchor(base_url() . 'manage/entitystate/modify/' . $id, '<i class="fi-arrow-right"></i>');
+            $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' ' . anchor(base_url() . 'manage/entitystate/modify/' . $id, '<i class="fa fa-arrow-right"></i>');
             if (!$isActive) {
-                $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . ' ' . anchor(base_url() . 'manage/premoval/providertoremove/' . $id, '<i class="fi-arrow-right"></i>') . '</div>';
+                $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . ' ' . anchor(base_url() . 'manage/premoval/providertoremove/' . $id, '<i class="fa fa-arrow-right"></i>') . '</div>';
             } else {
                 $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . '<span class="alert"><i class="fi-prohibited"></i></span> <div class="alert">' . lang('rmproviderdisablefirst') . '</div></div>';
             }
@@ -1143,7 +1143,7 @@ class Providerdetails
         }
         $d[++$i]['name'] = '';
         if ($hasManageAccess) {
-            $d[$i]['value'] = lang('rr_displayaccess') . anchor(base_url() . 'manage/accessmanage/entity/' . $id, '<i class="fi-arrow-right"></i>');
+            $d[$i]['value'] = lang('rr_displayaccess') . anchor(base_url() . 'manage/accessmanage/entity/' . $id, '<i class="fa fa-arrow-right"></i>');
         } else {
             $d[$i]['value'] = lang('rr_displayaccess') . '';
         }

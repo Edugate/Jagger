@@ -1,22 +1,10 @@
-<?php
-/**
- * ResourceRegistry3
- *
- * @package     RR3
- * @subpackage  Views
- * @author      Middleware Team HEAnet
- *
- */
-?>
-<ul class="tabs" data-tab role="tablist">
-    <li class="tab-title active" role="presentation"><a href="#panel2-1" role="tab" tabindex="0" aria-selected="true"
-                                                        aria-controls="panel2-1">System</a></li>
-    <li class="tab-title" role="presentation"><a href="#panel2-2" role="tab" tabindex="0" aria-selected="false"
-                                                 aria-controls="panel2-2">Providers</a></li>
+<ul class="tabs" data-tabs id="tablist">
+    <li class="tabs-title is-active"><a href="#panel2-1" aria-selected="true">System</a></li>
+    <li class="tabs-title"><a href="#panel2-2">Providers</a></li>
 </ul>
 
-<div class="tabs-content">
-    <section role="tabpanel" aria-hidden="false" class="content active" id="panel2-1">
+<div class="tabs-content" data-tabs-content="tablist">
+    <section class="tabs-panel is-active" id="panel2-1">
         <table class="details">
             <tbody>
             <tr>
@@ -58,7 +46,7 @@
             </tbody>
         </table>
     </section>
-    <section role="tabpanel" aria-hidden="false" class="content " id="panel2-2">
+    <section class="tabs-panel is-active" id="panel2-2">
         <table class="details">
             <tbody>
             <tr>

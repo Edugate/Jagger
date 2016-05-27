@@ -7,40 +7,40 @@ $catButtons = '';
 
 if(count($categories)>0)
 {
-   echo '<dl class="sub-nav"> <dt>'.lang('rr_category').':</dt>';
+   echo '<ul class="menu">';
    foreach($categories as $v)
    {
        
        if($defaultSet)
        {
-           echo  '<dd><a href="'.base_url().'ajax/fedcat/'.$v['catid'].'" class="fedcategory">'.$v['name'].'</a></dd>';
+           echo  '<li><a href="'.base_url().'ajax/fedcat/'.$v['catid'].'" class="fedcategory">'.$v['name'].'</a></li>';
        }
        elseif(!empty($v['default']))
        {
-           echo  '<dd class="active"><a href="'.base_url().'ajax/fedcat/'.$v['catid'].'" class="fedcategory">'.$v['name'].'</a></dd>';
+           echo  '<li class="active"><a href="'.base_url().'ajax/fedcat/'.$v['catid'].'" class="fedcategory">'.$v['name'].'</a></li>';
            $defaultSet = TRUE;
        }
        else
        {
-           echo  '<dd><a href="'.base_url().'ajax/fedcat/'.$v['catid'].'" class="fedcategory">'.$v['name'].'</a></dd>';
+           echo  '<li><a href="'.base_url().'ajax/fedcat/'.$v['catid'].'" class="fedcategory">'.$v['name'].'</a></li>';
 
        }
    }
 
    if($defaultSet)
    {
-           echo  '<dd><a href="'.base_url().'ajax/fedcat/" id="fedcategoryall" class="fedcategory">'.lang('rr_allfeds').'</a></dd>';
+           echo  '<li><a href="'.base_url().'ajax/fedcat/" id="fedcategoryall" class="fedcategory">'.lang('rr_allfeds').'</a></li>';
    }
     else
    {
-           echo  '<dd class="active"><a href="'.base_url().'ajax/fedcat/" id="fedcategoryall" class="fedcategory">'.lang('rr_allfeds').'</a></dd>';
+           echo  '<li class="active"><a href="'.base_url().'ajax/fedcat/" id="fedcategoryall" class="fedcategory">'.lang('rr_allfeds').'</a></li>';
 
    }
-   echo '</dl>';
+   echo '</ul>';
 }
 else
 {
-           echo  '<dl class="hidden"><dd class="active"><a href="'.base_url().'ajax/fedcat/" id="fedcategoryall" class="fedcategory">'.lang('rr_allfeds').'</a></dd></dl>';
+           echo  '<li class="hidden active"><a href="'.base_url().'ajax/fedcat/" id="fedcategoryall" class="fedcategory">'.lang('rr_allfeds').'</a></li>';
 
 
 }

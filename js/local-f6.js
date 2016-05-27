@@ -499,11 +499,11 @@ var GINIT = {
                                 $.each(data[entgroupkey], function (i, v) {
                                     entstate = '';
 
-                                    if(v.penabled === false){
-                                        entstate = entstate+'<span class="label alert">disabled</span> ';
+                                    if (v.penabled === false) {
+                                        entstate = entstate + '<span class="label alert">disabled</span> ';
                                     }
-                                    if(v.mdisabled === 1 || v.mbanned === 1){
-                                        entstate = entstate+'<span class="label alert">membership suspended</span> ';
+                                    if (v.mdisabled === 1 || v.mbanned === 1) {
+                                        entstate = entstate + '<span class="label alert">membership suspended</span> ';
                                     }
                                     ++nr;
 
@@ -516,7 +516,7 @@ var GINIT = {
 
                                     out[++o] = '<div class="large-5 column">' + nr + '. <a href="' + preurl + v.pid + '">' + v.pname + '</a></div>';
                                     out[++o] = '<div class="large-5 column">' + v.entityid + '</div>';
-                                    out[++o] = '<div class="large-2 column">'+entstate+'</div>';
+                                    out[++o] = '<div class="large-2 column">' + entstate + '</div>';
 
                                     out[++o] = '</div>';
 
@@ -614,7 +614,7 @@ var GINIT = {
                         result.append(div_data);
                     });
                     if (refreshbtn !== null) {
-                        refreshbutton = '<a class="refreshurl right" href="#"  data-jagger-getmoreajaxonclick= "' + refreshbtn + '" data-jagger-response-msg="prdetails"><i class="fi-refresh" ></i></a>';
+                        refreshbutton = '<a class="refreshurl float-right" href="#"  data-jagger-getmoreajaxonclick= "' + refreshbtn + '" data-jagger-response-msg="prdetails"><i class="fa fa-refresh" ></i></a>';
                     }
                     targetelement.empty().append(refreshbutton).append(result).show();
 
@@ -683,7 +683,7 @@ var GINIT = {
                             if (data.html) {
                                 secondfactorrow.html(data.html).show();
                             }
-                            loginform.foundation( 'open');
+                            loginform.foundation('open');
                             return false;
                         }
                     }
@@ -708,17 +708,32 @@ var GINIT = {
             $(this).foundation('reveal', 'close');
         });
 
-        $('#providerlogtab').on('toggled', function (event, tab) {
-            console.log(tab);
-            var link = $(this).attr("data-reveal-ajax-tab");
-            if (link !== undefined) {
+        $('#providerdetail-tabs[data-tabs]').on('change.zf.tabs', function (e) {
+            console.log('Those tabs sure did change!');
+            var tabActive = $('div[data-tabs-content="' + $(this).attr('id') + '"]').children('.tabs-panel.is-active');
+     //       var tabId = tabActive.attr('id');
+            var ajaxTab = tabActive.attr('data-reveal-ajax-tab');
+            if(ajaxTab !== undefined){
                 $.ajax({
                     cache: true,
                     type: 'GET',
-                    url: link,
-                    success: function (data) {
-                        $('#providerlogtab').empty().append(data);
-                        $(document).foundation('accordion', 'reflow');
+                    url: ajaxTab,
+                    success: function (response) {
+                        var data;
+                        try {
+                            data = JSON.parse(response);
+                        }
+                        catch (e){
+                            data = response;
+                            tabActive.empty().append(data);
+                            Foundation.reInit(tabActive);
+                            return false;
+                        }
+                        var dataHtml;
+                        $.each(data, function(k,v){
+
+                        });
+
                     }
                 });
             }
@@ -820,7 +835,7 @@ var GINIT = {
                         });
                         listbody.append(result.join(''));
                         content.append(listbody);
-                        modal.foundation( 'open');
+                        modal.foundation('open');
                     }
                 }
 
@@ -940,7 +955,7 @@ var GINIT = {
                     else {
                         $('a[data-jagger-ec="' + ecid + '"]').closest('tr').hide();
                     }
-                    $("#confirmremover").foundation( 'close');
+                    $("#confirmremover").foundation('close');
                 },
                 error: function (xhr, status, error) {
                     var alertmsg = '' + error + '';
@@ -974,7 +989,7 @@ var GINIT = {
             else {
                 form.attr('data-jagger-regpolicy', regid);
             }
-            formremover.foundation( 'open');
+            formremover.foundation('open');
 
         });
 
@@ -1205,7 +1220,7 @@ var GINIT = {
                 error: function (jqXHR, textStatus, errorThrown) {
                     $('#spinner').hide();
                     infomsg.html(jqXHR.responseText);
-                    messagereveal.foundation( 'open');
+                    messagereveal.foundation('open');
 
                 }
             });
@@ -1291,7 +1306,7 @@ var GINIT = {
             //return false;
         });
 
-        $("#rejectqueue").on('submit',function(e){
+        $("#rejectqueue").on('submit', function (e) {
             var serializedData = $(this).serializeArray();
             var posturl = $(this).attr('action');
             $.ajax({
@@ -1299,14 +1314,14 @@ var GINIT = {
                 url: posturl,
                 data: serializedData,
                 dataType: "json",
-                success: function(data){
-                    if(data){
+                success: function (data) {
+                    if (data) {
                         alert(data.message);
                         window.location.href = baseurl;
                     }
                 },
-                error: function(jqXHR, textStatus, errorThrown){
-                     window.alert('Error occured: ' + errorThrown);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    window.alert('Error occured: ' + errorThrown);
                 }
             });
             return false;
@@ -1981,7 +1996,7 @@ $(document).ready(function () {
             selected.attr('disabled', true).attr('selected', false);
             $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][idpsso][keywords][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][idpsso][keywords][" + nf + "]\" name=\"f[uii][idpsso][keywords][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline\" name=\"lkeywords\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         });
-        
+
         $("button#addlprivacyurlspsso").click(function () {
             var selected = $("span.addlprivacyurlspsso option:selected").first();
             var nf = selected.val();
@@ -2719,7 +2734,7 @@ $(document).ready(function () {
                     }
                     modal.find('[name="policy"] option').prop('selected', false).filter('[value="' + attrpolicy + '"]').prop('selected', true);
 
-                    modal.foundation( 'open');
+                    modal.foundation('open');
                 }
                 else if (arptype === 'fed' && arpaction === 'edit') {
                     modal = $("#arpmeditfedattr");
@@ -2737,7 +2752,7 @@ $(document).ready(function () {
                     modal.find('input[name="attrid"]').first().val(attrid);
                     modal.find('input[name="entcatid"]').first().val(entcatid);
                     modal.find('[name="policy"] option').prop('selected', false).filter('[value="' + attrpolicy + '"]').prop('selected', true);
-                    modal.foundation( 'open');
+                    modal.foundation('open');
                 }
                 else if (arptype === 'sp' && arpaction === 'edit') {
                     modal = $('#arpmeditspattr');
@@ -2789,7 +2804,7 @@ $(document).ready(function () {
                             }
                         }
                     });
-                    modal.foundation( 'open');
+                    modal.foundation('open');
                 }
             }
 
@@ -3420,8 +3435,9 @@ $(document).ready(function () {
     var browsertimezone = -browsertime.getTimezoneOffset();
     fedlogin.attr('href', '' + fedloginurl + '/' + browsertimezone + '');
 
-    if ($('#fedcategories dd.active').length) {
-        var url = $('dd.active').find('a').first().attr('href');
+    if ($('#fedcategories li.active').length) {
+        var url = $('#fedcategories li.active').find('a').first().attr('href');
+
         var value = $('table.fedistpercat');
         var data;
         $.ajax({
@@ -3450,8 +3466,8 @@ $(document).ready(function () {
 
     $(".fedcategory").on('click', '', function (event) {
 
-        $('dd').removeClass('active');
-        $(this).closest('dd').addClass('active');
+        $(this).closest('ul').find('li').removeClass('active');
+        $(this).closest('li').addClass('active');
         var url = $(this).attr("href");
         var value = $('table.fedistpercat');
         var data;
@@ -3567,10 +3583,10 @@ $(function () {
 
     var iqcounter = $('#qcounter');
 
-    if(iqcounter.length > 0) {
+    if (iqcounter.length > 0) {
         var iqsrc = iqcounter.attr('data-jagger-src');
         var qcounterFromSession = sessionStorage.getItem('jaggerqcounter');
-        if(qcounterFromSession !== null){
+        if (qcounterFromSession !== null) {
             iqcounter.html(parseInt(qcounterFromSession));
         }
         var refresherFn = function () {
@@ -3590,33 +3606,33 @@ $(function () {
                     sessionStorage.setItem('jaggerqcounter', thesum);
 
                     iqcounter.html(thesum);
-                    if(dashresponsecontainer){
+                    if (dashresponsecontainer) {
                         var rows = [];
-                        if(result.definitions){
+                        if (result.definitions) {
                             var defs = result.definitions;
-                            rows.push('<table id="detailsi" class="itablesorter"><thead><tr><th>' +defs.date+'</th><th>'+defs.requester+'</th><th>'+defs.requesttype+'</th><th></th></tr><thead><tbody>');
+                            rows.push('<table id="detailsi" class="itablesorter"><thead><tr><th>' + defs.date + '</th><th>' + defs.requester + '</th><th>' + defs.requesttype + '</th><th></th></tr><thead><tbody>');
                         }
                         else {
                             rows.push('<table id="detailsi" class="itablesorter"><thead><tr><th>Date</th><th>Requester</th><th>Request type</th><th></th></tr><thead><tbody>');
                         }
-                        if(result.data.q){
-                            $.each(result.data.q, function(v,k){
+                        if (result.data.q) {
+                            $.each(result.data.q, function (v, k) {
 
-                                rows.push('<tr><td>'+ k.idate+'</td><td>'+ k.requesterCN + ' '+ k.mail+'</td><td>'+ k.type+' - '+ k.action+'</td><td><a href="'+baseurl+'reports/awaiting/detail/'+ k.token+'"><i class="fi-arrow-right"></i></a></td></tr>');
+                                rows.push('<tr><td>' + k.idate + '</td><td>' + k.requesterCN + ' ' + k.mail + '</td><td>' + k.type + ' - ' + k.action + '</td><td><a href="' + baseurl + 'reports/awaiting/detail/' + k.token + '"><i class="fi-arrow-right"></i></a></td></tr>');
                             });
                         }
-                        if(result.data.s){
-                             $.each(result.data.s, function(v,k){
-                                rows.push('<tr><td>&nbsp;</td><td>'+k.subscriber+' &lt'+k.subscriber_email+'&gt;</td><td>'+k.type+'</td><td><a href="'+k.url+'"><i class="fi-arrow-right"></i></a></td></tr>');
-                             });
+                        if (result.data.s) {
+                            $.each(result.data.s, function (v, k) {
+                                rows.push('<tr><td>&nbsp;</td><td>' + k.subscriber + ' &lt' + k.subscriber_email + '&gt;</td><td>' + k.type + '</td><td><a href="' + k.url + '"><i class="fi-arrow-right"></i></a></td></tr>');
+                            });
                         }
                         rows.push('</tbody></table>');
                         var tableresult = rows.join('');
                         dashresponsecontainer.html(tableresult);
                     }
                 },
-                error: function(){
-                    if(dashresponsecontainer){
+                error: function () {
+                    if (dashresponsecontainer) {
                         var errmsg = '<div data-alert class="alert-box alert center">Could not refresh queue</div>';
                         dashresponsecontainer.html(errmsg);
                     }
@@ -3625,19 +3641,16 @@ $(function () {
 
             });
         };
-        setTimeout(refresherFn,1000);
+        setTimeout(refresherFn, 1000);
         var refreshInterval = setInterval(refresherFn, 30000);
         refreshInterval;
     }
 
 
-
-$("#responsecontainer").load(baseurl + "reports/awaiting/ajaxrefresh");
-   setInterval(function () {
+    $("#responsecontainer").load(baseurl + "reports/awaiting/ajaxrefresh");
+    setInterval(function () {
         $("#responsecontainer").load(baseurl + 'reports/awaiting/ajaxrefresh');
     }, 172000);
-
-
 
 
     $('#languageset').on('change', 'select', function (e) {
@@ -4357,7 +4370,7 @@ $(document).ready(function () {
                 modal.foundation('close');
             });
             nobtn.off().on('click', function () {
-                modal.foundation( 'close');
+                modal.foundation('close');
             });
         });
 
@@ -5048,9 +5061,10 @@ $('.oidclink').on('click', function (e) {
 
 $("#updateprefsmodal").on('submit', function (e) {
     e.preventDefault();
-    var link = $(this).attr('data-jagger-link');
-    var alertDiv = $(this).find('div.alert').first();
-    var form = $(this).find('form').first();
+    var modal = $(this);
+    var link = modal.attr('data-jagger-link');
+    var alertDiv = modal.find('div.alert').first();
+    var form = modal.find('form').first();
     $.ajax({
         'url': link,
         'type': 'POST',
@@ -5076,7 +5090,7 @@ $("#updateprefsmodal").on('submit', function (e) {
                         sStatus.addClass('alert').html(data.statusstring);
                     }
 
-                    $(document).foundation('close');
+                   modal.foundation('close');
                 }
                 else if (data.error) {
                     alertDiv.html(data.error).show();
@@ -5146,12 +5160,11 @@ $(document).on('click', 'a.updateprefs', function (e) {
 
     });
 
-
     modal.foundation('open');
     return false;
 
 });
-$("#updatemembership").on('click', '.yes', function(e){
+$("#updatemembership").on('click', '.yes', function (e) {
 
     var form = $("#updatemembership").find('form');
     var url = form.attr('action');
@@ -5161,24 +5174,24 @@ $("#updatemembership").on('click', '.yes', function(e){
         type: 'post',
         data: data,
         dataType: 'json',
-        success: function(result){
-            if(result.message){
-                revealAlert(result.message,'OK');
+        success: function (result) {
+            if (result.message) {
+                revealAlert(result.message, 'OK');
             }
         },
-        error: function(jqXHR, textStatus, errorThrown){
-            revealAlert('<div data-alert class="alert-box alert ">'+jqXHR.responseText+'</div>','OK');
+        error: function (jqXHR, textStatus, errorThrown) {
+            revealAlert('<div data-alert class="alert-box alert ">' + jqXHR.responseText + '</div>', 'OK');
         }
     });
     return false;
 });
 
-$('button.revealc').on('click', function(){
+$('button.revealc').on('click', function () {
     var valtopass = $(this).val();
     var msg = $(this).attr('data-jagger-desc');
     var modal = $("#updatemembership");
     var msgdesc = modal.find('div.message').first();
-    if(msgdesc){
+    if (msgdesc) {
         msgdesc.html(msg);
     }
     var updatedata = modal.find('input[name="updatedata"]');

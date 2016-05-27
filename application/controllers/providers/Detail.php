@@ -96,6 +96,58 @@ class Detail extends MY_Controller
 
     }
 
+    public function getlogs($providerID) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
+            return $this->output->set_status_header(403)->set_output('Denied');
+        }
+        $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
+        /**
+         * @var $ent models\Provider
+         */
+        $ent = $this->em->getRepository("models\Provider")->findOneBy(array('id' => $providerID));
+        if ($ent === null) {
+            return $this->load->view('providers/showlogs_view', array('d' => array()));
+        }
+
+        $hasWriteAccess = $this->zacl->check_acl($providerID, 'write', 'entity', '');
+        if ($hasWriteAccess !== TRUE) {
+            return $this->load->view('providers/showlogs_view', array('d' => array()));
+        }
+
+        $isstats = $this->config->item('statistics');
+        if ($this->isGearman && $isstats === true) {
+            $rows[] = array('name' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', lang('statsmngmt')) . '',
+                            'value' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<i class="fi-graph-bar"></i>') . '');
+        }
+        $rows[] = array(
+            'header' => lang('rr_logs'),
+        );
+        $rows[] = array(
+            'name' => lang('rr_variousreq'),
+            'value' => $this->show_element->generateRequestsList($ent, 10)
+        );
+        $rows[] = array(
+            'name' => lang('rr_modifications'),
+            'value' => $this->show_element->generateModificationsList($ent, 10)
+        );
+
+        if ((strcasecmp($ent->getType(), 'SP') !== 0)) {
+            $tmpLogs = new models\Trackers;
+            /**
+             * @var $arpLogs models\Tracker[]
+             */
+            $arpLogs = $tmpLogs->getArpDownloaded($ent);
+            $loggHtml = '<ul class="no-bullet">';
+            foreach ($arpLogs as $l) {
+                $loggHtml .= '<li><b>' . jaggerDisplayDateTimeByOffset($l->getCreated(), jauth::$timeOffset) . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
+            }
+            $loggHtml .= '</ul>';
+            $rows[] = array('name' => '' . lang('rr_recentarpdownload') . '', 'value' => '' . $loggHtml . '');
+        }
+        $this->load->view('providers/showlogs_view', array('d' => $rows));
+
+    }
+
     public function showlogs($providerID) {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Denied');
@@ -176,7 +228,7 @@ class Detail extends MY_Controller
 
         $data = $this->providerdetails->generateForControllerProvidersDetail();
         if (empty($data['bookmarked'])) {
-            $data['sideicons'][] = '<a href="' . base_url() . 'ajax/bookmarkentity/' . $data['entid'] . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fi-bookmark" style="color: white"></i></a>';
+            $data['sideicons'][] = '<a href="' . base_url() . 'ajax/bookmarkentity/' . $data['entid'] . '" class="updatebookmark bookentity"  data-jagger-bookmark="add" title="Add to dashboard"><i class="fa fa-bookmark" style="color: white"></i></a>';
 
         }
         /**

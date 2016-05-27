@@ -192,6 +192,7 @@ class Ajax extends MY_Controller
 
         $result = array();
         $imgtoggle = '<img class="toggle" src="' . base_url() . 'images/icons/control-270.png" />';
+        $imgtoggle = '<i class="fa fa-caret-square-o-down toggle"></i>';
         foreach ($federations as $v) {
             $lbs = array(
                 'pub' => makeLabel('notpublic', '', lang('rr_fed_notpublic')),

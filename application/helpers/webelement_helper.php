@@ -7,7 +7,7 @@ function generateTopBar($a) {
         <button class="menu-icon" type="button" data-toggle></button>
         <div class="title-bar-title">Menu</div>
     </div>
-    <div id="topbar-menu" class="top-bar stacked-for-large" data-sticky data-options="marginTop:0;">';
+    <div id="topbar-menu" class="top-bar stacked-for-medium" data-sticky data-options="marginTop:0;">';
     if (isset($a['logo'])) {
 
         $html[] = '<div class="title-bar-left" ><div class="logo-wrapper hide-for-small-only" >' .
@@ -80,10 +80,11 @@ function jaggerDisplayDateTimeByOffset(\DateTime $dateTime, $timeOffset, $outFor
 }
 
 function revealBtnsRow($btns) {
-    $r = '<ul class="button-group text-right">';
+    $r = '<div class="button-group text-right">';
     foreach ($btns as $btn) {
-        $r .= '<li>' . $btn . '</li>';
+        $r .= $btn ;
     }
+    $r .='</div>';
 
     return $r;
 }

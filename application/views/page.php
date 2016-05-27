@@ -69,7 +69,7 @@ $foundation = $base_url . 'foundation/';
     href="http://whatbrowser.org/">upgrade your browser</a> to improve your experience.</p></div>
 <![endif]-->
 <header>
-    <?php
+       <?php
     $iscookieconsent = $this->rrpreference->getPreferences('cookieConsent');
     $breadcrumbsConf = $this->rrpreference->getPreferences('breadcrumbs');
     $breadcrumbsEnabled = FALSE;

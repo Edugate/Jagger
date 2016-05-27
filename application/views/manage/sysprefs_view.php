@@ -46,7 +46,7 @@ echo $this->table->generate();
 
 ?>
 
-<div id="updateprefsmodal" class="reveal-modal medium" data-reveal
+<div id="updateprefsmodal" class="reveal medium" data-reveal
      data-jagger-link="<?php echo base_url() ?>smanage/sysprefs/updateconf">
 	<h3>Update prefs for <span data-jagger-name="displayname"></span></h3>
 
@@ -67,7 +67,7 @@ echo $this->table->generate();
 	echo '</div>';
 	echo '<div class="rows">';
     $btns = array(
-        '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+        '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
         '<button type="submit" name="update" value="updateprefs" class="button">' . lang('btnupdate') . '</button>'
     );
     echo revealBtnsRow($btns);
@@ -77,8 +77,10 @@ echo $this->table->generate();
 	?>
 
 
+	<button class="close-button" data-close aria-label="Close reveal" type="button">
+		<span aria-hidden="true">&times;</span>
+	</button>
 
 
-	<a class="close-reveal-modal">&#215;</a>
 </div>
 

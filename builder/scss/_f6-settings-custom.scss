@@ -1,12 +1,15 @@
+$body-background: #F6F7F7;
 
-$topbar-background: #0A0A0A;
+
+$topbar-background: #014289;
 $topbar-submenu-background: $topbar-background;
 $topbar-title-spacing: 1rem;
 $topbar-input-width: 200px;
 $topbar-unstack-breakpoint: medium;
+$topbar-link-color: $white;
 
 
-$footer-background: #0A0A0A;
+$footer-background: #014289;
 $footer-text: $white;
 
 $jagger-selected-bgcolor: #074e68;
@@ -43,7 +46,14 @@ $fedlogin-color: $primary-color;
 $icon-size: 2rem;
 
 // TABS
-$tab-background: $black;
+$tab-background: #258CFD;
+$tab-item-color: $white;
+$tab-item-color-hover: $black;
 $tab-background-active: lighten($black,20%);
 
 $tab-background-second-level: lighten($black,10%);
+
+
+// box header (dashboard)
+$box-header-background: #454545;
+$box-header-font: lighten($box-header-background,80%);

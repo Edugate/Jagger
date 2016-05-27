@@ -233,25 +233,25 @@ class Manage extends MY_Controller
             array_push($d,
                 array(
                     lang('rr_fedmetaunsingedlink'),
-                    $metaLinkPrefix.'/metadata.xml' . ' ' . anchor($metaLinkPrefix.'/metadata.xml', '<i class="fi-arrow-right"></i>', 'class=""')
+                    $metaLinkPrefix.'/metadata.xml' . ' ' . anchor($metaLinkPrefix.'/metadata.xml', '<i class="fa fa-arrow-right"></i>', 'class=""')
                 ),
                 array(
                     lang('rr_fedmetaunsingedlink').' <span class="label">'.lang('rr_only').' '.lang('identityproviders').'</span>',
-                    $metaLinkPrefix.'/IDP/metadata.xml' . ' ' . anchor($metaLinkPrefix.'/IDP/metadata.xml', '<i class="fi-arrow-right"></i>', 'class=""')
+                    $metaLinkPrefix.'/IDP/metadata.xml' . ' ' . anchor($metaLinkPrefix.'/IDP/metadata.xml', '<i class="fa fa-arrow-right"></i>', 'class=""')
                 ),
                 array(
                     lang('rr_fedmetaunsingedlink').' <span class="label">'.lang('rr_only').' '.lang('serviceproviders').'</span>',
-                    $metaLinkPrefix.'/SP/metadata.xml' . ' ' . anchor($metaLinkPrefix.'/SP/metadata.xml', '<i class="fi-arrow-right"></i>', 'class=""')
+                    $metaLinkPrefix.'/SP/metadata.xml' . ' ' . anchor($metaLinkPrefix.'/SP/metadata.xml', '<i class="fa fa-arrow-right"></i>', 'class=""')
                 ),
                 array(
-                    lang('rr_fedmetasingedlink') . ' <span class="label">' . $digest . '</span>', $metaLinkSigned . " " . anchor_popup($metaLinkSigned, '<i class="fi-arrow-right"></i>'))
+                    lang('rr_fedmetasingedlink') . ' <span class="label">' . $digest . '</span>', $metaLinkSigned . " " . anchor_popup($metaLinkSigned, '<i class="fa fa-arrow-right"></i>'))
             );
 
         }
         $lexportenabled = $federation->getLocalExport();
         if ($lexportenabled === true) {
-            $d[] = array(lang('rr_fedmetaexportunsingedlink'), $metaExportLink . " " . anchor_popup($metaExportLink, '<i class="fi-arrow-right"></i>', 'class=""'));
-            $d[] = array(lang('rr_fedmetaexportsingedlink') . ' <span class="label">' . $digestExport . '</span>', $metaExportLinkSigned . " " . anchor_popup($metaExportLinkSigned, '<i class="fi-arrow-right"></i>'));
+            $d[] = array(lang('rr_fedmetaexportunsingedlink'), $metaExportLink . " " . anchor_popup($metaExportLink, '<i class="fa fa-arrow-right"></i>', 'class=""'));
+            $d[] = array(lang('rr_fedmetaexportsingedlink') . ' <span class="label">' . $digestExport . '</span>', $metaExportLinkSigned . " " . anchor_popup($metaExportLinkSigned, '<i class="fa fa-arrow-right"></i>'));
         }
         if ($federation->getActive()) {
             $gearmanenabled = $this->config->item('gearman');
@@ -384,18 +384,18 @@ class Manage extends MY_Controller
         if ($access['hasAddbulkAccess']) {
             $data['result']['membership'] = array(
                 array('data' => array('data' => lang('rr_membermanagement'), 'class' => 'highlight', 'colspan' => 2)),
-                array('IDPs', lang('rr_addnewidpsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/idp', '<i class="fi-arrow-right"></i>')),
-                array('SPs', lang('rr_addnewspsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/sp', '<i class="fi-arrow-right"></i>'))
+                array('IDPs', lang('rr_addnewidpsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/idp', '<i class="fa fa-arrow-right"></i>')),
+                array('SPs', lang('rr_addnewspsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/sp', '<i class="fa fa-arrow-right"></i>'))
             );
         }
         if ($access['hasWriteAccess']) {
-            $data['result']['membership'][] = array(lang('rr_fedinvitation'), lang('rr_fedinvidpsp') . anchor(base_url() . 'federations/manage/inviteprovider/' . $encodedFedName . '', '<i class="fi-arrow-right"></i>'));
-            $data['result']['membership'][] = array(lang('rr_fedrmmember'), lang('rr_fedrmidpsp') . anchor(base_url() . 'federations/manage/removeprovider/' . $encodedFedName . '', '<i class="fi-arrow-right"></i>'));
+            $data['result']['membership'][] = array(lang('rr_fedinvitation'), lang('rr_fedinvidpsp') . anchor(base_url() . 'federations/manage/inviteprovider/' . $encodedFedName . '', '<i class="fa fa-arrow-right"></i>'));
+            $data['result']['membership'][] = array(lang('rr_fedrmmember'), lang('rr_fedrmidpsp') . anchor(base_url() . 'federations/manage/removeprovider/' . $encodedFedName . '', '<i class="fa fa-arrow-right"></i>'));
         }
 
 
         if ($access['hasManageAccess']) {
-            $data['result']['management'][] = array('data' => array('data' => lang('access_mngmt') . anchor(base_url() . 'manage/accessmanage/federation/' . $federationID, '<i class="fi-arrow-right"></i>'), 'colspan' => 2));
+            $data['result']['management'][] = array('data' => array('data' => lang('access_mngmt') . anchor(base_url() . 'manage/accessmanage/federation/' . $federationID, '<i class="fa fa-arrow-right"></i>'), 'colspan' => 2));
             $data['hiddenspan'] = '<span id="fednameencoded" style="display:none">' . $encodedFedName . '</span>';
             if ($federation->getActive()) {
                 $userBoardData = '<button type="button" name="fedstatus" value="disablefed" class="resetbutton reseticon alert small" title="' . lang('btn_deactivatefed') . ': ' . html_escape($federation->getName()) . '">' . lang('btn_deactivatefed') . '</button>';

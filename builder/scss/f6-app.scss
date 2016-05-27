@@ -6,6 +6,14 @@
 @import 'motion-ui';
 @import 'foundation-icons';
 
+//@import "font-awesome-sprockets";
+$fa-font-path: 'fontawesome/fonts';
+@import "font-awesome";
+
+// to decide
+// @import 'ffab';
+//@include ffab-everything;
+
 @include foundation-global-styles;
 @include foundation-grid;
 // @include foundation-flex-grid;
@@ -50,6 +58,7 @@
 
 @include motion-ui-transitions;
 @include motion-ui-animations;
+
 
 @import "select2";
 @import "_dataTables.foundation";

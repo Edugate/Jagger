@@ -3,6 +3,7 @@ var rename = require('gulp-rename');
 var sass = require('gulp-sass');
 var clean = require('gulp-clean');
 var copy = require('gulp-copy');
+var copyfonts = require('gulp-copy');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 var filerev = require('gulp-file-rev');
@@ -16,8 +17,19 @@ var addsrc = require('gulp-add-src');
 var sassFoundation6Paths = [
   'bower_components/foundation-sites/scss',
   'bower_components/motion-ui/src',
-  'bower_components/foundation-icon-fonts'
+  'bower_components/foundation-icon-fonts',
+  'bower_components/font-awesome/scss',
+  'bower_components/foundation-font-awesome-buttons/src'
 ];
+
+gulp.task('copyfonts', function(){
+  return gulp.src([
+    'bower_components/font-awesome/fonts/*'
+  ])
+    .pipe(copy('../styles/fontawesome/fonts/',{ prefix: 3 }));
+
+});
+
 
 
 
@@ -105,7 +117,7 @@ gulp.task('sass-f6-default',  function () { // preparing for foundation6
   ;
 });
 
-gulp.task('sass',gulp.parallel('sass-default-theme','sass-theme01', 'sass-f6-default'));
+gulp.task('sass',gulp.parallel('copyfonts','sass-default-theme','sass-theme01', 'sass-f6-default'));
 
 gulp.task('clean', function () {
   return gulp
@@ -127,7 +139,6 @@ gulp.task('copy',function() {
     .pipe(copy('build/src/',{ prefix: 2 }));
 
 });
-
 
 gulp.task('uglify', function () {
   return gulp.src(['build/src/jquery.cookie.js','build/src/jquery.placeholder.js','build/src/modernizr.js','build/src/local.js','build/src/local-f6.js'])

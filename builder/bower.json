@@ -13,5 +13,8 @@
     "datatables-plugins": "1.10.10",
     "underscore": "1.8.3",
     "font-awesome": "*"
+  },
+  "devDependencies": {
+    "foundation-font-awesome-buttons": "~3.2.1"
   }
 }

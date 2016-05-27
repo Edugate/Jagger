@@ -89,6 +89,8 @@ $foundation = $base_url . 'foundation/';
     $args['breadcrumbsEnabled'] = $breadcrumbsEnabled;
     $this->load->view('f6/toppanel', $args);
 
+echo '</header>';
+    echo '<div id="topabersep"></div>';
     if (!empty($showPagetitles) && !empty($showPagetitles['status']) && (!empty($titlepage) || !empty($subtitlepage))) {
 
         echo '<div id="titlepage" class="fullWidth">'; // start id="titlepage"
@@ -125,7 +127,7 @@ $foundation = $base_url . 'foundation/';
         echo '</div>'; // end id="titlepage"
     }
     ?>
-</header>
+
 <?php
 
 if ($breadcrumbsEnabled === true) {
@@ -338,11 +340,11 @@ if (!empty($rawJs) && is_array($rawJs)) {
 
 <script>
     $(document).foundation();
-    $('.title-bar').on('sticky.zf.stuckto:top', function () {
-        $(this).addClass('shrink');
-    }).on('sticky.zf.unstuckfrom:top', function () {
-        $(this).removeClass('shrink');
-    })
+   // $('.title-bar').on('sticky.zf.stuckto:top', function () {
+   //     $(this).addClass('shrink');
+   // }).on('sticky.zf.unstuckfrom:top', function () {
+   //     $(this).removeClass('shrink');
+   // })
 </script>
 
 
