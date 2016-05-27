@@ -175,7 +175,7 @@ class Providerdetails
         }
         if ($isLocal && $hasWriteAccess && !empty($gearman_enabled) && $circleEnabled) {
             $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
-            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner" class="button tiny">' . lang('btn_signmetadata') . '</a>';
+            $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner" class="button">' . lang('btn_signmetadata') . '</a>';
         }
         $wayfhide = false;
 
@@ -236,22 +236,22 @@ class Providerdetails
 
                     if ($hasManageAccess) {
                         $valTmp = $ent->getId() . '|' . $f->getFederation()->getId() . '|dis|0';
-                        $mngmtBtns[] = '<button data-jagger-desc="Reactivate membership" class="tiny revealc" value="' . $valTmp . '">'.lang('btntmpactmemb').'</button>';
+                        $mngmtBtns[] = '<button data-jagger-desc="Reactivate membership" class="button small revealc" value="' . $valTmp . '">'.lang('btntmpactmemb').'</button>';
                     }
                 } else if ($hasManageAccess) {
                     $valTmp = $ent->getId() . '|' . $f->getFederation()->getId() . '|dis|1';
-                    $mngmtBtns[] = '<button data-jagger-desc="Temporary suspend membership without leaving federation" class="alert tiny revealc " value="' . $valTmp . '">'.lang('btntmpsuspendmemb').'</button>';
+                    $mngmtBtns[] = '<button data-jagger-desc="Temporary suspend membership without leaving federation" class="button alert small revealc " value="' . $valTmp . '">'.lang('btntmpsuspendmemb').'</button>';
                 }
                 $membershipBanned = '';
                 if ($f->isBanned()) {
                     if ($isAdmin) {
                         $valTmp = $ent->getId() . '|' . $f->getFederation()->getId() . '|ban|0';
-                        $mngmtBtns[] = '<button data-jagger-desc="Reactivate membership" class="tiny revealc" value="' . $valTmp . '">'.lang('btnadmactmemb').'</button>';
+                        $mngmtBtns[] = '<button data-jagger-desc="Reactivate membership" class="button small revealc" value="' . $valTmp . '">'.lang('btnadmactmemb').'</button>';
                     }
                     $membershipBanned = makeLabel('disabled', lang('membership_banned'), lang('membership_banned'));
                 } else if ($isAdmin) {
                     $valTmp = $ent->getId() . '|' . $f->getFederation()->getId() . '|ban|1';
-                    $mngmtBtns[] = '<button data-jagger-desc="Administravely suspend membership without leaving federation" class="tiny revealc alert" value="' . $valTmp . '">'.lang('btnadmsuspendmemb').'</button>';
+                    $mngmtBtns[] = '<button data-jagger-desc="Administravely suspend membership without leaving federation" class="button small revealc alert" value="' . $valTmp . '">'.lang('btnadmsuspendmemb').'</button>';
                 }
                 $fedActive = $f->getFederation()->getActive();
 
@@ -278,7 +278,7 @@ class Providerdetails
             $no_feds = $membership->count();
             if ($no_feds > 0 && $hasWriteAccess) {
                 if (!$isLocked) {
-                    $manage_membership .= '<div><a href="' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '" class="button tiny alert">' . lang('rr_federationleave') . '</a></div>';
+                    $manage_membership .= '<div><a href="' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '" class="button small alert">' . lang('rr_federationleave') . '</a></div>';
                     $this->entmenu[11] = array('name' => lang('rr_federationleave'), 'link' => '' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '', 'class' => '');
                 } else {
                     $manage_membership .= '<b>' . lang('rr_federationleave') . '</b> ' . $lockicon . ' <br />';
@@ -286,7 +286,7 @@ class Providerdetails
             }
             if ($hasWriteAccess && (count($membershipNotLeft) < count($all_federations))) {
                 if (!$isLocked) {
-                    $manage_membership .= '<div><a href="' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '" class="button tiny">' . lang('rr_federationjoin') . '</a></div>';
+                    $manage_membership .= '<div><a href="' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '" class="button small">' . lang('rr_federationjoin') . '</a></div>';
                     $this->entmenu[10] = array('name' => lang('rr_federationjoin'), 'link' => '' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '', 'class' => '');
                 } else {
                     $manage_membership .= '<b>' . lang('rr_federationjoin') . '</b> ' . $lockicon . '<br />';
@@ -296,7 +296,7 @@ class Providerdetails
         $d[$i]['value'] = '<p>' . $federationsString . '</p>' . '<p>' . $manage_membership . '</p>';
         if ($no_feds > 0) {
             $d[++$i]['name'] = '';
-            $d[$i]['value'] = '<a href="' . base_url() . 'providers/detail/showmembers/' . $id . '" id="getmembers"><button type="button" class="savebutton arrowdownicon small secondary">' . lang('showmemb_btn') . '</button></a>';
+            $d[$i]['value'] = '<a href="' . base_url() . 'providers/detail/showmembers/' . $id . '" id="getmembers"><button type="button" class="button secondary arrowdownicon ">' . lang('showmemb_btn') . '</button></a>';
 
             $d[++$i]['2cols'] = '<div id="membership"></div>';
         }
@@ -456,7 +456,7 @@ class Providerdetails
             $editLink .= makeLabel('locked', lang('rr_lockedentity'), lang('rr_lockedentity'));
             $this->entmenu[0] = array('name' => '' . lang('rr_lockedentity') . '', 'link' => '#', 'class' => 'alert');
         } else {
-            $editLink .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="editbutton editicon button small" id="editprovider" title="edit" >' . lang('rr_edit') . '</a>';
+            $editLink .= '<a href="' . base_url() . 'manage/entityedit/show/' . $id . '" class="button" id="editprovider" title="edit" >' . lang('rr_edit') . '</a>';
             $this->entmenu[0] = array('name' => '' . lang('rr_editentity') . '', 'link' => '' . base_url() . 'manage/entityedit/show/' . $id . '', 'class' => '');
             $data['showclearcache'] = true;
         }
@@ -941,7 +941,7 @@ class Providerdetails
                 }
             }
             $d[++$i]['name'] = lang('rr_arpoverview');
-            $d[$i]['value'] = anchor(base_url('reports/idpmatrix/show/' . $ent->getId()), 'matrix', 'class="editbutton"');
+            $d[$i]['value'] = anchor(base_url('reports/idpmatrix/show/' . $ent->getId()), 'matrix', 'class="button"');
         }
         $logoUploadEnabled = $this->CI->config->item('rr_logoupload');
         /**

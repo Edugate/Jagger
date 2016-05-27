@@ -443,3 +443,41 @@ div.error {
   transition-delay: initial;
  // background-color: $white;
 }
+
+.alert-box {
+  font-size: 90%;
+  padding: 0.4rem;
+  //background-color: $black;
+}
+.alert-box.warning {
+  background-color: map_get($foundation-palette,'warning');
+}
+.alert-box.alert {
+  background-color: map_get($foundation-palette,'alert');
+}
+.spinner {
+  color:  $black;
+  transition: box-shadow 0.2s ease-in;
+}
+
+td.highlight {
+  background-color:lighten(map_get($foundation-palette,'secondary'),30%);
+}
+
+//.alert-box.warning:before {
+//    content: "\f000";
+//    font-family: FontAwesome;
+//}
+#map {
+  width: 100%;
+  //width: 500px;
+  height: 500px;
+  position: relative;
+  background-color: rgb(229, 227, 223);
+  overflow: hidden;
+}
+code {
+
+  white-space: pre;
+  font-size: smaller;
+}

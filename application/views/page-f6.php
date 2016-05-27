@@ -240,10 +240,14 @@ if ($breadcrumbsEnabled === true) {
 
     </footer>
 </div>
+    
 
-<div id="spinner" class="spinner" style="display:none;">
-    <img id="img-spinner" src="<?php echo $base_url; ?>images/spinner1.gif" alt="<?php echo lang('loading'); ?>"/>
-</div>
+ <div id="spinner" class="spinner hidden ">
+     <i class="fa fa-spinner fa-spin fa-3x fa-fw text-danger"></i>
+<span class="sr-only">Loading...</span>
+ </div>
+
+
 <a href="javascript:" id="return-to-top"><i class="fi-arrow-up largeicon"></i></a>
 
 <div style="display: none">

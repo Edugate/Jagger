@@ -5,13 +5,14 @@ function generateTopBar($a) {
     $html[] = '<div data-sticky-container>
     <div class="title-bar" data-responsive-toggle="topbar-menu" data-hide-for="medium" data-sticky>
         <button class="menu-icon" type="button" data-toggle></button>
-        <div class="title-bar-title">Menu</div>
-    </div>
-    <div id="topbar-menu" class="top-bar stacked-for-medium" data-sticky data-options="marginTop:0;">';
+        <div class="title-bar-title">Menu</div></div>' .
+        '<div id="topbar-menu" class="top-bar stacked-for-medium" data-sticky data-options="marginTop:0;">';
+
+
     if (isset($a['logo'])) {
 
         $html[] = '<div class="title-bar-left" ><div class="logo-wrapper hide-for-small-only" >' .
-            '<span class="top-bar-title logo" ><a href = "' . $a['logo']['link'] . '" class="sitelogo" ><img src = "' . $a['logo']['img'] . '" alt = "Logo" /></a ></span >'.
+            '<span class="top-bar-title logo" ><a href = "' . $a['logo']['link'] . '" class="sitelogo" ><img src = "' . $a['logo']['img'] . '" alt = "Logo" /></a ></span >' .
             '</div ></div >';
     }
     $html[] = '<div class="title-bar-left">';
@@ -51,12 +52,12 @@ function generateTopBarElements($b, $position, $top = true) {
     }
     foreach ($b as $v) {
         $linkclass = isset($v['linkprop']) ? $v['linkprop'] : '';
-        $href = isset($v['link']) ? ' href="'.$v['link'].'" ' : ' ';
+        $href = isset($v['link']) ? ' href="' . $v['link'] . '" ' : ' ';
         $elementActive = '';
-        if(isset($v['active']) && $v['active'] === true){
+        if (isset($v['active']) && $v['active'] === true) {
             $elementActive = ' class="active" ';
         }
-        $r .= '<li '.$elementActive.'><a  '.$href.' '.$linkclass.'>' . $v['name'] . '</a>';
+        $r .= '<li ' . $elementActive . '><a  ' . $href . ' ' . $linkclass . '>' . $v['name'] . '</a>';
         if (isset($v['sub']) && is_array($v['sub'])) {
             $r .= generateTopBarElements($v['sub'], $position, false);
         }
@@ -82,9 +83,9 @@ function jaggerDisplayDateTimeByOffset(\DateTime $dateTime, $timeOffset, $outFor
 function revealBtnsRow($btns) {
     $r = '<div class="button-group text-right">';
     foreach ($btns as $btn) {
-        $r .= $btn ;
+        $r .= $btn;
     }
-    $r .='</div>';
+    $r .= '</div>';
 
     return $r;
 }
@@ -193,12 +194,12 @@ function generateSelectInputCheckboxFields($label1, $name1, $select1, $selected1
     $r .= '<div class="small-6 columns">';
     $r .= form_input(
         array(
-            'name'       => $name2,
-            'id'         => $name2,
-            'size'       => '3',
+            'name' => $name2,
+            'id' => $name2,
+            'size' => '3',
             'max-length' => '3',
-            'class'      => 'acsindex',
-            'value'      => $value2,
+            'class' => 'acsindex',
+            'value' => $value2,
         )
     );
     $r .= '</div>';
@@ -207,10 +208,10 @@ function generateSelectInputCheckboxFields($label1, $name1, $select1, $selected1
         $r .= '<label for="' . $name3 . '">' . $label3 . '</label>';
     }
     $r .= form_radio(array(
-        'name'    => $name3,
-        'id'      => $name3,
-        'value'   => $value3,
-        'class'   => 'acsdefault',
+        'name' => $name3,
+        'id' => $name3,
+        'value' => $value3,
+        'class' => 'acsdefault',
         'checked' => $ifset3,
     ));
     $r .= '</div>';
@@ -236,12 +237,12 @@ function generateSelectInputFields($label1, $name1, $select1, $selected1, $label
     $r .= '<div class="small-2 large-1 columns end">'; // input+check
     $r .= form_input(
         array(
-            'name'       => $name2,
-            'id'         => $name2,
-            'size'       => '3',
+            'name' => $name2,
+            'id' => $name2,
+            'size' => '3',
             'max-length' => '3',
-            'class'      => 'acsindex',
-            'value'      => $value2,
+            'class' => 'acsindex',
+            'value' => $value2,
         )
     );
 
@@ -306,8 +307,8 @@ function jGenerateRadios($label, $inputname, $radios, $value, $inputclass) {
 function generateInputWithRemove($label, $name, $buttonname, $buttonvalue, $value, $inputclasses, $buttonclasses) {
     $result = '<div class="small-3 columns"><label for="' . $name . '" class="right inline ">' . $label . '</label></div><div class="small-6 large-7 columns">' . form_input(
             array(
-                'name'  => '' . $name . '',
-                'id'    => '' . $name . '',
+                'name' => '' . $name . '',
+                'id' => '' . $name . '',
                 'value' => '' . $value . '',
                 'class' => $inputclasses . ' right inline'
             )

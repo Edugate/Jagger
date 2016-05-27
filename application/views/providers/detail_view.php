@@ -1,6 +1,6 @@
 <?php
 if (!empty($alerts) && is_array($alerts) && count($alerts) > 0) {
-    echo '<div  class="callout warning" >';
+    echo '<div  class="alert-box warning" >';
     foreach ($alerts as $v) {
         echo '<div>' . $v . '</div>';
     }
@@ -9,7 +9,7 @@ if (!empty($alerts) && is_array($alerts) && count($alerts) > 0) {
 
 echo '<div data-jagger-getmoreajax= "' . base_url() . 'providers/detail/status/' . $entid . '" data-jagger-response-msg="prdetails" data-jagger-refreshurl="' . base_url() . 'providers/detail/status/' . $entid . '/1"></div>';
 
-echo '<div id="prdetails" class="callout warning hidden" ></div>';
+echo '<div id="prdetails" class="alert-box warning hidden" ></div>';
 ?>
 <div class="off-canvas-wrapper">
     <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
