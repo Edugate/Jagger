@@ -3,9 +3,7 @@
 
 function generateTopBar($a) {
     $html[] = '<div data-sticky-container>
-    <div class="title-bar" data-responsive-toggle="topbar-menu" data-hide-for="medium" data-sticky>
-        <button class="menu-icon" type="button" data-toggle></button>
-        <div class="title-bar-title">Menu</div></div>' .
+    <div class="title-bar" data-responsive-toggle="topbar-menu" data-hide-for="medium" data-sticky><button class="menu-icon" type="button" data-toggle></button><div class="title-bar-title">Menu</div></div>' .
         '<div id="topbar-menu" class="top-bar stacked-for-medium" data-sticky data-options="marginTop:0;">';
 
 
@@ -13,7 +11,7 @@ function generateTopBar($a) {
 
         $html[] = '<div class="title-bar-left" ><div class="logo-wrapper hide-for-small-only" >' .
             '<span class="top-bar-title logo" ><a href = "' . $a['logo']['link'] . '" class="sitelogo" ><img src = "' . $a['logo']['img'] . '" alt = "Logo" /></a ></span >' .
-            '</div ></div >';
+            '</div ></div>';
     }
     $html[] = '<div class="title-bar-left">';
     if (isset($a['left'])) {
@@ -35,7 +33,7 @@ function generateTopBar($a) {
     }
 
     $html[] = '</div>';
-
+    $html[] = '</div>';
     $html[] = '</div>';
 
 
@@ -194,12 +192,12 @@ function generateSelectInputCheckboxFields($label1, $name1, $select1, $selected1
     $r .= '<div class="small-6 columns">';
     $r .= form_input(
         array(
-            'name' => $name2,
-            'id' => $name2,
-            'size' => '3',
+            'name'       => $name2,
+            'id'         => $name2,
+            'size'       => '3',
             'max-length' => '3',
-            'class' => 'acsindex',
-            'value' => $value2,
+            'class'      => 'acsindex',
+            'value'      => $value2,
         )
     );
     $r .= '</div>';
@@ -208,10 +206,10 @@ function generateSelectInputCheckboxFields($label1, $name1, $select1, $selected1
         $r .= '<label for="' . $name3 . '">' . $label3 . '</label>';
     }
     $r .= form_radio(array(
-        'name' => $name3,
-        'id' => $name3,
-        'value' => $value3,
-        'class' => 'acsdefault',
+        'name'    => $name3,
+        'id'      => $name3,
+        'value'   => $value3,
+        'class'   => 'acsdefault',
         'checked' => $ifset3,
     ));
     $r .= '</div>';
@@ -237,12 +235,12 @@ function generateSelectInputFields($label1, $name1, $select1, $selected1, $label
     $r .= '<div class="small-2 large-1 columns end">'; // input+check
     $r .= form_input(
         array(
-            'name' => $name2,
-            'id' => $name2,
-            'size' => '3',
+            'name'       => $name2,
+            'id'         => $name2,
+            'size'       => '3',
             'max-length' => '3',
-            'class' => 'acsindex',
-            'value' => $value2,
+            'class'      => 'acsindex',
+            'value'      => $value2,
         )
     );
 
@@ -307,8 +305,8 @@ function jGenerateRadios($label, $inputname, $radios, $value, $inputclass) {
 function generateInputWithRemove($label, $name, $buttonname, $buttonvalue, $value, $inputclasses, $buttonclasses) {
     $result = '<div class="small-3 columns"><label for="' . $name . '" class="right inline ">' . $label . '</label></div><div class="small-6 large-7 columns">' . form_input(
             array(
-                'name' => '' . $name . '',
-                'id' => '' . $name . '',
+                'name'  => '' . $name . '',
+                'id'    => '' . $name . '',
                 'value' => '' . $value . '',
                 'class' => $inputclasses . ' right inline'
             )

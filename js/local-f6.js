@@ -1514,7 +1514,10 @@ var GINIT = {
 
 
 $(document).ready(function () {
-
+    $('pre code').each(function (i, block) {
+        hljs.highlightBlock(block);
+    });
+   
     var spinner = $('#spinner');
 
     $(window).scroll(function () {
@@ -1677,9 +1680,9 @@ $(document).ready(function () {
 
 
                 var markersSet = false;
-            
+
                 providerEditForm.on('change.zf.tabs', '[data-tabs]', function (e) {
-                      if (markersSet === false) {
+                    if (markersSet === false) {
                         var bounds = new google.maps.LatLngBounds();
                         for (var i = 0, tot = markers.length; i < tot; i++) {
                             var myLatlng = new google.maps.LatLng(markers[i][0], markers[i][1]);

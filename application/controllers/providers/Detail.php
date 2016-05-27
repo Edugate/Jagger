@@ -37,7 +37,7 @@ class Detail extends MY_Controller
         if (!ctype_digit($providerID)) {
             return $this->output->set_status_header(403)->set_output('Denied - received incorrect params');
         }
-        $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
+        $this->load->library(array('show_element', 'zacl', 'providertoxml'));
         $hasWriteAccess = $this->zacl->check_acl($providerID, 'write', 'entity', '');
         if ($hasWriteAccess === true) {
             log_message('debug', 'TEST access ' . $hasWriteAccess);
@@ -100,7 +100,7 @@ class Detail extends MY_Controller
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Denied');
         }
-        $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
+        $this->load->library(array('show_element', 'zacl', 'providertoxml'));
         /**
          * @var $ent models\Provider
          */
@@ -152,7 +152,7 @@ class Detail extends MY_Controller
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Denied');
         }
-        $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
+        $this->load->library(array( 'show_element', 'zacl', 'providertoxml'));
         /**
          * @var $ent models\Provider
          */
@@ -207,7 +207,7 @@ class Detail extends MY_Controller
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
-        $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
+        $this->load->library(array('show_element', 'zacl', 'providertoxml'));
 
         $tmpProviders = new models\Providers();
         /**
@@ -263,7 +263,7 @@ class Detail extends MY_Controller
         if ($ent === null) {
             return $this->output->set_status_header(404)->set_output('' . lang('error404') . '');
         }
-        $this->load->library(array('geshilib', 'show_element', 'zacl', 'providertoxml'));
+        $this->load->library(array('show_element', 'zacl', 'providertoxml'));
         $hasReadAccess = $this->zacl->check_acl($providerid, 'read', 'entity', '');
         if (!$hasReadAccess) {
             return $this->output->set_status_header(403)->set_output('Access Denied');

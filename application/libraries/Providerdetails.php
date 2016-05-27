@@ -655,8 +655,7 @@ class Providerdetails
                 $d[$i]['value'] = '<span class="alert">' . lang('rr_isempty') . '</span>';
             } else {
                 $d[++$i]['header'] = lang('rr_staticmetadataactive');
-
-                $d[++$i]['2cols'] = '<code>' . $this->CI->geshilib->highlight($static_metadata, 'xml', $params) . '</code>';
+                $d[++$i]['2cols'] = '<pre><code class="xml">' . html_escape($static_metadata) . '</code></pre>';
             }
             $subresult[20] = array('section' => 'staticmetadata', 'title' => '' . lang('tabStaticMeta') . '', 'data' => $d);
         }
@@ -889,7 +888,7 @@ class Providerdetails
 
 
         $xmldata = $this->CI->providertoxml->entityConvertNewDocument($ent, array('attrs' => 1), true);
-        $subresult[1] = array('section' => 'xmlmeta', 'title' => '<i class="fi-clipboard-notes"></i>', 'data' => '<code>' . $this->CI->geshilib->highlight($xmldata, 'xml', $params) . '</code>');
+        $subresult[1] = array('section' => 'xmlmeta', 'title' => '<i class="fi-clipboard-notes"></i>', 'data' => '<pre><code class="xml">' . html_escape($xmldata) . '</code></pre>');
 
         $d = array();
         if (count($entityCategories) == 0) {

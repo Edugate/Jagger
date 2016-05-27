@@ -529,11 +529,10 @@ class J_queue
 
         if ($showXML === true) {
             $dataRows[]['header'] = 'Metadata view';
-            $this->ci->load->library('geshilib');
             $params = array(
                 'enable_classes' => true,
             );
-            array_push($dataRows, array('name' => 'XML', 'value' => '' . $this->ci->geshilib->highlight($metadataXML, 'xml', $params) . ''));
+            array_push($dataRows, array('name' => 'XML', 'value' => '<pre><code class="xml">' . html_escape($metadataXML) . '</code></pre>'));
 
         }
 

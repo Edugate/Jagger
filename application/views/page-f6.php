@@ -69,7 +69,7 @@ $foundation = $base_url . 'foundation/';
 <div data-alert class="alert-box alert"><p>You are using an <strong>outdated</strong> browser. Please <a
     href="http://whatbrowser.org/">upgrade your browser</a> to improve your experience.</p></div>
 <![endif]-->
-<header>
+
     <?php
     $iscookieconsent = $this->rrpreference->getPreferences('cookieConsent');
     $breadcrumbsConf = $this->rrpreference->getPreferences('breadcrumbs');
@@ -87,6 +87,8 @@ $foundation = $base_url . 'foundation/';
         }
     }
     $args['breadcrumbsEnabled'] = $breadcrumbsEnabled;
+
+    echo '<header>';
     $this->load->view('f6/toppanel', $args);
 
 echo '</header>';
@@ -291,7 +293,7 @@ if ($breadcrumbsEnabled === true) {
 </div>
 
 <?php
-echo '<script type="text/javascript" src="' . $base_url . 'js/f6-thirdpartylibs.min.a1894c93.js"></script>' . PHP_EOL;
+echo '<script type="text/javascript" src="' . $base_url . 'js/f6-thirdpartylibs.min.d99ff2b7.js"></script>' . PHP_EOL;
 
 if (!empty($load_matrix_js)) {
     echo '<script type="text/javascript">';
