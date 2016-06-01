@@ -21,7 +21,7 @@ if (!empty($sessform)) {
 <?php
 $action = current_url();
 $attrs = array('id' => 'providereditform');
-echo '<div class="tabs-content">';
+//echo '<div class="dtabs-content">';
 echo form_open($action, $attrs);
 
 
@@ -132,13 +132,13 @@ echo form_open($action, $attrs);
             foreach ($m['form'] as $g) {
                 if (empty($g)) {
                     if ($counter % 2 == 0) {
-                        echo '<div class="group">';
+                        echo '<div class="row group">';
                     } else {
                         echo '</div>';
                     }
                     $counter++;
                 } else {
-                    echo '<div class="small-12 columns">' . $g . '</div>';
+                    echo '<div class="row ">' . $g . '</div>';
                 }
             }
         }
@@ -150,7 +150,7 @@ echo form_open($action, $attrs);
         echo '</div>';
     }
     echo '</div>';
-    echo '<div class="row">&nbsp;</div>';
+    echo '<div class="row">';
     echo '<div class="small-12 column text-center">';
     echo '<div class="button-group expanded">';
     if (empty($registerForm)) {
@@ -167,12 +167,12 @@ echo form_open($action, $attrs);
         <button type="submit" name="modify" value="savedraft" class="button savebutton saveicon secondary">' . lang('savedraft') . '</button>
         <button type="submit" name="modify" value="modify" class="button savebutton saveicon">' . lang('btnregister') . '</button></div>';
     }
-    echo '</div></div>';
+    echo '</div></div></div>';
     ?>
 
 
     </form>
-</div>
+ </div> 
 <div style="display: none" id="entitychangealert"><?php echo lang('alertentchange'); ?></div>
 <?php
 echo '<button id="helperbutttonrm" type="button" class="button langinputrm hidden  left inline button">' . lang('rr_remove') . '</button>';

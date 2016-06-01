@@ -354,6 +354,8 @@ var createRowTaskParams = function (label1, label2) {
         '<div class=\"small-6 column\"><label>' + label2 + '<input name=\"params[' + rname + '][value]\" type="text"  value=\"\"/></label></div></div>');
 };
 
+var spinImage = $('#spinner');
+$.ajaxSetup({});
 
 var BINIT = {
     initFvalidators: function () {
@@ -364,7 +366,6 @@ var BINIT = {
         $("ul.validatorbuttons button").on('click', function (e) {
             var link = $(this).attr("value");
             var fvform = $('#fvform');
-            var spinner = $('#spinner');
             $.ajax({
                 type: "GET",
                 url: link,
@@ -372,7 +373,7 @@ var BINIT = {
                 cache: true,
                 dataType: "json",
                 success: function (data) {
-                    spinner.hide();
+                    spinImage.hide();
                     if (data) {
                         var vfedid = data.fedid;
                         var fvalidid = data.id;
@@ -388,11 +389,10 @@ var BINIT = {
                 },
                 beforeSend: function () {
                     $("#fvresult").hide();
-                    spinner.show();
 
                 },
                 error: function () {
-                    spinner.hide();
+                    spinImage.hide();
                     fvform.hide();
                     $('#fvresult').hide();
                 }
@@ -727,6 +727,7 @@ var GINIT = {
                             data = response;
                             tabActive.empty().append(data);
                             Foundation.reInit(tabActive);
+                            
                             return false;
                         }
                         var dataHtml;
@@ -737,7 +738,10 @@ var GINIT = {
                     }
                 });
             }
-        });
+
+        })
+
+
         $("#newusermodal").on('submit', 'form', function (e) {
             e.preventDefault();
             var modal = $(this);
@@ -765,7 +769,7 @@ var GINIT = {
 
         });
 
-        $("button.cleartarget").on('click', function (e) {
+        $(".cleartarget").on('click', function (e) {
 
             e.preventDefault();
             var targetname1 = $(this).attr('data-jagger-textarea');
@@ -779,7 +783,7 @@ var GINIT = {
             return false;
         });
 
-        $("button.postajax").on('click', function (e) {
+        $(".postajax").on('click', function (e) {
             e.preventDefault();
             var form = $(this).closest("form");
             var targetresponseid = $(this).attr('data-jagger-response-msg');
@@ -1043,13 +1047,13 @@ var GINIT = {
                             GINIT.initialize();
                         }
                     });
-                    $('#spinner').hide();
+                    spinImage.hide();
                     revealAlert(data, 'OK');
 
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     result.css('color', 'red');
                     revealAlert('<div data-alert class="alert-box alert">' + jqXHR.responseText + '</div>', 'OK');
                 }
@@ -1076,10 +1080,10 @@ var GINIT = {
                     result.css('color', 'black');
                     $("form#availablelogos div.buttons").hide().appendTo("form#availablelogos");
 
-                    $('#spinner').show();
+                    spinImage.show();
                 },
                 success: function (data1) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     result.html(data1);
                     revealAlert($('div.uploadresult').text(), 'OK');
                     $.ajax({
@@ -1097,7 +1101,7 @@ var GINIT = {
                             GINIT.initialize();
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
-                            $('#spinner').hide();
+                            spinImage.hide();
                             $('#availablelogos').unbind();
                             $('#assignedlogos').unbind();
                             $('#uploadlogo').unbind();
@@ -1121,7 +1125,7 @@ var GINIT = {
                             GINIT.initialize();
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
-                            $('#spinner').hide();
+                            spinImage.hide();
                             $('#availablelogos').unbind();
                             $('#uploadlogo').unbind();
                             $("table#details").unbind();
@@ -1133,7 +1137,7 @@ var GINIT = {
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     revealAlert('<div data-alert class="alert-box alert">' + jqXHR.responseText + '</div>', 'OK');
 
                 }
@@ -1175,15 +1179,15 @@ var GINIT = {
                 cache: false,
                 beforeSend: function () {
                     result.html('');
-                    $('#spinner').show();
+                    spinImage.show();
                 },
                 success: function (data) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     result.html(data);
                     $("form#applyforaccount").remove();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     result.html(jqXHR.responseText);
                     result.css('color', 'red');
                     $("form#applyforaccount").remove();
@@ -1208,17 +1212,17 @@ var GINIT = {
                 beforeSend: function () {
                     $("div#unsignlogosbtn").hide().appendTo("form#assignedlogos");
                     result.html('');
-                    $('#spinner').show();
+                    spinImage.show();
                 },
                 success: function (data) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     infomsg.html(data);
                     messagereveal.foundation('open');
                     checkedObj.parent().remove();
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     infomsg.html(jqXHR.responseText);
                     messagereveal.foundation('open');
 
@@ -1257,7 +1261,7 @@ var GINIT = {
                 dataType: "json",
                 timeout: 120000,
                 success: function (data) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     if (!data) {
                         alert('no data received from upstream server');
                     }
@@ -1290,10 +1294,10 @@ var GINIT = {
                 beforeSend: function () {
                     $("span#fvreturncode").text('');
                     $("div#fvmessages").text('');
-                    $('#spinner').show();
+                    spinImage.show();
                 },
                 error: function (x, t, m) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     if (t === 'timeout') {
                         window.alert('got timeout from validation server');
                     }
@@ -1327,7 +1331,7 @@ var GINIT = {
             return false;
         });
 
-        $("form#approvequeue").submit(function (e) {
+        $("#approvequeue").submit(function (e) {
             var result = 0;
             var validators = 0;
 
@@ -1363,7 +1367,7 @@ var GINIT = {
                     timeout: 9500,
                     cache: true,
                     success: function (data) {
-                        $('#spinner').hide();
+                        spinImage.hide();
                         var stitle;
                         var nlist;
                         var div_data;
@@ -1414,10 +1418,10 @@ var GINIT = {
 
                     },
                     beforeSend: function () {
-                        $('#spinner').show();
+                        spinImage.show();
                     },
                     error: function () {
-                        $('#spinner').hide();
+                        spinImage.hide();
                         window.alert('problem with loading data');
                     }
                 }).done(function () {
@@ -1441,7 +1445,7 @@ var GINIT = {
                 cache: true,
                 dataType: "json",
                 success: function (data) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     if (!data) {
                         window.alert('no data');
                     }
@@ -1468,10 +1472,10 @@ var GINIT = {
                     }
                 },
                 beforeSend: function () {
-                    $('#spinner').show();
+                    spinImage.show();
                 },
                 error: function () {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     window.alert('problem with loading data');
                 }
 
@@ -1517,8 +1521,6 @@ $(document).ready(function () {
     $('pre code').each(function (i, block) {
         hljs.highlightBlock(block);
     });
-   
-    var spinner = $('#spinner');
 
     $(window).scroll(function () {
         if ($(this).scrollTop() >= 100) {
@@ -1548,7 +1550,7 @@ $(document).ready(function () {
             url: dataLink,
             dataTypa: 'json',
             beforeSend: function () {
-                spinner.show();
+                spinImage.show();
             },
             success: function (json) {
                 var administrator = json.definitions.admin;
@@ -1559,8 +1561,7 @@ $(document).ready(function () {
                 var dictUsername = json.definitions.dictionary.username;
                 var dictIsAdmin = 'Administrator';
                 var dictIsYou = 'You';
-
-                spinner.hide();
+                spinImage.hide();
                 var tbl = [];
                 tbl.push('<table><thead><tr><th>' + dictUsername + '</th>');
                 $.each(json.definitions.actions, function (a, action) {
@@ -1617,7 +1618,7 @@ $(document).ready(function () {
 
             },
             error: function (xhr, status, error) {
-                spinner.hide();
+                spinImage.hide();
                 window.alert(xhr.responseText);
             }
         });
@@ -1682,28 +1683,29 @@ $(document).ready(function () {
                 var markersSet = false;
 
                 providerEditForm.on('change.zf.tabs', '[data-tabs]', function (e) {
-                    if (markersSet === false) {
-                        var bounds = new google.maps.LatLngBounds();
-                        for (var i = 0, tot = markers.length; i < tot; i++) {
-                            var myLatlng = new google.maps.LatLng(markers[i][0], markers[i][1]);
-                            var marker = new google.maps.Marker({
-                                position: myLatlng,
-                                map: map,
-                                title: ''
-                            });
 
-                            marker.setMap(map);
-                            gMarkers.push(marker);
-                            bounds.extend(marker.position);
-                        }
-                        markersSet = true;
+                    //     if (markersSet === false) {
 
-                        var center = map.getCenter();
-                        google.maps.event.trigger(map, "resize");
-                        map.setCenter(center);
-                        if (markers.length > 0) {
-                            map.fitBounds(bounds);
-                        }
+                    var bounds = new google.maps.LatLngBounds();
+                    for (var i = 0, tot = markers.length; i < tot; i++) {
+                        var myLatlng = new google.maps.LatLng(markers[i][0], markers[i][1]);
+                        var marker = new google.maps.Marker({
+                            position: myLatlng,
+                            map: map,
+                            title: ''
+                        });
+
+                        marker.setMap(map);
+                        gMarkers.push(marker);
+                        bounds.extend(marker.position);
+                    }
+                    markersSet = true;
+                    //     }
+                    var center = map.getCenter();
+                    google.maps.event.trigger(map, "resize");
+                    map.setCenter(center);
+                    if (markers.length > 0) {
+                        map.fitBounds(bounds);
                     }
                     var listener = google.maps.event.addListener(map, "idle", function () {
                         if (map.getZoom() > 16) map.setZoom(16);
@@ -1747,7 +1749,7 @@ $(document).ready(function () {
                 for (var i = 0; i < 5; i++) {
                     rname += possible.charAt(Math.floor(Math.random() * possible.length));
                 }
-                var html = '<div class="small-12 column collapse georow"><div class="small-11 column"><input name="f[uii][idpsso][geo][' + rname + ']" type="text" value="' + inputgeo + '" readonly="readonly"></div><div class="small-1 column"><a href="#" class="rmgeo"><i class="fi-trash alert" style="color: red"></i></a></div></div>';
+                var html = '<div class="small-12 column collapse georow"><div class="small-11 column"><input name="f[uii][idpsso][geo][' + rname + ']" type="text" value="' + inputgeo + '" readonly="readonly"></div><div class="small-1 column"><a href="#" class="rmgeo"><i class="fa fa-trash alert" style="color: red"></i></a></div></div>';
                 $(html).appendTo($('#geogroup'));
                 if (typeof google === 'object' && typeof google.maps === 'object') {
                     var bounds = new google.maps.LatLngBounds();
@@ -2273,10 +2275,10 @@ $(document).ready(function () {
             cache: false,
             dataType: "json",
             beforeSend: function () {
-                spinner.show();
+                spinImage.show();
             },
             success: function (json) {
-                spinner.hide();
+                spinImage.hide();
                 if (json) {
 
                     var attrdefs = json.attrs;
@@ -2335,7 +2337,7 @@ $(document).ready(function () {
                 }
             },
             error: function () {
-                spinner.hide();
+                spinImage.hide();
             }
         });
     });
@@ -2368,10 +2370,10 @@ $(document).ready(function () {
                 method: 'GET',
                 dataType: 'json',
                 beforeSend: function () {
-                    spinner.show();
+                    spinImage.show();
                 },
                 success: function (data) {
-                    spinner.hide();
+                    spinImage.hide();
                     meter.css('width', '100%');
                     var idf, supplbl, policy, datajaggersupm, support = [];
                     if (data.type === 'supported') {
@@ -2411,9 +2413,9 @@ $(document).ready(function () {
                             tbl += '</td><td>';
 
 
-                            tbl += '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + a + '" data-jagger-attrsupport="' + datajaggersup + '" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="edit" data-jagger-arp="global"><i class="fi-pencil"></i></a>';
+                            tbl += '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + a + '" data-jagger-attrsupport="' + datajaggersup + '" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="edit" data-jagger-arp="global"><i class="fa fa-pencil"></i></a>';
                             if (idf === -1) {
-                                tbl += '&nbsp;&nbsp;&nbsp;<a href="#" class="modalconfirm" data-jagger-attrsupport="' + datajaggersup + '" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="delete" data-jagger-arp="global"><i class="fi-trash alert"></i></a>';
+                                tbl += '&nbsp;&nbsp;&nbsp;<a href="#" class="modalconfirm" data-jagger-attrsupport="' + datajaggersup + '" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="delete" data-jagger-arp="global"><i class="fa fa-trash alert"></i></a>';
 
                             }
 
@@ -2479,10 +2481,10 @@ $(document).ready(function () {
                                     supportCopy.splice(idf, 1);
                                 }
 
-                                tbl += '</td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-attrpolicy="' + w + '" data-jagger-arp="fed" data-jagger-action="edit" data-jagger-fedid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-attrname="' + data.definitions.attrs[j] + '"><i class="fi-pencil"></i></a></td></tr>';
+                                tbl += '</td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-attrpolicy="' + w + '" data-jagger-arp="fed" data-jagger-action="edit" data-jagger-fedid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-attrname="' + data.definitions.attrs[j] + '"><i class="fa fa-pencil"></i></a></td></tr>';
                             });
                             $.each(supportCopy, function (jk, wk) {
-                                tbl += '<tr><td>' + data.definitions.attrs[wk] + '</td><td><span class="label secondary">' + data.definitions.policy[100] + '</span></td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-attrname="' + data.definitions.attrs[wk] + '" data-jagger-attrpolicy="100" data-jagger-fedid="' + i + '" data-jagger-action="edit" data-jagger-attrid="' + wk + '"><i class="fi-pencil"></i></a></td></tr>';
+                                tbl += '<tr><td>' + data.definitions.attrs[wk] + '</td><td><span class="label secondary">' + data.definitions.policy[100] + '</span></td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-attrname="' + data.definitions.attrs[wk] + '" data-jagger-attrpolicy="100" data-jagger-fedid="' + i + '" data-jagger-action="edit" data-jagger-attrid="' + wk + '"><i class="fa fa-pencil"></i></a></td></tr>';
                             });
 
 
@@ -2534,7 +2536,7 @@ $(document).ready(function () {
 
 
                                 tbl += '<tr>';
-                                tbl += '<td>' + data.definitions.attrs[j] + '</td><td><span class="label ' + labelclass + '">' + data.definitions.policy[w] + '</span>' + unsupwttr + '</td><td><a href="#" class="modalconfirm" data-jagger-arp="entcat" data-jagger-entcatid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-arp="entcat" data-jagger-action="edit" data-jagger-attrname="' + data.definitions.attrs[j] + '" data-jagger-attrpolicy="' + w + '"><i class="fi-pencil"></i></a></td>';
+                                tbl += '<td>' + data.definitions.attrs[j] + '</td><td><span class="label ' + labelclass + '">' + data.definitions.policy[w] + '</span>' + unsupwttr + '</td><td><a href="#" class="modalconfirm" data-jagger-arp="entcat" data-jagger-entcatid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-arp="entcat" data-jagger-action="edit" data-jagger-attrname="' + data.definitions.attrs[j] + '" data-jagger-attrpolicy="' + w + '"><i class="fa fa-pencil"></i></a></td>';
                                 tbl += '</tr>';
                             });
 
@@ -2631,7 +2633,7 @@ $(document).ready(function () {
                                             '<td>' + data.definitions.req[spReqAttrStr] + '</td>' +
                                             '<td>' +
                                             '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + l + '" data-jagger-entityid="' + data.definitions.sps[i]['entityid'] + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + j + '">' +
-                                            '<i class="fi-pencil"></i></a></td></tr>';
+                                            '<i class="fa fa-pencil"></i></a></td></tr>';
                                     });
                                     for (var vkey in spReqAttr) {
                                         customattrpol = '';
@@ -2662,7 +2664,7 @@ $(document).ready(function () {
                                             tbl += '<tr><td>' + attrName + '</td>' +
                                                 '<td><span class="label ' + policyLabels['100'] + '">' + data.definitions.policy['100'] + '</span>  ' + supportedStatus + ' ' + customattrpol + '</td>' +
                                                 '<td>' + data.definitions.req[spReqAttr[vkey]] + '</td>' +
-                                                '<td><a href="#" class="modalconfirm" data-jagger-attrpolicy="100" data-jagger-entityid="' + data.definitions.sps[i]['entityid'] + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fi-pencil"></i></i></td></tr>';
+                                                '<td><a href="#" class="modalconfirm" data-jagger-attrpolicy="100" data-jagger-entityid="' + data.definitions.sps[i]['entityid'] + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fa fa-pencil"></i></i></td></tr>';
                                         }
                                     }
 
@@ -2683,7 +2685,7 @@ $(document).ready(function () {
 
                 },
                 error: function (xhr, status, error) {
-                    spinner.hide();
+                    spinImage.hide();
                     target.html('<div data-aler class="alert-box alert">' + xhr.responseText + '</div>');
                 }
             });
@@ -2700,16 +2702,17 @@ $(document).ready(function () {
         });
         attrpolsVar.on('click', 'a.modalconfirm', function (event) {
             event.preventDefault();
-            var arptype = $(this).attr('data-jagger-arp');
-            var arpaction = $(this).attr('data-jagger-action');
-            var attrname = $(this).attr('data-jagger-attrname');
-            var attrid = $(this).attr('data-jagger-attrid');
-            var fedid = $(this).attr('data-jagger-fedid');
-            var entcatid = $(this).attr('data-jagger-entcatid');
-            var attrsupport = $(this).attr('data-jagger-attrsupport');
-            var attrpolicy = $(this).attr('data-jagger-attrpolicy');
-            var spid = $(this).attr('data-jagger-spid');
-            var entityid = $(this).attr('data-jagger-entityid');
+            var thisObj = $(this);
+            var arptype = thisObj.attr('data-jagger-arp');
+            var arpaction = thisObj.attr('data-jagger-action');
+            var attrname = thisObj.attr('data-jagger-attrname');
+            var attrid = thisObj.attr('data-jagger-attrid');
+            var fedid = thisObj.attr('data-jagger-fedid');
+            var entcatid = thisObj.attr('data-jagger-entcatid');
+            var attrsupport = thisObj.attr('data-jagger-attrsupport');
+            var attrpolicy = thisObj.attr('data-jagger-attrpolicy');
+            var spid = thisObj.attr('data-jagger-spid');
+            var entityid = thisObj.attr('data-jagger-entityid');
             var baseurl = $("[name='baseurl']").val();
             var modal;
             if (arptype !== undefined && arpaction !== undefined) {
@@ -3197,7 +3200,7 @@ $(document).ready(function () {
             cache: false,
             dataType: "json",
             success: function (json) {
-                spinner.hide();
+                spinImage.hide();
 
                 if (json) {
                     var startTime = new Date();
@@ -3291,10 +3294,10 @@ $(document).ready(function () {
                 }
             },
             beforeSend: function () {
-                spinner.show();
+                spinImage.show();
             },
             error: function (xhr, status, error) {
-                spinner.hide();
+                spinImage.hide();
                 var alerthtml = '<div class="small-12 medium-11 columns small-centered"><div data-alert class="alert-box error">' + error + '</div></div>';
                 matrixdiv.html(alerthtml);
                 return false;
@@ -3357,70 +3360,7 @@ $(document).ready(function () {
         });
     }
 ///////////////////
-    if ($('#defaultarptab').length > 0) {
 
-        var arptable = $('#defaultarptab');
-        var modal = $('#globalpolicyupdater');
-        var modalForm = $('#globalpolicyupdater').find("form").first();
-        var addDefaultForm = $('#adddefaultpolicy');
-        var modalAttrId = modal.find("input[name='attribute']").first();
-        var modalDropdown = modal.find("select[name='policy']").first();
-        var link1 = modal.attr("data-jagger-link");
-        var attrnameval = modal.find("span.dynamicval").first();
-        arptable.on('click', 'a', function (e) {
-            e.preventDefault();
-            var attrid = $(this).attr('data-jagger-attrid');
-            var attrname = $(this).attr('data-jagger-attrname');
-            modalAttrId.val(attrid);
-            $.ajax({
-                type: "GET",
-                url: link1 + '/' + attrid,
-                cache: false,
-                success: function (data) {
-                    modalDropdown.find("option:selected").prop("selected", false);
-                    modalDropdown.find("option[value=" + data + "]").prop("selected", true);
-                    attrnameval.html(attrname);
-                    modal.foundation('open');
-
-                },
-                error: function () {
-                    alert('error');
-                }
-            });
-
-
-        });
-        modal.on('click', '.yes', function (e) {
-            e.preventDefault();
-            var posturl = modalForm.attr('action');
-            var serializedData = modalForm.serializeArray();
-            $.ajax({
-                type: "POST",
-                url: posturl,
-                data: serializedData,
-                dataType: "json",
-                success: function (data) {
-                    modal.foundation('close');
-                    location.reload();
-                }
-            });
-        });
-        addDefaultForm.on('click', 'button', function (e) {
-            e.preventDefault();
-            var posturl = addDefaultForm.attr('action');
-            var serializedData = addDefaultForm.serializeArray();
-            $.ajax({
-                type: "POST",
-                url: posturl,
-                data: serializedData,
-                dataType: "json",
-                success: function (data) {
-                    modal.foundation('close');
-                    location.reload();
-                }
-            });
-        });
-    }
 
     var helpactivity = $("#showhelps");
     if (helpactivity.length) {
@@ -3451,7 +3391,7 @@ $(document).ready(function () {
             dataType: "json",
             value: $('table.fedistpercat'),
             success: function (data) {
-                spinner.hide();
+                spinImage.hide();
                 if (!data) {
                     window.alert('no data in federation category');
                 }
@@ -3482,7 +3422,7 @@ $(document).ready(function () {
             dataType: "json",
             value: value,
             success: function (data) {
-                spinner.hide();
+                spinImage.hide();
                 if (!data) {
                     window.alert('no data in federation category');
                 }
@@ -3496,10 +3436,10 @@ $(document).ready(function () {
 
             },
             beforeSend: function () {
-                spinner.show();
+                spinImage.show();
             },
             error: function () {
-                spinner.hide();
+                spinImage.hide();
                 window.alert('problem with loading data');
             }
         }).done(function () {
@@ -3763,7 +3703,7 @@ $(function () {
             dataType: "json",
             success: function (data) {
                 i = null;
-                $('#spinner').hide();
+                spinImage.hide();
                 if (!data) {
                     window.alert('no data');
                 }
@@ -3780,10 +3720,10 @@ $(function () {
 
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinImage.show();
             },
             error: function () {
-                $('#spinner').hide();
+                spinImage.hide();
                 window.alert('problem with loading data');
             }
 
@@ -4025,12 +3965,6 @@ $(document).ready(function () {
     if (baseurl === undefined) {
         baseurl = '';
     }
-// Preload Images
-    var img1 = new Image(16, 16);
-    img1.src = baseurl + 'images/spinner.gif';
-
-    var img2 = new Image(220, 19);
-    img2.src = baseurl + 'images/ajax-loader.gif';
 
     if ($("#eds2").is('*')) {
         $("#idpSelect").modal(
@@ -4046,15 +3980,15 @@ $(document).ready(function () {
             type: "GET",
             url: baseurl + 'smanage/reports/vormversion',
             success: function (data) {
-                $('#spinner').hide();
+                spinImage.hide();
                 $("#rvormversion").show();
                 $("tr#rvormversion td:first-child").html(data);
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinImage.show();
             },
             error: function () {
-                $('#spinner').hide();
+                spinImage.hide();
                 window.alert('Error occurred');
             }
         });
@@ -4066,15 +4000,15 @@ $(document).ready(function () {
             type: "GET",
             url: baseurl + 'smanage/reports/vschema',
             success: function (data) {
-                $('#spinner').hide();
+                spinImage.hide();
                 $("#rvschema").show();
                 $("tr#rvschema td:first-child").html(data);
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinImage.show();
             },
             error: function () {
-                $('#spinner').hide();
+                spinImage.hide();
                 window.alert('Error ocured');
             }
         });
@@ -4086,15 +4020,15 @@ $(document).ready(function () {
             type: "GET",
             url: baseurl + 'smanage/reports/vschemadb',
             success: function (data) {
-                $('#spinner').hide();
+                spinImage.hide();
                 $("#rvschemadb").show();
                 $("tr#rvschemadb td:first-child").html(data);
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinImage.show();
             },
             error: function () {
-                $('#spinner').hide();
+                spinImage.hide();
                 window.alert('Error ocured');
             }
         });
@@ -4106,15 +4040,15 @@ $(document).ready(function () {
             type: "GET",
             url: baseurl + 'smanage/reports/vmigrate',
             success: function (data) {
-                $('#spinner').hide();
+                spinImage.hide();
                 $("#rvmigrate").show();
                 $("tr#rvmigrate td:first-child").html(data);
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinImage.show();
             },
             error: function () {
-                $('#spinner').hide();
+                spinImage.hide();
                 window.alert('Error ocured');
             }
         });
@@ -4161,15 +4095,15 @@ $(document).ready(function () {
                 });
                 rows.push('</tbody></table>');
                 var result = rows.join('');
-                $('#spinner').hide();
+                spinImage.hide();
                 $("#rvcerts").show();
                 $("tr#rvcerts td:first-child").html(result);
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinImage.show();
             },
             error: function () {
-                $('#spinner').hide();
+                spinImage.hide();
                 window.alert('Error ocured');
             }
         });
@@ -4419,7 +4353,7 @@ $('#joinfed').on('change', '#fedid', function (e) {
             data: postdata,
             dataType: "json",
             success: function (data) {
-                $('#spinner').hide();
+                spinImage.hide();
                 if (data) {
                     var validatorButtons = $("ul.validatorbuttons");
                     $.each(data, function (i, v) {
@@ -4429,10 +4363,11 @@ $('#joinfed').on('change', '#fedid', function (e) {
                 }
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinImage.show();
+
             },
             error: function () {
-                $('#spinner').hide();
+                spinImage.hide();
                 $('#fvform').hide();
                 $('#fvresult').hide();
             }
@@ -4519,7 +4454,7 @@ $("#notificationupdateform").on('submit', function (e) {
 
 });
 
-$(document).on('submit', 'div#loginform form', function (e) {
+$(document).on('submit', '#loginform form', function (e) {
     e.preventDefault();
     var loginform = $("#loginform");
     var submitbutton = $(loginform).find(":submit").first();
@@ -4544,7 +4479,8 @@ $(document).on('submit', 'div#loginform form', function (e) {
         success: function (data) {
             if (data) {
                 if (data.success === true && data.result === 'OK') {
-                    $('#loginform').foundation('close');
+                    loginform.foundation('close');
+                    spinImage.show();
                     setTimeout(function () {
 
                         window.location.href = baseurl;
@@ -4599,8 +4535,7 @@ if ($('#providerslistresultv2').length) {
         cache: true,
         dataType: "json",
         success: function (result) {
-
-            $('#spinner').hide();
+            spinImage.hide();
             var langdefs = result.definitions.lang;
             var table = $('<table/>');
             var thead = $('<thead/>');
@@ -4752,10 +4687,10 @@ if ($('#providerslistresultv2').length) {
 
         },
         beforeSend: function () {
-            $('#spinner').show();
+            spinImage.show();
         },
         error: function (xhr, status, error) {
-            $('#spinner').hide();
+            spinImage.hide();
             window.alert(error);
 
         }
@@ -4786,7 +4721,7 @@ $(".afilter").click(function () {
         cache: true,
         dataType: "json",
         success: function (result) {
-            $('#spinner').hide();
+            spinImage.hide();
             if (filter === 1) {
                 $('dd.filterext').addClass('active');
             }
@@ -4882,10 +4817,11 @@ $(".afilter").click(function () {
             $('dd.afilter').removeClass('active');
             $('div#providerslistresult').empty();
             $('div.alert-box').empty().hide();
-            $('#spinner').show();
+            spinImage.show();
+
         },
         error: function (xhr, status, error) {
-            $('#spinner').hide();
+            spinImage.hide();
             $('div.subtitle').empty();
             $('div.alert-box').append(error).show();
 

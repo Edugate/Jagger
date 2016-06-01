@@ -71,7 +71,7 @@ if ($loggedin) {
         ),
         array(
             'name' => lang('rr_attr_defs'),
-            'link' => $base_url . 'attributes/attributes/show"'
+            'link' => $base_url . 'attributes/attributes/show'
         )
 
     );

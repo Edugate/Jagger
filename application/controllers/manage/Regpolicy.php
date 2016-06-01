@@ -57,9 +57,9 @@ class Regpolicy extends MY_Controller
                 $countProviders = $c->getProvidersCount();
                 $isEnabled = $c->getAvailable();
                 if ($has_write_access) {
-                    $l = '<a href="' . base_url() . 'manage/regpolicy/edit/' . $c->getId() . '" ><i class="fi-pencil"></i></a>';
+                    $l = '<a href="' . base_url() . 'manage/regpolicy/edit/' . $c->getId() . '" ><i class="fa fa-pencil"></i></a>';
                     if (!$isEnabled) {
-                        $l .= '&nbsp;&nbsp;<a href="' . base_url() . 'manage/regpolicy/remove/' . $c->getId() . '" class="withconfirm" data-jagger-regpolicy="' . $c->getId() . '" data-jagger-fieldname="'.$c->getName().'"  data-jagger-counter="'.$countProviders.'"><i class="fi-trash"></i></a>';
+                        $l .= '&nbsp;&nbsp;<a href="' . base_url() . 'manage/regpolicy/remove/' . $c->getId() . '" class="withconfirm" data-jagger-regpolicy="' . $c->getId() . '" data-jagger-fieldname="'.$c->getName().'"  data-jagger-counter="'.$countProviders.'"><i class="fa fa-trash"></i></a>';
                     }
                 } else {
                     $l = '';

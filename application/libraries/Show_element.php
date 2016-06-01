@@ -87,7 +87,7 @@ class Show_element
         }
 
 
-        $result = '<dl class="accordion" data-accordion="modificationsList">';
+        $result = '<ul class="accordion" data-accordion data-multi-expand="true" >';
         $mcounter = 0;
         foreach ($tracks as $t) {
             $modArray = unserialize($t->getDetail());
@@ -105,12 +105,12 @@ class Show_element
             if (empty($user)) {
                 $user = lang('unknown');
             }
-            $result .= '<dd class="accordion-navigation">';
-            $result .= '<a href="#mod' . $mcounter . '" class="accordion-icon">' .jaggerDisplayDateTimeByOffset($t->getCreated(),jauth::$timeOffset).  ' ' . lang('chng_made_by') . ' <b>' . $user . '</b> ' . lang('from') . ' ' . $t->getIp() . '</a><div id="mod' . $mcounter . '" class="content">' . $y . '</div>';
-            $result .= '</dd>';
+            $result .= '<li class="accordion-item" data-accordion-item>';
+            $result .= '<a  class="accordion-title">' .jaggerDisplayDateTimeByOffset($t->getCreated(),jauth::$timeOffset).  ' ' . lang('chng_made_by') . ' <b>' . $user . '</b> ' . lang('from') . ' ' . $t->getIp() . '</a><div class="accordion-content" data-tab-content>' . $y . '</div>';
+            $result .= '</li>';
             $mcounter++;
         }
-        $result .= '</dl>';
+        $result .= '</ul>';
         return $result;
     }
 

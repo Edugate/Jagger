@@ -359,9 +359,9 @@ class Users extends MY_Controller
             'content_view' => 'manage/userdetail_view'
         );
         if ($isAdmin) {
-            $data['sideicons'][] = '<a href="' . base_url('manage/userprofile/edit/' . $encodedUsername . '') . '"><i class="fi-pencil"></i></a>';
+            $data['sideicons'][] = '<a href="' . base_url('manage/userprofile/edit/' . $encodedUsername . '') . '"><i class="fa fa-pencil"></i></a>';
         } else {
-            $data['sideicons'][] = '<a href="' . base_url('manage/userprofile/edit') . '"><i class="fi-pencil"></i></a>';
+            $data['sideicons'][] = '<a href="' . base_url('manage/userprofile/edit') . '"><i class="fa fa-pencil"></i></a>';
         }
 
         $this->load->view(MY_Controller::$page, $data);
@@ -396,12 +396,12 @@ class Users extends MY_Controller
             $roles = $u->getRoleNames();
             $editLink = '';
             if ($isAdmin) {
-                $editLink = '<a href="' . $editLinkPrefix . '/' . $encodedUsername . '"><i class="fi-pencil"></i></a>';
+                $editLink = '<a href="' . $editLinkPrefix . '/' . $encodedUsername . '"><i class="fa fa-pencil"></i></a>';
             }
             if (in_array('Administrator', $roles, true)) {
                 $action = '';
             } else {
-                $action = '<a href="#" class="rmusericon" data-jagger-username="' . html_escape($u->getUsername()) . '" data-jagger-encodeduser="' . $encodedUsername . '"><i class="fi-trash"></i><a>';
+                $action = '<a href="#" class="rmusericon" data-jagger-username="' . html_escape($u->getUsername()) . '" data-jagger-encodeduser="' . $encodedUsername . '"><i class="fa fa-trash alert"></i><a>';
             }
             $last = $u->getLastlogin();
             $lastlogin = '';

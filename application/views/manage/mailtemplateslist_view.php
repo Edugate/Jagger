@@ -30,7 +30,7 @@ foreach ($templgroups as $t)
             {
                 $labels .= ' <span class="label">'.lang('mtmplattach').'</span>';
             }
-            $edit = '<a href="'.base_url().'manage/mailtemplates/edit/'.$v->getId().'"><i class="fi-pencil"></i></a>';
+            $edit = '<a href="'.base_url().'manage/mailtemplates/edit/'.$v->getId().'"><i class="fa fa-pencil"></i></a>';
             $r = array($i++, $v->getLanguage(),$v->getSubject(),  nl2br($v->getBody()),$labels, $edit);
             
             $this->table->add_row($r);

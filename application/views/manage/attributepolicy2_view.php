@@ -1,40 +1,40 @@
 <?php
 
 echo '
-<ul class="tabs" id="attrpolstab" data-tab role="tablist">
-<li class="tab-title active" role="presentational"><a href="#introtab" role="tab" tabindex="0" aria-selected="true" controls="introtab">' . lang('tabinformation') . '</a></li>
-  <li class="tab-title" role="presentational" data-reveal-ajax-tab="' . base_url('manage/attributepolicy/getsupported/' . $idpid . '') . '"><a href="#attrpol-1" role="tab" tabindex="0" aria-selected="false" controls="attrpol-1">' . lang('rr_attributes') . '/' . lang('defaultpolicytab') . '</a></li>
-  <li class="tab-title" role="presentational" data-reveal-ajax-tab="' . base_url('manage/attributepolicy/getfedattrs/' . $idpid . '') . '"><a href="#attrpol-2" role="tab" tabindex="0"aria-selected="false" controls="attrpol-2">' . lang('fedspolicytab') . '</a></li>
-  <li class="tab-title" role="presentational" data-reveal-ajax-tab="' . base_url('manage/attributepolicy/getentcatattrs/' . $idpid . '') . '"><a href="#attrpol-3" role="tab" tabindex="0" aria-selected="false" controls="attrpol-3">' . lang('ecpolicytab') . '</a></li>
-  <li class="tab-title" role="presentational" data-reveal-ajax-tab="' . base_url('manage/attributepolicy/getspecattrs/' . $idpid . '') . '"><a href="#attrpol-4" role="tab" tabindex="0" aria-selected="false" controls="attrpol-4">' . lang('sppolicytab') . '</a></li>
+<ul class="tabs" id="attrpolstab" data-tabs>
+<li class="tabs-title active"><a href="#introtab">' . lang('tabinformation') . '</a></li>
+  <li class="tabs-title" data-reveal-ajax-tab="' . base_url('manage/attributepolicy/getsupported/' . $idpid . '') . '"><a href="#attrpol-1">' . lang('rr_attributes') . '/' . lang('defaultpolicytab') . '</a></li>
+  <li class="tabs-title" data-reveal-ajax-tab="' . base_url('manage/attributepolicy/getfedattrs/' . $idpid . '') . '"><a href="#attrpol-2">' . lang('fedspolicytab') . '</a></li>
+  <li class="tabs-title" data-reveal-ajax-tab="' . base_url('manage/attributepolicy/getentcatattrs/' . $idpid . '') . '"><a href="#attrpol-3">' . lang('ecpolicytab') . '</a></li>
+  <li class="tabs-title" data-reveal-ajax-tab="' . base_url('manage/attributepolicy/getspecattrs/' . $idpid . '') . '"><a href="#attrpol-4">' . lang('sppolicytab') . '</a></li>
 </ul>
 ';
 
 
-echo '<div id="attrpols" class="tabs-content" data-jagger-providerdetails="' . base_url('providers/detail/show/') . '">
-        <section role="tabpanel" aria-hidden="false" class="content active" id="introtab">
+echo '<div id="attrpols" class="tabs-content" data-tabs-content="attrpolstab" data-jagger-providerdetails="' . base_url('providers/detail/show/') . '">
+        <section class="tabs-panel is-active" id="introtab">
             INFORMATION GUIDE SOON!
 
 <ul>
             <li>Default Attribute Release Policy - it does not include rules based on Entity Categories: <br />
-            <small>' . base_url('arp/format2/' . $encodedentity . '/arp.xml') . '</small> <a href="' . base_url('arp/format2/' . $encodedentity . '/arp.xml') . '"><i class="fi-link"></i></a>
+            <small>' . base_url('arp/format2/' . $encodedentity . '/arp.xml') . '</small> <a href="' . base_url('arp/format2/' . $encodedentity . '/arp.xml') . '"><i class="fa fa-link"></i></a>
 </li>
 <li>Experimental Attribute Release Policy for ShibbolethIDP ver 2.x - it does include rules based on Entity Categories: <br />
-            <small>' . base_url('arp/format2exp/' . $encodedentity . '/arp.xml') . '</small> <a href="' . base_url('arp/format2exp/' . $encodedentity . '/arp.xml') . '"><i class="fi-link"></i></a>
+            <small>' . base_url('arp/format2exp/' . $encodedentity . '/arp.xml') . '</small> <a href="' . base_url('arp/format2exp/' . $encodedentity . '/arp.xml') . '"><i class="fa fa-link"></i></a>
             </li>
 
 <li>Experimental Attribute Release Policy for ShibbolethIDP ver 3.x - it does include rules based on Entity Categories: <br />
-            <small>' . base_url('arp/format3exp/' . $encodedentity . '/arp.xml') . '</small> <a href="' . base_url('arp/format3exp/' . $encodedentity . '/arp.xml') . '"><i class="fi-link"></i></a>
+            <small>' . base_url('arp/format3exp/' . $encodedentity . '/arp.xml') . '</small> <a href="' . base_url('arp/format3exp/' . $encodedentity . '/arp.xml') . '"><i class="fa fa-link"></i></a>
             </li>
             </ul>
         </section>
-        <section role="tabpanel" aria-hidden="true" class="content" id="attrpol-1">
+        <section class="tabs-panel" id="attrpol-1">
         </section>
-        <section role="tabpanel" aria-hidden="true" class="content" id="attrpol-2">
+        <section class="tabs-panel" id="attrpol-2">
         </section>
-        <section role="tabpanel" aria-hidden="true" class="content" id="attrpol-3">
+        <section class="tabs-panel" id="attrpol-3">
         </section>
-        <section role="tabpanel" aria-hidden="true" class="content" id="attrpol-4">
+        <section class="tabs-panel" id="attrpol-4">
         </section>
     </div>';
 

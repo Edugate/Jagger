@@ -81,7 +81,7 @@ class Providerdetails
                         array('name' => lang('rr_fingerprint') . ' (sha1)', 'value' => '' . generateFingerprint($certData, 'sha1') . ''),
                         array(
                             'name' => '',
-                            'value' => '<dl class="accordion" data-accordion><dd class="accordion-navigation"><a href="#c' . $cert->getId() . '" class="accordion-icon">' . lang('rr_certbody') . '</a><code id="c' . $cert->getId() . '" class="content">' . trim($certData) . '</code></dd></dl>'
+                            'value' => '<ul class="accordion" data-accordion data-allow-all-closed="true"><li class="accordion-item" data-accordion-item><a href="#c' . $cert->getId() . '" class="accordion-title">' . lang('rr_certbody') . '</a><div class="accordion-content" data-tab-content><code id="c' . $cert->getId() . '" class="content">' . trim($certData) . '</code></div></li></ul>'
                         ));
                 }
             }
@@ -293,7 +293,7 @@ class Providerdetails
                 }
             }
         }
-        $d[$i]['value'] = '<p>' . $federationsString . '</p>' . '<p>' . $manage_membership . '</p>';
+        $d[$i]['value'] = '<p>' . $federationsString . '</p><p>' . $manage_membership . '</p>';
         if ($no_feds > 0) {
             $d[++$i]['name'] = '';
             $d[$i]['value'] = '<a href="' . base_url() . 'providers/detail/showmembers/' . $id . '" id="getmembers"><button type="button" class="button secondary arrowdownicon ">' . lang('showmemb_btn') . '</button></a>';
@@ -728,13 +728,7 @@ class Providerdetails
             $v = implode('<br />', $ent->getProtocolSupport('idpsso'));
             $d[$i]['value'] = $v;
             $d[++$i]['name'] = lang('rr_domainscope');
-            $scopes = $ent->getScope('idpsso');
-            $scopeString = '<ul class="no-bullet">';
-            foreach ($scopes as $key => $value) {
-                $scopeString .= '<li>' . html_escape($value) . '</li>';
-            }
-            $scopeString .= '</ul>';
-            $d[$i]['value'] = $scopeString;
+            $d[$i]['value'] = implode('; ',$ent->getScope('idpsso'));
 
             $d[++$i]['name'] = lang('rr_supportednameids');
             $nameids = '<ul class="no-bullet">';
@@ -777,13 +771,7 @@ class Providerdetails
             $v = implode('<br />', $ent->getProtocolSupport('aa'));
             $d[$i]['value'] = $v;
             $d[++$i]['name'] = lang('rr_domainscope') . '';
-            $scopes = $ent->getScope('aa');
-            $scopeString = '<ul class="no-bullet">';
-            foreach ($scopes as $key => $value) {
-                $scopeString .= '<li>' . html_escape($value) . '</li>';
-            }
-            $scopeString .= '</ul>';
-            $d[$i]['value'] = $scopeString;
+            $d[$i]['value'] = implode('; ',$ent->getScope('aa'));
             $aanameids = $ent->getNameIds('aa');
             if (count($aanameids) > 0) {
                 $d[++$i]['name'] = lang('rr_supportednameids');

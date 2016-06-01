@@ -168,7 +168,7 @@ class Subscriber extends MY_Controller
                 } else {
                     $relatedto = $v['langany'];
                 }
-                $button = '<a href="#" value="' . $v['id'] . '" class="updatenotifactionstatus"  data-reveal-id="notificationupdatemodal"><i class="fi-pencil"></i></a>';
+                $button = '<a href="#" value="' . $v['id'] . '" class="updatenotifactionstatus"  data-reveal-id="notificationupdatemodal"><i class="fa fa-pencil"></i></a>';
                 $row[] = array(++$i, $type, $relatedto, $v['delivery'], $v['rcptto'], '<div class="subscrstatus">' . $v['langstatus'] . '</div>', $v['updated'], $button);
             }
         }

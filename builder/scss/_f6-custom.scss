@@ -76,6 +76,7 @@ height: 100%;
   margin-top: 2em;
 }
 #footer {
+  margin-top: 2em;
   min-height: 100px;
   background-color: $footer-background;
   color: $footer-text;
@@ -480,4 +481,7 @@ code {
 
   white-space: pre;
   font-size: smaller;
+}
+.fa.alert {
+  color: map_get($foundation-palette,'alert');
 }

@@ -161,9 +161,9 @@ class Formelement
         }
         $r = '';
         if (!$this->ci->jauth->isAdministrator()) {
-            $r .= '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
+            $r .= '<div class="row"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }
-        $r .= '<div class="small-12 columns"><dl class="accordion checkboxlist" data-accordion>';
+        $r .= '<div class=""><ul class="accordion checkboxlist" data-accordion data-allow-all-closed="true">';
         foreach ($entCategoriesArray as $k => $v) {
             $lbl = '';
             $is = true;
@@ -181,14 +181,14 @@ class Formelement
                 $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
             }
 
-            $r .= '<dd class="accordion-navigation small-12 column">' .
+            $r .= '<li class="accordion-item ">' .
                 '<div class="small-3 columns" >' . form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is, 'class' => 'right')) . '</div><a href="#entcats' . $k . '" class="small-9 columns inline"><span data-tooltip aria-haspopup="true" class="has-tip" title="' .
                 $v['desc'] . '">' . $v['name'] . '</span> ' . $lbl . '</a>' .
-                '<div id="entcats' . $k . '" class="content"><b>' . lang('attrname') . '</b>: ' . $v['attrname'] . '<br /><b>' . lang('entcat_url') . '</b>: ' . $v['value'] . '<br /><b>' .
+                '<div id="entcats' . $k . '" class="accordion-content" data-tab-content><b>' . lang('attrname') . '</b>: ' . $v['attrname'] . '<br /><b>' . lang('entcat_url') . '</b>: ' . $v['value'] . '<br /><b>' .
                 lang('rr_description') . '</b>:<p>' . $v['desc'] . '</p></div>' .
-                '</dd>';
+                '</li>';
         }
-        $r .= '</dl></div>';
+        $r .= '</ul></div>';
         $result[] = $r;
 
         return $result;
@@ -1984,7 +1984,7 @@ class Formelement
         // start geolocation
         $geosinputs = '';
         foreach ($dataByBlocks['geo'] as $k => $g) {
-            $geosinputs .= '<div class="small-12 column collapse georow"><div class="small-11 column"><input name="f[uii][idpsso][geo][' . $k . ']" type="text" value="' . html_escape($g) . '" readonly="readonly"></div><div class="small-1 column"><a href="#" class="rmgeo"><i class="fi-trash alert" style="color: red"></i></a></div></div>';
+            $geosinputs .= '<div class="small-12 column collapse georow"><div class="small-11 column"><input name="f[uii][idpsso][geo][' . $k . ']" type="text" value="' . html_escape($g) . '" readonly="readonly"></div><div class="small-1 column"><a href="#" class="rmgeo"><i class="fa fa-trash alert" style="color: red"></i></a></div></div>';
         }
 
         $r = '<div class="small-12 column">' .

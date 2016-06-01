@@ -15,6 +15,7 @@
     "font-awesome": "*"
   },
   "devDependencies": {
-    "foundation-font-awesome-buttons": "~3.2.1"
+    "foundation-font-awesome-buttons": "~3.2.1",
+    "highlight": "~9.4.0"
   }
 }

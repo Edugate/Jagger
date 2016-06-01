@@ -52,9 +52,9 @@ class Ec extends MY_Controller
                 }
                 $linetxt = '';
                 if ($hasWriteAccess) {
-                    $linetxt = '<a href="' . base_url() . 'manage/ec/edit/' . $entCat->getId() . '" ><i class="fi-pencil"></i></a>';
+                    $linetxt = '<a href="' . base_url() . 'manage/ec/edit/' . $entCat->getId() . '" ><i class="fa fa-pencil"></i></a>';
                     if (!$isEnabled) {
-                        $linetxt .= '&nbsp;&nbsp;<a href="' . base_url() . 'manage/ec/remove/' . $entCat->getId() . '" class="withconfirm" data-jagger-fieldname="' . $entCat->getName() . '" data-jagger-ec="' . $entCat->getId() . '" data-jagger-counter="' . $countProviders . '"><i class="fi-trash"></i></a>';
+                        $linetxt .= '&nbsp;&nbsp;<a href="' . base_url() . 'manage/ec/remove/' . $entCat->getId() . '" class="withconfirm" data-jagger-fieldname="' . $entCat->getName() . '" data-jagger-ec="' . $entCat->getId() . '" data-jagger-counter="' . $countProviders . '"><i class="fa fa-trash"></i></a>';
                     }
                 }
 

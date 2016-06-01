@@ -13,10 +13,10 @@ echo '</div>';
 
 echo '<div class="small-12 column  ">';
 echo '<div class="medium-12  column">';
-echo '<ul class="button-group  right">';
-echo '<li><button class="small alert cleartarget" data-jagger-textarea="inputmsg">'.lang('rr_clearbtn').'</button></li>';
-echo '<li><button class="postajax small" data-jagger-response-msg="outputmsg">'.lang('rr_submit').'</button></li>';
-echo '</ul>';
+echo '<div class="button-group  text-right">';
+echo '<a class="small button alert cleartarget" data-jagger-textarea="inputmsg">'.lang('rr_clearbtn').'</a>';
+echo '<a class="postajax button small" data-jagger-response-msg="outputmsg">'.lang('rr_submit').'</a>';
+echo '</div>';
 echo '</div>';
 echo '</div>';
 

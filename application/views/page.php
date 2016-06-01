@@ -184,9 +184,9 @@ if ($breadcrumbsEnabled === true) {
             if ($loggedin) {
                 $showhelp = $this->session->userdata('showhelp');
                 if (!empty($showhelp) && $showhelp === true) {
-                    $sideicons[] = '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpactive alert active"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpshow" style="display:none"><i class="fi-info"></i></a>';
+                    $sideicons[] = '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpactive alert active"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpshow" style="display:none"><i class="fa fa-info"></i></a>';
                 } else {
-                    $sideicons[] = '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpinactive"><i class="fi-info"></i></a>';
+                    $sideicons[] = '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpinactive"><i class="fa fa-info"></i></a>';
                 }
                 ?>
                 <?php
@@ -197,7 +197,7 @@ if ($breadcrumbsEnabled === true) {
     <article role="main" class="clearfix">
         <div>
 
-            <div id="wrapper">
+            <div id="wrapper" class="row">
                 <?php
                 $this->load->view($content_view);
                 ?>
@@ -230,7 +230,7 @@ if ($breadcrumbsEnabled === true) {
             <?php
             $footer = $this->rrpreference->getPreferences('pageFooter');
             if (isset($footer['status']) && (boolean)$footer['status'] === true && isset($footer['value'])) {
-                echo '<div>' . nl2br($footer['value']) . '<div>';
+                echo '<div>' . nl2br($footer['value']) . '</div>';
             }
             $disp_mem = $this->rrpreference->getPreferences('rr_display_memory_usage');
             if (isset($disp_mem['status']) && (boolean)$disp_mem['status'] === true) {
@@ -249,7 +249,7 @@ if ($breadcrumbsEnabled === true) {
  </div>
 
 
-<a href="javascript:" id="return-to-top"><i class="fi-arrow-up largeicon"></i></a>
+<a href="javascript:" id="return-to-top"><i class="fa fa-arrow-up largeicon"></i></a>
 
 <div style="display: none">
     <input type="hidden" name="baseurl" value="<?php echo base_url(); ?>">
@@ -292,7 +292,7 @@ if ($breadcrumbsEnabled === true) {
 </div>
 
 <?php
-echo '<script type="text/javascript" src="' . $base_url . 'js/f6-thirdpartylibs.min.d99ff2b7.js"></script>' . PHP_EOL;
+echo '<script type="text/javascript" src="' . $base_url . 'js/f6-thirdpartylibs.min.09a4574f.js"></script>' . PHP_EOL;
 
 if (!empty($load_matrix_js)) {
     echo '<script type="text/javascript">';
