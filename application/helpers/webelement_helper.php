@@ -1,10 +1,12 @@
 <?php
 
 
+
+
 function generateTopBar($a) {
     $html[] = '<div data-sticky-container>
     <div class="title-bar" data-responsive-toggle="topbar-menu" data-hide-for="medium" data-sticky><button class="menu-icon" type="button" data-toggle></button><div class="title-bar-title">Menu</div></div>' .
-        '<div id="topbar-menu" class="top-bar stacked-for-medium" data-sticky data-options="marginTop:0;">';
+        '<div id="topbar-menu" class="top-bar stacked-for-large" data-sticky data-options="marginTop:0;">';
 
 
     if (isset($a['logo'])) {
@@ -317,4 +319,10 @@ function generateInputWithRemove($label, $name, $buttonname, $buttonvalue, $valu
 
 function jform_label($a, $b) {
     return '<label form="' . $b . '" class="right inline">' . $a . '</label>';
+}
+
+function closeModalIcon(){
+    return '<button class="close-button" data-close aria-label="Close modal" type="button">
+  <span aria-hidden="true">&times;</span>
+</button>';
 }

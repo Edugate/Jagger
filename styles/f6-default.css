@@ -7724,9 +7724,6 @@ body {
 .top-bar.shrink .top-bar-right, .top-bar.shrink .top-bar-left {
   padding-top: 0em; }
 
-.top-bar .dropdown.menu li {
-  float: left; }
-
 .top-bar .dropdown.menu .is-dropdown-submenu {
   border: none;
   background-color: #014289; }

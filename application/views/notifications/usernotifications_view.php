@@ -7,7 +7,7 @@ if(!empty($warnmessage))
  
 }
 ?>
-<div class="small-12 columns text-right"><button class="small" type="button" data-reveal-id="notificationaddmodal"><?php echo lang('rr_add');?></button></div>
+<div class="small-12 columns text-right"><button class="small" type="button" data-open="notificationaddmodal"><?php echo lang('rr_add');?></button></div>
 <?php
   if(count($rows)>1)
   {
@@ -24,12 +24,12 @@ if(!empty($warnmessage))
  */
    $rrs = array('id'=>'notificationupdateform');
 
-   echo '<div id="notificationupdatemodal" class="reveal-modal small" data-reveal>';
+   echo '<div id="notificationupdatemodal" class="reveal small" data-reveal>';
    echo form_open(base_url().'notification/subscriber/updatestatus/',$rrs);
    echo form_input(array('name'=>'noteid','id'=>'noteid','type'=>'hidden','value'=>''));
 $btns = array(
-    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
-    '<button type="submit" name="updstatus">'. lang('btnupdate').'</button>'
+    '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
+    '<button type="submit" name="updstatus" class="button">'. lang('btnupdate').'</button>'
 );
    ?>
       <div class="header row">
@@ -50,7 +50,7 @@ $btns = array(
      </div>
    <?php
    echo form_close();
-   echo' <a class="close-reveal-modal">&#215;</a>';
+   echo closeModalIcon();
    echo '</div>';
 
 /**
