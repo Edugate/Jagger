@@ -120,8 +120,8 @@ function nl2br(str, is_xhtml) {
 
 function revealAlert(str, btnval) {
     'use strict';
-    var button = '<div class="row text-right"><button class="small modal-close">' + btnval + '</button></div>', modal = $('#malert');
-    modal.empty().append('<div class="row text-center"><p><h4>' + str + '</h4></p></div>').append(button).foundation('reveal', 'open');
+    var button = '<div class="row text-right"><button class="button" data-close>' + btnval + '</button></div>', modal = $('#malert');
+    modal.empty().append('<div class="row text-center"><p><h4>' + str + '</h4></p></div>').append(button).foundation('open');
 }
 
 
@@ -4594,7 +4594,10 @@ if ($('#providerslistresultv2').length) {
                                 }
                             }
                             else if (s === 'contacts') {
-                                cell = cell + w.contacts.join("<br />");
+                                $.each(w.contacts, function(j,h){
+                                  cell = cell+ '<span class="label">'+h.type.charAt(0).toUpperCase()+'</span> '+h.mail+'<br />';
+                                });
+                                //cell = cell + w.contacts.join("<br />");
                             }
                             else {
                                 cell = cell + '  ' + w[s];
@@ -4703,6 +4706,7 @@ if ($('#providerslistresultv2').length) {
 
 // get list providers with dynamic list columns: in progress
 $(".afilter").click(function () {
+
     var url = $(this).attr("href");
 
     var filter;
@@ -5122,7 +5126,7 @@ $("#updatemembership").on('click', '.yes', function (e) {
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            revealAlert('<div data-alert class="alert-box alert ">' + jqXHR.responseText + '</div>', 'OK');
+            revealAlert('<div class="alert-box alert ">' + jqXHR.responseText + '</div>', 'OK');
         }
     });
     return false;

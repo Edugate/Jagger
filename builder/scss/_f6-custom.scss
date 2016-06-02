@@ -255,6 +255,11 @@ height: 100%;
 .subtab.tabs {
   background: $tab-background-second-level;
 }
+
+.pseudo-tabs-title {
+  @include tabs-title;
+
+}
 .pseudo-tabs-title > a {
   color: $tab-item-color;
 }
@@ -433,8 +438,9 @@ div.error {
   @include callout();
   background-color: map-get($foundation-palette, alert);
 }
-#wrapper {
+#dwrapper {
   background-color: $white;
+  padding: 0.5em;
 }
 .box {
   transition: box-shadow 0.2s ease-in;
@@ -484,4 +490,24 @@ code {
 }
 .fa.alert {
   color: map_get($foundation-palette,'alert');
+}
+
+ul {
+ // list-style-type: none;
+}
+
+
+td.section {
+  background-color: $section-header-background;
+  color: $section-header-font;
+  font-weight: bold;
+}
+div.section {
+  background-color: $section-header-background;
+  color: $section-header-font;
+  font-weight: bold;
+  padding: 0.5em;
+}
+legend {
+  font-weight: bold;
 }

@@ -257,21 +257,24 @@ class Providerdetails
 
                 $fedlink = base_url('federations/manage/show/' . base64url_encode($f->getFederation()->getName()));
 
+                $federationsString .= '<li>';
                 if ($showMetalinks) {
                     $metalink = base_url('metadata/federation/' . $f->getFederation()->getSysname() . '/metadata.xml');
                     if ($fedActive) {
-                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, html_escape($f->getFederation()->getName())) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ': </span><span class="accordionContent"><br /><i>' . $metalink . '</i>&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fa fa-arrow-right"></i>', 'class=""') . '</li>';
+                        $federationsString .= $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, html_escape($f->getFederation()->getName())) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ': </span><span class="accordionContent"><br /><i>' . $metalink . '</i>&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fa fa-arrow-right"></i>', 'class=""') ;
                     } else {
-                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ': </span><span class="accordionContent"><br /><i>' . $metalink . '</i>&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fa fa-arrow-right"></i>', 'class=""') . '</li>';
+                        $federationsString .= $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . ' <span class="accordionButton">' . lang('rr_metadataurl') . ': </span><span class="accordionContent"><br /><i>' . $metalink . '</i>&nbsp;</span> &nbsp;&nbsp;' . anchor($metalink, '<i class="fa fa-arrow-right"></i>', 'class=""') ;
                     }
                 } else {
                     if ($fedActive) {
-                        $federationsString .= '<li>' . $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, html_escape($f->getFederation()->getName())) . ' </li>';
+                        $federationsString .= $membershipDisabled . '  ' . $membershipBanned . ' ' . anchor($fedlink, html_escape($f->getFederation()->getName()));
                     } else {
-                        $federationsString .= '<li>' . $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName()) . '</li>';
+                        $federationsString .= $membershipDisabled . ' ' . $membershipBanned . ' ' . makeLabel('disabled', lang('rr_fed_inactive_full'), lang('rr_fed_inactive_full')) . ' ' . anchor($fedlink, $f->getFederation()->getName());
                     }
                 }
-                $federationsString .= implode(' ', $mngmtBtns);
+                $federationsString .= '<br />'.implode(' ', $mngmtBtns);
+                $federationsString .='</li>';
+
             }
             $federationsString .= '</ul>';
 
@@ -352,7 +355,7 @@ class Providerdetails
             }
             $d[$iCounter]['value'] = $lvalues;
         } else {
-            $d[$iCounter]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
+            $d[$iCounter]['value'] = '<span class="label alert">' . lang('rr_notset') . '</span>';
         }
         $d[++$iCounter]['name'] = lang('e_orgdisplayname');
         $ldisplayname = $this->ent->getMergedLocalDisplayName();
@@ -361,9 +364,9 @@ class Providerdetails
             foreach ($ldisplayname as $k => $v) {
                 $lvalues .= '<b>' . $k . ':</b> ' . html_escape($v) . '<br />';
             }
-            $d[$iCounter]['value'] = '<div id="selectme">' . $lvalues . '</div>';
+            $d[$iCounter]['value'] = '<div>' . $lvalues . '</div>';
         } else {
-            $d[$iCounter]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
+            $d[$iCounter]['value'] = '<span class="label alert">' . lang('rr_notset') . '</span>';
         }
         $d[++$iCounter]['name'] = lang('e_orgurl');
         $localizedHelpdesk = $this->ent->getHelpdeskUrlLocalized();
@@ -374,7 +377,7 @@ class Providerdetails
             }
             $d[$iCounter]['value'] = $lvalues;
         } else {
-            $d[$iCounter]['value'] = '<div id="selectme" data-alert class="alert-box alert">' . lang('rr_notset') . '</div>';
+            $d[$iCounter]['value'] = '<span class="label alert">' . lang('rr_notset') . '</span>';
         }
 
         return $d;
@@ -404,7 +407,7 @@ class Providerdetails
                 $result = array_merge($result, $part);
             }
         } else {
-            $result[]['2cols'] = '<div data-alert class="alert-box warning">' . lang('rr_notset') . '</div>';
+            $result[]['2cols'] = '<div  class="alert-box warning">' . lang('rr_notset') . '</div>';
         }
 
         return $result;
@@ -876,7 +879,7 @@ class Providerdetails
 
 
         $xmldata = $this->CI->providertoxml->entityConvertNewDocument($ent, array('attrs' => 1), true);
-        $subresult[1] = array('section' => 'xmlmeta', 'title' => '<i class="fi-clipboard-notes"></i>', 'data' => '<pre><code class="xml">' . html_escape($xmldata) . '</code></pre>');
+        $subresult[1] = array('section' => 'xmlmeta', 'title' => '<i class="fa fa-file"></i>', 'data' => '<pre><code class="xml">' . html_escape($xmldata) . '</code></pre>');
 
         $d = array();
         if (count($entityCategories) == 0) {
@@ -1136,7 +1139,7 @@ class Providerdetails
         }
         if (($hasManageAccess || $hasWriteAccess) && $isLocal) {
 
-            $d[++$i] = array('name' => lang('regpols_menulink'), 'value' => '<a href="' . base_url() . 'manage/entitystate/regpolicies/' . $ent->getId() . '" class="button tiny">' . lang('rr_edit') . '');
+            $d[++$i] = array('name' => lang('regpols_menulink'), 'value' => '<a href="' . base_url() . 'manage/entitystate/regpolicies/' . $ent->getId() . '" class="button"><i class="fa fa-pencil"> </i> ' . lang('rr_edit') . '');
         }
 
         ksort($subresult);

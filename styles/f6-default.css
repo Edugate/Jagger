@@ -7902,6 +7902,18 @@ body {
 .subtab.tabs {
   background: #242424; }
 
+.pseudo-tabs-title {
+  float: left; }
+  .pseudo-tabs-title > a {
+    display: block;
+    padding: 1.25rem 1.5rem;
+    line-height: 1;
+    font-size: 0.75rem; }
+    .pseudo-tabs-title > a:hover {
+      background: #fefefe; }
+    .pseudo-tabs-title > a:focus, .pseudo-tabs-title > a[aria-selected='true'] {
+      background: #3d3d3d; }
+
 .pseudo-tabs-title > a {
   color: #fefefe; }
 
@@ -8089,8 +8101,9 @@ div.error {
   .alert-box.alert > :last-child {
     margin-bottom: 0; }
 
-#wrapper {
-  background-color: #fefefe; }
+#dwrapper {
+  background-color: #fefefe;
+  padding: 0.5em; }
 
 .box {
   transition: box-shadow 0.2s ease-in;
@@ -8129,6 +8142,20 @@ code {
 
 .fa.alert {
   color: #ec5840; }
+
+td.section {
+  background-color: #454545;
+  color: white;
+  font-weight: bold; }
+
+div.section {
+  background-color: #454545;
+  color: white;
+  font-weight: bold;
+  padding: 0.5em; }
+
+legend {
+  font-weight: bold; }
 
 /*
 Description: Foundation 4 docs style for highlight.js

@@ -70,64 +70,64 @@ $foundation = $base_url . 'foundation/';
     href="http://whatbrowser.org/">upgrade your browser</a> to improve your experience.</p></div>
 <![endif]-->
 
-    <?php
-    $iscookieconsent = $this->rrpreference->getPreferences('cookieConsent');
-    $breadcrumbsConf = $this->rrpreference->getPreferences('breadcrumbs');
-    $breadcrumbsEnabled = false;
-    if (!empty($breadcrumbsConf) && !empty($breadcrumbsConf['status'])) {
-        $breadcrumbsEnabled = true;
-    }
+<?php
+$iscookieconsent = $this->rrpreference->getPreferences('cookieConsent');
+$breadcrumbsConf = $this->rrpreference->getPreferences('breadcrumbs');
+$breadcrumbsEnabled = false;
+if (!empty($breadcrumbsConf) && !empty($breadcrumbsConf['status'])) {
+    $breadcrumbsEnabled = true;
+}
 
-    $showPagetitles = $this->rrpreference->getPreferences('titleheader');
-    if (isset($iscookieconsent['status']) && (boolean)$iscookieconsent['status'] === true && isset($iscookieconsent['value'])) {
-        $this->load->helper('cookie');
-        $cookieaccepted = get_cookie('cookieAccept');
-        if (empty($cookieaccepted) || $cookieaccepted !== 'accepted') {
-            $this->load->view('cookiesconsent', $iscookieconsent);
-        }
+$showPagetitles = $this->rrpreference->getPreferences('titleheader');
+if (isset($iscookieconsent['status']) && (boolean)$iscookieconsent['status'] === true && isset($iscookieconsent['value'])) {
+    $this->load->helper('cookie');
+    $cookieaccepted = get_cookie('cookieAccept');
+    if (empty($cookieaccepted) || $cookieaccepted !== 'accepted') {
+        $this->load->view('cookiesconsent', $iscookieconsent);
     }
-    $args['breadcrumbsEnabled'] = $breadcrumbsEnabled;
+}
+$args['breadcrumbsEnabled'] = $breadcrumbsEnabled;
 
-    echo '<header>';
-    $this->load->view('f6/toppanel', $args);
+echo '<header>';
+$this->load->view('f6/toppanel', $args);
 
 echo '</header>';
-    if (!empty($showPagetitles) && !empty($showPagetitles['status']) && (!empty($titlepage) || !empty($subtitlepage))) {
+if (!empty($showPagetitles) && !empty($showPagetitles['status']) && (!empty($titlepage) || !empty($subtitlepage))) {
 
-        echo '<div id="titlepage" class="fullWidth">'; // start id="titlepage"
+    echo '<div id="titlepage" class="fullWidth">'; // start id="titlepage"
 
-        echo '<div class="row">'; //start titlepage part
+    echo '<div class="row">'; //start titlepage part
 
-        if (!empty($titlepage)) {
-            if (!empty($providerlogourl)) {
-                echo '<div class="large-8 columns text-left">' . $titlepage . '</div><div class="large-4 columns text-right show-for-medium-up"><img src="' . $providerlogourl . '" class="right" style="max-height: 40px; background-color: white;"/></div>';
-            } else {
-                echo '<div>' . $titlepage . '</div>';
-            }
+    if (!empty($titlepage)) {
+        if (!empty($providerlogourl)) {
+            echo '<div class="large-8 columns text-left">' . $titlepage . '</div><div class="large-4 columns text-right show-for-medium-up"><img src="' . $providerlogourl . '" class="right" style="max-height: 40px; background-color: white;"/></div>';
+        } else {
+            echo '<div>' . $titlepage . '</div>';
         }
-        if (!empty($subtitlepage)) {
-            echo '<div class="small-12 columns text-center subtitle">' . $subtitlepage . '</div>';
-        }
-
-        ///////////// start submenupage
-        if (!empty($submenupage)) {
-            echo '<div><div class="small-12 columns text-right">';
-            echo '<dl class="subnav">';
-            echo '<dt></dt>';
-            foreach ($submenupage as $v) {
-                if (isset($v['url'])) {
-                    echo '<dd><a href="' . $v['url'] . '">' . $v['name'] . '</a></dd>';
-                }
-            }
-            echo '</dl>';
-            echo '</div>';
-            echo '</div>';
-        }
-        /////////////// end submenupage
-        echo '</div>'; // end titlepage part
-        echo '</div>'; // end id="titlepage"
     }
-    ?>
+    if (!empty($subtitlepage)) {
+        echo '<div class="small-12 columns text-center subtitle">' . $subtitlepage . '</div>';
+    }
+
+    ///////////// start submenupage
+    if (!empty($submenupage)) {
+        echo '<div><div class="small-12 columns text-right">';
+        echo '<dl class="subnav">';
+        echo '<dt></dt>';
+        foreach ($submenupage as $v) {
+            if (isset($v['url'])) {
+                echo '<dd><a href="' . $v['url'] . '">' . $v['name'] . '</a></dd>';
+            }
+        }
+        echo '</dl>';
+        echo '</div>';
+        echo '</div>';
+    }
+    /////////////// end submenupage
+    echo '</div>'; // end titlepage part
+    echo '</div>'; // end id="titlepage"
+}
+?>
 
 <?php
 
@@ -137,7 +137,7 @@ if ($breadcrumbsEnabled === true) {
     } else {
         $prefBreadcrumbs = array();
     }
-    echo '<div class="row  fullWidth">';
+    echo '<div class="row  expanded"><div class="small-12 column">';
     echo '<ul class="breadcrumbs">';
 
 
@@ -165,6 +165,7 @@ if ($breadcrumbsEnabled === true) {
     }
     echo '</ul>';
     echo '</div>';
+    echo '</div>';
 
 
 }
@@ -183,47 +184,45 @@ if ($breadcrumbsEnabled === true) {
             <?php
             if ($loggedin) {
                 $showhelp = $this->session->userdata('showhelp');
-                if (!empty($showhelp) && $showhelp === true) {
-                    $sideicons[] = '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpactive alert active"><img src="' . base_url() . 'images/icons/info.png" class="iconhelpshow" style="display:none"><i class="fa fa-info"></i></a>';
+                if ($showhelp === true) {
+                    $sideicons[] = '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpactive alert active"><i class="fa fa-info"></i></a>';
                 } else {
                     $sideicons[] = '<a href="' . base_url() . 'ajax/showhelpstatus" id="showhelps" class="helpinactive"><i class="fa fa-info"></i></a>';
                 }
-                ?>
-                <?php
             }
             ?>
         </header>
     </div>
     <article role="main" class="clearfix">
-        <div>
 
-            <div id="wrapper" class="row">
-                <?php
-                $this->load->view($content_view);
-                ?>
 
-            </div>
-            <div id="navigation">
-                <?php
-                if (!empty($navigation_view)) {
-                    $this->load->view($navigation_view);
-                }
-                ?>
-            </div>
-            <div id="extra">
-                <?php
-                if (!empty($extra_view)) {
-                    $this->load->view($extra_view);
-                }
-                ?>
-            </div>
+        <div id="wrapper" class="row expanded">
+            <?php
+            $this->load->view($content_view);
+            ?>
 
         </div>
+        <div id="navigation">
+            <?php
+            if (!empty($navigation_view)) {
+                $this->load->view($navigation_view);
+            }
+            ?>
+        </div>
+        <div id="extra">
+            <?php
+            if (!empty($extra_view)) {
+                $this->load->view($extra_view);
+            }
+            ?>
+        </div>
+
+
     </article>
     <div id="inpre_footer"></div>
 </div>
 
-<div id="footer">
+<div id="footer" class="row expanded">
 
     <footer class="row">
         <div class="large-12 columns text-center">
@@ -241,12 +240,12 @@ if ($breadcrumbsEnabled === true) {
 
     </footer>
 </div>
-    
 
- <div id="spinner" class="spinner hidden ">
-     <i class="fa fa-spinner fa-spin fa-3x fa-fw text-danger"></i>
-<span class="sr-only">Loading...</span>
- </div>
+
+<div id="spinner" class="spinner hidden ">
+    <i class="fa fa-spinner fa-spin fa-3x fa-fw text-danger"></i>
+    <span class="sr-only">Loading...</span>
+</div>
 
 
 <a href="javascript:" id="return-to-top"><i class="fa fa-arrow-up largeicon"></i></a>
@@ -277,9 +276,9 @@ if ($breadcrumbsEnabled === true) {
             </select>
         </label>
     </form>
-     <button class="close-button" data-close aria-label="Close modal" type="button">
-    <span aria-hidden="true">&times;</span>
-  </button>
+    <button class="close-button" data-close aria-label="Close modal" type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
 
 </div>
 
@@ -349,7 +348,7 @@ if (!empty($rawJs) && is_array($rawJs)) {
    //     $(this).addClass('shrink');
    // }).on('sticky.zf.unstuckfrom:top', function () {
    //     $(this).removeClass('shrink');
-   // })
+  //  })
 </script>
 
 

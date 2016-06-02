@@ -865,7 +865,7 @@ class Formelement
             }
             $SSOPart .= implode('', $sso);
             $result[] = '';
-            $result[] = '<fieldset><legend>' . lang('rr_srvssoends') . '</legend>' . $SSOPart . '</fieldset>';
+            $result[] = '<fieldset class="fieldset"><legend>' . lang('rr_srvssoends') . '</legend>' . $SSOPart . '</fieldset>';
             $result[] = '';
             /**
              * IDP SingleLogoutService
@@ -1834,7 +1834,7 @@ class Formelement
             } elseif (strcmp($k1, 'sp') == 0) {
                 $t = 'sp';
             }
-            $p = '<ul class="small-block-grid-1">';
+            $p = '<ul class="no-bullet">';
             foreach ($v1 as $k2 => $v2) {
                 $p .= '<li class="small-12 columns">';
                 $p .= '<div class="medium-3 columns"><img src="' . $v2['url'] . '" style="max-height: 100px;"/>';
@@ -1872,18 +1872,18 @@ class Formelement
                 $p .= lang('rr_lang') . ': ' . $l . '<br />';
                 $p .= lang('rr_size') . ': ' . $v2['width'] . 'x' . $v2['height'] . '';
                 $p .= '</div>';
-                $p .= '<div class="medium-3 columns"><button class="btn langinputrm inline left button alert">' . lang('rr_remove') . '</button></div>';
+                $p .= '<div class="medium-3 columns"><button class="langinputrm button alert">' . lang('rr_remove') . '</button></div>';
                 $p .= '</li>';
             }
 
             $z = '<li id="nlogo' . $t . 'row" class="small-12 columns" style="display: none;">';
             $z .= '<div class="medium-3 columns"><img src="" style="max-height: 100px;"/></div>';
             $z .= '<div class="medium-6 columns logoinfo"></div>';
-            $z .= '<div class="medium-3 columns"><button class="btn langinputrm inline left button alert">' . lang('rr_remove') . '</button></div>';
+            $z .= '<div class="medium-3 columns"><button class="langinputrm button alert">' . lang('rr_remove') . '</button></div>';
             $z .= '</li>';
             $p .= $z;
             $p .= '</ul>';
-            $inlabel = '<div class="small-12 column"><div class="small-3 columns"><label class="right inline" for="logoretrieve">' . lang('rr_url') . '</label></div>';
+            $inlabel = '<div class="small-12 column"><div class="small-3 columns"><label class="text-right middle" for="logoretrieve">' . lang('rr_url') . '</label></div>';
             $in = '<div class="small-6 columns">' . form_input(array('name' => '' . $t . 'logoretrieve')) . '<small class="' . $t . 'logoretrieve error" style="display:none;"></small></div>';
             $in2 = '<div class="small-3 columns"><button type="button" name="' . $t . 'getlogo" class="button getlogo" value="' . base_url() . 'ajax/checklogourl">' . lang('btngetlogo') . '</button></div></div>';
 
@@ -1892,7 +1892,7 @@ class Formelement
             $reviewlogo = '<div class="small-3 column"><div class="logolangselect">' . $langselection . '</div><div class="logosizeinfo"></div><div>' . $embededoption . '</div></div><div class="small-6 column imgsource"></div><div class="small-3 column"><button class="button addnewlogo" type="button" name="addnewlogo">' . lang('rr_add') . '</button></div>';
             $da = '<fieldset><legend>' . lang('rr_newlogosection') . '</legend>' . $inlabel . $in . $in2 . '<div id="' . $t . 'reviewlogo" class="small-12 column reviewlogo" style="display: none; max-height: 100px">' . $reviewlogo . '</div></fieldset>';
 
-            $result[$k1][] = '<fieldset><legend>' . lang('rr_logoofservice') . '</legend>' . $p . ' ' . $da . '</fieldset>';
+            $result[$k1][] = '<fieldset class="fieldset"><legend>' . lang('rr_logoofservice') . '</legend>' . $p . ' ' . $da . '</fieldset>';
             $result[$k1][] = '';
         }
 

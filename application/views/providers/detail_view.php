@@ -41,7 +41,7 @@ echo '<div id="prdetails" class="alert-box warning hidden" ></div>';
 
 
             <ul class="tabs" data-tabs id="providerdetail-tabs">
-                <li class="pseudo-tabs-title" style="float: left;padding: 1.25rem 1.5rem; line-height: 1;font-size: 0.75rem;"><a href="#"  data-toggle="offCanvas"><i class="fa fa-cog"></i></a></li>
+                <li class="pseudo-tabs-title"><a href="#"  data-toggle="offCanvas"><i class="fa fa-cog "></i></a></li>
                 <?php
                 $activetab = 'general';
                 $tset = false;
@@ -191,14 +191,14 @@ echo '<div id="prdetails" class="alert-box warning hidden" ></div>';
     <div class="metadataresult" style="display: none"></div>
 
     <?php
-    echo '<div id="updatemembership" class="reveal-modal small" data-reveal>';
+    echo '<div id="updatemembership" class="reveal small" data-reveal>';
     echo '<div class="row message title">';
 
     echo '</div>';
     echo form_open(base_url('manage/entitystate/updatemembership'));
     echo '<input type="hidden" name="updatedata" value="" style="display:none;" />';
     $buttons = array(
-        '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+        '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
         '<div class="yes button">' . lang('btnupdate') . '</div>'
     );
     echo revealBtnsRow($buttons);
