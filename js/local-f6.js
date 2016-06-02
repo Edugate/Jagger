@@ -246,6 +246,7 @@ jQuery.uiTableFilter.has_words = function (str, words, caseSensitive) {
 var jlettersdigits = 'abcdefghijklmnopqrstuvwxyz0123456789';
 var jLetters = 'abcdefghijklmnopqrstuvwxyz';
 var jDigits = '0123456789';
+
 var genRandomStr = function (counter) {
     'use strict';
     var randStr = '', i, limitLength = jlettersdigits.length;
@@ -253,7 +254,7 @@ var genRandomStr = function (counter) {
         randStr += jlettersdigits.charAt(Math.floor(Math.random() * limitLength));
     }
     return randStr;
-}
+};
 
 
 var map, mapSearchInput;
@@ -338,10 +339,11 @@ jQuery.fn.toggleOption = function (show) {
         jQuery(this).wrap('<span class="toggleOption" style="display: none;" />');
     }
 };
+
 var createRowWithLangRm = function (langCode, langString, inputName, rmbtn) {
     console.log('createRowWithLangRm fired');
     return $('<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"' + inputName + '\" class=\"right inline\">' + langString + '</label></div><div class=\"small-6 large-7 columns\"><input id=\"' + inputName + '\" name=\"' + inputName + '\" type=\"text\" class=\"validurl\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button inline  left alert\" name=\"langrm\" value=\"' + langCode + '\">' + rmbtn + '</button></div></div>');
-}
+};
 
 var createRowTaskParams = function (label1, label2) {
     var rname = 'z';
@@ -354,8 +356,11 @@ var createRowTaskParams = function (label1, label2) {
         '<div class=\"small-6 column\"><label>' + label2 + '<input name=\"params[' + rname + '][value]\" type="text"  value=\"\"/></label></div></div>');
 };
 
+
+
+
 var spinImage = $('#spinner');
-$.ajaxSetup({});
+
 
 var BINIT = {
     initFvalidators: function () {
@@ -711,7 +716,6 @@ var GINIT = {
         $('#providerdetail-tabs[data-tabs]').on('change.zf.tabs', function (e) {
             console.log('Those tabs sure did change!');
             var tabActive = $('div[data-tabs-content="' + $(this).attr('id') + '"]').children('.tabs-panel.is-active');
-            //       var tabId = tabActive.attr('id');
             var ajaxTab = tabActive.attr('data-reveal-ajax-tab');
             if (ajaxTab !== undefined) {
                 $.ajax({
@@ -726,20 +730,17 @@ var GINIT = {
                         catch (e) {
                             data = response;
                             tabActive.empty().append(data);
-                            Foundation.reInit(tabActive);
-                            
-                            return false;
-                        }
-                        var dataHtml;
-                        $.each(data, function (k, v) {
 
-                        });
+
+                        }
+                        tabActive.foundation();
+                        return false;
 
                     }
                 });
             }
 
-        })
+        });
 
 
         $("#newusermodal").on('submit', 'form', function (e) {
@@ -1353,7 +1354,7 @@ var GINIT = {
         $(document).on('click', '.fmembers', 'a', function () {
 
             var link = $(this), url = link.attr("href");
-            var row = $(this).parent().parent();
+            var row = link.parent().parent();
             if ($(row).hasClass('opened') === true) {
                 $(row).next().remove();
                 $(row).removeClass('opened').removeClass('highlight');
@@ -1518,6 +1519,7 @@ var GINIT = {
 
 
 $(document).ready(function () {
+	$('fieldset').addClass('fieldset');
     $('pre code').each(function (i, block) {
         hljs.highlightBlock(block);
     });
@@ -2571,7 +2573,7 @@ $(document).ready(function () {
 
                         $.each(data.data.sps, function (i, v) {
 
-                                var spReqAttr = new Array();
+                                var spReqAttr = [];
                                 if (v.req !== undefined) {
                                     $.each(v.req, function (p, w) {
                                         spReqAttr[p] = w;

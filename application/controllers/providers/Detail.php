@@ -182,6 +182,10 @@ class Detail extends MY_Controller
             'name' => lang('rr_modifications'),
             'value' => $this->show_element->generateModificationsList($ent, 10)
         );
+        /**
+         * test
+         */
+
 
         if ((strcasecmp($ent->getType(), 'SP') !== 0)) {
             $tmpLogs = new models\Trackers;

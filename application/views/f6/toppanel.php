@@ -37,7 +37,7 @@ if ($loggedin) {
         'name' => '<i class="fa fa-user"></i>',
         'sub' => array(
             array(
-                'name' => '<i class="fa fa-cog"></i>',
+                'name' => '<i class="fa fa-cog"></i> <span class="show-for-large">Profile</span>',
                 'link' => '' . $base_url . 'manage/users/show/'.base64url_encode($user)
             ),
             array(
@@ -45,9 +45,9 @@ if ($loggedin) {
                 'link' => '' . $base_url . 'notifications/subscriber/mysubscriptions/'.base64url_encode($user)
             ),
             array(
-                'name' => '<i class="fa fa-sign-out alert red error"></i>',
+                'name' => '<i class="fa fa-sign-out"></i>',
                 'link' => '' . $base_url . 'auth/logout',
-                'linkprop' => 'style="color: red" class="logoutbutton userlogout" jagger-data-logout="' . $shibLogoutUri . '"'
+                'linkprop' => 'class="logoutbutton userlogout" jagger-data-logout="' . $shibLogoutUri . '"'
             ),
         ),
     );

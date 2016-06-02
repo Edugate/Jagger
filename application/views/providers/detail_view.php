@@ -41,7 +41,7 @@ echo '<div id="prdetails" class="alert-box warning hidden" ></div>';
 
 
             <ul class="tabs" data-tabs id="providerdetail-tabs">
-                <li class="pseudo-tabs-title" style="float: left;padding: 1.25rem 1.5rem; line-height: 1;font-size: 0.75rem;"><a href="#"  data-toggle="offCanvas"><i class="fi-indent-more"></i></a></li>
+                <li class="pseudo-tabs-title" style="float: left;padding: 1.25rem 1.5rem; line-height: 1;font-size: 0.75rem;"><a href="#"  data-toggle="offCanvas"><i class="fa fa-cog"></i></a></li>
                 <?php
                 $activetab = 'general';
                 $tset = false;
