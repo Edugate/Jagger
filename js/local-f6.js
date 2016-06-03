@@ -2516,7 +2516,7 @@ $(document).ready(function () {
                         tbl += '</tr></thead>';
 
                         $.each(data.data.entcats, function (i, v) {
-                            tbl += '<tr><td colspan="' + nrcols + '" class="highlight">EntityCategory: ' + data.definitions.entcats[i]['name'] + '  ' + data.definitions.entcats[i]['value'] + ' <i class="ecmembers fi-list"  data-jagger-jsource="' + ecmemberurl + '/' + i + '"></i></td></tr>';
+                            tbl += '<tr><td colspan="' + nrcols + '" class="highlight">EntityCategory: ' + data.definitions.entcats[i]['name'] + '  ' + data.definitions.entcats[i]['value'] + ' <i class="ecmembers fa fa-list"  data-jagger-jsource="' + ecmemberurl + '/' + i + '"></i></td></tr>';
 
                             $.each(v, function (j, w) {
                                 unsupwttr = '';
@@ -3564,12 +3564,12 @@ $(function () {
                         if (result.data.q) {
                             $.each(result.data.q, function (v, k) {
 
-                                rows.push('<tr><td>' + k.idate + '</td><td>' + k.requesterCN + ' ' + k.mail + '</td><td>' + k.type + ' - ' + k.action + '</td><td><a href="' + baseurl + 'reports/awaiting/detail/' + k.token + '"><i class="fi-arrow-right"></i></a></td></tr>');
+                                rows.push('<tr><td>' + k.idate + '</td><td>' + k.requesterCN + ' ' + k.mail + '</td><td>' + k.type + ' - ' + k.action + '</td><td><a href="' + baseurl + 'reports/awaiting/detail/' + k.token + '"><i class="fa fa-arrow-right"></i></a></td></tr>');
                             });
                         }
                         if (result.data.s) {
                             $.each(result.data.s, function (v, k) {
-                                rows.push('<tr><td>&nbsp;</td><td>' + k.subscriber + ' &lt' + k.subscriber_email + '&gt;</td><td>' + k.type + '</td><td><a href="' + k.url + '"><i class="fi-arrow-right"></i></a></td></tr>');
+                                rows.push('<tr><td>&nbsp;</td><td>' + k.subscriber + ' &lt' + k.subscriber_email + '&gt;</td><td>' + k.type + '</td><td><a href="' + k.url + '"><i class="fa fa-arrow-right"></i></a></td></tr>');
                             });
                         }
                         rows.push('</tbody></table>');
@@ -4114,6 +4114,7 @@ $(document).ready(function () {
 
 
     $('button[name="fedstatus"]').click(function (ev) {
+
         var btnVal = $(this).attr('value');
         var additionalMsg = $(this).attr('title');
         if (additionalMsg === undefined) {
@@ -4122,7 +4123,7 @@ $(document).ready(function () {
         var csrfname = $("[name='csrfname']").val();
         var csrfhash = $("[name='csrfhash']").val();
         var baseurl = $("[name='baseurl']").val();
-        var fedname = $("span#fednameencoded").text();
+        var fedname = $("#fednameencoded").text();
         var url = baseurl + 'federations/fedactions/changestatus';
         var data = [{name: 'status', value: btnVal}, {name: csrfname, value: csrfhash}, {
             name: 'fedname',
@@ -4300,9 +4301,7 @@ $(document).ready(function () {
     function sconfirm(message, callback) {
         var modal = $('#sconfirm');
         modal.find('.message').html(message + '&nbsp;');
-        modal.foundation('open');
-        modal.foundation('reflow');
-        modal.on('opened.fndtn.reveal', function (e) {
+        modal.on('open.zf.reveal', function (e) {
             var yesbtn = modal.find('.yes').first();
             var nobtn = modal.find('.no').first();
             yesbtn.off().on('click', function () {
@@ -4313,11 +4312,8 @@ $(document).ready(function () {
                 modal.foundation('close');
             });
         });
-
-
+        modal.foundation('open');
     }
-
-
 });
 
 function go_to_private_page() {

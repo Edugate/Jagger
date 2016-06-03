@@ -136,12 +136,12 @@ function jaggerTagsReplacer($str) {
 
 
 function confirmDialog($title, $msg, $yes, $no) {
-    $r = '<div id="sconfirm" class="reveal-modal small" data-reveal><div class="title-header small-12 columns text-center">' . html_escape($title) . '</div>
+    $r = '<div id="sconfirm" class="reveal tiny" data-reveal><div class="title-header small-12 columns text-center">' . html_escape($title) . '</div>
   <p class="message">' . html_escape($msg) . '</p>';
 
     $btns = array(
-        '<div class="no button small alert reveal-close">' . htmlentities($no) . '</div>',
-        '<div class="yes button small">' . html_escape($yes) . '</div>'
+        '<a class="no button alert" data-close>' . html_escape($no) . '</a>',
+        '<a class="yes button">' . html_escape($yes) . '</a>'
 
     );
 

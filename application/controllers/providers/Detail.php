@@ -117,7 +117,7 @@ class Detail extends MY_Controller
         $isstats = $this->config->item('statistics');
         if ($this->isGearman && $isstats === true) {
             $rows[] = array('name' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', lang('statsmngmt')) . '',
-                            'value' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<i class="fi-graph-bar"></i>') . '');
+                            'value' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<i class="fa fa-bar-chart"></i>') . '');
         }
         $rows[] = array(
             'header' => lang('rr_logs'),
@@ -169,7 +169,7 @@ class Detail extends MY_Controller
         $isstats = $this->config->item('statistics');
         if ($this->isGearman && $isstats === true) {
             $rows[] = array('name' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', lang('statsmngmt')) . '',
-                'value' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<i class="fi-graph-bar"></i>') . '');
+                'value' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<i class="fa fa-bar-chart"></i>') . '');
         }
         $rows[] = array(
             'header' => lang('rr_logs'),

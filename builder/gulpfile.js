@@ -17,7 +17,6 @@ var addsrc = require('gulp-add-src');
 var sassFoundation6Paths = [
     'bower_components/foundation-sites/scss',
     'bower_components/motion-ui/src',
-    'bower_components/foundation-icon-fonts',
     'bower_components/font-awesome/scss',
     'bower_components/foundation-font-awesome-buttons/src'
 ];

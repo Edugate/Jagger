@@ -10,7 +10,7 @@
             <tr>
                 <td><?php echo lang('rr_ormvalidate') . ', PHP version'; ?></td>
                 <td>
-                    <button id="vormversion" class="savebutton small"><?php echo lang('rr_runprocess'); ?></button>
+                    <button id="vormversion" class="button"><?php echo lang('rr_runprocess'); ?></button>
                 </td>
             </tr>
             <tr id="rvormversion" class="hidden">
@@ -19,7 +19,7 @@
             <tr>
                 <td><?php echo lang('rr_validatedbschema'); ?></td>
                 <td>
-                    <button id="vschema" class="savebutton small"><?php echo lang('rr_runprocess'); ?></button>
+                    <button id="vschema" class="button"><?php echo lang('rr_runprocess'); ?></button>
                 </td>
             </tr>
             <tr id="rvschema" class="hidden">
@@ -28,7 +28,7 @@
             <tr>
                 <td><?php echo lang('rr_validatedbsync'); ?></td>
                 <td>
-                    <button id="vschemadb" class="savebutton small"><?php echo lang('rr_runprocess'); ?></button>
+                    <button id="vschemadb" class="button"><?php echo lang('rr_runprocess'); ?></button>
                 </td>
             </tr>
             <tr id="rvschemadb" class="hidden">
@@ -37,7 +37,7 @@
             <tr>
                 <td><?php echo lang('rr_runmigration'); ?></td>
                 <td>
-                    <button id="vmigrate" class="savebutton small"><?php echo lang('rr_runprocess'); ?></button>
+                    <button id="vmigrate" class="button"><?php echo lang('rr_runprocess'); ?></button>
                 </td>
             </tr>
             <tr id="rvmigrate" class="hidden">

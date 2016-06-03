@@ -1121,15 +1121,15 @@ class Providerdetails
             if (!$isActive) {
                 $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . ' ' . anchor(base_url() . 'manage/premoval/providertoremove/' . $id, '<i class="fa fa-arrow-right"></i>') . '</div>';
             } else {
-                $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . '<span class="alert"><i class="fi-prohibited"></i></span> <div class="alert">' . lang('rmproviderdisablefirst') . '</div></div>';
+                $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . '<span class="alert"><i class="fa fa-lock"></i></span> <div class="alert">' . lang('rmproviderdisablefirst') . '</div></div>';
             }
         } elseif ($hasWriteAccess) {
             $d[++$i]['name'] = lang('rr_managestatus');
-            $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' <span class="alert"><i class="fi-prohibited"></i></span><div class="alert">' . lang('rerror_managepermneeded') . '</div>';
-            $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . '<i class="fi-prohibited"></i><div class="alert">' . lang('rerror_managepermneeded') . '</div> </div>';
+            $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' <span class="alert"><i class="fa fa-lock"></i></span><div class="alert">' . lang('rerror_managepermneeded') . '</div>';
+            $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . '<i class="fa fa-lock"></i><div class="alert">' . lang('rerror_managepermneeded') . '</div> </div>';
         } else {
             $d[++$i]['name'] = lang('rr_managestatus');
-            $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' <span class="alert"><i class="fi-prohibited"></i></span>';
+            $d[$i]['value'] = lang('rr_lock') . '/' . lang('rr_unlock') . ' ' . lang('rr_enable') . '/' . lang('rr_disable') . ' <span class="alert"><i class="fa fa-lock"></i></span>';
         }
         $d[++$i]['name'] = '';
         if ($hasManageAccess) {
