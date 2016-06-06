@@ -137,7 +137,7 @@ if ($breadcrumbsEnabled === true) {
     } else {
         $prefBreadcrumbs = array();
     }
-    echo '<div class="row  expanded"><div class="small-12 column">';
+    echo '<div class="row  expanded"><div class="small-12 column"><nav aria-label="You are here:" role="navigation">';
     echo '<ul class="breadcrumbs">';
 
 
@@ -155,15 +155,18 @@ if ($breadcrumbsEnabled === true) {
             }
             if (isset($b['type'])) {
                 if ($b['type'] === 'current') {
-                    $rawAttrs = 'class="current"';
+                    $rawAttrs = 'class="disabled"';
                 } elseif ($b['type'] === 'unavailable') {
-                    $rawAttrs = 'class="unavailable" aria-disabled="true"';
+                    $rawAttrs = 'class="disabled" ';
                 }
+                echo '<li ' . $rawAttrs . '>' . $b['name'] . '</li>';
             }
-            echo '<li ' . $rawAttrs . '><a href="' . $b['url'] . '" class="' . $aClass . '">' . $b['name'] . '</a></li>';
+            else {
+                echo '<li ' . $rawAttrs . '><a href="' . $b['url'] . '" class="' . $aClass . '">' . $b['name'] . '</a></li>';
+            }
         }
     }
-    echo '</ul>';
+    echo '</ul></nav>';
     echo '</div>';
     echo '</div>';
 

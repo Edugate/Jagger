@@ -1923,7 +1923,7 @@ $(document).ready(function () {
             var rmbtn = $("button#helperbutttonrm").html();
             selected.attr('disabled', true).attr('selected', false);
 
-            $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][spsso][keywords][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][spsso][keywords][" + nf + "]\" name=\"f[uii][spsso][keywords][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button  left inline alert\" name=\"uiispkeywordsrm\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
+            $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][spsso][keywords][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][spsso][keywords][" + nf + "]\" name=\"f[uii][spsso][keywords][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"langinputrm button  left inline alert\" name=\"uiispkeywordsrm\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         });
 
         $("button#addlname").click(function () {
@@ -1990,7 +1990,7 @@ $(document).ready(function () {
             var nfv = selected.text();
             var inputname = $(this).attr('value');
             selected.attr('disabled', true).attr('selected', false);
-            $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][idpsso][desc][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button  left inline\" name=\"ldesc\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
+            $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][idpsso][desc][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\" langinputrm button  left inline alert\" name=\"ldesc\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         });
         $("button#idpadduiikeywords").click(function () {
             var selected = $("span.idpuiikeywordsadd option:selected").first();
@@ -2002,7 +2002,7 @@ $(document).ready(function () {
             var nfv = selected.text();
             var inputname = $(this).attr('value');
             selected.attr('disabled', true).attr('selected', false);
-            $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][idpsso][keywords][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][idpsso][keywords][" + nf + "]\" name=\"f[uii][idpsso][keywords][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button  left inline\" name=\"lkeywords\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
+            $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][idpsso][keywords][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][idpsso][keywords][" + nf + "]\" name=\"f[uii][idpsso][keywords][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"langinputrm button  left inline alert\" name=\"lkeywords\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         });
 
         $("button#addlprivacyurlspsso").click(function () {
@@ -2364,7 +2364,7 @@ $(document).ready(function () {
             if (link === undefined) {
                 return false;
             }
-            var target = attrpolsVar.find('section.active').first();
+            var target = attrpolsVar.find('section.is-active').first();
             //  progressbar.appendTo(target);
             var tbl;
             $.ajax({

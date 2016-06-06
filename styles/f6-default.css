@@ -6673,9 +6673,15 @@ body {
   #sideicons a.active {
     background-color: #0f5f94; }
 
+.buttons-columnVisibility {
+  text-align: left; }
+  .buttons-columnVisibility:before {
+    font-family: "FontAwesome";
+    content: "\f096\ "; }
+
 .buttons-columnVisibility.active:before {
-  font-family: "foundation-icons";
-  content: "\f126"; }
+  font-family: "FontAwesome";
+  content: "\f14a\ "; }
 
 .split.button.fedlogin {
   background: #2199e8; }
@@ -6683,8 +6689,8 @@ body {
     background: #147dc2; }
     .split.button.fedlogin span:after {
       border: none;
-      font-family: "foundation-icons";
-      content: "";
+      font-family: "FontAwesome";
+      content: "\f0c0";
       font-size: 2rem;
       line-height: 0.25rem;
       margin-left: -0.7rem; }
@@ -6695,8 +6701,8 @@ body {
     background: #a50c1d; }
     .split.button.google span:after {
       border: none;
-      font-family: "foundation-icons";
-      content: "\f1ca";
+      font-family: "FontAwesome";
+      content: "\f1a0";
       font-size: 2rem;
       line-height: 0.25rem;
       margin-left: -0.7rem; }
@@ -7004,6 +7010,10 @@ legend {
   font-weight: bold; }
 
 textarea.certdata {
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+  font-size: smaller; }
+
+textarea.metadata {
   font-family: Consolas, "Liberation Mono", Courier, monospace;
   font-size: smaller; }
 

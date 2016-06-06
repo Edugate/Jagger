@@ -412,7 +412,7 @@ class Formelement
                     'value' => '' . $value . '',
                     'class' => $classes . ' right inline'
                 )
-            ) . '</div><div class="small-3 large-2 columns"><button type="button" class="btn langinputrm inline left button alert" name="lname" value="' . $buttonvalue . '">' . lang('rr_remove') . '</button></div>';
+            ) . '</div><div class="small-3 large-2 columns"><button type="button" class="langinputrm left oko button alert" name="lname" value="' . $buttonvalue . '">' . lang('rr_remove') . '</button></div>';
 
         return $result;
     }
@@ -421,7 +421,7 @@ class Formelement
         $result = '<div class="small-3 columns"><label for="' . $name . '" class="right inline ">' . $label . '</label></div><div class="small-6 large-7 columns"><textarea name="' . $name . '" id="' . $name . '" cols="40" rows="5" class="' . $classes . ' right inline">' . $value . '</textarea>
                         </div><div class="small-3 large-2 columns">';
         if (empty($hideremove)) {
-            $result .= '<button type="button" class="btn langinputrm inline left button" name="lname" value="' . $buttonvalue . '">' . lang('rr_remove') . '</button>';
+            $result .= '<button type="button" class="btn langinputrm inline left button alert" name="lname" value="' . $buttonvalue . '">' . lang('rr_remove') . '</button>';
         }
         $result .= '</div>';
 
