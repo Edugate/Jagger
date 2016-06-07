@@ -27,6 +27,7 @@ echo '<div id="general" class="tabs-panel is-active">';
 
 if (!empty($fedpiechart)) {
     $this->table->set_template($tmpl2);
+    $this->table->auto_heading = false;
     echo '<div class="row">';
     echo '<div class="medium-8 column">';
     echo $this->table->generate($result['general']);
@@ -37,6 +38,7 @@ if (!empty($fedpiechart)) {
     echo '</div>';
 } else {
     $this->table->set_template($tmpl);
+    $this->table->auto_heading = false;
     echo $this->table->generate($result['general']);
 }
 
@@ -51,6 +53,7 @@ foreach ($result as $k => $v) {
 
     echo '<div id="' . $k . '" class="tabs-panel">';
     $this->table->set_template($tmpl);
+    $this->table->auto_heading = false;
     echo $this->table->generate($v);
     $this->table->clear();
     echo '</div>';

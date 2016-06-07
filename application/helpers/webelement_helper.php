@@ -259,7 +259,7 @@ function jGenerateInput($label, $inputname, $value, $inputclass, $placeholder = 
     } else {
         $pl = '';
     }
-    $r = '<div class="medium-3 columns medium-text-right"><label for="' . $inputname . '" class="inline">' . $label . '</label></div>';
+    $r = '<div class="medium-3 columns medium-text-right"><label for="' . $inputname . '" class="inline">&nbsp;' . $label . '</label></div>';
     $r .= '<div class="medium-8 large-7 columns end"><input type="text" id="' . $inputname . '" name="' . $inputname . '" value="' . $value . '" class="' . $inputclass . '" ' . $pl . '></div>';
 
     return $r;
