@@ -1,8 +1,5 @@
-
-
-
 <?php
-    $errors_v = validation_errors('<span class="span-12">', '</span><br />');
+    $errors_v = validation_errors('<div>', '</div>');
     if (!empty($errors_v)) {
         echo '<div class="alert-box alert" data-alert>';
         echo $errors_v;

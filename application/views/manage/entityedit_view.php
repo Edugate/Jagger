@@ -21,7 +21,6 @@ if (!empty($sessform)) {
 <?php
 $action = current_url();
 $attrs = array('id' => 'providereditform');
-//echo '<div class="dtabs-content">';
 echo form_open($action, $attrs);
 
 

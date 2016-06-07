@@ -107,7 +107,6 @@ class Providers_list extends MY_Controller
                 $cnts = array();
                 foreach ($v->getContacts() as $c) {
                     $cnts[] = array('type' => $c->getType(),'name' => $c->getFullName(),'mail' => $c->getEmail());
-                    //$cnts[] = html_escape($c->getType() . ': ' . $c->getFullName() . ' <' . $c->getEmail() . '>');
                 }
                 $data['"' . $counter++ . '"'] = array(
                     'pid'        => $v->getId(),

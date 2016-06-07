@@ -255,6 +255,9 @@ var genRandomStr = function (counter) {
     }
     return randStr;
 };
+function go_to_private_page() {
+    window.location.reload();
+}
 
 
 var map, mapSearchInput;
@@ -4316,9 +4319,7 @@ $(document).ready(function () {
     }
 });
 
-function go_to_private_page() {
-    window.location.reload();
-}
+
 
 
 $(".submit").click(function () {

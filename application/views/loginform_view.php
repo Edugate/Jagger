@@ -84,7 +84,6 @@ echo '<div class="row text-center hide-for-medium"><hr /></div>';
     }
     if ($oidcEnabled) {
         echo '<div class="small-12 columns end text-center"><hr /></div>';
-      //  echo '<div class="small-12 columns end text-center"><h5 class="loginheader small-12 columns end text-center">OpenId Connect</h5></div>';
         echo '<div class="small-12 columns end text-center">';
         foreach ($oidcOps as $key => $oidcOp) {
             $btnClass = '';
