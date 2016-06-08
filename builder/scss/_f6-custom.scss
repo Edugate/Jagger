@@ -139,6 +139,10 @@ body {
 
 #container {
   min-height: 100%;
+
+}
+#wrapper {
+  background-color: $white;
 }
 
 #sideicons {
@@ -461,10 +465,6 @@ div.error {
   background-color: map-get($foundation-palette, alert);
 }
 
-#dwrapper {
-  background-color: $white;
-  padding: 0.5em;
-}
 
 .box {
   transition: box-shadow 0.2s ease-in;

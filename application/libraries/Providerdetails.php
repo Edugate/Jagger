@@ -1121,7 +1121,7 @@ class Providerdetails
             if (!$isActive) {
                 $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . ' ' . anchor(base_url() . 'manage/premoval/providertoremove/' . $id, '<i class="fa fa-arrow-right"></i>') . '</div>';
             } else {
-                $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . '<span class="alert"><i class="fa fa-lock"></i></span> <div class="alert">' . lang('rmproviderdisablefirst') . '</div></div>';
+                $d[$i]['value'] .= '<div>' . lang('rr_rmprovider') . '<span class="alert"><i class="fa fa-lock"></i></span> <div class="label alert">' . lang('rmproviderdisablefirst') . '</div></div>';
             }
         } elseif ($hasWriteAccess) {
             $d[++$i]['name'] = lang('rr_managestatus');

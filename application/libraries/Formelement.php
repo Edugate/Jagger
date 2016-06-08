@@ -181,8 +181,9 @@ class Formelement
                 $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
             }
 
-            $r .= '<li class="accordion-item ">' .
-                '<div class="small-3 columns" >' . form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is, 'class' => 'right')) . '</div><a href="#entcats' . $k . '" class="small-9 columns inline"><span data-tooltip aria-haspopup="true" class="has-tip" title="' .
+            $r .= '<li class="accordion-item row">' .
+                '<div class="small-1 medium-3 columns text-right" >' . form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is, 'class' => 'right')) . '</div>' .
+                '<a href="#entcats' . $k . '" class="small-9 columns inline"><span data-tooltip aria-haspopup="true" class="has-tip" title="' .
                 $v['desc'] . '">' . $v['name'] . '</span> ' . $lbl . '</a>' .
                 '<div id="entcats' . $k . '" class="accordion-content" data-tab-content><b>' . lang('attrname') . '</b>: ' . $v['attrname'] . '<br /><b>' . lang('entcat_url') . '</b>: ' . $v['value'] . '<br /><b>' .
                 lang('rr_description') . '</b>:<p>' . $v['desc'] . '</p></div>' .
@@ -696,8 +697,8 @@ class Formelement
                     form_dropdown('f[reqattr][' . $rid . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $req->getStatus()) .
                     '</div><div class="medium-6 columns">' .
                     '<textarea name="f[reqattr][' . $rid . '][reason]" placeholder="' . lang('rrjustifyreqattr') . '">' . $req->getReason() . '</textarea>' .
-                    '</div><div class="medium-3 columns end"></div>' .
-                    '<button type="button" class="btn reqattrrm inline left button alert" name="f[reqattr][' . $rid . ']" >' . lang('rr_remove') . '</button>' .
+                    '</div><div class="medium-3 columns end">' .
+                    '<button type="button" class="btn reqattrrm inline left button alert" name="f[reqattr][' . $rid . ']" >' . lang('rr_remove') . '</button></div>' .
                     '</div></fieldset>';
                 $attrArray['' . $attrid . '']['disabled'] = 1;
             }

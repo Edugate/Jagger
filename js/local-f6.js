@@ -3938,13 +3938,13 @@ $("#usepredefined").click(function () {
 
 
 $("#nattrreqbtn").click(function (ev) {
-    ev.preventDefault();
     var rname = genRandomStr(5);
     var attrselect = $('select[name="nattrreq"]');
     var attrname = attrselect.find(":selected").text();
     var attrid = attrselect.find(":selected").val();
-    var newelement = '<fieldset><legend>' + attrname + '</legend><div class="small-12 columns"><div class="medium-3 columns medium-text-right"><select name="f[reqattr][' + rname + '][status]"><option value="required">required</option><option value="desired">desired</option></select><input type="hidden" name="f[reqattr][' + rname + '][attrname]" value="' + attrname + '"><input type="hidden" name="f[reqattr][' + rname + '][attrid]" value="' + attrid + '"></div><div class="medium-6 collumns end"><textarea name="f[reqattr][' + rname + '][reason]"></textarea></div></div></fieldset>';
+    var newelement = '<fieldset class="fieldset"><legend>' + attrname + '</legend><div class="small-12 columns"><div class="medium-3 columns medium-text-right"><select name="f[reqattr][' + rname + '][status]"><option value="required">required</option><option value="desired">desired</option></select><input type="hidden" name="f[reqattr][' + rname + '][attrname]" value="' + attrname + '"><input type="hidden" name="f[reqattr][' + rname + '][attrid]" value="' + attrid + '"></div><div class="medium-6 columns"><textarea name="f[reqattr][' + rname + '][reason]"></textarea></div><div class="medium-3 column end"><button class="btn reqattrrm inline left button alert" type="button" name="f[reqattr]['+rname+']">Remove</button></div></div></fieldset>';
     $(this).parent().parent().before(newelement);
+    return false;
 
 });
 

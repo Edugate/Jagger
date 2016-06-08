@@ -21,12 +21,7 @@ $topbarArray['left']= array(
 );
 
 
-$topbarArray['right'][] = array(
-    'name'     => strtoupper($myLang),
-    'link'     => null,
-    'linkprop' => '  data-open="languageset"',
-    'sub'      => null
-);
+
 if ($loggedin) {
     $topbarArray['right'][] = array(
         'name' => '<i  class="fa fa-flag-o"></i><sup id="qcounter" data-jagger-src="' . $base_url . 'reports/awaiting/dashz">0</sup>',
@@ -37,17 +32,17 @@ if ($loggedin) {
         'name' => '<i class="fa fa-user"></i>',
         'sub' => array(
             array(
-                'name' => '<i class="fa fa-cog"></i> <span class="show-for-large">Profile</span>',
-                'link' => '' . $base_url . 'manage/users/show/'.base64url_encode($user)
+                'name' => '<i class="fa fa-sign-out"></i>',
+                'link' => '' . $base_url . 'auth/logout',
+                'linkprop' => 'class="logoutbutton userlogout" jagger-data-logout="' . $shibLogoutUri . '"'
             ),
             array(
                 'name' => '<i class="fa fa-envelope"></i>',
                 'link' => '' . $base_url . 'notifications/subscriber/mysubscriptions/'.base64url_encode($user)
             ),
             array(
-                'name' => '<i class="fa fa-sign-out"></i>',
-                'link' => '' . $base_url . 'auth/logout',
-                'linkprop' => 'class="logoutbutton userlogout" jagger-data-logout="' . $shibLogoutUri . '"'
+                'name' => '<i class="fa fa-cog"></i> <span class="show-for-large">Profile</span>',
+                'link' => '' . $base_url . 'manage/users/show/'.base64url_encode($user)
             ),
         ),
     );
@@ -182,6 +177,11 @@ if ($loggedin) {
         );
     }
 }
-
+$topbarArray['right'][] = array(
+    'name'     => strtoupper($myLang),
+    'link'     => null,
+    'linkprop' => '  data-open="languageset"',
+    'sub'      => null
+);
 
 echo generateTopBar($topbarArray);

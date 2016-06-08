@@ -13,18 +13,18 @@
 echo '<div class="row">';
 echo form_open();
 echo '<div class="row">';
-echo '<div class="small-3 large-2 columns"><label for="buttonname" class="text-right middle">'.lang('tbl_catbtnname').'</label></div>';
-echo '<div class="small-9 large-7 columns end"><input type="text" id="buttonname" name="buttonname" 
+echo '<div class="medium-3 large-2 columns medium-text-right"><label for="buttonname" class="middle">'.lang('tbl_catbtnname').'</label></div>';
+echo '<div class="medium-9 large-7 columns end"><input type="text" id="buttonname" name="buttonname" 
                            value="'.set_value('buttonname').'" /></div>';
 echo '</div>';
 echo '<div class="row">';
-echo '<div class="small-3 large-2 columns"><label for="fullname" class="text-right middle">'.lang('tbl_catbtnititlename').'</label></div>';
-echo '<div class="small-9 large-7 columns end"><input type="text" id="fullname" name="fullname" 
+echo '<div class="medium-3 large-2 columns medium-text-right"><label for="fullname" class="middle">'.lang('tbl_catbtnititlename').'</label></div>';
+echo '<div class="medium-9 large-7 columns end"><input type="text" id="fullname" name="fullname" 
                            value="'.set_value('fullname').'" /></div>';
 echo '</div>';
 echo '<div class="row">';
-echo '<div class="small-3 large-2 columns"><label for="description" class="text-right">'.lang('rr_description').'</label></div>';
-echo '<div class="small-9 large-7 columns end"><textarea id="description" name="description" rows="5">';
+echo '<div class="medium-3 large-2 columns medium-text-right"><label for="description">'.lang('rr_description').'</label></div>';
+echo '<div class="medium-9 large-7 columns end"><textarea id="description" name="description" rows="5">';
 echo set_value('description');
 echo '</textarea></div>';
                         

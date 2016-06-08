@@ -6639,6 +6639,9 @@ body {
 #container {
   min-height: 100%; }
 
+#wrapper {
+  background-color: #fefefe; }
+
 #sideicons {
   position: fixed;
   z-index: 9999;
@@ -6952,10 +6955,6 @@ div.error {
     margin-top: 0; }
   .alert-box.alert > :last-child {
     margin-bottom: 0; }
-
-#dwrapper {
-  background-color: #fefefe;
-  padding: 0.5em; }
 
 .box {
   transition: box-shadow 0.2s ease-in;

@@ -183,8 +183,8 @@ class Ec extends MY_Controller
             $form = form_open() .
                 $this->formelement->generateAddCoc() .
                 '<div class="buttons small-12 medium-10 large-10 columns end text-right">' .
-                '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ' .
-                '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>' .
+                '<button type="reset" name="reset" value="reset" class="button alert">' . lang('rr_reset') . '</button> ' .
+                '<button type="submit" name="modify" value="submit" class="button">' . lang('rr_save') . '</button></div>' .
                 form_close();
             $data['form'] = $form;
         }

@@ -199,7 +199,7 @@ if ($breadcrumbsEnabled === true) {
     <article role="main" class="clearfix">
 
 
-        <div id="wrapper" class="row expanded">
+        <div id="wrapper" class="row column expanded">
             <?php
             $this->load->view($content_view);
             ?>

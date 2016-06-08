@@ -87,6 +87,7 @@ echo form_open($action, $attrs);
             echo '<div class="small-6 large-7 columns end">' . form_input(array('id' => 'f[primarycnt][phone]', 'name' => 'f[primarycnt][phone]', 'value' => set_value('f[primarycnt][phone]', '', FALSE))) . '</div>';
             echo '</div>';
         } else {
+            echo '<div class="row group">';
             echo '<div class="small-12 columns"><div class="section">' . lang('yourcontactdetails') . '</div></div>';
             echo '<div class="small-12 columns">';
             echo '<div class="small-3 columns">' . jform_label(lang('rr_username'), 'f[primarycnt][username]') . '</div>';
@@ -103,6 +104,7 @@ echo form_open($action, $attrs);
             echo '<div class="small-12 columns">';
             echo '<div class="small-3 columns">' . jform_label(lang('rr_contactemail'), 'f[primarycnt][mail]') . '</div>';
             echo '<div class="small-6 large-7 columns end">' . form_input(array('id' => 'f[primarycnt][mail]', 'name' => 'f[primarycnt][mail]', 'disabled' => 'disabled', 'readonly' => 'readonly', 'value' => '' . $loggeduser['email'] . '')) . '</div>';
+            echo '</div>';
             echo '</div>';
 
 
