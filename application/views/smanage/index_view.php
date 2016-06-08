@@ -46,12 +46,12 @@
             </tbody>
         </table>
     </section>
-    <section class="tabs-panel is-active" id="panel2-2">
+    <section class="tabs-panel" id="panel2-2">
         <table class="details">
             <tbody>
             <tr>
                 <td>Certificates checks</td>
-                <td><div><select><optgroup label="Local"><option value="localidp">IdP (local)</option><option value="localsp">SP (local)</option></optgroup><optgroup label="External"><option value="extidp">IdP (external)</option><option value="extsp">SP (external)</option></optgroup></select><button id="vcerts" class="savebutton small" value=""><?php echo lang('rr_runprocess'); ?></button></div></td>
+                <td><div><select><optgroup label="Local"><option value="localidp">IdP (local)</option><option value="localsp">SP (local)</option></optgroup><optgroup label="External"><option value="extidp">IdP (external)</option><option value="extsp">SP (external)</option></optgroup></select><button id="vcerts" class="button" value=""><?php echo lang('rr_runprocess'); ?></button></div></td>
             </tr>
             <tr id="rvcerts" class="hidden">
                 <td colspan="2"></td>

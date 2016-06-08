@@ -4247,7 +4247,7 @@ $(document).ready(function () {
 
     });
 
-    $(document).on('open.fndtn.reveal', '#notificationaddmodal', function () {
+    $(document).on('open.zf.reveal', '#notificationaddmodal', function () {
         var modal = $(this);
         $('select#sfederation').parent().hide();
         $('select#sprovider').parent().hide();

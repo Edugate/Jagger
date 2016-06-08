@@ -49,8 +49,8 @@ echo '<textarea name="'.$attrname.'" class="advancededitor">'.set_value($attrnam
 echo '</div>';
 echo '</div>';
 echo '<div class="small-12 columns">';
-echo '<div class="small-12 columns">';
-echo '<input type="submit" class="button small right" name="update" value="update">';
+echo '<div class="small-12 columns text-right">';
+echo '<input type="submit" class="button  right" name="update" value="update">';
 echo '</div>';
 echo '</div>';
 

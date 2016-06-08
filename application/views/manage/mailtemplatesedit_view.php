@@ -53,7 +53,7 @@ echo $rowStart;
 echo jGenerateInput(lang('mtmplsbj'), 'msgsubj', set_value('msgsubj', $msgsubj,FALSE), '', null);
 echo $rowEnd;
 echo $rowStart;
-echo '<div class="medium-8 columns medium-centered  panel callout" style="font-size: smaller">';
+echo '<div class="small-12 columns centered  panel callout primary" style="font-size: smaller">';
 foreach($mailtmplGroups as $k=>$v)
 {
     echo '<div><b>'.lang($v['desclang']).'</b></div>';
@@ -75,7 +75,7 @@ echo $rowEnd;
 
 
 echo '<div class="small-12 columns text-right">';
-echo '<div class="medium-10 columns end"><a href="'.base_url().'manage/mailtemplates/showlist" class="button alert">'.lang('rr_cancel').'</a> <button type="submit">'.lang('rr_save').'</button>';
+echo '<div class="medium-10 columns end"><a href="'.base_url().'manage/mailtemplates/showlist" class="button alert">'.lang('rr_cancel').'</a> <button type="submit" class="button">'.lang('rr_save').'</button>';
 echo $rowEnd;
 
 echo form_close();

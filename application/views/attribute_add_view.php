@@ -5,10 +5,10 @@ if (!empty($errors_v)) {
 }
 
 echo form_open();
-echo form_fieldset('');
+
 echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns"><label for="attrname" class="right inline">'.lang('attrname').'</label></div>';
-echo '<div class="small-6 large-7 columns end">';
+echo '<div class="medium-3 columns medium-text-right"><label for="attrname">'.lang('attrname').'</label></div>';
+echo '<div class="medium-9 large-7 columns end">';
 echo form_input(array(
      'id'=>'attrname',
      'name'=>'attrname',
@@ -21,8 +21,8 @@ echo '</div>';
 echo '</div>';
 
 echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns"><label for="attrfullname" class="right inline">'.lang('attrfullname').'</label></div>';
-echo '<div class="small-6 large-7 columns end">';
+echo '<div class="medium-3 columns medium-text-right"><label for="attrfullname">'.lang('attrfullname').'</label></div>';
+echo '<div class="medium-9 large-7 columns end">';
 echo form_input(array(
      'id'=>'attrfullname',
      'name'=>'attrfullname',
@@ -33,8 +33,8 @@ echo form_input(array(
 echo '</div>';
 echo '</div>';
 echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns"><label for="attroidname" class="right inline">'.lang('attrsaml2').'</label></div>';
-echo '<div class="small-6 large-7 columns end">';
+echo '<div class="medium-3 columns medium-text-right"><label for="attroidname">'.lang('attrsaml2').'</label></div>';
+echo '<div class="medium-9 large-7 columns end">';
 echo form_input(array(
      'id'=>'attroidname',
      'name'=>'attroidname',
@@ -45,8 +45,8 @@ echo form_input(array(
 echo '</div>';
 echo '</div>';
 echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns"><label for="attrurnname" class="right inline">'.lang('attrsaml1').'</label></div>';
-echo '<div class="small-6 large-7 columns end">';
+echo '<div class="medium-3 columns medium-text-right"><label for="attrurnname">'.lang('attrsaml1').'</label></div>';
+echo '<div class="medium-9 large-7 columns end">';
 echo form_input(array(
      'id'=>'attrurnname',
      'name'=>'attrurnname',
@@ -57,8 +57,8 @@ echo form_input(array(
 echo '</div>';
 echo '</div>';
 echo '<div class="small-12 columns">';
-echo '<div class="small-3 columns"><label for="description" class="right inline">'.lang('rr_description').'</label></div>';
-echo '<div class="small-6 large-7 columns end">';
+echo '<div class="medium-3 columns medium-text-right"><label for="description">'.lang('rr_description').'</label></div>';
+echo '<div class="medium-9 large-7 columns end">';
 echo form_textarea(array(
     'id' => 'description',
     'name' => 'description',
@@ -69,7 +69,7 @@ echo form_textarea(array(
 ));
 echo '</div>';
 echo '</div>';
-echo '<div class="buttons small-12"><div class="small-9 large-10 columns end text-right"><button type="submit" name="submit" class="savebutton">'. lang('rr_submit').'</button></div></div>';
-echo form_fieldset_close();
+echo '<div class="buttons small-12 column"><div class="large-10 columns end text-right"><button type="submit" name="submit" class="button">'. lang('rr_submit').'</button></div></div>';
+
 
 echo form_close();

@@ -45,7 +45,7 @@ foreach ($templgroups as $t)
 
 if (!empty($showaddbtn) && $showaddbtn === TRUE)
 {
-    echo '<div class="small-12 columns text-right"><a href="' . base_url() . 'manage/mailtemplates/edit" class="button small addbutton addicon">' . lang('rr_add') . '</a></div>';
+    echo '<div class="small-12 columns text-right"><a href="' . base_url() . 'manage/mailtemplates/edit" class="button  addbutton addicon">' . lang('rr_add') . '</a></div>';
 }
 echo '<div class="small-12 columns">';
 echo $this->table->generate();

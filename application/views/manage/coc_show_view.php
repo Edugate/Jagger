@@ -7,7 +7,7 @@ if(!empty($error_message))
 if($showaddbutton)
 {
 
-echo '<div class="small-12 text-right"><a href="'.base_url().'manage/ec/add" class="button small">'.lang('addentcat_btn').'</a></div>';
+echo '<div class="small-12 text-right"><a href="'.base_url().'manage/ec/add" class="button">'.lang('addentcat_btn').'</a></div>';
  
 }
 

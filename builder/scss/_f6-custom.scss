@@ -141,6 +141,7 @@ body {
   min-height: 100%;
 
 }
+
 #wrapper {
   background-color: $white;
 }
@@ -191,7 +192,7 @@ body {
 //td.highlight {
 //  &:before {
 //    font-family: "FontAwesome";
- //   content: "\f14a\ ";
+//   content: "\f14a\ ";
 //  }
 //}
 
@@ -465,7 +466,6 @@ div.error {
   background-color: map-get($foundation-palette, alert);
 }
 
-
 .box {
   transition: box-shadow 0.2s ease-in;
   transition-property: box-shadow;
@@ -543,14 +543,14 @@ legend {
 }
 
 textarea.certdata {
-    font-family: $code-font-family;
-    font-size: smaller;
+  font-family: $code-font-family;
+  font-size: smaller;
 
-  }
+}
 
 textarea.metadata {
-    font-family: $code-font-family;
-    font-size: smaller;
+  font-family: $code-font-family;
+  font-size: smaller;
 
-  }
+}
 

@@ -163,9 +163,9 @@ class Regpolicy extends MY_Controller
             $f = form_open();
             $this->load->library('formelement');
             $f .= $this->formelement->generateAddRegpol();
-            $f .= '<div class="buttons small-12 medium-10 large-10 columns end text-right">';
-            $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ';
-            $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
+            $f .= '<div class="small-12 column"></div><div class="medium-9 large-9 columns end text-right">';
+            $f .= '<button type="reset" name="reset" value="reset" class="button alert">' . lang('rr_reset') . '</button> ';
+            $f .= '<button type="submit" name="modify" value="submit" class="button">' . lang('rr_save') . '</button></div></div>';
 
             $f .= form_close();
             $data['form'] = $f;
@@ -224,9 +224,9 @@ class Regpolicy extends MY_Controller
         $data['coc_name'] = $coc->getName();
         $this->load->library('formelement');
         $f = form_open() . $this->formelement->generateEditRegpol($coc);
-        $f .= '<div class="buttons large-10 medium-10 small-12 text-right columns end">';
-        $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ';
-        $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
+        $f .= '<div class="small-12 column"><div class="buttons large-9 medium-9 small-12 text-right columns end">';
+        $f .= '<button type="reset" name="reset" value="reset" class="button alert">' . lang('rr_reset') . '</button> ';
+        $f .= '<button type="submit" name="modify" value="submit" class="button">' . lang('rr_save') . '</button></div></div>';
         $f .= form_close();
         $data['breadcrumbs'] = array(
             array('url'=>base_url('manage/regpolicy/show'),'name'=>lang('title_regpols')),

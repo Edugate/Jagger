@@ -60,3 +60,20 @@ $box-header-font: lighten($box-header-background,80%);
 
 $section-header-background:  #454545;
 $section-header-font: lighten($section-header-background, 80%);
+table#details th.header.headerSortDown:before {
+  content: "\25BE\00a0\00a0";
+}
+
+table#details th.header.headerSortUp:before {
+  content: "\25B4\00a0\00a0";
+}
+
+.alert-box.success {
+  background-color: map_get($foundation-palette,'success');
+}
+.alert-box.warning {
+  background-color: map_get($foundation-palette,'warning');
+}
+.alert-box.alert {
+  background-color: map_get($foundation-palette,'alert');
+}

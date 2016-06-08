@@ -1,4 +1,19 @@
 @charset "UTF-8";
+table#details th.header.headerSortDown:before {
+  content: "\25BE\00a0\00a0"; }
+
+table#details th.header.headerSortUp:before {
+  content: "\25B4\00a0\00a0"; }
+
+.alert-box.success {
+  background-color: #3adb76; }
+
+.alert-box.warning {
+  background-color: #ffae00; }
+
+.alert-box.alert {
+  background-color: #ec5840; }
+
 /**
  * Foundation for Sites by ZURB
  * Version 6.2.3

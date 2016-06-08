@@ -7,7 +7,7 @@ if(!empty($warnmessage))
  
 }
 ?>
-<div class="small-12 columns text-right"><button class="small" type="button" data-open="notificationaddmodal"><?php echo lang('rr_add');?></button></div>
+<div class="small-12 columns text-right"><button class="button" type="button" data-open="notificationaddmodal"><?php echo lang('rr_add');?></button></div>
 <?php
   if(count($rows)>1)
   {
@@ -58,11 +58,11 @@ $btns = array(
  */
    $rrs = array('id'=>'notificationaddform');
 
-   echo '<div id="notificationaddmodal" class="reveal-modal" data-reveal>';
+   echo '<div id="notificationaddmodal" class="reveal" data-reveal>';
    echo form_open(base_url().'notifications/subscriber/add/'.$encodeduser.'',$rrs);
 $btns = array(
-     '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
-    '<button type="submit" class="">'. lang('rr_add').'</button>'
+     '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
+    '<button type="submit" class="button">'. lang('rr_add').'</button>'
 );
    ?>
       <div class="header">
@@ -80,12 +80,12 @@ $btns = array(
          $typedropdown[''.$v['group'].''][$k] = lang(''.$v['desclang'].'');
        }
        echo form_fieldset();
-       echo '<ul>';
+       echo '<ul class="no-bullet">';
        echo '<li>'. form_label(lang('whennotifyme'),'type');
        echo form_dropdown('type', $typedropdown,'','id="type" class="smallselect"'). '</li>';
 
        echo '<li>'. form_label(lang('rr_provider'),'sprovider');
-       echo form_dropdown('sprovider', array(),'','id="sprovider"').'</li>';
+       echo form_dropdown('sprovider', array(),'','id="sprovider" class="select2"').'</li>';
 
        echo '<li>'.form_label(lang('rr_federation'),'sfederation');
        echo form_dropdown('sfederation', array(),'','id="sfederation"').'</li>';
@@ -105,6 +105,6 @@ $btns = array(
      </div>
    <?php
    echo form_close();
-   echo' <a class="close-reveal-modal">&#215;</a>';
+   echo' <a class="close-button" data-close>&#215;</a>';
    echo '</div>';
 
