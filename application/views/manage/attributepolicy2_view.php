@@ -28,13 +28,13 @@ echo '<div id="attrpols" class="tabs-content" data-tabs-content="attrpolstab" da
             </li>
             </ul>
         </section>
-        <section class="tabs-panel" id="attrpol-1">
+        <section class="tabs-panel row" id="attrpol-1">
         </section>
-        <section class="tabs-panel" id="attrpol-2">
+        <section class="tabs-panel row" id="attrpol-2">
         </section>
-        <section class="tabs-panel" id="attrpol-3">
+        <section class="tabs-panel row" id="attrpol-3">
         </section>
-        <section class="tabs-panel" id="attrpol-4">
+        <section class="tabs-panel row" id="attrpol-4">
         </section>
     </div>';
 
@@ -42,7 +42,7 @@ echo '<div id="attrpols" class="tabs-content" data-tabs-content="attrpolstab" da
 /////////MODALS
 
 
-echo '<div id="arpmdelattr" class="reveal-modal medium" data-reveal>
+echo '<div id="arpmdelattr" class="reveal medium" data-reveal>
     <h4>' . lang('delattrsconfirm') . '</h4>
     <p>
     <div>' . lang('rrattr') . ': <span class="attributename"></span></div>
@@ -52,13 +52,13 @@ echo '<div id="arpmdelattr" class="reveal-modal medium" data-reveal>
 $hidden = array('attrid' => '', 'idpid' => '');
 echo form_open(base_url('manage/attributepolicy/delattr/' . $idpid . ''), null, $hidden);
 $buttons = array(
-    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
     '<div class="yes button">' . lang('btn_deleteall') . '</div>'
 );
 echo revealBtnsRow($buttons);
 echo form_close() . '</div>';
 
-echo '<div id="arpmeditglobalattr" class="reveal-modal medium" data-reveal>
+echo '<div id="arpmeditglobalattr" class="reveal medium" data-reveal>
     <h4>' . lang('updatedefaultpol') . '</h4>
     <p><div>' . lang('rrattr') . ': <span class="attributename"></span></div></p>
     <div class="response"></div>';
@@ -77,19 +77,19 @@ echo '</div>';
 
 
 $buttons = array(
-    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
     '<div class="yes button">' . lang('btnupdate') . '</div>'
 );
 echo revealBtnsRow($buttons);
-echo form_close() . ' <a class="close-reveal-modal" aria-label="Close">&#215;</a></div>';
+echo form_close() . ' <a class="close-button" data-close aria-label="Close">&#215;</a></div>';
 
-echo '<div  id="addattrsupport" class="small-12 column hidden" data-jagger-link="' . base_url('manage/attributepolicy/getsupported/' . $idpid . '') . '"><button class="small right">' . lang('btnaddattr') . '</button></div>';
-echo '<div  id="addentcatattr" class="small-12 column hidden" data-jagger-link="' . base_url('manage/attributepolicy/getentcats/' . $idpid . '') . '"><button class="small right">' . lang('addnpol') . '</button></div>';
-echo '<div  id="addespecattr" class="small-12 column hidden" data-jagger-link="' . base_url('manage/attributepolicy/getspecsp/' . $idpid . '') . '"><button class="small right">' . lang('addnpol') . '</button></div>';
+echo '<div  id="addattrsupport" class="small-12 column hidden text-right" data-jagger-link="' . base_url('manage/attributepolicy/getsupported/' . $idpid . '') . '"><button class="button">' . lang('btnaddattr') . '</button></div>';
+echo '<div  id="addentcatattr" class="small-12 column hidden text-right" data-jagger-link="' . base_url('manage/attributepolicy/getentcats/' . $idpid . '') . '"><button class="button">' . lang('addnpol') . '</button></div>';
+echo '<div  id="addespecattr" class="small-12 column hidden text-right" data-jagger-link="' . base_url('manage/attributepolicy/getspecsp/' . $idpid . '') . '"><button class="button">' . lang('addnpol') . '</button></div>';
 ///////////////////////
 $nhidden = array('support' => 'enabled');
 
-echo '<div id="arpmaddattr" class="reveal-modal medium" data-reveal>';
+echo '<div id="arpmaddattr" class="reveal medium" data-reveal>';
 echo form_open(base_url('manage/attributepolicy/updateattrglobal/' . $idpid . ''), null, $nhidden);
 echo '<div class="row">';
 echo '<div class="medium-3 column"><label class="text-right">' . lang('rrattr') . '</label></div>';
@@ -107,18 +107,18 @@ echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang
 echo '</div>';
 
 $buttons = array(
-    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
     '<div class="yes button">' . lang('rr_add') . '</div>'
 );
 echo revealBtnsRow($buttons);
 echo form_close();
 ?>
-    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+    <a class="close-button" data-close aria-label="Close">&#215;</a>
 <?php
 echo '</div>';
 ////////////////
 
-echo '<div id="arpmeditfedattr" class="reveal-modal medium" data-reveal>
+echo '<div id="arpmeditfedattr" class="reveal medium" data-reveal>
     <h4>' . lang('updatefedpol') . '</h4>
     <p><div>' . lang('rrattr') . ': <span class="attributename"></span></div></p>
     <div class="response"></div>';
@@ -130,15 +130,15 @@ echo '<div class="medium-3 column medium-text-right"><label>' . lang('policy') .
 echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
 echo '</div>';
 $buttons = array(
-    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
     '<div class="yes button">' . lang('btnupdate') . '</div>'
 );
 echo revealBtnsRow($buttons);
 echo form_close();
-echo '<a class="close-reveal-modal" aria-label="Close">&#215;</a></div>';
+echo '<a class="close-button" aria-label="Close" data-close>&#215;</a></div>';
 ////////////////////////////////////////////////////////////////////////////
 
-echo '<div id="arpmeditentcatattr" class="reveal-modal medium" data-reveal>
+echo '<div id="arpmeditentcatattr" class="reveal medium" data-reveal>
     <h4>' . lang('updateecpol') . '</h4>
     <p><div>' . lang('rrattr') . ': <span class="attributename"></span></div></p>
     <div class="response"></div>';
@@ -149,15 +149,15 @@ echo '<div class="medium-3 column medium-text-right"><label>' . lang('policy') .
 echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
 echo '</div>';
 $buttons = array(
-    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
     '<div class="yes button">' . lang('btnupdate') . '</div>'
 );
 echo revealBtnsRow($buttons) .
     form_close() .
-    '<a class="close-reveal-modal" aria-label="Close">&#215;</a></div>';
+    '<a class="close-button" data-close aria-label="Close">&#215;</a></div>';
 
 
-echo '<div id="arpmeditspattr" class="reveal-modal medium" data-reveal data-jagger-getdata="' . base_url('manage/attributepolicy/getspecforedit/' . $idpid . '') . '">';
+echo '<div id="arpmeditspattr" class="reveal medium" data-reveal data-jagger-getdata="' . base_url('manage/attributepolicy/getspecforedit/' . $idpid . '') . '">';
 echo '<h4>' . lang('updatesppol') . '</h4>
 <p>
 <div>' . lang('rrattr') . ': <span class="attributename"></span></div>
@@ -189,16 +189,16 @@ echo '</div>';
 
 
 $buttons = array(
-    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
     '<div class="yes button">' . lang('btnupdate') . '</div>'
 );
 echo revealBtnsRow($buttons);
 echo form_close();
 
-echo '<a class="close-reveal-modal" aria-label="Close">&#215;</a></div>';
+echo '<a class="close-button" data-close aria-label="Close">&#215;</a></div>';
 
 
-echo '<div id="arpmaddentcatattr" class="reveal-modal medium" data-reveal>
+echo '<div id="arpmaddentcatattr" class="reveal medium" data-reveal>
     <h4>' . lang('addecpol') . '</h4>
     <div class="response"></div>';
 echo form_open(base_url('manage/attributepolicy/addattrentcat/' . $idpid . ''));
@@ -215,14 +215,14 @@ echo '<div class="medium-3 column medium-text-right"><label>' . lang('policy') .
 echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
 echo '</div>';
 $buttons = array(
-    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
     '<div class="yes button">' . lang('btnupdate') . '</div>'
 );
 echo revealBtnsRow($buttons) . form_close() . '</div>';
 
 
 $buttons = array(
-    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
     '<div class="yes button">' . lang('btnupdate') . '</div>'
 );
 echo '<div id="arpmaddspecattr" class="reveal-modal medium" data-reveal><h4>' . lang('addsppol') . '</h4><div class="response"></div>' .
@@ -250,11 +250,11 @@ echo '<div id="arpmaddspecattr" class="reveal-modal medium" data-reveal><h4>' . 
     '<div class="row">' .
     '<div class="medium-3 column medium-text-right"><label>' . lang('rr_valuessplitbycomma') . '</label></div>' .
     '<div class="medium-9 column"><textarea name="customvals"></textarea></div>' .
-    '</div>' . revealBtnsRow($buttons) . form_close() . '<a class="close-reveal-modal" aria-label="Close">&#215;</a>' .
+    '</div>' . revealBtnsRow($buttons) . form_close() . '<a class="close-button" data-close aria-label="Close">&#215;</a>' .
     '</div>';
 
-echo '<div id="ecmembers" class="reveal-modal small" data-reveal>';
+echo '<div id="ecmembers" class="reveal small" data-reveal>';
 echo '<h4>' . lang('modtl_listentconec') . '</h4>';
 echo '<div class="datacontent"></div>';
-echo '<a class="close-reveal-modal">&#215;</a>';
+echo '<a class="close-button" data-close>&#215;</a>';
 echo '</div>';

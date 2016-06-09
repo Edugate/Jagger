@@ -2354,7 +2354,7 @@ $(document).ready(function () {
         var arpmaddspecattrVar = $('#arpmaddspecattr').first();
         providerdetailurl = attrpolsVar.attr('data-jagger-providerdetails');
         var fedid;
-        attrpolstabVar.on('toggled', function (event, tab) {
+        attrpolstabVar.on('change.zf.tabs', function (event, tab) {
 
             var progressbarHTML = '<div class="progress"><span class="meter" style="width: 10%"></span></div>';
             var progressbar = $($.parseHTML(progressbarHTML));
