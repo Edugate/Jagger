@@ -55,7 +55,7 @@ $foundation = $base_url . 'foundation/';
         '<meta content=\'rr\' name=\'description\'>' . PHP_EOL .
         '<meta content=\'\' name=\'author\'>' . PHP_EOL .
         '<meta content=\'width=device-width, initial-scale=1.0, user-scalable=0\' name=\'viewport\'>' . PHP_EOL .
-        '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/f6-' . $colorTheme . '.css" />' . PHP_EOL;
+        '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/' . $colorTheme . '.css" />' . PHP_EOL;
     ?>
     <style>
 
@@ -90,11 +90,11 @@ $args['breadcrumbsEnabled'] = $breadcrumbsEnabled;
 
 echo '<header>';
 $this->load->view('f6/toppanel', $args);
-
 echo '</header>';
+
 if (!empty($showPagetitles) && !empty($showPagetitles['status']) && (!empty($titlepage) || !empty($subtitlepage))) {
 
-    echo '<div id="titlepage" class="fullWidth">'; // start id="titlepage"
+    echo '<div id="titlepage" class="row expanded">'; // start id="titlepage"
 
     echo '<div class="row">'; //start titlepage part
 
@@ -327,7 +327,7 @@ if (!$loggedin) {
 </script>
 <?php
 // load local final js
-echo '<script type="text/javascript" src="' . $base_url . 'js/local-f6.js"></script>' . PHP_EOL;
+echo '<script type="text/javascript" src="' . $base_url . 'js/local-f6.min.883329fd.js"></script>' . PHP_EOL;
 
 // raw js from array
 if (!empty($rawJs) && is_array($rawJs)) {
@@ -347,11 +347,11 @@ if (!empty($rawJs) && is_array($rawJs)) {
 
 <script>
     $(document).foundation();
-   // $('.title-bar').on('sticky.zf.stuckto:top', function () {
+    $('.title-bar').on('sticky.zf.stuckto:top', function () {
    //     $(this).addClass('shrink');
-   // }).on('sticky.zf.unstuckfrom:top', function () {
-   //     $(this).removeClass('shrink');
-  //  })
+    }).on('sticky.zf.unstuckfrom:top', function () {
+    //    $(this).removeClass('shrink');
+    })
 </script>
 
 

@@ -182,6 +182,7 @@ class Users extends MY_Controller
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn() || !$this->jauth->isAdministrator()) {
             return $this->output->set_status_header(403)->set_output('Permission denied');
         }
+      
         $this->load->library('zacl');
         if ($this->addSubmitValidate()) {
             $username = $this->input->post('username');
@@ -213,12 +214,11 @@ class Users extends MY_Controller
 
             try {
                 $this->em->flush();
-                echo 'OK';
             } catch (Exception $e) {
                 log_message('error', __METHOD__ . ' ' . $e);
-
                 return $this->output->set_status_header(500)->set_output('Internal server error');
             }
+            return $this->output->set_status_header(200)->set_output('OK');
         } else {
             $errors = validation_errors('<div>', '</div>');
 

@@ -36,7 +36,7 @@ if ($fedloginbtn === null) {
 if ($fedenabled || $oidcEnabled) {
     echo '<div id="loginform" class="row reveal medium" data-reveal>';
 
-    echo '<div id="loginresponse" class="callout alert hidden" ></div>';
+    echo '<div id="loginresponse" class="alert-box alert hidden" ></div>';
 
     echo '<div class="large-6 columns">';
     echo form_open($base . 'authenticate/dologin');

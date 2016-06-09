@@ -26,7 +26,7 @@ if($canEdit === TRUE)
          echo '<div class="small-12 columns"><div class="large-3 columns">'.form_label(lang('rr_uploadlogo'),'userfile').'</div>';
          echo '<div class="large-9 columns"><input type="file" name="userfile" id="userfile" size="20" class="clearable" style="background: transparent" /></div></div>';
      }
-     echo '<div class="buttons small-12 columns text-right"><button type="submit" name="upload" value="upload" class="savebutton saveicon">'.lang('rr_add').'</button></div>';
+     echo '<div class="buttons small-12 columns text-right"><button type="submit" name="upload" value="upload" class="button">'.lang('rr_add').'</button></div>';
      echo form_close();
      echo '</div>';
 }
@@ -64,9 +64,9 @@ echo '<div class="assignedlogosgrid" style="display:none">'.base_url().'manage/l
 echo '<div class="availablelogosgrid" style="display:none">'.base_url().'manage/logomngmt/getAvailableLogosInGrid/'.$provider_detail['type'].'/'.$provider_detail['id'].'</div>';
 
 ?>
-<div id="messagereveal" class="reveal-modal small" data-reveal>
+<div id="messagereveal" class="reveal small" data-reveal>
     <p class="infomsg"></p>
-   <p><button class="modal-close button mall">Close</a></button>
-  <a class="close-reveal-modal">&#215;</a>
+   <p><button class="modal-close button mall" data-close>Close</a></button>
+  <a class="close-reveal-modal" data-close>&#215;</a>
 </div>
 

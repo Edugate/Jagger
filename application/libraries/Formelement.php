@@ -2751,4 +2751,3 @@ class Formelement
 }
 ?>
 
-<div class="medium-text-right"></div>

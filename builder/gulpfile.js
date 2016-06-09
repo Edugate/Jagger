@@ -79,20 +79,10 @@ gulp.task('sass-default-theme', function () { // WARNING: potential duplicate ta
     return gulp
         .src('scss/app.scss')
         .pipe(sass({includePaths: ['bower_components/foundation/scss']}))
-        .pipe(rename('default.css'))
+        .pipe(rename('default-old.css'))
         .pipe(gulp.dest('../styles/'));
 });
 
-gulp.task('sass-theme01', function () { // WARNING: potential duplicate task
-
-    console.log('RUN::::sass-theme01');
-    return gulp
-        .src('scss/app-theme01.scss')
-        .pipe(sass({includePaths: ['bower_components/foundation/scss']}))
-        .pipe(rename('theme01.css'))
-        .pipe(gulp.dest('../styles/'))
-        ;
-});
 
 gulp.task('sass-theme02', function () { // preparing for foundation6
 
@@ -101,28 +91,25 @@ gulp.task('sass-theme02', function () { // preparing for foundation6
         .src('scss/app-theme02.scss')
         .pipe(sass({includePaths: sassFoundation6Paths}))
         .pipe(rename('theme02.css'))
-        .pipe(gulp.dest('../styles/'))
-        ;
+        .pipe(gulp.dest('../styles/'));
 });
 
-gulp.task('sass-f6-default', function () { // preparing for foundation6
+gulp.task('sass-f6-default-theme', function () { // preparing for foundation6
 
     console.log('RUN::::sass-f6-default');
     return gulp
         .src('scss/f6-app.scss')
         .pipe(sass({includePaths: sassFoundation6Paths}))
-        .pipe(rename('f6-default.css'))
-        .pipe(gulp.dest('../styles/'))
-        ;
+        .pipe(rename('default.css'))
+        .pipe(gulp.dest('../styles/'));
 });
 
-gulp.task('sass', gulp.parallel('copyfonts', 'sass-default-theme', 'sass-theme01', 'sass-f6-default'));
+gulp.task('sass', gulp.parallel('copyfonts',  'sass-f6-default-theme'));
 
 gulp.task('clean', function () {
     return gulp
         .src(['js/*', 'css/*', 'tmpdist/*', 'build/src/*', 'build/minified/*'], {read: false})
         .pipe(clean());
-    ;
 });
 
 

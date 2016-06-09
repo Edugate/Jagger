@@ -7,12 +7,12 @@ function generateTopBar($a) {
         <button class="menu-icon" type="button" data-toggle></button>
         <div class="title-bar-title">Menu</div>
      </div>' .
-     '<div id="topbar-menu" class="top-bar stacked-for-medium" data-sticky data-options="marginTop:0;">';
+     '<div id="topbar-menu" class="top-bar sktacked-for-medium" data-sticky data-options="marginTop:0;">';
 
 
     if (isset($a['logo'])) {
 
-        $html[] = '<div class="title-bar-left" ><div class="logo-wrapper hide-for-small-only" >' .
+        $html[] = '<div class="title-bar-left " ><div class="logo-wrapper hide-for-small-only" >' .
             '<span class="top-bar-title logo" ><a href = "' . $a['logo']['link'] . '" class="sitelogo" ><img src = "' . $a['logo']['img'] . '" alt = "Logo" /></a ></span >' .
             '</div ></div>';
     }
@@ -47,9 +47,9 @@ function generateTopBar($a) {
 function generateTopBarElements($b, $position, $top = true) {
     $r = '';
     if ($top === true) {
-        $r .= '<ul class="dropdown menu align-' . $position . '" data-dropdown-menu>';
+        $r .= '<ul class="vertical medium-horizontal dropdown menu align-' . $position . '" data-dropdown-menu >';
     } else {
-        $r .= '<ul class="menu vertical">';
+        $r .= '<ul class="vertical medium-khorizontal menu">';
     }
     foreach ($b as $v) {
         $linkclass = isset($v['linkprop']) ? $v['linkprop'] : '';

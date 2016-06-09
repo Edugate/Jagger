@@ -1,4 +1,4 @@
-<div class="small-12 columns text-right"><a href="<?php echo base_url().'manage/statdefs/newstatdef/'.$providerid.''; ?>" class="addbutton addicon button small"><?php echo lang('rr_add');?></a></div>
+<div class="small-12 columns text-right"><a href="<?php echo base_url().'manage/statdefs/newstatdef/'.$providerid.''; ?>" class="button"><?php echo lang('rr_add');?></a></div>
 <div style="clear: both;"></div>
 <div id="statdefs" style="width: 100%">
 <?php
@@ -17,7 +17,7 @@ if(!empty($existingStatDefs))
        }
        else
        {
-           $r = array(anchor(base_url().'manage/statdefs/show/'.$providerid.'/'.$v['id'].'',$v['title']).' <span style="float: right;" class="alert">'.lang('rerror_nopredefinedstat').'</span>',''.htmlentities($v['desc']).'');
+           $r = array(anchor(base_url().'manage/statdefs/show/'.$providerid.'/'.$v['id'].'',$v['title']).' <span style="float: right;" class="alert">'.lang('rerror_nopredefinedstat').'</span>',''.html_escape($v['desc']).'');
 
        }
        $this->table->add_row($r);

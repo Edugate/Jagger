@@ -157,7 +157,7 @@ elseif(!empty($showpredefined) && $showpredefined === TRUE)
   
 </fieldset>
   <div class="buttons small-12 columns">
-      <div class="small-9 large-10 columns end text-right"><button type="submit" name="submit" value="submit" class="savebutton saveicon small">
+      <div class="small-9 large-10 columns end text-right"><button type="submit" name="submit" value="submit" class="button">
             <?php echo lang('btnupdate');?></button>
 
   </div></div> 

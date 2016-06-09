@@ -1,4 +1,4 @@
-$body-background: #F6F7F7;
+$body-background: lighten(#F6F7F7,10%);
 
 
 $topbar-background: #014289;
@@ -24,7 +24,7 @@ $jagger-selected-color: #fff;
 @if variable-exists(j-side-icon-font-color) {
   $final-side-icon-font-color: $j-side-icon-font-color;
 } @else {
-  $final-side-icon-font-color: white;
+  $final-side-icon-font-color: $white;
 }
 
 @if variable-exists(jagger-selected-bgcolor) {
@@ -68,12 +68,35 @@ table#details th.header.headerSortUp:before {
   content: "\25B4\00a0\00a0";
 }
 
+.alert-box {
+
+  background-color: map_get($foundation-palette,primary);
+  color: foreground(map-get($foundation-palette,primary));
+  font-size: 90%;
+  padding: 0.4rem;
+}
+
 .alert-box.success {
-  background-color: map_get($foundation-palette,'success');
+  background-color: map_get($foundation-palette,success);
+  color: foreground(map-get($foundation-palette,success));
 }
 .alert-box.warning {
-  background-color: map_get($foundation-palette,'warning');
+  background-color: map_get($foundation-palette,warning);
+  color: foreground(map-get($foundation-palette,warning));
 }
 .alert-box.alert {
-  background-color: map_get($foundation-palette,'alert');
+  background-color: map_get($foundation-palette,alert);
+  color: foreground(map-get($foundation-palette,alert));
+}
+.alert-box.secondary {
+  background-color: map_get($foundation-palette,secondary);
+  color: foreground(map-get($foundation-palette,secondary));
+}
+.alert-box.primary {
+  background-color: map_get($foundation-palette,primary);
+  color: foreground(map-get($foundation-palette,primary));
+}
+.alert-box.info {
+  background-color: map_get($foundation-palette,primary);
+  color: foreground(map-get($foundation-palette,primary));
 }

@@ -19,7 +19,7 @@ echo '<div id="prdetails" class="alert-box warning hidden" ></div>';
         <?php
         echo '<aside class="off-canvas position-left" id="offCanvas" data-off-canvas>';
         echo '<ul class="vertical menu">';
-        echo '<li><label>' . lang('menu_actions') . '</label></li>';
+        echo '<li><label class="label expanded">' . lang('menu_actions') . '</label></li>';
         ksort($entmenu);
         foreach ($entmenu as $v) {
             if (isset($v['label'])) {

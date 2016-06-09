@@ -13,7 +13,7 @@ body {
 
   @include breakpoint(medium) {
     .title-bar {
-      display: none;
+     display: none;
     }
   }
 }
@@ -31,11 +31,17 @@ body {
   }
 }
 
+.title-bar {
+  width: 100%;
+  z-index: 10;
+  min-height: 3.5em;
+}
+
 .top-bar {
   width: 100%;
   z-index: 10;
   transition: height 0.05s ease;
-  height: 3.5em;
+  min-height: 3.5em;
 }
 
 .top-bar .top-bar-right, .top-bar .top-bar-left {
@@ -109,19 +115,23 @@ body {
 
 .lbl-disabled, .lbl-pactive-0 {
   background-color: map-get($foundation-palette, alert);
+  color: foreground(map-get($foundation-palette, alert));
 }
 
 .lbl-locked, .lbl-static, .lbl-plocked-1, .lbl-pstatic-1 {
   background-color: map-get($foundation-palette, warning);
+   color: foreground(map-get($foundation-palette, warning));
 
 }
 
 .lbl-plocal-0 {
   background-color: map-get($foundation-palette, alert);
+  color: foreground(map-get($foundation-palette, alert));
 }
 
 .lbl-pvisible-0 {
   background-color: map-get($foundation-palette, secondary);
+  color: foreground(map-get($foundation-palette, secondary));
 }
 
 .spinner {
@@ -449,22 +459,25 @@ caption {
 #titlepage {
   @include callout();
   background-color: $tab-background;
+  color: foreground($tab-background);
   font-size: map_get($header-sizes, 'h1');
+  a {
+    color: foreground($tab-background);
+  }
+
 }
+
 
 div.error {
   @include callout();
   background-color: map-get($foundation-palette, alert);
+  color: foreground(map-get($foundation-palette, alert));
 }
 
 .alert-box {
   @include callout();
 }
 
-.alert-box.alert {
-  @include callout();
-  background-color: map-get($foundation-palette, alert);
-}
 
 .box {
   transition: box-shadow 0.2s ease-in;
@@ -475,19 +488,9 @@ div.error {
   // background-color: $white;
 }
 
-.alert-box {
-  font-size: 90%;
-  padding: 0.4rem;
-  //background-color: $black;
-}
 
-.alert-box.warning {
-  background-color: map_get($foundation-palette, 'warning');
-}
 
-.alert-box.alert {
-  background-color: map_get($foundation-palette, 'alert');
-}
+
 
 .spinner {
   color: $black;
@@ -512,7 +515,8 @@ td.highlight {
 }
 
 code {
-
+  max-width: $global-width;
+  overflow:auto;
   white-space: pre;
   font-size: smaller;
 }
@@ -554,3 +558,6 @@ textarea.metadata {
 
 }
 
+.ui-sortable-handle > label {
+  cursor: move;
+}

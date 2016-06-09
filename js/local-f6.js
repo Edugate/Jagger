@@ -759,7 +759,7 @@ var GINIT = {
                     msgdiv.hide().empty();
                 },
                 success: function (data) {
-                    if (data && data === 'OK') {
+                    if (data && data.trim() === 'OK') {
                         $("#newusermodal").foundation('close');
                         msgdiv.hide().empty();
                         location.reload();
