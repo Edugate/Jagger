@@ -90,13 +90,12 @@ if ($show2fa === true) {
 }
 
 $btns = array(
-        '<a href="'.$userprofileurl.'" class="button alert">' . lang('rr_cancel') . '</a>',
-        '<button type="submit" name="update" value="updateprofile" class="button">' . lang('btnupdate') . '</button>'
+        '<a href="'.$userprofileurl.'" class="large button alert">' . lang('rr_cancel') . '</a>',
+        '<button type="submit" name="update" value="updateprofile" class="large button">' . lang('btnupdate') . '</button>'
     );
   echo '<div class="small-9 end column">';
 
 
 echo revealBtnsRow($btns);
-
 echo '</div>';
 echo form_close();

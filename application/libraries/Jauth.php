@@ -151,8 +151,9 @@ class Jauth
     }
 
     public function logout() {
-        $this->ci->session->sess_destroy();
+        
         $this->ci->session->sess_regenerate(true);
+        $this->ci->session->sess_destroy();
         $this->set_message('logout_successful');
         return true;
     }

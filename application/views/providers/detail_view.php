@@ -1,6 +1,6 @@
 <?php
 if (!empty($alerts) && is_array($alerts) && count($alerts) > 0) {
-    echo '<div  data-alert class="alert-box warning" >';
+    echo '<div  class="alert-box warning" >';
     foreach ($alerts as $v) {
         echo '<div>' . $v . '</div>';
     }
@@ -9,17 +9,17 @@ if (!empty($alerts) && is_array($alerts) && count($alerts) > 0) {
 
 echo '<div data-jagger-getmoreajax= "' . base_url() . 'providers/detail/status/' . $entid . '" data-jagger-response-msg="prdetails" data-jagger-refreshurl="' . base_url() . 'providers/detail/status/' . $entid . '/1"></div>';
 
-echo '<div id="prdetails" data-alert class="alert-box info" style="display: none"></div>';
+echo '<div id="prdetails" class="alert-box warning hidden" ></div>';
 ?>
-    <div class="off-canvas-wrap" data-offcanvas>
-    <div class="inner-wrap">
+<div class="off-canvas-wrapper">
+    <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
 
 
         <!-- Off Canvas Menu -->
         <?php
-        echo '<aside class="left-off-canvas-menu">';
-        echo '<ul class="off-canvas-list">';
-        echo '<li><label>' . lang('menu_actions') . '</label></li>';
+        echo '<aside class="off-canvas position-left" id="offCanvas" data-off-canvas>';
+        echo '<ul class="vertical menu">';
+        echo '<li><label class="label expanded">' . lang('menu_actions') . '</label></li>';
         ksort($entmenu);
         foreach ($entmenu as $v) {
             if (isset($v['label'])) {
@@ -35,26 +35,27 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
         echo '</aside>';
         ?>
 
-        <div id="providertabsi">
-            <ul class="tabs" data-tab>
+        <div id="providertabsi" class="off-canvas-content" data-off-canvas-content>
+
+
+
+
+            <ul class="tabs" data-tabs id="providerdetail-tabs">
+                <li class="pseudo-tabs-title"><a href="#"  data-toggle="offCanvas"><i class="fa fa-cog "></i></a></li>
                 <?php
                 $activetab = 'general';
                 $tset = false;
-
-                echo '<li class="tab-title" >
-        <a class="left-off-canvas-toggle" href="#none"><img src="' . base_url() . 'images/jicons/appbar.cog.png" style="height: 20px"/></a>
-      </li>';
                 foreach ($tabs as $t) {
                     if ($tset || ($t['section'] !== $activetab)) {
-                        echo '<li class="tab-title">';
+                        echo '<li class="tabs-title">';
                     } else {
-                        echo '<li class="tab-title active">';
+                        echo '<li class="tabs-title is-active">';
                         $tset = true;
                     }
                     echo '<a href="#' . $t['section'] . '">' . $t['title'] . '</a>';
                     echo '</li>';
                 }
-                echo '<li class="tab-title">';
+                echo '<li class="tabs-title">';
                 echo '<a href="#providerlogtab">' . lang('tabLogs') . '/' . lang('tabStats') . '</a>';
                 echo '</li>';
                 ?>
@@ -62,7 +63,7 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
             <?php
             reset($tabs);
             $tmpl = array('table_open' => '<table id="detailsnosort" class="zebra">');
-            echo '<div class="tabs-content">';
+            echo '<div class="tabs-content" data-tabs-content="providerdetail-tabs">';
             $tset = false;
             foreach ($tabs as $t) {
                 if (isset($t['data'])) {
@@ -93,24 +94,25 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
                         }
                     }
                     if ($tset || ($t['section'] !== $activetab)) {
-                        echo '<div id="' . $t['section'] . '" class="content nopadding">';
+                        echo '<div id="' . $t['section'] . '" class="tabs-panel nopadding">';
                     } else {
-                        echo '<div id="' . $t['section'] . '" class="content active nopadding">';
+                        echo '<div id="' . $t['section'] . '" class="tabs-panel is-active nopadding">';
                         $tset = true;
                     }
                     echo $this->table->generate();
                     $this->table->clear();
                 } elseif (!empty($t['subtab'])) {
-                    echo '<div id="' . $t['section'] . '" class="content nopadding subtab">';
+                    echo '<div id="' . $t['section'] . '" class="tabs-panel nopadding subtab">';
                     $d = $t['subtab'];
-                    echo '<ul class="tabs subtab" data-tab>';
+
+                    echo '<ul class="tabs subtab" data-tabs id="sub-' . $t['section'] . '">';
                     $tact = true;
                     foreach ($d as $key => $dv) {
                         if ($tact && $key != 1) {
-                            echo '<li class="tab-title active">';
+                            echo '<li class="tabs-title is-active">';
                             $tact = false;
                         } else {
-                            echo '<li class="tab-title">';
+                            echo '<li class="tabs-title">';
                         }
                         echo '<a href="#' . $dv['section'] . '">' . $dv['title'] . '</a>';
                         echo '</li>';
@@ -118,7 +120,7 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
 
                     echo '</ul>';
                     $tmpl = array('table_open' => '<table id="detailsnosort" class="zebra">');
-                    echo '<div class="tabs-content subtab">';
+                    echo '<div class="tabs-content" data-tabs-content="sub-' . $t['section'] . '">';
                     $tact = true;
                     foreach ($d as $key => $v) {
                         if (is_array($v['data'])) {
@@ -147,10 +149,10 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
                                 }
                             }
                             if ($tact && $key != 1) {
-                                echo '<div id="' . $v['section'] . '" class="content nopadding active">';
+                                echo '<div id="' . $v['section'] . '" class="tabs-panel nopadding is-active">';
                                 $tact = false;
                             } else {
-                                echo '<div id="' . $v['section'] . '" class="content nopadding">';
+                                echo '<div id="' . $v['section'] . '" class="tabs-panel nopadding">';
                             }
                             if ($key != 1) {
                                 echo $this->table->generate();
@@ -159,10 +161,10 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
                             echo '</div>';
                         } else {
                             if ($tact && $key != 1) {
-                                echo '<div id="' . $v['section'] . '" class="content nopadding active">';
+                                echo '<div id="' . $v['section'] . '" class="tabs-panel nopadding is-active">';
                                 $tact = false;
                             } else {
-                                echo '<div id="' . $v['section'] . '" class="content nopadding">';
+                                echo '<div id="' . $v['section'] . '" class="tabs-panel nopadding">';
                             }
 
                             echo $v['data'];
@@ -175,7 +177,7 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
                 echo '</div>';
             }
             // logs tab reveal //
-            echo '<div id="providerlogtab" class="content" data-reveal-ajax-tab="' . base_url() . 'providers/detail/showlogs/' . $entid . '">';
+            echo '<div id="providerlogtab" class="tabs-panel" data-reveal-ajax-tab="' . base_url() . 'providers/detail/getlogs/' . $entid . '">';
             echo '</div>';
             // end logs
             echo '</div>';
@@ -188,22 +190,19 @@ echo '<div id="prdetails" data-alert class="alert-box info" style="display: none
 
     <div class="metadataresult" style="display: none"></div>
 
-<?php
-echo '<div id="updatemembership" class="reveal-modal small" data-reveal>';
-echo '<div class="row message title">';
+    <?php
+    echo '<div id="updatemembership" class="reveal small" data-reveal>';
+    echo '<div class="row message title">';
 
-echo '</div>';
-echo form_open(base_url('manage/entitystate/updatemembership'));
-echo '<input type="hidden" name="updatedata" value="" style="display:none;" />';
-$buttons = array(
-    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
-    '<div class="yes button">' . lang('btnupdate') . '</div>'
-);
-echo revealBtnsRow($buttons);
-echo form_close();
-echo '</div>';
-
-
-
+    echo '</div>';
+    echo form_open(base_url('manage/entitystate/updatemembership'));
+    echo '<input type="hidden" name="updatedata" value="" style="display:none;" />';
+    $buttons = array(
+        '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
+        '<div class="yes button">' . lang('btnupdate') . '</div>'
+    );
+    echo revealBtnsRow($buttons);
+    echo form_close();
+    echo '</div>';
 
 

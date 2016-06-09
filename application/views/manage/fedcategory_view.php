@@ -1,7 +1,7 @@
 <?php
 if(!empty($showaddbtn) && $showaddbtn === TRUE)
 {
-   echo '<div class="small-12 columns text-right"><a href="'.base_url().'manage/fedcategory/addnew" class="button small addbutton addicon">'.lang('addfedcat_btn').'</a></div>';
+   echo '<div class="small-12 columns text-right"><a href="'.base_url().'manage/fedcategory/addnew" class="button">'.lang('addfedcat_btn').'</a></div>';
 }
 echo '<div class="small-12 columns">';
 if(count($result) > 0)

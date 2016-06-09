@@ -56,7 +56,7 @@ if (!isset($vregenabled)) {
 }
 
 echo form_open();
-echo '<fieldset><legend>' . lang('general') . '</legend>';
+echo '<fieldset class="fieldset"><legend>' . lang('general') . '</legend>';
 echo '<div class="small-12 columns">';
 echo '<div class="medium-3 columns medium-text-right">';
 echo '<label for="vname">' . lang('fvalid_name') . '</label>';
@@ -135,7 +135,7 @@ echo '<div class="small-12 columns">';
 echo '<div class="medium-3 columns medium-text-right">';
 
 
-echo '<label for="voptparams" >' . lang('fvalid_optargs') . ' ' . showBubbleHelp(sprintf(lang('rhelp_multargvalinputseparator'), '&#36;&#36;', '&#36;:&#36;', 'arg1:val1  arg2:val2 - &gt; arg1&#36;:&#36;val1&#36;&#36;arg2&#36;:&#36;val2')) . '</label>';
+echo '<label for="voptparams" >' . lang('fvalid_optargs') . ' ' . showBubbleHelp(sprintf(lang('rhelp_multargvalinputseparator'), '$$', '$:$', 'arg1:val1  arg2:val2 - > arg1$:$val1$$arg2$:$val2')) . '</label>';
 echo '</div><div class="medium-7 columns end">';
 echo '<textarea id="voptparams" name="voptparams">' . set_value('voptparams', $voptparams) . '</textarea>';
 
@@ -161,7 +161,7 @@ echo '</div></div>';
 
 
 echo '</fieldset>';
-echo '<fieldset><legend>'.lang('rr_response').'</legend>';
+echo '<fieldset class="fieldset"><legend>'.lang('rr_response').'</legend>';
 echo '<div class="small-12 columns">';
 echo '<div class="medium-3 columns medium-text-right">';
 
@@ -174,7 +174,7 @@ echo '</div></div>';
 echo '<div class="small-12 columns">';
 echo '<div class="medium-3 columns medium-text-right">';
 
-echo '<label for="vsuccesscode">' . lang('fcode_succes') . ' ' . showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'), '&#36;&#36;')) . '</label>';
+echo '<label for="vsuccesscode">' . lang('fcode_succes') . ' ' . showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'), '$$')) . '</label>';
 echo '</div><div class="medium-7 columns end">';
 echo '<input type="text" id="vsuccesscode" name="vsuccesscode"
                            value="' . set_value('vsuccesscode', $vsuccesscode) . '" maxlength="100" />';
@@ -182,7 +182,7 @@ echo '</div></div>';
 echo '<div class="small-12 columns">';
 echo '<div class="medium-3 columns medium-text-right">';
 
-echo '<label for="vwarningcode">' . lang('fcode_warning') . ' ' . showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'), '&#36;&#36;')) . '</label>';
+echo '<label for="vwarningcode">' . lang('fcode_warning') . ' ' . showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'), '$$')) . '</label>';
 echo '</div><div class="medium-7 columns end">';
 echo '<input type="text" id="vwarningcode" name="vwarningcode"
                            value="' . set_value('vwarningcode', $vwarningcode) . '" maxlength="100" />';
@@ -190,7 +190,7 @@ echo '</div></div>';
 echo '<div class="small-12 columns">';
 echo '<div class="medium-3 columns medium-text-right">';
 
-echo '<label for="verrorcode">' . lang('fcode_error') . ' ' . showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'), '&#36;&#36;')) . '</label>';
+echo '<label for="verrorcode">' . lang('fcode_error') . ' ' . showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'), '$$')) . '</label>';
 echo '</div><div class="medium-7 columns end">';
 echo '<input type="text" id="verrorcode" name="verrorcode"
                            value="' . set_value('verrorcode', $verrorcode) . '" maxlength="100" />';
@@ -199,7 +199,7 @@ echo '</div></div>';
 echo '<div class="small-12 columns">';
 echo '<div class="medium-3 columns medium-text-right">';
 
-echo '<label for="vcriticalcode">' . lang('fcode_crit') . ' ' . showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'), '&#36;&#36;')) . '</label>';
+echo '<label for="vcriticalcode">' . lang('fcode_crit') . ' ' . showBubbleHelp(sprintf(lang('rhelp_multiplvalssep'), '$$')) . '</label>';
 echo '</div><div class="medium-7 columns end">';
 echo '<input type="text" id="vcriticalcode" name="vcriticalcode"
                            value="' . set_value('vcriticalcode', $vcriticalcode) . '" maxlength="100" />';
@@ -219,12 +219,12 @@ echo '</fieldset>';
 
 echo '<div class="buttons medium-10 end columns text-right">';
 $buttons = array();
-$buttons[] = '<a href="'.$federationlink.'" class="resetbutton reseticon button alert">
+$buttons[] = '<a href="'.$federationlink.'" class="button alert">
                   ' . lang('rr_cancel') . '</a> ';
 if (empty($newfvalidator)) {
-    $buttons[] = '<button type="submit" id="rmfedvalidator" name="formsubmit" value="remove" class="alert">' . lang('rr_remove') . '</button>';
+    $buttons[] = '<button type="submit" id="rmfedvalidator" name="formsubmit" value="remove" class="button alert">' . lang('rr_remove') . '</button>';
 }
-$buttons[] = '<button type="submit" name="formsubmit" value="update" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
+$buttons[] = '<button type="submit" name="formsubmit" value="update" class="button">' . lang('rr_save') . '</button></div>';
 echo revealBtnsRow($buttons);
 echo form_close();
 

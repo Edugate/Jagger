@@ -54,7 +54,7 @@ class Show_element
             return null;
         }
         $mcounter = 0;
-        $result[] = '<dl class="accordion" data-accordion="requestsList">';
+        $result[] = '<ul class="accordion" data-accordion data-multi-expand="true">';
         foreach ($tracks as $t) {
             $det = $t->getDetail();
             $this->ci->table->set_heading('Request/Status');
@@ -64,13 +64,13 @@ class Show_element
             if (empty($user)) {
                 $user = lang('unknown');
             }
-            $result[] = '<dd class="accordion-navigation">'.
-                '<a href="#rmod' . $mcounter . '">' .jaggerDisplayDateTimeByOffset($t->getCreated(),jauth::$timeOffset). ' ' . lang('made_by') . ' <b>' . $user . '</b> ' . lang('from') . ' ' . $t->getIp() . '</a><div id="rmod' . $mcounter . '" class="content">' . $y . '</div>'.
-                '</dd>';
+            $result[] = '<li class="accordion-item" data-accordion-item>'.
+                '<a href="#" class="accordion-title">' .jaggerDisplayDateTimeByOffset($t->getCreated(),jauth::$timeOffset). ' ' . lang('made_by') . ' <b>' . $user . '</b> ' . lang('from') . ' ' . $t->getIp() . '</a><div  class="accordion-content" data-tab-content>' . $y . '</div>'.
+                '</li>';
             $mcounter++;
             $this->ci->table->clear();
         }
-        $result[] = '</dl>';
+        $result[] = '</ul>';
         return implode('',$result);
     }
 
@@ -87,7 +87,7 @@ class Show_element
         }
 
 
-        $result = '<dl class="accordion" data-accordion="modificationsList">';
+        $result = '<ul class="accordion" data-accordion data-multi-expand="true" >';
         $mcounter = 0;
         foreach ($tracks as $t) {
             $modArray = unserialize($t->getDetail());
@@ -105,12 +105,12 @@ class Show_element
             if (empty($user)) {
                 $user = lang('unknown');
             }
-            $result .= '<dd class="accordion-navigation">';
-            $result .= '<a href="#mod' . $mcounter . '" class="accordion-icon">' .jaggerDisplayDateTimeByOffset($t->getCreated(),jauth::$timeOffset).  ' ' . lang('chng_made_by') . ' <b>' . $user . '</b> ' . lang('from') . ' ' . $t->getIp() . '</a><div id="mod' . $mcounter . '" class="content">' . $y . '</div>';
-            $result .= '</dd>';
+            $result .= '<li class="accordion-item" data-accordion-item>';
+            $result .= '<a  class="accordion-title">' .jaggerDisplayDateTimeByOffset($t->getCreated(),jauth::$timeOffset).  ' ' . lang('chng_made_by') . ' <b>' . $user . '</b> ' . lang('from') . ' ' . $t->getIp() . '</a><div class="accordion-content" data-tab-content>' . $y . '</div>';
+            $result .= '</li>';
             $mcounter++;
         }
-        $result .= '</dl>';
+        $result .= '</ul>';
         return $result;
     }
 

@@ -52,9 +52,9 @@ class Ec extends MY_Controller
                 }
                 $linetxt = '';
                 if ($hasWriteAccess) {
-                    $linetxt = '<a href="' . base_url() . 'manage/ec/edit/' . $entCat->getId() . '" ><i class="fi-pencil"></i></a>';
+                    $linetxt = '<a href="' . base_url() . 'manage/ec/edit/' . $entCat->getId() . '" ><i class="fa fa-pencil"></i></a>';
                     if (!$isEnabled) {
-                        $linetxt .= '&nbsp;&nbsp;<a href="' . base_url() . 'manage/ec/remove/' . $entCat->getId() . '" class="withconfirm" data-jagger-fieldname="' . $entCat->getName() . '" data-jagger-ec="' . $entCat->getId() . '" data-jagger-counter="' . $countProviders . '"><i class="fi-trash"></i></a>';
+                        $linetxt .= '&nbsp;&nbsp;<a href="' . base_url() . 'manage/ec/remove/' . $entCat->getId() . '" class="withconfirm" data-jagger-fieldname="' . $entCat->getName() . '" data-jagger-ec="' . $entCat->getId() . '" data-jagger-counter="' . $countProviders . '"><i class="fa fa-trash"></i></a>';
                     }
                 }
 
@@ -148,7 +148,7 @@ class Ec extends MY_Controller
         $data['titlepage'] = lang('title_addentcat');
         $hasWriteAccess = $this->zacl->check_acl('coc', 'write', 'default', '');
         if (!$hasWriteAccess) {
-            show_error('No access', 401);
+            show_error('Access Denied', 401);
         }
 
         if ($this->_add_submit_validate() === true) {
@@ -182,9 +182,9 @@ class Ec extends MY_Controller
             $this->load->library('formelement');
             $form = form_open() .
                 $this->formelement->generateAddCoc() .
-                '<div class="buttons small-12 medium-10 large-10 columns end text-right">' .
-                '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ' .
-                '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>' .
+                '<div class="small-12 column"><div class="medium-9 columns end text-right">' .
+                '<button type="reset" name="reset" value="reset" class="button alert">' . lang('rr_reset') . '</button> ' .
+                '<button type="submit" name="modify" value="submit" class="button">' . lang('rr_save') . '</button></div></div>' .
                 form_close();
             $data['form'] = $form;
         }
@@ -250,9 +250,9 @@ class Ec extends MY_Controller
         $this->load->library('formelement');
         $data['form'] = form_open() .
             $this->formelement->generateEditCoc($coc) .
-            '<div class="buttons large-10 medium-10 small-12 text-right columns end">' .
-            '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ' .
-            '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>' . form_close();
+            '<div class="small-12 column"><div class="buttons large-10 medium-11 small-12 text-right columns end">' .
+            '<button type="reset" name="reset" value="reset" class="button alert">' . lang('rr_reset') . '</button> ' .
+            '<button type="submit" name="modify" value="submit" class="button">' . lang('rr_save') . '</button></div></div>' . form_close();
         $data['breadcrumbs'] = array(
             array('url' => base_url('manage/ec/show'), 'name' => lang('title_entcats')),
             array('url' => '#', 'name' => lang('title_editform'), 'type' => 'current'),

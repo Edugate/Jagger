@@ -33,7 +33,29 @@ class Xmlvalidator
     }
 
     public function validateMetadata($xml, $signed = false, $pubkey = false) {
-        $schemaLocation = dirname(APPPATH) . '/schemas/old/' . $this->rootSchemaFile;
+
+        if (function_exists("libxml_set_external_entity_loader")) {
+            log_message('debug', 'libxml_set_external_entity_loader supported');
+            $schemasFolder = dirname(APPPATH) . '/schemas/new/';
+            $mapping = j_schemasMapping($schemasFolder);
+            libxml_set_external_entity_loader(
+                function ($public, $system, $context) use ($mapping) {
+                    if (is_file($system)) {
+                        return $system;
+                    }
+                    if (isset($mapping[$system])) {
+                        return $mapping[$system];
+                    }
+                    $message = "Failed to load external entity";
+                    throw new RuntimeException($message);
+                }
+            );
+            $schemaLocation = $schemasFolder . $this->rootSchemaFile;
+        } else {
+            $schemaLocation = dirname(APPPATH) . '/schemas/old/' . $this->rootSchemaFile;
+        }
+
+
         \log_message('debug', __METHOD__ . ' started');
         $result = false;
         $this->pubKey = $pubkey;
@@ -113,7 +135,7 @@ class Xmlvalidator
             $this->ci->globalerrors[] = 'Metada validation : Unable to validate Signature';
             log_message('warning', __METHOD__ . ' Unable to validate Signature');
         } else {
-            $result = $this->xmlDOM->schemaValidate('schemas/old/' . $this->rootSchemaFile . '');
+            $result = $this->xmlDOM->schemaValidate($schemaLocation);
             $errors = libxml_get_errors();
             if ($result === true) {
                 log_message('debug', __METHOD__ . ' metadata is valid with schema');

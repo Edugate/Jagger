@@ -17,7 +17,7 @@ foreach ($datas as $x => $y) {
 			} else {
 				$cell[] = '<span class="label alert" data-jagger-name="status">' . lang('rr_disabled') . '</span>';
 			}
-			$cell[] = '<a href="' . base_url() . 'smanage/sysprefs/retgconf/' . $v['confname'] . '" class="updateprefs" data-jagger-record="' . $v['confname'] . '"><i class="fi-pencil"></i></a>';
+			$cell[] = '<a href="' . base_url() . 'smanage/sysprefs/retgconf/' . $v['confname'] . '" class="updateprefs" data-jagger-record="' . $v['confname'] . '"><i class="fa fa-pencil"></i></a>';
 
 		}
 		elseif($v['type'] === 'bool')
@@ -31,7 +31,7 @@ foreach ($datas as $x => $y) {
 			} else {
 				$cell[] = '<span class="label alert" data-jagger-name="status">' . lang('rr_disabled') . '</span>';
 			}
-			$cell[] = '<a href="' . base_url() . 'smanage/sysprefs/retgconf/' . $v['confname'] . '" class="updateprefs" data-jagger-record="' . $v['confname'] . '"><i class="fi-pencil"></i></a>';
+			$cell[] = '<a href="' . base_url() . 'smanage/sysprefs/retgconf/' . $v['confname'] . '" class="updateprefs" data-jagger-record="' . $v['confname'] . '"><i class="fa fa-pencil"></i></a>';
 
 		}
 
@@ -46,7 +46,7 @@ echo $this->table->generate();
 
 ?>
 
-<div id="updateprefsmodal" class="reveal-modal medium" data-reveal
+<div id="updateprefsmodal" class="reveal medium" data-reveal
      data-jagger-link="<?php echo base_url() ?>smanage/sysprefs/updateconf">
 	<h3>Update prefs for <span data-jagger-name="displayname"></span></h3>
 
@@ -67,7 +67,7 @@ echo $this->table->generate();
 	echo '</div>';
 	echo '<div class="rows">';
     $btns = array(
-        '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+        '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
         '<button type="submit" name="update" value="updateprefs" class="button">' . lang('btnupdate') . '</button>'
     );
     echo revealBtnsRow($btns);
@@ -77,8 +77,10 @@ echo $this->table->generate();
 	?>
 
 
+	<button class="close-button" data-close aria-label="Close reveal" type="button">
+		<span aria-hidden="true">&times;</span>
+	</button>
 
 
-	<a class="close-reveal-modal">&#215;</a>
 </div>
 

@@ -114,7 +114,7 @@ class Translator extends MY_Controller
 
         $data = array(
             'merger'        => $merger,
-            'subtitlepage'  => 'en <i class="fi-arrow-right"></i> ' . html_escape($langto),
+            'subtitlepage'  => 'en <i class="fa fa-arrow-right"></i> ' . html_escape($langto),
             'titlepage'     => 'Translator',
             'breadcrumbs'   => array(
                 array('url' => '#', 'name' => lang('rr_administration'), 'type' => 'unavailable'),

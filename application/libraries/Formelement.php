@@ -161,9 +161,9 @@ class Formelement
         }
         $r = '';
         if (!$this->ci->jauth->isAdministrator()) {
-            $r .= '<div class="small-12 columns"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
+            $r .= '<div class="row"><div data-alert class="alert-box info">' . lang('approval_required') . '</div></div>';
         }
-        $r .= '<div class="small-12 columns"><dl class="accordion checkboxlist" data-accordion>';
+        $r .= '<div class=""><ul class="accordion checkboxlist" data-accordion data-allow-all-closed="true">';
         foreach ($entCategoriesArray as $k => $v) {
             $lbl = '';
             $is = true;
@@ -181,14 +181,15 @@ class Formelement
                 $lbl = '<span class="label alert">' . lang('rr_disabled') . '</span>';
             }
 
-            $r .= '<dd class="accordion-navigation small-12 column">' .
-                '<div class="small-3 columns" >' . form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is, 'class' => 'right')) . '</div><a href="#entcats' . $k . '" class="small-9 columns inline"><span data-tooltip aria-haspopup="true" class="has-tip" title="' .
+            $r .= '<li class="accordion-item row">' .
+                '<div class="small-1 medium-3 columns text-right" >' . form_checkbox(array('name' => 'f[coc][]', 'id' => 'f[coc][]', 'value' => $k, 'checked' => $is, 'class' => 'right')) . '</div>' .
+                '<a href="#entcats' . $k . '" class="small-9 columns inline"><span data-tooltip aria-haspopup="true" class="has-tip" title="' .
                 $v['desc'] . '">' . $v['name'] . '</span> ' . $lbl . '</a>' .
-                '<div id="entcats' . $k . '" class="content"><b>' . lang('attrname') . '</b>: ' . $v['attrname'] . '<br /><b>' . lang('entcat_url') . '</b>: ' . $v['value'] . '<br /><b>' .
+                '<div id="entcats' . $k . '" class="accordion-content" data-tab-content><b>' . lang('attrname') . '</b>: ' . $v['attrname'] . '<br /><b>' . lang('entcat_url') . '</b>: ' . $v['value'] . '<br /><b>' .
                 lang('rr_description') . '</b>:<p>' . $v['desc'] . '</p></div>' .
-                '</dd>';
+                '</li>';
         }
-        $r .= '</dl></div>';
+        $r .= '</ul></div>';
         $result[] = $r;
 
         return $result;
@@ -233,7 +234,7 @@ class Formelement
             $row .= '<div class="small-12 columns">' . jGenerateInput(lang('rr_contactfirstname'), 'f[contact][' . $tid . '][fname]', set_value('f[contact][' . $tid . '][fname]', $t2, false), '') . '</div>';
             $row .= '<div class="small-12 columns">' . jGenerateInput(lang('rr_contactlastname'), 'f[contact][' . $tid . '][sname]', set_value('f[contact][' . $tid . '][sname]', $t3, false), '') . '</div>';
             $row .= '<div class="small-12 columns">' . jGenerateInput(lang('rr_contactemail'), 'f[contact][' . $tid . '][email]', set_value('f[contact][' . $tid . '][email]', $t4, false), '') . '</div>';
-            $row .= '<div class="small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="contactrm button tiny alert inline right" name="contact" value="' . $cnt->getId() . '">' . lang('btn_removecontact') . ' </button></div><div class="small-3 large-2 columns"></div></div>';
+            $row .= '<div class="small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="contactrm button alert inline right" name="contact" value="' . $cnt->getId() . '">' . lang('btn_removecontact') . ' </button></div><div class="small-3 large-2 columns"></div></div>';
             array_push($result, '', '' . form_fieldset(lang('rr_contact')) . '<div>' . $row . '</div>' . form_fieldset_close() . '', '');
 
             if ($sessform) {
@@ -247,13 +248,13 @@ class Formelement
                 $n .= '<div class="small-12 columns">' . jGenerateInput(lang('rr_contactfirstname'), 'f[contact][' . $k . '][fname]', set_value('f[contact][' . $k . '][fname]', $v['fname']), '') . '</div>';
                 $n .= '<div class="small-12 columns">' . jGenerateInput(lang('rr_contactlastname'), 'f[contact][' . $k . '][sname]', set_value('f[contact][' . $k . '][sname]', $v['sname']), '') . '</div>';
                 $n .= '<div class="small-12 columns">' . jGenerateInput(lang('rr_contactemail'), 'f[contact][' . $k . '][email]', set_value('f[contact][' . $k . '][email]', $v['email']), '') . '</div>';
-                $n .= '<div class="rmelbtn fromprevtoright small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="btn contactrm button alert tiny inline right" name="contact" value="' . $k . '">' . lang('btn_removecontact') . '</button></div><div class="small-3 large-2 columns"></div></div>';
+                $n .= '<div class="rmelbtn fromprevtoright small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="btn contactrm button alert inline right" name="contact" value="' . $k . '">' . lang('btn_removecontact') . '</button></div><div class="small-3 large-2 columns"></div></div>';
                 $n .= '</div>' . form_fieldset_close();
                 array_push($result, '', $n, '');
 
             }
         }
-        $n = '<button class="editbutton addicon smallerbtn button tiny" type="button" id="ncontactbtn" value="' . lang('btn_removecontact') . '|' . lang('rr_contacttype') . '|' . lang('rr_contactfirstname') . '|' . lang('rr_contactlastname') . '|' . lang('rr_contactemail') . '|' . lang('rr_contact') . '">' . lang('rr_addnewcoontact') . '</button>';
+        $n = '<button class="editbutton addicon smallerbtn button" type="button" id="ncontactbtn" value="' . lang('btn_removecontact') . '|' . lang('rr_contacttype') . '|' . lang('rr_contactfirstname') . '|' . lang('rr_contactlastname') . '|' . lang('rr_contactemail') . '|' . lang('rr_contact') . '">' . lang('rr_addnewcoontact') . '</button>';
         array_push($result, '', $n, '');
 
         return $result;
@@ -344,19 +345,19 @@ class Formelement
             }
             $r .= '<option value="' . $a['attrid'] . '" ' . $disabled . '>' . $a['attrname'] . '</option>';
         }
-        $r .= '</select></div><div class="medium-3 columns end"><button id="nattrreqbtn" name="nattrreqbtn" class="tiny">' . lang('rr_add') . '</button></div></div>';
+        $r .= '</select></div><div class="medium-3 columns end"><button id="nattrreqbtn" name="nattrreqbtn" class="button">' . lang('rr_add') . '</button></div></div>';
 
         return $r;
     }
 
     private function _generateAddButton($spanclass, $buttonname, $buttonvalue, $buttontext) {
-        $r = '<span class="' . $spanclass . '"><div class="small-6 large-4 end columns"><button type="button" id="' . $buttonname . '" name="' . $buttonname . '" value="' . $buttonvalue . '" class="editbutton addicon smallerbtn button inline left tiny">' . $buttontext . '</button></div></span>';
+        $r = '<span class="' . $spanclass . '"><div class="small-6 large-4 end columns"><button type="button" id="' . $buttonname . '" name="' . $buttonname . '" value="' . $buttonvalue . '" class="editbutton addicon smallerbtn button inline left">' . $buttontext . '</button></div></span>';
 
         return $r;
     }
 
     private function _generateLangAddButton($spanclass, $dropname, $langs, $buttonname, $buttonvalue) {
-        $r = '<span class="' . $spanclass . '"><div class="small-6 medium-3 large-3 columns">' . form_dropdown('' . $dropname . '', $langs, $this->defaultlangselect) . '</div><div class="small-6 large-4 end columns"><button type="button" id="' . $buttonname . '" name="' . $buttonname . '" value="' . $buttonvalue . '" class="editbutton addicon smallerbtn button inline left tiny">' . lang('btnaddinlang') . '</button></div></span>';
+        $r = '<span class="' . $spanclass . '"><div class="small-6 medium-3 large-3 columns">' . form_dropdown('' . $dropname . '', $langs, $this->defaultlangselect) . '</div><div class="small-6 large-4 end columns"><button type="button" id="' . $buttonname . '" name="' . $buttonname . '" value="' . $buttonvalue . '" class="editbutton addicon smallerbtn button inline left">' . lang('btnaddinlang') . '</button></div></span>';
 
         return $r;
     }
@@ -366,7 +367,7 @@ class Formelement
             $result = '<div class="small-3 columns"><label for="' . $name . '" class="right inline ">' . $label . '</label></div><div class="small-6 large-7 columns inline ">' .
                 form_dropdown($name, $dropdowns, $value)
                 . '</div>';
-            $result .= '<div class="small-3 large-2 columns"><button type="button" class="inline left button tiny" name="rmfield" value="' . $name . '">' . lang('rr_remove') . '</button></div>';
+            $result .= '<div class="small-3 large-2 columns"><button type="button" class="inline left button" name="rmfield" value="' . $name . '">' . lang('rr_remove') . '</button></div>';
         } else {
             $result = '<div class="small-3 columns"><label for="' . $name . '" class="right inline ">' . $label . '</label></div><div class="small-8 large-7 columns inline ">' .
                 form_dropdown($name, $dropdowns, $value)
@@ -393,7 +394,7 @@ class Formelement
             $result = '<div class="small-3 columns"><label for="' . $name . '" class="right inline ">' . $label . '</label></div><div class="small-6 large-7 columns">' . form_input(
                     $arg
                 ) . '</div>';
-            $result .= '<div class="small-3 large-2 columns"><button type="button" class="inline left button tiny alert rmfield" name="rmfield" value="' . $name . '">' . lang('rr_remove') . '</button></div>';
+            $result .= '<div class="small-3 large-2 columns"><button type="button" class="inline left button alert rmfield" name="rmfield" value="' . $name . '">' . lang('rr_remove') . '</button></div>';
         } else {
             $result = '<div class="small-3 columns"><label for="' . $name . '" class="right inline ">' . $label . '</label></div><div class="small-8 large-7 columns">' . form_input(
                     $arg
@@ -412,7 +413,7 @@ class Formelement
                     'value' => '' . $value . '',
                     'class' => $classes . ' right inline'
                 )
-            ) . '</div><div class="small-3 large-2 columns"><button type="button" class="btn langinputrm inline left button tiny alert" name="lname" value="' . $buttonvalue . '">' . lang('rr_remove') . '</button></div>';
+            ) . '</div><div class="small-3 large-2 columns"><button type="button" class="langinputrm left oko button alert" name="lname" value="' . $buttonvalue . '">' . lang('rr_remove') . '</button></div>';
 
         return $result;
     }
@@ -421,7 +422,7 @@ class Formelement
         $result = '<div class="small-3 columns"><label for="' . $name . '" class="right inline ">' . $label . '</label></div><div class="small-6 large-7 columns"><textarea name="' . $name . '" id="' . $name . '" cols="40" rows="5" class="' . $classes . ' right inline">' . $value . '</textarea>
                         </div><div class="small-3 large-2 columns">';
         if (empty($hideremove)) {
-            $result .= '<button type="button" class="btn langinputrm inline left button tiny" name="lname" value="' . $buttonvalue . '">' . lang('rr_remove') . '</button>';
+            $result .= '<button type="button" class="btn langinputrm inline left button alert" name="lname" value="' . $buttonvalue . '">' . lang('rr_remove') . '</button>';
         }
         $result .= '</div>';
 
@@ -500,7 +501,7 @@ class Formelement
         }
 
         if ($showremove) {
-            $row .= '<div class="small-12 columns"><div class="small-3 columns">&nbsp</div><div class="small-6 large-7 columns"><button type="button" class="certificaterm button alert tiny right" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button></div><div class="small-3 large-2 columns"></div></div>';
+            $row .= '<div class="small-12 columns"><div class="small-3 columns">&nbsp</div><div class="small-6 large-7 columns"><button type="button" class="certificaterm button alert right" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button></div><div class="small-3 large-2 columns"></div></div>';
         }
         $row .= '</div></div></div>';
 
@@ -579,7 +580,7 @@ class Formelement
 
 
         if ($showremove) {
-            $row .= '<div class="small-12 columns"><div class="small-3 columns">&nbsp</div><div class="small-6 large-7 columns"><button type="button" class="certificaterm button alert tiny right" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button></div><div class="small-3 large-2 columns"></div></div>';
+            $row .= '<div class="small-12 columns"><div class="small-3 columns">&nbsp</div><div class="small-6 large-7 columns"><button type="button" class="certificaterm button alert right" name="certificate" value="' . $crtid . '">' . lang('btn_removecert') . '</button></div><div class="small-3 large-2 columns"></div></div>';
         }
         $row .= '</div>';
 
@@ -696,8 +697,8 @@ class Formelement
                     form_dropdown('f[reqattr][' . $rid . '][status]', array('desired' => '' . lang('dropdesired') . '', 'required' => '' . lang('droprequired') . ''), $req->getStatus()) .
                     '</div><div class="medium-6 columns">' .
                     '<textarea name="f[reqattr][' . $rid . '][reason]" placeholder="' . lang('rrjustifyreqattr') . '">' . $req->getReason() . '</textarea>' .
-                    '</div><div class="medium-3 columns end"></div>' .
-                    '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr][' . $rid . ']" >' . lang('rr_remove') . '</button>' .
+                    '</div><div class="medium-3 columns end">' .
+                    '<button type="button" class="btn reqattrrm inline left button alert" name="f[reqattr][' . $rid . ']" >' . lang('rr_remove') . '</button></div>' .
                     '</div></fieldset>';
                 $attrArray['' . $attrid . '']['disabled'] = 1;
             }
@@ -717,7 +718,7 @@ class Formelement
                     '</div><div class="medium-6 columns">' .
                     '<textarea name="f[reqattr][' . $skey . '][reason]">' . $sval['reason'] . '</textarea>' .
                     '</div><div class="medium-3 columns end"></div>' .
-                    '<button type="button" class="btn reqattrrm inline left button tiny alert" name="f[reqattr][' . $skey . ']" >' . lang('rr_remove') . '</button>' .
+                    '<button type="button" class="btn reqattrrm inline left button alert" name="f[reqattr][' . $skey . ']" >' . lang('rr_remove') . '</button>' .
                     '</div></fieldset>';
             }
         }
@@ -865,7 +866,7 @@ class Formelement
             }
             $SSOPart .= implode('', $sso);
             $result[] = '';
-            $result[] = '<fieldset><legend>' . lang('rr_srvssoends') . '</legend>' . $SSOPart . '</fieldset>';
+            $result[] = '<fieldset class="fieldset"><legend>' . lang('rr_srvssoends') . '</legend>' . $SSOPart . '</fieldset>';
             $result[] = '';
             /**
              * IDP SingleLogoutService
@@ -1344,7 +1345,7 @@ class Formelement
                 }
             }
             $ACSPart .= implode('', $acs);
-            $newelement = '<div><button class="editbutton addicon smallerbtn button tiny" type="button" id="nacsbtn">' . lang('addnewacs') . '</button></div>';
+            $newelement = '<div><button class="editbutton addicon smallerbtn button" type="button" id="nacsbtn">' . lang('addnewacs') . '</button></div>';
             $ACSPart .= $newelement . '';
             $result[] = $ACSPart . '</fieldset>';
             /**
@@ -1420,7 +1421,7 @@ class Formelement
                 }
             }
             $ACSPart .= implode('', $acs);
-            $newelement = '<div><button class="editbutton addicon smallerbtn button tiny" type="button" id="nspartifactbtn">' . lang('addnewartresservice') . '</button></div>';
+            $newelement = '<div><button class="editbutton addicon smallerbtn button" type="button" id="nspartifactbtn">' . lang('addnewartresservice') . '</button></div>';
             $ACSPart .= $newelement . '</fieldset>';
             $result[] = $ACSPart;
             /**
@@ -1535,7 +1536,7 @@ class Formelement
                 }
             }
             $RequestInitiatorPart .= implode('', $ri);
-            $newelement = '<div><button class="editbutton addicon smallerbtn button tiny" type="button" id="nribtn" value="' . lang('rr_remove') . '">' . lang('addnewreqinit') . '</button></div>';
+            $newelement = '<div><button class="editbutton addicon smallerbtn button" type="button" id="nribtn" value="' . lang('rr_remove') . '">' . lang('addnewreqinit') . '</button></div>';
             $RequestInitiatorPart .= $newelement . '</fieldset>';
             $result[] = $RequestInitiatorPart;
             /**
@@ -1598,7 +1599,7 @@ class Formelement
                 }
             }
             $DiscoverResponsePart .= implode('', $dr);
-            $newelement = '<div><button class="editbutton addicon smallerbtn button tiny" type="button" id="ndrbtn">' . lang('addnewds') . '</button></div>';
+            $newelement = '<div><button class="editbutton addicon smallerbtn button" type="button" id="ndrbtn">' . lang('addnewds') . '</button></div>';
             $DiscoverResponsePart .= $newelement . '';
             $result[] = $DiscoverResponsePart . '</fieldset>';
 
@@ -1834,7 +1835,7 @@ class Formelement
             } elseif (strcmp($k1, 'sp') == 0) {
                 $t = 'sp';
             }
-            $p = '<ul class="small-block-grid-1">';
+            $p = '<ul class="no-bullet">';
             foreach ($v1 as $k2 => $v2) {
                 $p .= '<li class="small-12 columns">';
                 $p .= '<div class="medium-3 columns"><img src="' . $v2['url'] . '" style="max-height: 100px;"/>';
@@ -1872,27 +1873,27 @@ class Formelement
                 $p .= lang('rr_lang') . ': ' . $l . '<br />';
                 $p .= lang('rr_size') . ': ' . $v2['width'] . 'x' . $v2['height'] . '';
                 $p .= '</div>';
-                $p .= '<div class="medium-3 columns"><button class="btn langinputrm inline left button tiny alert">' . lang('rr_remove') . '</button></div>';
+                $p .= '<div class="medium-3 columns"><button class="langinputrm button alert">' . lang('rr_remove') . '</button></div>';
                 $p .= '</li>';
             }
 
             $z = '<li id="nlogo' . $t . 'row" class="small-12 columns" style="display: none;">';
             $z .= '<div class="medium-3 columns"><img src="" style="max-height: 100px;"/></div>';
             $z .= '<div class="medium-6 columns logoinfo"></div>';
-            $z .= '<div class="medium-3 columns"><button class="btn langinputrm inline left button tiny alert">' . lang('rr_remove') . '</button></div>';
+            $z .= '<div class="medium-3 columns"><button class="langinputrm button alert">' . lang('rr_remove') . '</button></div>';
             $z .= '</li>';
             $p .= $z;
             $p .= '</ul>';
-            $inlabel = '<div class="small-12 column"><div class="small-3 columns"><label class="right inline" for="logoretrieve">' . lang('rr_url') . '</label></div>';
+            $inlabel = '<div class="small-12 column"><div class="small-3 columns"><label class="text-right middle" for="logoretrieve">' . lang('rr_url') . '</label></div>';
             $in = '<div class="small-6 columns">' . form_input(array('name' => '' . $t . 'logoretrieve')) . '<small class="' . $t . 'logoretrieve error" style="display:none;"></small></div>';
-            $in2 = '<div class="small-3 columns"><button type="button" name="' . $t . 'getlogo" class="button tiny getlogo" value="' . base_url() . 'ajax/checklogourl">' . lang('btngetlogo') . '</button></div></div>';
+            $in2 = '<div class="small-3 columns"><button type="button" name="' . $t . 'getlogo" class="button getlogo" value="' . base_url() . 'ajax/checklogourl">' . lang('btngetlogo') . '</button></div></div>';
 
             $embededoption = '<label for="' . $t . 'embedded">Embedded?<input name="' . $t . 'embedded" type="checkbox" value="embedded"/></label>';
             $langselection = form_dropdown($t . 'logolang', $btnlangs);
-            $reviewlogo = '<div class="small-3 column"><div class="logolangselect">' . $langselection . '</div><div class="logosizeinfo"></div><div>' . $embededoption . '</div></div><div class="small-6 column imgsource"></div><div class="small-3 column"><button class="button tiny addnewlogo" type="button" name="addnewlogo">' . lang('rr_add') . '</button></div>';
+            $reviewlogo = '<div class="small-3 column"><div class="logolangselect">' . $langselection . '</div><div class="logosizeinfo"></div><div>' . $embededoption . '</div></div><div class="small-6 column imgsource"></div><div class="small-3 column"><button class="button addnewlogo" type="button" name="addnewlogo">' . lang('rr_add') . '</button></div>';
             $da = '<fieldset><legend>' . lang('rr_newlogosection') . '</legend>' . $inlabel . $in . $in2 . '<div id="' . $t . 'reviewlogo" class="small-12 column reviewlogo" style="display: none; max-height: 100px">' . $reviewlogo . '</div></fieldset>';
 
-            $result[$k1][] = '<fieldset><legend>' . lang('rr_logoofservice') . '</legend>' . $p . ' ' . $da . '</fieldset>';
+            $result[$k1][] = '<fieldset class="fieldset"><legend>' . lang('rr_logoofservice') . '</legend>' . $p . ' ' . $da . '</fieldset>';
             $result[$k1][] = '';
         }
 
@@ -1984,7 +1985,7 @@ class Formelement
         // start geolocation
         $geosinputs = '';
         foreach ($dataByBlocks['geo'] as $k => $g) {
-            $geosinputs .= '<div class="small-12 column collapse georow"><div class="small-11 column"><input name="f[uii][idpsso][geo][' . $k . ']" type="text" value="' . html_escape($g) . '" readonly="readonly"></div><div class="small-1 column"><a href="#" class="rmgeo"><i class="fi-trash alert" style="color: red"></i></a></div></div>';
+            $geosinputs .= '<div class="small-12 column collapse georow"><div class="small-11 column"><input name="f[uii][idpsso][geo][' . $k . ']" type="text" value="' . html_escape($g) . '" readonly="readonly"></div><div class="small-1 column"><a href="#" class="rmgeo"><i class="fa fa-trash alert" style="color: red"></i></a></div></div>';
         }
 
         $r = '<div class="small-12 column">' .
@@ -2686,11 +2687,11 @@ class Formelement
     public function generateAddRegpol() {
         $langs = languagesCodes();
         $langselected = set_value('regpollang', $this->defaultlangselect);
-        $result = '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('rr_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name', '', false)) . '</div></div>';
-        $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="regpollang" class="inline right">' . lang('regpol_language') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('regpollang', $langs, $langselected) . '</div></div>';
-        $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_url') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url', '', false)) . '</div></div>';
-        $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description', '', false)) . '</div></div>';
-        $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept') . '</div></div>';
+        $result = '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="name">' . lang('rr_displayname') . '</label></div><div class="medium-6 columns end">' . form_input('name', set_value('name', '', false)) . '</div></div>';
+        $result .= '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="regpollang">' . lang('regpol_language') . '</label></div><div class="medium-6 columns end">' . form_dropdown('regpollang', $langs, $langselected) . '</div></div>';
+        $result .= '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="url">' . lang('entcat_url') . '</label></div><div class="medium-6 columns end">' . form_input('url', set_value('url', '', false)) . '</div></div>';
+        $result .= '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="description">' . lang('entcat_description') . '</label></div><div class="medium-6 columns end">' . form_textarea('description', set_value('description', '', false)) . '</div></div>';
+        $result .= '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="cenabled">' . lang('entcat_enabled') . '</label></div><div class="medium-6 columns end">' . form_checkbox('cenabled', 'accept') . '</div></div>';
 
         return $result;
     }
@@ -2704,11 +2705,11 @@ class Formelement
             }
         }
         $langselected = $langset;
-        $result = '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('rr_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name', $coc->getName(), false)) . '</div></div>' .
-            '<div class="small-12 columns"><div class="small-3 columns"><label for="regpollang" class="inline right">' . lang('regpol_language') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('regpollang', $langs, $langselected) . '</div></div>' .
-            '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_url') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url', $coc->getUrl(), false)) . '</div></div>' .
-            '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description', $coc->getDescription(), false)) . '</div></div>' .
-            '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="inline right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
+        $result = '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="name">' . lang('rr_displayname') . '</label></div><div class="medium-6 columns end">' . form_input('name', set_value('name', $coc->getName(), false)) . '</div></div>' .
+            '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="regpollang">' . lang('regpol_language') . '</label></div><div class="medium-6 columns end">' . form_dropdown('regpollang', $langs, $langselected) . '</div></div>' .
+            '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="url">' . lang('entcat_url') . '</label></div><div class="medium-6 columns end">' . form_input('url', set_value('url', $coc->getUrl(), false)) . '</div></div>' .
+            '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="description">' . lang('entcat_description') . '</label></div><div class="medium-6 columns end">' . form_textarea('description', set_value('description', $coc->getDescription(), false)) . '</div></div>' .
+            '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="cenabled">' . lang('entcat_enabled') . '</label></div><div class="medium-6 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
 
         return $result;
     }
@@ -2720,12 +2721,12 @@ class Formelement
             $attrdropdown['' . $k . ''] = $k;
         }
         $availForDropdown = array('both' => 'idp, sp', 'idp' => 'idp', 'sp' => 'sp');
-        $result = '<div class="small-12 columns"><div class="small-3 columns"><label for="name" class="inline right">' . lang('entcat_displayname') . '</label></div><div class="small-6 large-7 columns end">' . form_input('name', set_value('name')) . '</div></div>';
-        $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="attrname" class="inline right">' . lang('rr_attr_name') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('attrname', $attrdropdown, set_value('attrname')) . '</div></div>';
-        $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="availfor" class="inline right">' . lang('rravailforenttypelng') . '</label></div><div class="small-6 large-7 columns end">' . form_dropdown('availfor', $availForDropdown, set_value('availfor')) . '</div></div>';
-        $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="url" class="inline right">' . lang('entcat_value') . '</label></div><div class="small-6 large-7 columns end">' . form_input('url', set_value('url', '', false)) . '</div></div>';
-        $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept') . '</div></div>';
-        $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description')) . '</div></div>';
+        $result = '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="name"">' . lang('entcat_displayname') . '</label></div><div class="medium-6 columns end">' . form_input('name', set_value('name')) . '</div></div>';
+        $result .= '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="attrname">' . lang('rr_attr_name') . '</label></div><div class="medium-6 columns end">' . form_dropdown('attrname', $attrdropdown, set_value('attrname')) . '</div></div>';
+        $result .= '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="availfor">' . lang('rravailforenttypelng') . '</label></div><div class="medium-6 columns end">' . form_dropdown('availfor', $availForDropdown, set_value('availfor')) . '</div></div>';
+        $result .= '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="url">' . lang('entcat_value') . '</label></div><div class="medium-6 columns end">' . form_input('url', set_value('url', '', false)) . '</div></div>';
+        $result .= '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="cenabled">' . lang('entcat_enabled') . '</label></div><div class="medium-6 columns end">' . form_checkbox('cenabled', 'accept') . '</div></div>';
+        $result .= '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="description">' . lang('entcat_description') . '</label></div><div class="medium-6 columns end">' . form_textarea('description', set_value('description')) . '</div></div>';
 
         return $result;
     }
@@ -2741,10 +2742,12 @@ class Formelement
         $result .= '<div class="small-12 columns">' . jGenerateInput(lang('entcat_value'), 'url', set_value('url', $coc->getUrl(), false), '') . '</div>';
         $result .= '<div class="small-12 columns">' . jGenerateDropdown(lang('rr_attr_name'), 'attrname', $attrdropdown, $coc->getSubtype(), '') . '</div>';
         $result .= '<div class="small-12 columns">' . jGenerateDropdown(lang('rravailforenttypelng'), 'availfor', $availForDropdown, $coc->getAvailFor(), '') . '</div>';
-        $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="cenabled" class="right">' . lang('entcat_enabled') . '</label></div><div class="small-6 large-7 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
-        $result .= '<div class="small-12 columns"><div class="small-3 columns"><label for="description" class="inline right">' . lang('entcat_description') . '</label></div><div class="small-6 large-7 columns end">' . form_textarea('description', set_value('description', $coc->getDescription())) . '</div></div>';
+        $result .= '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="cenabled">' . lang('entcat_enabled') . '</label></div><div class="medium-8 large-7 columns end">' . form_checkbox('cenabled', 'accept', set_value('cenabled', $coc->getAvailable())) . '</div></div>';
+        $result .= '<div class="small-12 columns"><div class="medium-3 columns medium-text-right"><label for="description">' . lang('entcat_description') . '</label></div><div class="medium-8 large-7 columns end">' . form_textarea('description', set_value('description', $coc->getDescription())) . '</div></div>';
 
         return $result;
     }
 
 }
+?>
+

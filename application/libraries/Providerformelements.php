@@ -36,7 +36,7 @@ class Providerformelements
     }
 
     private function _generateLangAddButton($spanclass, $dropname, $langs, $buttonvalue) {
-        $result = '<span class="' . $spanclass . '"><div class="small-6 medium-3 large-3 columns">' . form_dropdown('langcodes', $langs, $this->defaultlangselect) . '</div><div class="small-6 large-4 end columns"><button type="button" name="addinnewlang" value="' . $buttonvalue . '" class="editbutton addicon smallerbtn button inline left tiny">' . lang('btnaddinlang') . '</button></div></span>';
+        $result = '<span class="' . $spanclass . '"><div class="small-6 medium-3 large-3 columns">' . form_dropdown('langcodes', $langs, $this->defaultlangselect) . '</div><div class="small-6 large-4 end columns"><button type="button" name="addinnewlang" value="' . $buttonvalue . '" class="editbutton addicon smallerbtn button inline left">' . lang('btnaddinlang') . '</button></div></span>';
         return $result;
     }
 
@@ -49,7 +49,7 @@ class Providerformelements
                 'value' => '' . $value . '',
                 'class' => $classes . ' right inline'
             )) . '</div>' .
-            '<div class="small-3 large-2 columns"><button type="button" class="btn langinputrm inline left button tiny alert" name="lname" value="' . $buttonvalue . '">' . lang('rr_remove') .
+            '<div class="small-3 large-2 columns"><button type="button" class="btn langinputrm inline left button  alert" name="lname" value="' . $buttonvalue . '">' . lang('rr_remove') .
             '</button></div>';
         return $result;
     }

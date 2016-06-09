@@ -1,0 +1,563 @@
+
+body {
+  height: 100%;
+
+}
+
+.no-js {
+  @include breakpoint(small only) {
+    .top-bar {
+      display: none;
+    }
+  }
+
+  @include breakpoint(medium) {
+    .title-bar {
+     display: none;
+    }
+  }
+}
+
+#topbar-menu {
+  background-color: $topbar-background;
+  a {
+    color: $topbar-link-color;
+  }
+  a:hover {
+    background-color: lighten($topbar-background, 10%);
+  }
+  li.active a:hover {
+    background-color: lighten($topbar-background, 5%);
+  }
+}
+
+.title-bar {
+  width: 100%;
+  z-index: 10;
+  min-height: 3.5em;
+}
+
+.top-bar {
+  width: 100%;
+  z-index: 10;
+  transition: height 0.05s ease;
+  min-height: 3.5em;
+}
+
+.top-bar .top-bar-right, .top-bar .top-bar-left {
+  transition: padding-top .25s ease;
+
+}
+
+.top-bar.shrink {
+  height: 2em;
+}
+
+.top-bar.shrink .top-bar-right, .top-bar.shrink .top-bar-left {
+  padding-top: 0em;
+}
+
+.top-bar .dropdown.menu li {
+  //float: left;
+}
+
+@media screen and (max-width: 39.9375em) {
+
+}
+
+@media screen and (min-width: 40em) {
+}
+
+.top-bar .dropdown.menu .is-dropdown-submenu {
+  border: none;
+  background-color: $topbar-submenu-background;
+  //background-color: red;
+}
+
+#root {
+  margin-top: 2em;
+}
+
+#topabersep {
+  margin-top: 2em;
+}
+
+#footer {
+  margin-top: 2em;
+  min-height: 100px;
+  background-color: $footer-background;
+  color: $footer-text;
+}
+
+/* Medium-Up Navigation */
+
+@media only screen and (min-width: 40rem) {
+  .logo-wrapper {
+    position: relative;
+    .logo {
+      max-width: 100px;
+      height: 2rem;
+      top: -5px;
+      margin-left: 1px;
+    }
+  }
+
+}
+
+.hidden {
+  display: none;
+
+}
+
+.lbl {
+  @include label();
+}
+
+.lbl-disabled, .lbl-pactive-0 {
+  background-color: map-get($foundation-palette, alert);
+  color: foreground(map-get($foundation-palette, alert));
+}
+
+.lbl-locked, .lbl-static, .lbl-plocked-1, .lbl-pstatic-1 {
+  background-color: map-get($foundation-palette, warning);
+   color: foreground(map-get($foundation-palette, warning));
+
+}
+
+.lbl-plocal-0 {
+  background-color: map-get($foundation-palette, alert);
+  color: foreground(map-get($foundation-palette, alert));
+}
+
+.lbl-pvisible-0 {
+  background-color: map-get($foundation-palette, secondary);
+  color: foreground(map-get($foundation-palette, secondary));
+}
+
+.spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-left: -50px; /* half width of the spinner gif */
+  margin-top: -50px; /* half height of the spinner gif */
+  text-align: center;
+  z-index: 1234;
+  overflow: auto;
+  width: 158px; /* width of the spinner gif */
+  height: 158px; /*hight of the spinner gif +2px to fix IE8 issue */
+}
+
+#container {
+  min-height: 100%;
+
+}
+
+#wrapper {
+  background-color: $white;
+}
+
+#sideicons {
+  position: fixed;
+  z-index: 9999;
+  right: 0px;
+  top: 120px;
+  a, button {
+    @include button(
+      // $padding - Used to build padding for buttons Default: $button-med or rem-calc(12) rem-calc(4),
+      // Background color. We can set $bg:false for a transparent background. Default: $primary-color. $final-side-icon-bg-final,
+      // If true, set to button radius which is $global-radius or explicitly set radius amount in px (ex. $radius:10px). Default:false. $radius: 1px,
+      // We can set $full-width:true to remove side padding extend width. Default:false $full-width: false,
+      // We can set $disabled:true to create a disabled transparent button. Default:false $disabled: false // $is-input - <input>s and <button>s take on strange padding. We added this to help fix that. Default:false
+    );
+    color: $final-side-icon-font-color;
+    display: block;
+    margin: rem-calc(1);
+    padding: rem-calc(4);
+  }
+  a.nobg {
+    background-color: transparent !important;
+  }
+  a.active {
+
+    background-color: darken($final-side-icon-bg-final, 20);
+  }
+}
+
+.buttons-columnVisibility {
+  text-align: left;
+  &:before {
+    font-family: "FontAwesome";
+    content: "\f096\ ";
+  }
+}
+
+.buttons-columnVisibility.active {
+  &:before {
+    font-family: "FontAwesome";
+    content: "\f14a\ ";
+  }
+
+}
+
+//td.highlight {
+//  &:before {
+//    font-family: "FontAwesome";
+//   content: "\f14a\ ";
+//  }
+//}
+
+.split.button {
+  &.fedlogin {
+    background: $fedlogin-color;
+    span {
+      background: darken($fedlogin-color, 10%);
+      &:after {
+        border: none;
+        font-family: "FontAwesome";
+        content: "\f0c0";
+        font-size: $icon-size;
+        line-height: 0.25rem;
+        margin-left: -0.7rem;
+      }
+    }
+  }
+  &.google {
+    background: $google-color;
+    span {
+      background: darken($google-color, 10%);
+      &:after {
+        border: none;
+        font-family: "FontAwesome";
+        content: "\f1a0";
+        font-size: $icon-size;
+        line-height: 0.25rem;
+        margin-left: -0.7rem;
+      }
+    }
+  }
+  &.left-icon {
+    text-align: right;
+    span {
+      left: 0;
+    }
+  }
+}
+
+#return-to-top {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background: rgb(0, 0, 0);
+  background: rgba(0, 0, 0, 0.6);
+  width: 2rem;
+  height: 2rem;
+  display: block;
+  text-decoration: none;
+  text-align: center;
+  vertical-align: middle;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  border-radius: 30px;
+  display: none;
+  -webkit-transition: all 0.3s linear;
+  -moz-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+#return-to-top i {
+  color: #fff;
+  margin: 0;
+  position: relative;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+#return-to-top:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+#return-to-top:hover i {
+  color: #fff;
+  top: 5px;
+}
+
+.subtab.tabs {
+  background: $tab-background-second-level;
+}
+
+.pseudo-tabs-title {
+  @include tabs-title;
+
+}
+
+.pseudo-tabs-title > a {
+  color: $tab-item-color;
+}
+
+.tabs-title > a {
+  color: $tab-item-color;
+}
+
+.pseudo-tabs-title > a:hover {
+  color: $tab-item-color-hover;
+}
+
+.tabs-title > a:hover {
+  color: $tab-item-color-hover;
+}
+
+.editbutton {
+  @include button();
+}
+
+/// ROTATE
+
+.table-header-rotated {
+  border-collapse: collapse;
+  .csstransforms & td {
+    width: 2px;
+  }
+  .no-csstransforms & th {
+    padding: 0px 0px;
+  }
+  td {
+    text-align: center;
+    padding: 0px 0px;
+    border: 1px solid #ccc;
+    font-size: 0.7rem;
+  }
+  th.rotate {
+    height: 120px;
+    white-space: nowrap;
+    // Firefox needs the extra DIV for some reason, otherwise the text disappears if you rotate
+    > div {
+      transform: // Magic Numbers
+              translate(5px, 47px) // 45 is really 360-45
+              rotate(315deg);
+
+      -webkit-transform: translate(5px, 47px) rotate(315deg);
+
+      -ms-transform: translate(5px, 47px) rotate(315deg);
+
+      -moz-transform: translate(5px, 47px) rotate(315deg);
+
+      max-width: 5px;
+    }
+    > div > span {
+      border-bottom: 1px solid #ccc;
+      padding: 1px 1px;
+      text-size: 0.3rem;
+
+    }
+  }
+  th.row-header {
+    padding: 0 10px;
+    border-bottom: 1px solid #ccc;
+    font-size: 0.3rem;
+  }
+}
+
+//// IDP MATRIX
+
+#idpmatrix th {
+  padding: 1px;
+  border-left: 1px gray solid;
+  border-bottom: 1px gray solid;
+  border-top: 1px gray solid;
+}
+
+#idpmatrix tr th:last-child {
+  border-right: 1px gray solid;
+}
+
+#idpmatrix td {
+  padding: 0px;
+  text-align: center;
+  border-left: 0px gray solid;
+  border-bottom: 0px gray solid;
+  box-sizing: border-box;
+}
+
+#idpmatrix tr td:not(:first-child) {
+
+  text-transform: uppercase;
+}
+
+#idpmatrix td:first-child {
+  text-align: left;
+  padding-left: 5px;
+}
+
+#idpmatrix td:last-child {
+  border-right: 1px gray solid;
+}
+
+div.perm, td.perm, span.perm {
+  background-color: #00FF00;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+div.dis, td.dis, span.dis {
+  background-color: #E3E5FF;
+  text-transform: uppercase;
+
+  font-weight: bold;
+}
+
+div.spec, td.spec, span.spec {
+  background-color: #FFFF00;
+  text-transform: uppercase;
+
+  font-weight: bold;
+}
+
+div.den, td.den, span.den {
+  background-color: red;
+  text-transform: uppercase;
+
+  font-weight: bold;
+}
+
+div.perm:not(:empty), div.dis:not(:empty), td.dis:not(:empty), div.spec:not(:empty), div.den:not(:empty) {
+  cursor: pointer;
+}
+
+td.perm:not(:empty), div.dis:not(:empty), td.dis:not(:empty), div.spec:not(:empty), div.den:not(:empty) {
+  cursor: pointer;
+}
+
+#idpmatrixdiv td {
+  cursor: pointer;
+
+}
+
+.box-header {
+  padding: 3px;
+  text-align: center;
+  background-color: $box-header-background;
+  color: $box-header-font;
+  a {
+    color: $box-header-font !important;
+  }
+}
+
+.nopadding {
+  padding: 0;
+}
+
+caption {
+  background-color: $box-header-background;
+  color: $box-header-font;
+}
+
+#titlepage {
+  @include callout();
+  background-color: $tab-background;
+  color: foreground($tab-background);
+  font-size: map_get($header-sizes, 'h1');
+  a {
+    color: foreground($tab-background);
+  }
+
+}
+
+
+div.error {
+  @include callout();
+  background-color: map-get($foundation-palette, alert);
+  color: foreground(map-get($foundation-palette, alert));
+}
+
+.alert-box {
+  @include callout();
+}
+
+
+.box {
+  transition: box-shadow 0.2s ease-in;
+  transition-property: box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in;
+  transition-delay: initial;
+  // background-color: $white;
+}
+
+
+
+
+
+.spinner {
+  color: $black;
+  transition: box-shadow 0.2s ease-in;
+}
+
+td.highlight {
+  background-color: lighten(map_get($foundation-palette, 'secondary'), 30%);
+}
+
+//.alert-box.warning:before {
+//    content: "\f000";
+//    font-family: FontAwesome;
+//}
+#map {
+  width: 100%;
+  //width: 500px;
+  height: 500px;
+  position: relative;
+  background-color: rgb(229, 227, 223);
+  overflow: hidden;
+}
+
+code {
+  max-width: $global-width;
+  overflow:auto;
+  white-space: pre;
+  font-size: smaller;
+}
+
+.fa.alert {
+  color: map_get($foundation-palette, 'alert');
+}
+
+ul {
+  // list-style-type: none;
+}
+
+td.section {
+  background-color: $section-header-background;
+  color: $section-header-font;
+  font-weight: bold;
+}
+
+div.section {
+  background-color: $section-header-background;
+  color: $section-header-font;
+  font-weight: bold;
+  padding: 0.5em;
+}
+
+legend {
+  font-weight: bold;
+}
+
+textarea.certdata {
+  font-family: $code-font-family;
+  font-size: smaller;
+
+}
+
+textarea.metadata {
+  font-family: $code-font-family;
+  font-size: smaller;
+
+}
+
+.ui-sortable-handle > label {
+  cursor: move;
+}

@@ -58,15 +58,15 @@ class J_queue
         if (!$onlycancel) {
             $rejecttext = lang('rr_submitreject');
             $approveForm = form_open('reports/awaiting/approve', array('id' => 'approvequeue'), array('qaction' => 'approve', 'qid' => $qid, 'setfederation' => 'yes')) .
-                '<button type="submit" name="mysubmit" value="Accept request!" class="savebutton saveicon right">' . lang('rr_submitapprove') . '</button>' . form_close();
+                '<button type="submit" name="mysubmit" value="Accept request!" class="button savebutton saveicon right">' . lang('rr_submitapprove') . '</button>' . form_close();
         }
 
         /* add reject form */
         $rejectHiddenAttrs = array('qaction' => 'reject', 'qid' => $qid);
         $reject_attrid = array('id' => 'rejectqueue');
         $rejectForm = form_open('reports/queueactions/reject', $reject_attrid, $rejectHiddenAttrs).
-        '<button type="submit" name="mysubmit" value="Reject request!" class="resetbutton reseticon left alert">' . $rejecttext . '</button>' . form_close();
-        $result = '<div class="small-12 large-6 columns"><div class="buttons panel clearfix" >' . $rejectForm . '' . $approveForm . '</div></div>';
+        '<button type="submit" name="mysubmit" value="Reject request!" class="button resetbutton reseticon left alert">' . $rejecttext . '</button>' . form_close();
+        $result = '<div class="small-12  columns"><div class="small-6 column" >' . $rejectForm . '</div><div class="small-6 column">' . $approveForm . '</div></div>';
 
         return $result;
     }
@@ -529,11 +529,10 @@ class J_queue
 
         if ($showXML === true) {
             $dataRows[]['header'] = 'Metadata view';
-            $this->ci->load->library('geshilib');
             $params = array(
                 'enable_classes' => true,
             );
-            array_push($dataRows, array('name' => 'XML', 'value' => '' . $this->ci->geshilib->highlight($metadataXML, 'xml', $params) . ''));
+            array_push($dataRows, array('name' => 'XML', 'value' => '<pre><code class="xml">' . html_escape($metadataXML) . '</code></pre>'));
 
         }
 

@@ -182,6 +182,7 @@ class Users extends MY_Controller
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn() || !$this->jauth->isAdministrator()) {
             return $this->output->set_status_header(403)->set_output('Permission denied');
         }
+      
         $this->load->library('zacl');
         if ($this->addSubmitValidate()) {
             $username = $this->input->post('username');
@@ -213,12 +214,11 @@ class Users extends MY_Controller
 
             try {
                 $this->em->flush();
-                echo 'OK';
             } catch (Exception $e) {
                 log_message('error', __METHOD__ . ' ' . $e);
-
                 return $this->output->set_status_header(500)->set_output('Internal server error');
             }
+            return $this->output->set_status_header(200)->set_output('OK');
         } else {
             $errors = validation_errors('<div>', '</div>');
 
@@ -359,9 +359,9 @@ class Users extends MY_Controller
             'content_view' => 'manage/userdetail_view'
         );
         if ($isAdmin) {
-            $data['sideicons'][] = '<a href="' . base_url('manage/userprofile/edit/' . $encodedUsername . '') . '"><i class="fi-pencil"></i></a>';
+            $data['sideicons'][] = '<a href="' . base_url('manage/userprofile/edit/' . $encodedUsername . '') . '"><i class="fa fa-pencil"></i></a>';
         } else {
-            $data['sideicons'][] = '<a href="' . base_url('manage/userprofile/edit') . '"><i class="fi-pencil"></i></a>';
+            $data['sideicons'][] = '<a href="' . base_url('manage/userprofile/edit') . '"><i class="fa fa-pencil"></i></a>';
         }
 
         $this->load->view(MY_Controller::$page, $data);
@@ -396,12 +396,12 @@ class Users extends MY_Controller
             $roles = $u->getRoleNames();
             $editLink = '';
             if ($isAdmin) {
-                $editLink = '<a href="' . $editLinkPrefix . '/' . $encodedUsername . '"><i class="fi-pencil"></i></a>';
+                $editLink = '<a href="' . $editLinkPrefix . '/' . $encodedUsername . '"><i class="fa fa-pencil"></i></a>';
             }
             if (in_array('Administrator', $roles, true)) {
                 $action = '';
             } else {
-                $action = '<a href="#" class="rmusericon" data-jagger-username="' . html_escape($u->getUsername()) . '" data-jagger-encodeduser="' . $encodedUsername . '"><i class="fi-trash"></i><a>';
+                $action = '<a href="#" class="rmusericon" data-jagger-username="' . html_escape($u->getUsername()) . '" data-jagger-encodeduser="' . $encodedUsername . '"><i class="fa fa-trash alert"></i><a>';
             }
             $last = $u->getLastlogin();
             $lastlogin = '';

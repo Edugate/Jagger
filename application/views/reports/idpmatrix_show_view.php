@@ -64,7 +64,7 @@ echo form_input(array('name' => 'requester', 'id' => 'requester', 'type' => 'hid
 echo form_close();
 
 
-echo '<div id="policyupdater" class="reveal-modal small" data-reveal data-jagger-link="' . base_url('manage/attribute_policyajax/getattrpath/' . $idpid . '') . '">
+echo '<div id="policyupdater" class="reveal small" data-reveal data-jagger-link="' . base_url('manage/attribute_policyajax/getattrpath/' . $idpid . '') . '">
   <h3>' . lang('confirmupdpolicy') . '</h3>
  <p class="message">' . lang('rr_tbltitle_requester') . ':  <span class="mrequester"></span><br />' . lang('attrname') . ': <span class="mattribute"></span></p>
   <div>
@@ -83,7 +83,7 @@ echo '<div class="medium-9 columns">' . form_dropdown('policy', $dropdown, '') .
 echo '</div>';
 echo '<div class="row">';
 $buttons = array(
-    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
     '<div class="yes button">' . lang('btnupdate') . '</div>'
 );
 echo revealBtnsRow($buttons);

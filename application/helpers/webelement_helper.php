@@ -1,21 +1,92 @@
 <?php
 
 
+function generateTopBar($a) {
+    $html[] = '<div class="row expanded" data-sticky-container>
+    <div class="title-bar" data-responsive-toggle="topbar-menu" data-hide-for="medium">
+        <button class="menu-icon" type="button" data-toggle></button>
+        <div class="title-bar-title">Menu</div>
+     </div>' .
+     '<div id="topbar-menu" class="top-bar sktacked-for-medium" data-sticky data-options="marginTop:0;">';
+
+
+    if (isset($a['logo'])) {
+
+        $html[] = '<div class="title-bar-left " ><div class="logo-wrapper hide-for-small-only" >' .
+            '<span class="top-bar-title logo" ><a href = "' . $a['logo']['link'] . '" class="sitelogo" ><img src = "' . $a['logo']['img'] . '" alt = "Logo" /></a ></span >' .
+            '</div ></div>';
+    }
+    $html[] = '<div class="title-bar-left">';
+    if (isset($a['left'])) {
+        $r = generateTopBarElements($a['left'], 'left');
+        array_push($html, $r);
+
+    }
+
+    // topleft
+
+    $html[] = '</div>';
+
+    $html[] = '<div class="top-bar-right">';
+    // top-tright elements
+
+    if (isset($a['right'])) {
+        $r = generateTopBarElements($a['right'], 'right');
+        array_push($html, $r);
+    }
+
+    $html[] = '</div>';
+    $html[] = '</div>';
+    $html[] = '</div>';
+
+
+    return implode('', $html);
+
+}
+
+function generateTopBarElements($b, $position, $top = true) {
+    $r = '';
+    if ($top === true) {
+        $r .= '<ul class="vertical medium-horizontal dropdown menu align-' . $position . '" data-dropdown-menu >';
+    } else {
+        $r .= '<ul class="vertical medium-khorizontal menu">';
+    }
+    foreach ($b as $v) {
+        $linkclass = isset($v['linkprop']) ? $v['linkprop'] : '';
+        $href = isset($v['link']) ? ' href="' . $v['link'] . '" ' : ' ';
+        $elementActive = '';
+        if (isset($v['active']) && $v['active'] === true) {
+            $elementActive = ' class="active" ';
+        }
+        $r .= '<li ' . $elementActive . '><a  ' . $href . ' ' . $linkclass . '>' . $v['name'] . '</a>';
+        if (isset($v['sub']) && is_array($v['sub'])) {
+            $r .= generateTopBarElements($v['sub'], $position, false);
+        }
+        $r .= '</li>';
+    }
+    $r .= '</ul>';
+
+    return $r;
+
+}
+
+
 function jaggerDisplayDateTimeByOffset(\DateTime $dateTime, $timeOffset, $outFormat = 'Y-m-d H:i:s') {
     if ($timeOffset >= 0) {
-        $result = date(''.$outFormat.'', $dateTime->format('U') + abs($timeOffset));
+        $result = date('' . $outFormat . '', $dateTime->format('U') + abs($timeOffset));
     } else {
-        $result = date(''.$outFormat.'', $dateTime->format('U') - abs($timeOffset));
+        $result = date('' . $outFormat . '', $dateTime->format('U') - abs($timeOffset));
     }
 
     return $result;
 }
 
 function revealBtnsRow($btns) {
-    $r = '<ul class="button-group text-right">';
+    $r = '<div class="button-group text-right">';
     foreach ($btns as $btn) {
-        $r .= '<li>' . $btn . '</li>';
+        $r .= $btn;
     }
+    $r .= '</div>';
 
     return $r;
 }
@@ -65,12 +136,12 @@ function jaggerTagsReplacer($str) {
 
 
 function confirmDialog($title, $msg, $yes, $no) {
-    $r = '<div id="sconfirm" class="reveal-modal small" data-reveal><div class="title-header small-12 columns text-center">' . html_escape($title) . '</div>
+    $r = '<div id="sconfirm" class="reveal tiny" data-reveal><div class="title-header small-12 columns text-center">' . html_escape($title) . '</div>
   <p class="message">' . html_escape($msg) . '</p>';
 
     $btns = array(
-        '<div class="no button small alert reveal-close">' . htmlentities($no) . '</div>',
-        '<div class="yes button small">' . html_escape($yes) . '</div>'
+        '<a class="no button alert" data-close>' . html_escape($no) . '</a>',
+        '<a class="yes button">' . html_escape($yes) . '</a>'
 
     );
 
@@ -188,7 +259,7 @@ function jGenerateInput($label, $inputname, $value, $inputclass, $placeholder = 
     } else {
         $pl = '';
     }
-    $r = '<div class="medium-3 columns medium-text-right"><label for="' . $inputname . '" class="inline">' . $label . '</label></div>';
+    $r = '<div class="medium-3 columns medium-text-right"><label for="' . $inputname . '" class="inline">&nbsp;' . $label . '</label></div>';
     $r .= '<div class="medium-8 large-7 columns end"><input type="text" id="' . $inputname . '" name="' . $inputname . '" value="' . $value . '" class="' . $inputclass . '" ' . $pl . '></div>';
 
     return $r;
@@ -249,4 +320,10 @@ function generateInputWithRemove($label, $name, $buttonname, $buttonvalue, $valu
 
 function jform_label($a, $b) {
     return '<label form="' . $b . '" class="right inline">' . $a . '</label>';
+}
+
+function closeModalIcon() {
+    return '<button class="close-button" data-close aria-label="Close modal" type="button">
+  <span aria-hidden="true">&times;</span>
+</button>';
 }

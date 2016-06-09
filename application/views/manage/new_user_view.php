@@ -38,8 +38,8 @@ $form .= '</div>';
 
 $form .= '<div class="small-12 columns">';
 $btns = array(
-    '<a href="#" class="button small alert modal-close">'.lang('rr_cancel').'</a>',
-    '<button type="submit"  name="submit" value="submit" class="small addbutton addicon">' . lang('adduser_btn') . '</button>'
+    '<a href="#" class="button small alert" data-close>'.lang('rr_cancel').'</a>',
+    '<button type="submit"  name="submit" value="submit" class="button">' . lang('adduser_btn') . '</button>'
 );
 $form .= '<div class="medium-9 large-10 text-right columns">'.revealBtnsRow($btns).'</div>';
 $form .='</div>';

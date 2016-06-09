@@ -1,17 +1,17 @@
 <?php
 echo '
-<ul class="tabs" data-tab role="tablist">
-    <li class="tab-title active" role="presentational" ><a href="#' . $tabs[0]['tabid'] . '" role="tab" tabindex="0" aria-selected="true" controls="' . $tabs[0]['tabid'] . '">' . $tabs[0]['tabtitle'] . '</a></li>
-    <li class="tab-title" role="presentational" ><a href="#' . $tabs[1]['tabid'] . '" role="tab" tabindex="0"aria-selected="false" controls="' . $tabs[1]['tabid'] . '">' . $tabs[1]['tabtitle'] . '</a></li>
-    <li class="tab-title" role="presentational"><a href="#' . $tabs[2]['tabid'] . '" role="tab" tabindex="0" aria-selected="false" controls="' . $tabs[2]['tabid'] . '">' . $tabs[2]['tabtitle'] . '</a></li>
-    <li class="tab-title" role="presentational" ><a href="#tab4" role="tab" tabindex="0" aria-selected="false" controls="tab4">' . lang('actionlogs') . '</a></li>
+<ul class="tabs" data-tabs id="profile-tabs">
+    <li class="tabs-title is-active"><a href="#' . $tabs[0]['tabid'] . '" role="tab" tabindex="0" aria-selected="true" controls="' . $tabs[0]['tabid'] . '">' . $tabs[0]['tabtitle'] . '</a></li>
+    <li class="tabs-title"><a href="#' . $tabs[1]['tabid'] . '" role="tab" tabindex="0"aria-selected="false" controls="' . $tabs[1]['tabid'] . '">' . $tabs[1]['tabtitle'] . '</a></li>
+    <li class="tabs-title"><a href="#' . $tabs[2]['tabid'] . '" role="tab" tabindex="0" aria-selected="false" controls="' . $tabs[2]['tabid'] . '">' . $tabs[2]['tabtitle'] . '</a></li>
+    <li class="tabs-title"><a href="#tab4" role="tab" tabindex="0" aria-selected="false" controls="tab4">' . lang('actionlogs') . '</a></li>
 </ul>';
-echo '<div class="tabs-content">';
-echo '<section role="tabpanel" aria-hidden="false" class="content active" id="' . $tabs[0]['tabid'] . '"> ' . $this->table->generate($tabs[0]['tabdata']) . ' </section>';
+echo '<div class="tabs-content" data-tabs-content="profile-tabs">';
+echo '<section class="tabs-panel is-active" id="' . $tabs[0]['tabid'] . '"> ' . $this->table->generate($tabs[0]['tabdata']) . ' </section>';
 $this->table->clear();
-echo '<section role="tabpanel" aria-hidden="true" class="content" id="' . $tabs[1]['tabid'] . '"> ' . $this->table->generate($tabs[1]['tabdata']) . ' </section>';
+echo '<section class="tabs-panel" id="' . $tabs[1]['tabid'] . '"> ' . $this->table->generate($tabs[1]['tabdata']) . ' </section>';
 $this->table->clear();
-echo '<section role="tabpanel" aria-hidden="true" class="content" id="' . $tabs[2]['tabid'] . '"> ' . $this->table->generate($tabs[2]['tabdata']) . ' </section>';
+echo '<section class="tabs-panel" id="' . $tabs[2]['tabid'] . '"> ' . $this->table->generate($tabs[2]['tabdata']) . ' </section>';
 $this->table->clear();
 
 /// Actions Logs

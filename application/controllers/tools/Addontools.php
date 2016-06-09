@@ -13,7 +13,7 @@ if (!defined('BASEPATH')) {
 class Addontools extends MY_Controller
 {
 
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
     }
