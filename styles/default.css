@@ -16,7 +16,7 @@ table#details th.header.headerSortUp:before {
   color: #fefefe; }
 
 .alert-box.warning {
-  background-color: #aa4200;
+  background-color: #dd5600;
   color: #fefefe; }
 
 .alert-box.alert {
@@ -3730,10 +3730,10 @@ kbd {
       background-color: #476823;
       color: #fefefe; }
   .button.warning {
-    background-color: #aa4200;
+    background-color: #dd5600;
     color: #fefefe; }
     .button.warning:hover, .button.warning:focus {
-      background-color: #883500;
+      background-color: #b14500;
       color: #fefefe; }
   .button.alert {
     background-color: #9a161a;
@@ -3774,11 +3774,11 @@ kbd {
         border-color: #2d4116;
         color: #2d4116; }
     .button.hollow.warning {
-      border: 1px solid #aa4200;
-      color: #aa4200; }
+      border: 1px solid #dd5600;
+      color: #dd5600; }
       .button.hollow.warning:hover, .button.hollow.warning:focus {
-        border-color: #552100;
-        color: #552100; }
+        border-color: #6f2b00;
+        color: #6f2b00; }
     .button.hollow.alert {
       border: 1px solid #9a161a;
       color: #9a161a; }
@@ -4100,7 +4100,7 @@ select {
     background: #59822c;
     color: #fefefe; }
   .badge.warning {
-    background: #aa4200;
+    background: #dd5600;
     color: #fefefe; }
   .badge.alert {
     background: #9a161a;
@@ -4212,10 +4212,10 @@ select {
       background-color: #476823;
       color: #fefefe; }
   .button-group.warning .button {
-    background-color: #aa4200;
+    background-color: #dd5600;
     color: #fefefe; }
     .button-group.warning .button:hover, .button-group.warning .button:focus {
-      background-color: #883500;
+      background-color: #b14500;
       color: #fefefe; }
   .button-group.alert .button {
     background-color: #9a161a;
@@ -4267,7 +4267,7 @@ select {
   .callout.success {
     background-color: #e6f2d9; }
   .callout.warning {
-    background-color: #ffe0cc; }
+    background-color: #ffe4d4; }
   .callout.alert {
     background-color: #f9d3d4; }
   .callout.info {
@@ -4778,7 +4778,7 @@ select {
     background: #59822c;
     color: #fefefe; }
   .label.warning {
-    background: #aa4200;
+    background: #dd5600;
     color: #fefefe; }
   .label.alert {
     background: #9a161a;
@@ -5043,7 +5043,7 @@ body {
   .progress.success .progress-meter {
     background-color: #59822c; }
   .progress.warning .progress-meter {
-    background-color: #aa4200; }
+    background-color: #dd5600; }
   .progress.alert .progress-meter {
     background-color: #9a161a; }
   .progress.info .progress-meter {
@@ -6682,7 +6682,7 @@ body {
   color: #fefefe; }
 
 .lbl-locked, .lbl-static, .lbl-plocked-1, .lbl-pstatic-1 {
-  background-color: #aa4200;
+  background-color: #dd5600;
   color: #fefefe; }
 
 .lbl-plocal-0 {
@@ -6931,23 +6931,27 @@ body {
   border-right: 1px gray solid; }
 
 div.perm, td.perm, span.perm {
-  background-color: #00FF00;
+  background-color: #59822c;
+  color: #fefefe;
   text-transform: uppercase;
   font-weight: bold; }
 
 div.dis, td.dis, span.dis {
-  background-color: #E3E5FF;
+  background-color: #777;
   text-transform: uppercase;
+  color: #fefefe;
   font-weight: bold; }
 
 div.spec, td.spec, span.spec {
-  background-color: #FFFF00;
+  background-color: #dd5600;
   text-transform: uppercase;
+  color: #fefefe;
   font-weight: bold; }
 
 div.den, td.den, span.den {
-  background-color: red;
+  background-color: #9a161a;
   text-transform: uppercase;
+  color: #fefefe;
   font-weight: bold; }
 
 div.perm:not(:empty), div.dis:not(:empty), td.dis:not(:empty), div.spec:not(:empty), div.den:not(:empty) {

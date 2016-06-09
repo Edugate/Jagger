@@ -398,29 +398,31 @@ body {
 }
 
 div.perm, td.perm, span.perm {
-  background-color: #00FF00;
+  background-color: map_get($foundation-palette,success);
+  color: foreground(map_get($foundation-palette,success)  );
   text-transform: uppercase;
   font-weight: bold;
 }
 
 div.dis, td.dis, span.dis {
-  background-color: #E3E5FF;
+  background-color:map_get($foundation-palette, secondary);
   text-transform: uppercase;
 
+  color: foreground(map_get($foundation-palette, secondary));
   font-weight: bold;
 }
 
 div.spec, td.spec, span.spec {
-  background-color: #FFFF00;
+  background-color: map_get($foundation-palette, warning);
   text-transform: uppercase;
-
+color: foreground(map_get($foundation-palette, warning));
   font-weight: bold;
 }
 
 div.den, td.den, span.den {
-  background-color: red;
+  background-color: map_get($foundation-palette, alert);
   text-transform: uppercase;
-
+ color: foreground(map_get($foundation-palette, alert));
   font-weight: bold;
 }
 

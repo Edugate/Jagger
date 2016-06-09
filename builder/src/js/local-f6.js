@@ -360,8 +360,6 @@ var createRowTaskParams = function (label1, label2) {
 };
 
 
-
-
 var spinImage = $('#spinner');
 
 
@@ -1522,7 +1520,7 @@ var GINIT = {
 
 
 $(document).ready(function () {
-	$('fieldset').addClass('fieldset');
+    $('fieldset').addClass('fieldset');
     $('pre code').each(function (i, block) {
         hljs.highlightBlock(block);
     });
@@ -2351,6 +2349,10 @@ $(document).ready(function () {
     if ($('#attrpols').length > 0) {
         var attrpolsVar = $('#attrpols').first();
         var attrpolstabVar = $('#attrpolstab').first();
+        var doReloadTab = function () {
+            attrpolstabVar.foundation('_handleTabChange', $('li.tabs-title.is-active'));
+        };
+
         var arpmaddspecattrVar = $('#arpmaddspecattr').first();
         providerdetailurl = attrpolsVar.attr('data-jagger-providerdetails');
         var fedid;
@@ -2359,9 +2361,9 @@ $(document).ready(function () {
             var progressbarHTML = '<div class="progress"><span class="meter" style="width: 10%"></span></div>';
             var progressbar = $($.parseHTML(progressbarHTML));
             var meter = progressbar.find('span.meter').first();
-            var addbtn = $('#addattrsupport');
-            var addentcatbtn = $('#addentcatattr');
-            var addspecbtn = $('#addespecattr');
+            var addbtn = $('#addattrsupport').clone(true);
+            var addentcatbtn = $('#addentcatattr').clone(true);
+            var addspecbtn = $('#addespecattr').clone(true);
             console.log(event, tab);
             var link = $(tab).attr('data-reveal-ajax-tab');
             if (link === undefined) {
@@ -2833,7 +2835,7 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     $('#arpmdelattr').foundation('close');
-                    attrpolstabVar.find('a[href="#attrpol-1"]').first().trigger('click');
+                    doReloadTab();
 
                 }
             });
@@ -2849,7 +2851,7 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     $('#arpmeditglobalattr').foundation('close');
-                    attrpolstabVar.find('a[href="#attrpol-1"]').first().trigger('click');
+                    doReloadTab();
 
                 },
                 error: function (xhr, status, error) {
@@ -2970,7 +2972,7 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     $('#arpmaddattr').foundation('close');
-                    attrpolstabVar.find('a[href="#attrpol-1"]').first().trigger('click');
+                    doReloadTab();
 
                 },
                 error: function (xhr, status, error) {
@@ -2991,7 +2993,7 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     $('#arpmeditfedattr').foundation('close');
-                    attrpolstabVar.find('a[href="#attrpol-2"]').first().trigger('click');
+                    doReloadTab();
 
                 },
                 error: function (xhr, status, error) {
@@ -3030,7 +3032,7 @@ $(document).ready(function () {
                 success: function (json) {
                     response.empty().removeClass('alert').removeClass('alert-box').hide();
                     modal.foundation('close');
-                    attrpolstabVar.find('a[href="#attrpol-4"]').first().trigger('click');
+                    doReloadTab();
                 },
                 error: function (xhr, status, error) {
 
@@ -3052,7 +3054,7 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     $('#arpmeditspattr').foundation('close');
-                    attrpolstabVar.find('a[href="#attrpol-4"]').first().trigger('click');
+                    doReloadTab();
 
                 },
                 error: function (xhr, status, error) {
@@ -3074,8 +3076,7 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     $('#arpmeditentcatattr').foundation('close');
-                    attrpolstabVar.find('a[href="#attrpol-3"]').first().trigger('click');
-
+                    doReloadTab();
                 },
                 error: function (xhr, status, error) {
 
@@ -3095,7 +3096,7 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     $('#arpmaddentcatattr').foundation('close');
-                    attrpolstabVar.find('a[href="#attrpol-3"]').first().trigger('click');
+                    doReloadTab();
 
                 },
                 error: function (xhr, status, error) {
@@ -3942,7 +3943,7 @@ $("#nattrreqbtn").click(function (ev) {
     var attrselect = $('select[name="nattrreq"]');
     var attrname = attrselect.find(":selected").text();
     var attrid = attrselect.find(":selected").val();
-    var newelement = '<fieldset class="fieldset"><legend>' + attrname + '</legend><div class="small-12 columns"><div class="medium-3 columns medium-text-right"><select name="f[reqattr][' + rname + '][status]"><option value="required">required</option><option value="desired">desired</option></select><input type="hidden" name="f[reqattr][' + rname + '][attrname]" value="' + attrname + '"><input type="hidden" name="f[reqattr][' + rname + '][attrid]" value="' + attrid + '"></div><div class="medium-6 columns"><textarea name="f[reqattr][' + rname + '][reason]"></textarea></div><div class="medium-3 column end"><button class="btn reqattrrm inline left button alert" type="button" name="f[reqattr]['+rname+']">Remove</button></div></div></fieldset>';
+    var newelement = '<fieldset class="fieldset"><legend>' + attrname + '</legend><div class="small-12 columns"><div class="medium-3 columns medium-text-right"><select name="f[reqattr][' + rname + '][status]"><option value="required">required</option><option value="desired">desired</option></select><input type="hidden" name="f[reqattr][' + rname + '][attrname]" value="' + attrname + '"><input type="hidden" name="f[reqattr][' + rname + '][attrid]" value="' + attrid + '"></div><div class="medium-6 columns"><textarea name="f[reqattr][' + rname + '][reason]"></textarea></div><div class="medium-3 column end"><button class="btn reqattrrm inline left button alert" type="button" name="f[reqattr][' + rname + ']">Remove</button></div></div></fieldset>';
     $(this).parent().parent().before(newelement);
     return false;
 
@@ -4320,8 +4321,6 @@ $(document).ready(function () {
 });
 
 
-
-
 $(".submit").click(function () {
     return false;
 });
@@ -4591,8 +4590,8 @@ if ($('#providerslistresultv2').length) {
                                 }
                             }
                             else if (s === 'contacts') {
-                                $.each(w.contacts, function(j,h){
-                                  cell = cell+ '<span class="label">'+h.type.charAt(0).toUpperCase()+'</span> '+h.mail+'<br />';
+                                $.each(w.contacts, function (j, h) {
+                                    cell = cell + '<span class="label">' + h.type.charAt(0).toUpperCase() + '</span> ' + h.mail + '<br />';
                                 });
                                 //cell = cell + w.contacts.join("<br />");
                             }

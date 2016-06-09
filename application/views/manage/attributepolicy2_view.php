@@ -157,7 +157,7 @@ echo revealBtnsRow($buttons) .
     '<a class="close-button" data-close aria-label="Close">&#215;</a></div>';
 
 
-echo '<div id="arpmeditspattr" class="reveal medium" data-reveal data-jagger-getdata="' . base_url('manage/attributepolicy/getspecforedit/' . $idpid . '') . '">';
+echo '<div id="arpmeditspattr" data-reveal  class="reveal medium" data-jagger-getdata="' . base_url('manage/attributepolicy/getspecforedit/' . $idpid . '') . '">';
 echo '<h4>' . lang('updatesppol') . '</h4>
 <p>
 <div>' . lang('rrattr') . ': <span class="attributename"></span></div>
@@ -225,7 +225,7 @@ $buttons = array(
     '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
     '<div class="yes button">' . lang('btnupdate') . '</div>'
 );
-echo '<div id="arpmaddspecattr" class="reveal-modal medium" data-reveal><h4>' . lang('addsppol') . '</h4><div class="response"></div>' .
+echo '<div id="arpmaddspecattr" class="reveal medium" data-reveal><h4>' . lang('addsppol') . '</h4><div class="response"></div>' .
     form_open(base_url('manage/attributepolicy/addattrspec/' . $idpid . '')) .
     '<div class="row">' .
     '<div class="medium-3 column medium-text-right"><label>' . lang('rrattr') . '</label></div>' .

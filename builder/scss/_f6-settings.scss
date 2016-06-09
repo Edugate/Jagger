@@ -58,7 +58,7 @@ $foundation-palette: (
         primary: #178acc,
         secondary: #777,
         success: #59822c,
-        warning: #aa4200,
+        warning: lighten(#aa4200,10%),
         alert: #9a161a,
         info: #022241,
 );
