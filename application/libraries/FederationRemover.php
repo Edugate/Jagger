@@ -1,24 +1,15 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 /**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2012, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 
-/**
- * FederationRemover Class
- *
- * @package     RR3
- * @subpackage  Libraries
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
 class FederationRemover
 {
 
@@ -26,14 +17,15 @@ class FederationRemover
     protected $em;
 
 
-    function __construct()
-    {
+    public function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
     }
 
-    public function removeFederation(models\Federation $federation)
-    {
+    public function removeFederation(models\Federation $federation) {
+        /**
+         * @var \models\AclResource[] $aclresources
+         */
         $aclresources = $this->em->getRepository("models\AclResource")->findBy(array('resource' => 'f_' . $federation->getId()));
         if (!empty($aclresources)) {
             foreach ($aclresources as $a) {
@@ -47,6 +39,9 @@ class FederationRemover
                 $this->em->remove($r);
             }
         }
+        /**
+         * @var models\AttributeReleasePolicy[] $policies
+         */
         $policies = $this->em->getRepository("models\AttributeReleasePolicy")->findBy(array('type' => 'fed', 'requester' => $federation->getId()));
 
         foreach ($policies as $p) {
