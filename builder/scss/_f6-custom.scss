@@ -113,7 +113,7 @@ body {
   @include label();
 }
 
-.lbl-disabled, .lbl-pactive-0 {
+.lbl-disabled, .lbl-pactive-0, .lbl-alert {
   background-color: map-get($foundation-palette, alert);
   color: foreground(map-get($foundation-palette, alert));
 }
@@ -125,8 +125,8 @@ body {
 }
 
 .lbl-plocal-0 {
-  background-color: map-get($foundation-palette, alert);
-  color: foreground(map-get($foundation-palette, alert));
+  background-color: map-get($foundation-palette, warning);
+  color: foreground(map-get($foundation-palette, warning));
 }
 
 .lbl-pvisible-0 {

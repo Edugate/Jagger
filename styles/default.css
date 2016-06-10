@@ -6677,7 +6677,7 @@ body {
   cursor: default;
   border-radius: 0; }
 
-.lbl-disabled, .lbl-pactive-0 {
+.lbl-disabled, .lbl-pactive-0, .lbl-alert {
   background-color: #9a161a;
   color: #fefefe; }
 
@@ -6686,7 +6686,7 @@ body {
   color: #fefefe; }
 
 .lbl-plocal-0 {
-  background-color: #9a161a;
+  background-color: #dd5600;
   color: #fefefe; }
 
 .lbl-pvisible-0 {
