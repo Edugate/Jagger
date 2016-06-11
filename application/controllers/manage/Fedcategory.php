@@ -33,7 +33,7 @@ class Fedcategory extends MY_Controller
         MY_Controller::$menuactive = 'fed';
     }
 
-    private function _submit_validate($id = null) {
+    private function submitValidate($id = null) {
         $this->load->library('form_validation');
         $allowedSubmits = array('add', 'update');
         $this->form_validation->set_rules('formsubmit', 'submit', 'trim|required|matches_inarray[' . serialize($allowedSubmits) . ']');
@@ -54,7 +54,7 @@ class Fedcategory extends MY_Controller
             array('url' => base_url('manage/fedcategory/show'), 'name' => lang('rrfedcatslist')),
             array('url' => '#', 'name' => lang('newfedcategory'), 'type' => 'current'),
         );
-        if ($this->_submit_validate()) {
+        if ($this->submitValidate()) {
             $submittype = $this->input->post('formsubmit');
             if (strcasecmp($submittype, 'add') == 0) {
                 $cat = new models\FederationCategory;
@@ -92,9 +92,9 @@ class Fedcategory extends MY_Controller
         if (empty($currentCategory)) {
             show_error('not found', 404);
         }
-        if ($this->_submit_validate($currentCategory->getId())) {
+        if ($this->submitValidate($currentCategory->getId())) {
             $submittype = $this->input->post('formsubmit');
-            if (strcasecmp($submittype, 'update') == 0) {
+            if (strcasecmp($submittype, 'update') === 0) {
                 $postedFeds = $this->input->post('fed');
                 $buttonname = $this->input->post('buttonname');
                 $fullname = $this->input->post('fullname');
@@ -131,7 +131,7 @@ class Fedcategory extends MY_Controller
                     $this->em->flush();
                     $data['success_message'] = lang('updated');
                 }
-            } elseif (strcasecmp($submittype, 'remove') == 0) {
+            } elseif (strcasecmp($submittype, 'remove') === 0) {
                 $this->em->remove($currentCategory);
                 $this->em->flush();
                 $data['success_message'] = 'Federation category has been removed';

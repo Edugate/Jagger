@@ -136,7 +136,7 @@ class Formelement
         $result = array();
         $entType = $ent->getType();
         $allowedCategories = attrsEntCategoryList($entType);
-        $sessform = (null == $ses) ? false : true;
+        $sessform = (null === $ses) ? false : true;
         /**
          * @var  $entCategories models\Coc[]
          */
