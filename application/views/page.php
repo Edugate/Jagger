@@ -61,7 +61,7 @@ $foundation = $base_url . 'foundation/';
 
     </style>
 </head>
-<body>
+<body class="no-js">
 <noscript>
     <div data-alert class="alert-box alert"><h5>JavaScript is not enabled in you browser!</h5></div>
 </noscript>

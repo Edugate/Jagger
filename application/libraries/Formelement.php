@@ -1389,11 +1389,10 @@ class Formelement
 
 
                     $r = '<div class="srvgroup">';
-////
+
                     $r .= '<div class="small-12 columns">';
                     $r .= generateSelectInputFields(lang('rr_bindingname'), 'f[srv][SPArtifactResolutionService][' . $tid . '][bind]', $artifacts_binding, $fbind, '', 'f[srv][SPArtifactResolutionService][' . $tid . '][order]', $forder, null);
                     $r .= '</div>';
-////
 
                     $r .= '<div class="small-12 columns">';
                     $r .= $this->_generateLabelInput(lang('rr_url'), 'f[srv][SPArtifactResolutionService][' . $tid . '][url]', $furl, 'acsurl', true, false);
@@ -1407,22 +1406,16 @@ class Formelement
             }
             if ($sessform && isset($ses['srv']['SPArtifactResolutionService']) && is_array($ses['srv']['SPArtifactResolutionService'])) {
                 foreach ($ses['srv']['SPArtifactResolutionService'] as $k4 => $v4) {
-
-
-                    $r = '<div class="srvgroup">';
-/////
-                    $r .= '<div class="small-12 columns">';
                     $forder = set_value('f[srv][SPArtifactResolutionService][' . $k4 . '][order]', $ses['srv']['SPArtifactResolutionService']['' . $k4 . '']['order']);
-                    $r .= generateSelectInputFields(lang('rr_bindingname'), 'f[srv][SPArtifactResolutionService][' . $k4 . '][bind]', $artifacts_binding, '' . $v4['bind'] . '', '', 'f[srv][SPArtifactResolutionService][' . $k4 . '][order]', $forder, null);
-                    $r .= '</div>';
 
-                    $r .= '<div class="small-12 columns">';
-
-                    $r .= generateInputWithRemove(lang('rr_url'), 'f[srv][SPArtifactResolutionService][' . $k4 . '][url]', 'rmfield', '', set_value('f[srv][SPArtifactResolutionService][' . $k4 . '][url]', $ses['srv']['SPArtifactResolutionService']['' . $k4 . '']['url'], false), 'acsurl', 'rmfield');
-                    $r .= '</div>';
-////
-                    $r .= '</div>';
-                    $acs[] = $r;
+                    $acs[] = '<div class="srvgroup">' .
+                        '<div class="small-12 columns">' .
+                        generateSelectInputFields(lang('rr_bindingname'), 'f[srv][SPArtifactResolutionService][' . $k4 . '][bind]', $artifacts_binding, '' . $v4['bind'] . '', '', 'f[srv][SPArtifactResolutionService][' . $k4 . '][order]', $forder, null) .
+                        '</div>' .
+                        '<div class="small-12 columns">' .
+                        generateInputWithRemove(lang('rr_url'), 'f[srv][SPArtifactResolutionService][' . $k4 . '][url]', 'rmfield', '', set_value('f[srv][SPArtifactResolutionService][' . $k4 . '][url]', $ses['srv']['SPArtifactResolutionService']['' . $k4 . '']['url'], false), 'acsurl', 'rmfield') .
+                        '</div>' .
+                        '</div>';
                 }
             }
             $ACSPart .= implode('', $acs);

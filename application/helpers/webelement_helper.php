@@ -2,12 +2,60 @@
 
 
 function generateTopBar($a) {
+    $html[] = '
+    
+    <div class="title-bar" data-responsive-toggle="topbar-menu" data-hide-for="medium">
+        <button class="menu-icon" type="button" data-toggle></button>
+        <div class="title-bar-title">Menu</div>
+     </div>
+    ';
+
+
+    $html[] = '<div class="row expanded" data-sticky-container>'
+     .
+     '<div id="topbar-menu" class="top-bar stacked-for-medium" data-sticky data-options="marginTop:0;">';
+
+
+    if (isset($a['logo'])) {
+
+        $html[] = '<div class="title-bar-left " ><div class="logo-wrapper hide-for-small-only" >' .
+            '<span class="top-bar-title logo" ><a href = "' . $a['logo']['link'] . '" class="sitelogo" ><img src = "' . $a['logo']['img'] . '" alt = "Logo" /></a ></span >' .
+            '</div ></div>';
+    }
+    $html[] = '<div class="title-bar-left">';
+    if (isset($a['left'])) {
+        $r = generateTopBarElements($a['left'], 'left');
+        array_push($html, $r);
+
+    }
+
+    // topleft
+
+    $html[] = '</div>';
+
+    $html[] = '<div class="top-bar-right">';
+    // top-tright elements
+
+    if (isset($a['right'])) {
+        $r = generateTopBarElements($a['right'], 'right');
+        array_push($html, $r);
+    }
+
+    $html[] = '</div>';
+    $html[] = '</div>';
+    $html[] = '</div>';
+
+
+    return implode('', $html);
+
+}
+function generateTopBarCopy($a) {
     $html[] = '<div class="row expanded" data-sticky-container>
     <div class="title-bar" data-responsive-toggle="topbar-menu" data-hide-for="medium">
         <button class="menu-icon" type="button" data-toggle></button>
         <div class="title-bar-title">Menu</div>
      </div>' .
-     '<div id="topbar-menu" class="top-bar sktacked-for-medium" data-sticky data-options="marginTop:0;">';
+        '<div id="topbar-menu" class="top-bar sktacked-for-medium" data-sticky data-options="marginTop:0;">';
 
 
     if (isset($a['logo'])) {
