@@ -47,29 +47,29 @@
 $global-font-size: 95%;
 $global-width: rem-calc(1400);
 $global-lineheight: 1.5;
-$foundation-palette: (
-        primary: #2199e8,
-        secondary: #777,
-        success: #3adb76,
-        warning: #ffae00,
-        alert: #ec5840,
-);
-$foundation-palette: (
-        primary: #178acc,
-        secondary: #777,
-        success: #59822c,
-        warning: lighten(#aa4200,10%),
-        alert: #9a161a,
-        info: #022241,
-);
+
+@if not variable_exists(foundation-palette) {
+  $foundation-palette: (
+          primary: #178acc,
+          secondary: #777,
+          success: #59822c,
+          warning: lighten(#aa4200, 10%),
+          alert: #9a161a,
+          info: #022241,
+  );
+}
 
 $light-gray: #e6e6e6;
 $medium-gray: #cacaca;
 $dark-gray: #8a8a8a;
 $black: #0a0a0a;
 $white: #fefefe;
-$body-background: $white;
-$body-font-color: $black;
+@if not variable_exists(body-background){
+  $body-background: lighten(#F6F7F7,10%);
+}
+@if not variable_exists(body-font-color){
+  $body-font-color: $black;
+}
 $body-font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;
 $body-antialiased: true;
 $global-margin: 1rem;
@@ -518,10 +518,30 @@ $show-header-for-stacked: false;
 // --------
 
 $tab-margin: 0;
-$tab-background: $white;
-$tab-background-active: $light-gray;
+@if not variable_exists(tab-background) {
+  $tab-background: #258CFD;
+}
+//$tab-background: $white;
+@if not variable_exists(tab-item-color) {
+  $tab-item-color: foreground($tab-background);
+}
+
+@if not variable_exists(tab-background-active) {
+  $tab-background-active: lighten($black, 20%);
+}
+
+@if not variable_exists(tab-background-second-level) {
+  $tab-background-second-level: lighten($black, 10%);
+}
+
+
+@if not variable_exists(tab-item-color-hover) {
+  $tab-item-color-hover: foreground($tab-background, $white);
+}
 $tab-item-font-size: rem-calc(12);
-$tab-item-background-hover: $white;
+@if not variable_exists(tab-item-background-hover) {
+  $tab-item-background-hover: $white;
+}
 $tab-item-padding: 1.25rem 1.5rem;
 $tab-expand-max: 6;
 $tab-content-background: $white;
@@ -569,8 +589,12 @@ $tooltip-radius: $global-radius;
 $topbar-padding: 0.5rem;
 // janusz
 //$topbar-background: $light-gray;
-$topbar-background: $black;
-$topbar-submenu-background: $topbar-background;
+@if not variable_exists(topbar-background){
+  $topbar-background: #014289;
+}
+@if not variable_exists(topbar-submenu-background) {
+  $topbar-submenu-background: $topbar-background;
+}
 $topbar-title-spacing: 1rem;
 $topbar-input-width: 200px;
 $topbar-unstack-breakpoint: medium;

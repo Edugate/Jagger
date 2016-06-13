@@ -13,7 +13,7 @@ if(!empty($showform))
 
 
 
-    $btns[] = '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button>';
+    $btns[] = '<button type="submit" name="modify" value="submit" class="button">' . lang('rr_save') . '</button>';
     echo  form_open(current_url(), array('id' => 'formver2'));
     echo validation_errors('<span class="error">', '</span>');
     echo  form_fieldset('Leaving federation form');

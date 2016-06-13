@@ -71,7 +71,6 @@ body {
 .top-bar .dropdown.menu .is-dropdown-submenu {
   border: none;
   background-color: $topbar-submenu-background;
-  //background-color: red;
 }
 
 #root {
@@ -135,6 +134,8 @@ body {
 }
 
 .spinner {
+  color: $black;
+  transition: box-shadow 0.2s ease-in;
   position: fixed;
   top: 50%;
   left: 50%;
@@ -397,14 +398,14 @@ body {
   border-right: 1px gray solid;
 }
 
-div.perm, td.perm, span.perm {
+.perm {
   background-color: map_get($foundation-palette,success);
   color: foreground(map_get($foundation-palette,success)  );
   text-transform: uppercase;
   font-weight: bold;
 }
 
-div.dis, td.dis, span.dis {
+.dis {
   background-color:map_get($foundation-palette, secondary);
   text-transform: uppercase;
 
@@ -412,27 +413,24 @@ div.dis, td.dis, span.dis {
   font-weight: bold;
 }
 
-div.spec, td.spec, span.spec {
+.spec {
   background-color: map_get($foundation-palette, warning);
   text-transform: uppercase;
 color: foreground(map_get($foundation-palette, warning));
   font-weight: bold;
 }
 
-div.den, td.den, span.den {
+.den {
   background-color: map_get($foundation-palette, alert);
   text-transform: uppercase;
  color: foreground(map_get($foundation-palette, alert));
   font-weight: bold;
 }
 
-div.perm:not(:empty), div.dis:not(:empty), td.dis:not(:empty), div.spec:not(:empty), div.den:not(:empty) {
+.perm:not(:empty), .dis:not(:empty), .dis:not(:empty), .spec:not(:empty), .den:not(:empty) {
   cursor: pointer;
 }
 
-td.perm:not(:empty), div.dis:not(:empty), td.dis:not(:empty), div.spec:not(:empty), div.den:not(:empty) {
-  cursor: pointer;
-}
 
 #idpmatrixdiv td {
   cursor: pointer;
@@ -492,13 +490,6 @@ div.error {
 
 
 
-
-
-.spinner {
-  color: $black;
-  transition: box-shadow 0.2s ease-in;
-}
-
 td.highlight {
   background-color: lighten(map_get($foundation-palette, 'secondary'), 30%);
 }
@@ -531,16 +522,15 @@ ul {
   // list-style-type: none;
 }
 
-td.section {
+.section {
   background-color: $section-header-background;
   color: $section-header-font;
   font-weight: bold;
 }
 
+
+
 div.section {
-  background-color: $section-header-background;
-  color: $section-header-font;
-  font-weight: bold;
   padding: 0.5em;
 }
 
@@ -548,13 +538,13 @@ legend {
   font-weight: bold;
 }
 
-textarea.certdata {
+.certdata {
   font-family: $code-font-family;
   font-size: smaller;
 
 }
 
-textarea.metadata {
+.metadata {
   font-family: $code-font-family;
   font-size: smaller;
 
@@ -562,4 +552,44 @@ textarea.metadata {
 
 .ui-sortable-handle > label {
   cursor: move;
+}
+
+.alert-box {
+
+  background-color: map_get($foundation-palette,primary);
+  color: foreground(map-get($foundation-palette,primary));
+  font-size: 90%;
+  padding: 0.4rem;
+}
+
+.alert-box.success {
+  background-color: map_get($foundation-palette,success);
+  color: foreground(map-get($foundation-palette,success));
+}
+.alert-box.warning {
+  background-color: map_get($foundation-palette,warning);
+  color: foreground(map-get($foundation-palette,warning));
+}
+.alert-box.alert {
+  background-color: map_get($foundation-palette,alert);
+  color: foreground(map-get($foundation-palette,alert));
+}
+.alert-box.secondary {
+  background-color: map_get($foundation-palette,secondary);
+  color: foreground(map-get($foundation-palette,secondary));
+}
+.alert-box.primary {
+  background-color: map_get($foundation-palette,primary);
+  color: foreground(map-get($foundation-palette,primary));
+}
+.alert-box.info {
+  background-color: map_get($foundation-palette,primary);
+  color: foreground(map-get($foundation-palette,primary));
+}
+#details th.header.headerSortDown:before {
+  content: "\25BE\00a0\00a0";
+}
+
+#details th.header.headerSortUp:before {
+  content: "\25B4\00a0\00a0";
 }

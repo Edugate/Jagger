@@ -26,7 +26,7 @@ if($message)
 }
 echo $this->table->generate($form_elements);
 echo '<div class="buttons small-12 columns text-center">';
-echo '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">'.lang('rr_reset').'</button> ';
-echo '<button type="submit" name="ass" value="add selected new members" class="savebutton saveicon"><span class="save">'.lang('rr_add').'</button>';
+echo '<button type="reset" name="reset" value="reset" class="button resetbutton reseticon alert">'.lang('rr_reset').'</button> ';
+echo '<button type="submit" name="ass" value="add selected new members" class="button savebutton saveicon"><span class="save">'.lang('rr_add').'</button>';
 echo "</div>";
 echo form_close();

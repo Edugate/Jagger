@@ -21,7 +21,7 @@ echo '<div class="small-12 medium-10  columns">'.form_open(base_url().'federatio
 echo '<div id="fvresult" style="display:none;" data-alert class="alert-box info"><div><b>'.lang('fvalidcodereceived').'</b>: <span id="fvreturncode"></span></div><div><p><b>'.lang('fvalidmsgsreceived').'</b>:</p><div id="fvmessages"></div></div></div>';
 echo '<p><b>'.lang('validatewithfedvalid').'</b></p>';
 echo '<div id="fvalidesc"></div>';
-echo '<div class="buttons"><button type="submit" id="fvalidate" name="fvalidate" value="fvalidate" class="editbutton saveicon">'.lang('rr_submit').'</button></div>'; 
+echo '<div class="buttons"><button type="submit" id="fvalidate" name="fvalidate" value="fvalidate" class="button">'.lang('rr_submit').'</button></div>'; 
 
 ?>
 </form></div>
@@ -30,7 +30,7 @@ echo '<div class="buttons"><button type="submit" id="fvalidate" name="fvalidate"
 if(!empty($showform))
 {
     echo '<div class="small-12 column">';
-    $buttons = '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_apply') . '</button>';
+    $buttons = '<button type="submit" name="modify" value="submit" class="button">' . lang('rr_apply') . '</button>';
     $form = form_open(null, array('id' => 'joinfed'));
     $form .= '<div class="small-12 columns"><div class="small-3 columns">';
     $form .= '<label for="fedid" class="right inline">' . lang('rr_selectfedtojoin') . '</label></div>';
