@@ -285,7 +285,7 @@ class Jauth
         $this->ci->load->helper('random_generator');
         $randompass = str_generator();
         $user->setUsername($username);
-        $user->setEmail($attrs['fname']);
+        $user->setEmail($attrs['mail']);
         $user->setSalt();
         $user->setPassword($randompass);
         $user->setLocalDisabled();
