@@ -2,7 +2,7 @@
 
 echo '
 <ul class="tabs" id="attrpolstab" data-tabs>
-<li class="tabs-title active"><a href="#introtab">' . lang('tabinformation') . '</a></li>
+<li class="tabs-title is-active"><a href="#introtab">' . lang('tabinformation') . '</a></li>
   <li class="tabs-title" data-reveal-ajax-tab="' . base_url('manage/attributepolicy/getsupported/' . $idpid . '') . '"><a href="#attrpol-1">' . lang('rr_attributes') . '/' . lang('defaultpolicytab') . '</a></li>
   <li class="tabs-title" data-reveal-ajax-tab="' . base_url('manage/attributepolicy/getfedattrs/' . $idpid . '') . '"><a href="#attrpol-2">' . lang('fedspolicytab') . '</a></li>
   <li class="tabs-title" data-reveal-ajax-tab="' . base_url('manage/attributepolicy/getentcatattrs/' . $idpid . '') . '"><a href="#attrpol-3">' . lang('ecpolicytab') . '</a></li>
@@ -11,8 +11,8 @@ echo '
 ';
 
 
-echo '<div id="attrpols" class="tabs-content" data-tabs-content="attrpolstab" data-jagger-providerdetails="' . base_url('providers/detail/show/') . '">
-        <section class="tabs-panel is-active" id="introtab">
+echo '<div id="attrpols" class="tabs-content row" data-tabs-content="attrpolstab" data-jagger-providerdetails="' . base_url('providers/detail/show/') . '">
+        <section class="tabs-panel is-active row" id="introtab">
             INFORMATION GUIDE SOON!
 
 <ul>

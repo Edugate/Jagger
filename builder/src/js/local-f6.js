@@ -1711,7 +1711,9 @@ $(document).ready(function () {
                         map.fitBounds(bounds);
                     }
                     var listener = google.maps.event.addListener(map, "idle", function () {
-                        if (map.getZoom() > 16) map.setZoom(16);
+                        if (map.getZoom() > 16) {
+                            map.setZoom(16);
+                        }
                         google.maps.event.removeListener(listener);
                     });
 
@@ -2310,7 +2312,7 @@ $(document).ready(function () {
                         tbl += '<tr><td data-jagger-entidlink="' + a.idpid + '" class="searchcol"><a href="' + prefurl + '/' + a.idpid + '" title="' + a.entityid + '" >' + a.name + '</a><span class="hidden">' + i + '</span></td>';
                         $.each(attrdefs, function (k, v) {
                             cl = '';
-                            requiredAttr = a['data']['attributes']['' + k + ''];
+                            requiredAttr = a.data.attributes['' + k + ''];
                             cell = v[0].toUpperCase();
                             if (requiredAttr === undefined) {
                                 cl = 'dis';
@@ -2443,7 +2445,7 @@ $(document).ready(function () {
                         var nrcols = 0;
                         var fpolicy, labelclass;
 
-                        var federationStr = data.definitions.lang['federation'];
+                        var federationStr = data.definitions.lang.federation;
 
                         tbl = '<div class="small-12 column"><table class="table"><thead><tr>';
                         $.each(data.definitions.columns, function (i, v) {
@@ -2452,7 +2454,7 @@ $(document).ready(function () {
                         });
                         tbl += '</tr></thead>';
                         var nrcols2 = nrcols - 2;
-                        var statusstr = data['definitions']['statusstr'];
+                        var statusstr = data.definitions.statusstr;
 
                         var feid, idf1;
                         $.each(data.data.fedpols, function (i, v) {
@@ -3110,19 +3112,23 @@ $(document).ready(function () {
     }
 
 
+    var matrixloader = $('#matrixloader').first();
+    var matrixdiv = $('#idpmatrixdiv').first();
+    var formupdater = $('#policyupdater').first();
     ////////////// new idpmatrix
-    if ($('#matrixloader').length > 0) {
-        var formupdater = $('#policyupdater');
+    if (matrixloader.length === 1) {
+
         var formupdaterUrl = formupdater.attr('data-jagger-link');
-        var formupdaterAction = $(formupdater).find('form').first();
-        var providerdetailurl = $('#matrixloader').attr('data-jagger-providerdetails');
-        var mrequester = $(formupdater).find("span.mrequester").first();
-        var mattribute = $(formupdater).find("span.mattribute").first();
-        var updatebutton = $(formupdater).find("div.yes").first();
-        var attrflow = $(formupdater).find("div.attrflow").first();
-        var matrixdiv = $('#idpmatrixdiv');
+        var formupdaterAction = formupdater.find('form').first();
+        var providerdetailurl = matrixloader.attr('data-jagger-providerdetails');
+        var mrequester = formupdater.find("span.mrequester").first();
+        var mattribute = formupdater.find("span.mattribute").first();
+        var updatebutton = formupdater.find("div.yes").first();
+        var attrflow = formupdater.find("div.attrflow").first();
+
+
         var clickedcell;
-        formupdater.on('click', 'div.yes', function (event) {
+        formupdater.on('click', '.yes', function (event) {
             event.preventDefault();
 
             var actionUrl = formupdaterAction.attr('action');
@@ -3152,20 +3158,17 @@ $(document).ready(function () {
             });
         });
         matrixdiv.on('click', 'td', function (event) {
+            spinImage.show();
             clickedcell = $(this);
 
-            var splink = $(this).attr("data-jagger-entidlink");
+            var splink = clickedcell.attr("data-jagger-entidlink");
             if (splink !== undefined) {
                 document.location.href = providerdetailurl + '/' + splink;
                 return false;
             }
-
-            var spiddata = $(this).attr("data-jagger-spid");
-            var attrdata = $(this).attr("data-jagger-attrid");
-            //var attrclass = $(this).class();
+            var spiddata = clickedcell.attr("data-jagger-spid");
+            var attrdata = clickedcell.attr("data-jagger-attrid");
             if (spiddata !== undefined && attrdata !== undefined) {
-                //formupdater.foundation('reveal', 'open');
-                //alert(spiddata + 'and '+attrdata);
                 $.ajax({
                     type: "GET",
                     url: formupdaterUrl + '/' + spiddata + '/' + attrdata,
@@ -3192,11 +3195,12 @@ $(document).ready(function () {
                         attrflow.html(pl.html());
                         formupdater.foundation('open');
 
+                        spinImage.hide();
                     }
                 });
             }
         });
-        var pid = $('#matrixloader').attr("data-jagger-link");
+        var pid = matrixloader.attr("data-jagger-link");
         if (typeof pid === "undefined") {
             return false;
         }
