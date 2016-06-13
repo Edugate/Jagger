@@ -1,16 +1,13 @@
-$body-background: lighten(#F6F7F7,10%);
 
-
-$topbar-background: #014289;
-$topbar-submenu-background: $topbar-background;
 $topbar-title-spacing: 1rem;
 $topbar-input-width: 200px;
 $topbar-unstack-breakpoint: medium;
-$topbar-link-color: $white;
+$topbar-link-color: foreground($topbar-background);
 
-
-$footer-background: #014289;
-$footer-text: $white;
+@if not variable_exists(footer-background) {
+  $footer-background: #014289;
+}
+$footer-text: foreground($footer-background);
 
 $jagger-selected-bgcolor: #074e68;
 $jagger-selected-color: #fff;
@@ -46,8 +43,8 @@ $fedlogin-color: $primary-color;
 $icon-size: 2rem;
 
 // TABS
-$tab-background: #258CFD;
-$tab-item-color: $white;
+
+$tab-item-color: foreground($tab-background);
 $tab-item-color-hover: $black;
 $tab-background-active: lighten($black,20%);
 
@@ -60,43 +57,5 @@ $box-header-font: lighten($box-header-background,80%);
 
 $section-header-background:  #454545;
 $section-header-font: lighten($section-header-background, 80%);
-table#details th.header.headerSortDown:before {
-  content: "\25BE\00a0\00a0";
-}
 
-table#details th.header.headerSortUp:before {
-  content: "\25B4\00a0\00a0";
-}
 
-.alert-box {
-
-  background-color: map_get($foundation-palette,primary);
-  color: foreground(map-get($foundation-palette,primary));
-  font-size: 90%;
-  padding: 0.4rem;
-}
-
-.alert-box.success {
-  background-color: map_get($foundation-palette,success);
-  color: foreground(map-get($foundation-palette,success));
-}
-.alert-box.warning {
-  background-color: map_get($foundation-palette,warning);
-  color: foreground(map-get($foundation-palette,warning));
-}
-.alert-box.alert {
-  background-color: map_get($foundation-palette,alert);
-  color: foreground(map-get($foundation-palette,alert));
-}
-.alert-box.secondary {
-  background-color: map_get($foundation-palette,secondary);
-  color: foreground(map-get($foundation-palette,secondary));
-}
-.alert-box.primary {
-  background-color: map_get($foundation-palette,primary);
-  color: foreground(map-get($foundation-palette,primary));
-}
-.alert-box.info {
-  background-color: map_get($foundation-palette,primary);
-  color: foreground(map-get($foundation-palette,primary));
-}
