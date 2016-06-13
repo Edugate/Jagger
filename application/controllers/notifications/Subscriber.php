@@ -4,20 +4,11 @@ if (!defined('BASEPATH')) {
 }
 
 /**
- * ResourceRegistry3
- *
- * @package     RR3
- * @author      Middleware Team HEAnet
- * @copyright   Copyright (c) 2014, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *
- */
-
-/**
- * Dashboard Class
- *
- * @package     RR3
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @package   Jagger
+ * @author    Middleware Team HEAnet
+ * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2014, HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 class Subscriber extends MY_Controller
 {
@@ -74,7 +65,7 @@ class Subscriber extends MY_Controller
                 'email' => '' . $subscription->getAltEmail() . '',
                 'enabled' => '' . $subscription->getEnabled() . '',
                 'approved' => '' . $subscription->getApproved() . '',
-                'updated' => '' . jaggerDisplayDateTimeByOffset($subscription->getUpdatedAt(),jauth::$timeOffset),
+                'updated' => '' . jaggerDisplayDateTimeByOffset($subscription->getUpdatedAt(), Jauth::$timeOffset),
                 'langstatus' => $status,
                 'langprovider' => lang('rr_provider'),
                 'langfederation' => lang('rr_federation'),
@@ -85,12 +76,12 @@ class Subscriber extends MY_Controller
     }
 
     /**
-     * @param $username
+     * @param null $encodedusername
      * @return \models\User
      * @throws Exception
      */
-    private function getSubscriberOwner($encodedusername = null){
-        if($encodedusername === null){
+    private function getSubscriberOwner($encodedusername = null) {
+        if ($encodedusername === null) {
             throw new Exception('missing username');
         }
         $username = base64url_decode($encodedusername);
@@ -118,8 +109,7 @@ class Subscriber extends MY_Controller
         $this->load->library('zacl');
         try {
             $subscribtionOwner = $this->getSubscriberOwner($encodeduser);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             show_error(403, $e->getMessage());
         }
         $data = array(
@@ -168,7 +158,7 @@ class Subscriber extends MY_Controller
                 } else {
                     $relatedto = $v['langany'];
                 }
-                $button = '<a href="#" value="' . $v['id'] . '" class="updatenotifactionstatus"  data-reveal-id="notificationupdatemodal"><i class="fi-pencil"></i></a>';
+                $button = '<a href="#" value="' . $v['id'] . '" class="updatenotifactionstatus"  data-open="notificationupdatemodal"><i class="fa fa-pencil"></i></a>';
                 $row[] = array(++$i, $type, $relatedto, $v['delivery'], $v['rcptto'], '<div class="subscrstatus">' . $v['langstatus'] . '</div>', $v['updated'], $button);
             }
         }
@@ -315,7 +305,7 @@ class Subscriber extends MY_Controller
 
     public function updatestatus($id = null) {
         $method = $this->input->method(true);
-        if ($method !== 'POST' || !ctype_digit($id) ||  !$this->input->is_ajax_request() ) {
+        if ($method !== 'POST' || !ctype_digit($id) || !$this->input->is_ajax_request()) {
             return $this->output->set_status_header(403)->set_output('Denied');
         }
         if (!$this->jauth->isLoggedIn()) {
@@ -328,7 +318,7 @@ class Subscriber extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Denied');
         }
         $allowedStatus = array('remove', 'approve', 'enable', 'disable', 'disapprove');
-        if (!in_array($status, $allowedStatus,true)) {
+        if (!in_array($status, $allowedStatus, true)) {
             return $this->output->set_status_header(403)->set_output('Denied');
 
         }

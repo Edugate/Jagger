@@ -79,7 +79,7 @@ if(!empty($formdata))
         }
     }
 
-    echo '<div class="row"><div class="small-12 column"><button id="taskformaddparam" name="addparamval" class="secondary small">'.lang('arrparambtn').'</button></div></div>';
+    echo '<div class="row"><div class="small-12 column"><button id="taskformaddparam" name="addparamval" class="button secondary">'.lang('arrparambtn').'</button></div></div>';
 
     echo '</div>';
     echo $rowClose;
@@ -88,7 +88,7 @@ if(!empty($formdata))
     echo $rowOpen;
     echo '<div class="small-12 column text-center">';
 
-    echo '<button type="submit" value="submit" name="submit" class="small"/>'.lang('rr_submit').'</button>';
+    echo '<button type="submit" value="submit" name="submit" class="button"/>'.lang('rr_submit').'</button>';
     echo '</div>';
     echo $rowClose;
 

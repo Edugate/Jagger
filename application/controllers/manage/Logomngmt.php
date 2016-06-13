@@ -60,7 +60,7 @@ class Logomngmt extends MY_Controller
             $form1 .= form_open(base_url() . 'manage/logomngmt/unsign/' . $type . '/' . $id, $attributes);
             $form1 .= $this->logo->displayCurrentInGridForm($provider, $type, $canEdit);
             $form1 .= '<div class="buttons" id="unsignlogosbtn" >';
-            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="resetbutton reseticon alert">' . lang('rr_unsignselectedlogo') . '</button> ';
+            $form1 .= '<button name="remove" type="submit" value="Remove selected" class="button resetbutton reseticon alert">' . lang('rr_unsignselectedlogo') . '</button> ';
             $form1 .= '</div>';
             $form1 .= form_close();
             $form1 .= '</span>';
@@ -80,7 +80,7 @@ class Logomngmt extends MY_Controller
             $form1 = form_open(base_url() . 'manage/logomngmt/assign/' . $type . '/' . $id, $attributes);
             $form1 .= form_fieldset('' . lang('rr_selectimagetoassign') . '');
             if (!empty($availableImages)) {
-                $form1 .= '<div class="buttons" style="display: none"><button name="submit" type="submit" value="submit" class="savebutton saveicon">
+                $form1 .= '<div class="buttons" style="display: none"><button name="submit" type="submit" value="submit" class="button savebutton saveicon">
                       ' . lang('rr_btn_assignselecetedlogo') . '</button></div>';
                 $form1 .= $availableImages;
             } else {
@@ -370,7 +370,7 @@ class Logomngmt extends MY_Controller
                 form_open(base_url() . 'manage/logomngmt/unsign/' . $type . '/' . $id, $attributes) .
                 $this->logo->displayCurrentInGridForm($provider, $type, $canEdit) .
                 '<div class="buttons" id="unsignlogosbtn" >' .
-                '<button name="remove" type="submit" value="Remove selected" class="resetbutton reseticon alert">' . lang('rr_unsignselectedlogo') . '</button> ' .
+                '<button name="remove" type="submit" value="Remove selected" class="button resetbutton reseticon alert">' . lang('rr_unsignselectedlogo') . '</button> ' .
                 '</div>' .
                 form_close() . '</span>';
         }

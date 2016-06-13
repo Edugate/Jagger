@@ -30,17 +30,16 @@ class MY_form_validation extends CI_form_validation
     public function str_matches_array($str, $arr) {
         $result = false;
         $arr = unserialize($arr);
-        if (empty($str)) {
-            if (count($arr) == 0) {
-                $result = true;
-            }
-        } else {
-            $ar1 = explode(",", $str);
-            if (count(array_diff($ar1, $arr)) == 0 && count(array_diff($arr, $ar1)) == 0) {
-                $result = true;
-            }
+        if (empty($str) && count($arr) === 0) {
+                return true;
+        } 
 
+        $ar1 = explode(",", $str);
+        if (count(array_diff($ar1, $arr)) == 0 && count(array_diff($arr, $ar1)) == 0) {
+             $result = true;
         }
+
+        
         if (!$result) {
             $this->set_message('str_matches_array', 'The %s  must not been changed to ' . htmlentities($str));
         }
@@ -903,8 +902,8 @@ class MY_form_validation extends CI_form_validation
 
 
     public function matches_inarray($str, $serialized_array) {
-        $array = unserialize($serialized_array);
-        if (!in_array($str, $array)) {
+        $arrayToMatch = unserialize($serialized_array);
+        if (!in_array($str, $arrayToMatch, true)) {
             $this->set_message('matches_inarray', "%s: doesnt match allowed value");
             return false;
         }

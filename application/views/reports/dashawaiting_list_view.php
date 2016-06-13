@@ -27,7 +27,7 @@ if (!empty($list))
             $confirm = lang('rr_no');
         }
         $cdate = $q['idate'];
-        $detail = anchor(base_url('reports/awaiting/detail/'.$q['token'].'') , '<i class="fi-arrow-right"></i>');
+        $detail = anchor(base_url('reports/awaiting/detail/'.$q['token'].'') , '<i class="fa fa-arrow-right"></i>');
         $this->table->add_row($q['idate'], $q['requesterCN'] ." (". $q['requester'] .")", $q['type'] . " - " . $q['action'], $detail);
     }
     echo $this->table->generate();

@@ -41,6 +41,9 @@ class Msigner extends MY_Controller
         $this->load->library('zacl');
 
 
+        if(!class_exists('GearmanClient')) {
+            return $this->output->set_status_header(500)->set_output( 'Gearman is not supported by the system');
+        }
         $gearmanenabled = $this->config->item('gearman');
         if ($gearmanenabled !== true) {
             return $this->output->set_status_header(404)->set_output( 'gearman is not enabled ' . lang('error404').'');

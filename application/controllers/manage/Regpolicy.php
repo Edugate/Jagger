@@ -57,9 +57,9 @@ class Regpolicy extends MY_Controller
                 $countProviders = $c->getProvidersCount();
                 $isEnabled = $c->getAvailable();
                 if ($has_write_access) {
-                    $l = '<a href="' . base_url() . 'manage/regpolicy/edit/' . $c->getId() . '" ><i class="fi-pencil"></i></a>';
+                    $l = '<a href="' . base_url() . 'manage/regpolicy/edit/' . $c->getId() . '" ><i class="fa fa-pencil"></i></a>';
                     if (!$isEnabled) {
-                        $l .= '&nbsp;&nbsp;<a href="' . base_url() . 'manage/regpolicy/remove/' . $c->getId() . '" class="withconfirm" data-jagger-regpolicy="' . $c->getId() . '" data-jagger-fieldname="'.$c->getName().'"  data-jagger-counter="'.$countProviders.'"><i class="fi-trash"></i></a>';
+                        $l .= '&nbsp;&nbsp;<a href="' . base_url() . 'manage/regpolicy/remove/' . $c->getId() . '" class="withconfirm" data-jagger-regpolicy="' . $c->getId() . '" data-jagger-fieldname="'.$c->getName().'"  data-jagger-counter="'.$countProviders.'"><i class="fa fa-trash"></i></a>';
                     }
                 } else {
                     $l = '';
@@ -163,9 +163,9 @@ class Regpolicy extends MY_Controller
             $f = form_open();
             $this->load->library('formelement');
             $f .= $this->formelement->generateAddRegpol();
-            $f .= '<div class="buttons small-12 medium-10 large-10 columns end text-right">';
-            $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ';
-            $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
+            $f .= '<div class="small-12 column"></div><div class="medium-9 large-9 columns end text-right">';
+            $f .= '<button type="reset" name="reset" value="reset" class="button alert">' . lang('rr_reset') . '</button> ';
+            $f .= '<button type="submit" name="modify" value="submit" class="button">' . lang('rr_save') . '</button></div></div>';
 
             $f .= form_close();
             $data['form'] = $f;
@@ -224,9 +224,9 @@ class Regpolicy extends MY_Controller
         $data['coc_name'] = $coc->getName();
         $this->load->library('formelement');
         $f = form_open() . $this->formelement->generateEditRegpol($coc);
-        $f .= '<div class="buttons large-10 medium-10 small-12 text-right columns end">';
-        $f .= '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">' . lang('rr_reset') . '</button> ';
-        $f .= '<button type="submit" name="modify" value="submit" class="savebutton saveicon">' . lang('rr_save') . '</button></div>';
+        $f .= '<div class="small-12 column"><div class="buttons large-9 medium-9 small-12 text-right columns end">';
+        $f .= '<button type="reset" name="reset" value="reset" class="button alert">' . lang('rr_reset') . '</button> ';
+        $f .= '<button type="submit" name="modify" value="submit" class="button">' . lang('rr_save') . '</button></div></div>';
         $f .= form_close();
         $data['breadcrumbs'] = array(
             array('url'=>base_url('manage/regpolicy/show'),'name'=>lang('title_regpols')),

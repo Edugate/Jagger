@@ -123,6 +123,7 @@ class Importer extends MY_Controller
         }
 
         if ($this->_metadatasigner_validate($arg['metadataurl'], $sslvalidate, $mvalidate, $mcerturl, $mcert) !== TRUE) {
+            log_message('error','ffff');
             return $this->index();
         }
 
@@ -228,6 +229,7 @@ class Importer extends MY_Controller
     private function _metadatasigner_validate($metadataurl, $sslvalidate = FALSE, $signed = FALSE, $certurl = FALSE, $certbody = FALSE)
     {
         $maxsize = $this->curlMaxsize;
+        log_message('debug',__METHOD__.' curl maxsise set : '.$maxsize);
         $sslverifyhost = 0;
         if ($sslvalidate) {
             $sslverifyhost = 2;
@@ -245,7 +247,7 @@ class Importer extends MY_Controller
         );
         $this->xmlbody = $this->curl->simple_get('' . $metadataurl . '', array(), $curloptions);
         if (empty($this->xmlbody)) {
-            $this->otherErrors[] = $this->curl->error_string;
+            $this->otherErrors[] = $this->curl->debug();
             return false;
         }
         libxml_use_internal_errors(true);

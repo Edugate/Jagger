@@ -1,5 +1,7 @@
 <?php
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 
 if (!empty($error_message)) {
@@ -7,12 +9,10 @@ if (!empty($error_message)) {
 }
 
 if (!empty($excluded) && is_array($excluded) && count($excluded) > 0) {
+    $editlink = '';
     if (!empty($has_write_access)) {
         $editlink = '<span class="lbl lbl-disabled"><a href="' . base_url() . 'manage/arpsexcl/idp/' . $idpid . '">' . lang('rr_editarpexc') . '</a></span>';
-    } else {
-        $editlink = '';
     }
-
     echo '<div id="excarpslist"><b>' . lang('rr_arpexclist_title') . '</b> ' . $editlink;
     echo '<ol>';
     foreach ($excluded as $v) {
@@ -21,10 +21,10 @@ if (!empty($excluded) && is_array($excluded) && count($excluded) > 0) {
     echo '</ol></div>';
 }
 ?>
+
     <div class="row">
         <div class="small-12 columns">
-            <div class="medium-9 columns"></div>
-            <div class="medium-3 columns">
+            <div class="medium-3  medium-offset-9 columns end">
                 <label class="hide-for-small-only"><input id="tablesearchinput" type="text"
                                                           placeholder="<?php echo lang('rr_filter'); ?>"/></label>
             </div>
@@ -33,38 +33,11 @@ if (!empty($excluded) && is_array($excluded) && count($excluded) > 0) {
 <?php
 
 echo '<div id="matrixloader" data-jagger-link="' . base_url() . 'reports/idpmatrix/getarpdata/' . $idpid . '" data-jagger-providerdetails="' . base_url() . 'providers/detail/show"  class="row hidden"></div>';
+
 echo '<div id="idpmatrixdiv" class="row" style="margin-top: 20px"></div>';
 
 
-$rrs = array('id' => 'idpmatrixform', 'style' => 'display: none');
-
-echo form_open(base_url() . 'manage/attribute_policyajax/submit_sp/' . $idpid, $rrs);
-echo form_input(array('name' => 'attribute', 'id' => 'attribute', 'type' => 'hidden', 'value' => ''));
-echo form_input(array('name' => 'idpid', 'id' => 'idpid', 'type' => 'hidden', 'value' => '' . $idpid . ''));
-echo form_input(array('name' => 'requester', 'id' => 'requester', 'type' => 'hidden', 'value' => ''));
-?>
-    <div class="small-12 columns">
-        <?php echo lang('confirmupdpolicy'); ?>
-    </div>
-    <div class="attrflow small-12 columns"></div>
-    <p class="message"><?php echo lang('rr_tbltitle_requester') . ': '; ?><span
-            class="mrequester"></span><br/><?php echo lang('attrname') . ': '; ?><span class="mattribute"></span></p>
-    <div>
-        <?php
-        $dropdown = $this->config->item('policy_dropdown');
-        $dropdown = array_merge(array('' => lang('rr_select')), $dropdown);
-        echo form_dropdown('policy', $dropdown, set_value('policy'));
-        ?>
-    </div>
-    <div class="buttons small-12 columns">
-        <div class="yes button"><?php echo lang('btnupdate'); ?></div>
-        <div class="no button"><?php echo lang('rr_cancel'); ?></div>
-    </div>
-<?php
-echo form_close();
-
-
-echo '<div id="policyupdater" class="reveal-modal small" data-reveal data-jagger-link="' . base_url('manage/attribute_policyajax/getattrpath/' . $idpid . '') . '">
+echo '<div id="policyupdater" class="reveal small" data-reveal data-jagger-link="' . base_url('manage/attribute_policyajax/getattrpath/' . $idpid . '') . '">
   <h3>' . lang('confirmupdpolicy') . '</h3>
  <p class="message">' . lang('rr_tbltitle_requester') . ':  <span class="mrequester"></span><br />' . lang('attrname') . ': <span class="mattribute"></span></p>
   <div>
@@ -83,12 +56,16 @@ echo '<div class="medium-9 columns">' . form_dropdown('policy', $dropdown, '') .
 echo '</div>';
 echo '<div class="row">';
 $buttons = array(
-    '<button type="reset" name="cancel" value="cancel" class="button alert modal-close">' . lang('rr_cancel') . '</button>',
+    '<button type="button" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
     '<div class="yes button">' . lang('btnupdate') . '</div>'
 );
 echo revealBtnsRow($buttons);
 echo '</div>';
 echo '    
 </form>
-  <a class="close-reveal-modal">&#215;</a>
+  <a class="close-button" data-close>&#215;</a>
 </div>';
+
+
+
+

@@ -52,7 +52,7 @@ $.fn.dataTable.ext.search.push(
                 option = function (name) {
                     return el_options[name] || settings[name];
                 };
-                modal = $("<div data-reveal class='reveal-modal " + (option('modal_class')) + "'>\n  <h2 data-confirm-title class='" + (option('title_class')) + "'></h2>\n  <p data-confirm-body class='" + (option('body_class')) + "'></p>\n  <div data-confirm-footer class='" + (option('footer_class')) + "'>\n    <a data-confirm-cancel class='" + (option('cancel_class')) + "'></a>\n  </div>\n</div>");
+                modal = $("<div data-reveal class='reveal " + (option('modal_class')) + "'>\n  <h2 data-confirm-title class='" + (option('title_class')) + "'></h2>\n  <p data-confirm-body class='" + (option('body_class')) + "'></p>\n  <div data-confirm-footer class='" + (option('footer_class')) + "'>\n    <a data-confirm-cancel class='" + (option('cancel_class')) + "'></a>\n  </div>\n</div>");
                 confirm_button = $el.is('a') ? $el.clone() : $('<a/>');
                 confirm_button.removeAttr('data-confirm').attr('class', option('ok_class')).html(option('ok')).on('click', function (e) {
                     if ($(this).prop('disabled')) {
@@ -120,8 +120,8 @@ function nl2br(str, is_xhtml) {
 
 function revealAlert(str, btnval) {
     'use strict';
-    var button = '<div class="row text-right"><button class="small modal-close">' + btnval + '</button></div>', modal = $('#malert');
-    modal.empty().append('<div class="row text-center"><p><h4>' + str + '</h4></p></div>').append(button).foundation('reveal', 'open');
+    var button = '<div class="row text-right"><button class="button" data-close>' + btnval + '</button></div>', modal = $('#malert');
+    modal.empty().append('<div class="row text-center"><p><h4>' + str + '</h4></p></div>').append(button).foundation('open');
 }
 
 
@@ -246,6 +246,7 @@ jQuery.uiTableFilter.has_words = function (str, words, caseSensitive) {
 var jlettersdigits = 'abcdefghijklmnopqrstuvwxyz0123456789';
 var jLetters = 'abcdefghijklmnopqrstuvwxyz';
 var jDigits = '0123456789';
+
 var genRandomStr = function (counter) {
     'use strict';
     var randStr = '', i, limitLength = jlettersdigits.length;
@@ -253,6 +254,9 @@ var genRandomStr = function (counter) {
         randStr += jlettersdigits.charAt(Math.floor(Math.random() * limitLength));
     }
     return randStr;
+};
+function go_to_private_page() {
+    window.location.reload();
 }
 
 
@@ -338,9 +342,10 @@ jQuery.fn.toggleOption = function (show) {
         jQuery(this).wrap('<span class="toggleOption" style="display: none;" />');
     }
 };
+
 var createRowWithLangRm = function (langCode, langString, inputName, rmbtn) {
     console.log('createRowWithLangRm fired');
-    return $('<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"' + inputName + '\" class=\"right inline\">' + langString + '</label></div><div class=\"small-6 large-7 columns\"><input id=\"' + inputName + '\" name=\"' + inputName + '\" type=\"text\" class=\"validurl\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button inline tiny left alert\" name=\"langrm\" value=\"' + langCode + '\">' + rmbtn + '</button></div></div>');
+    return $('<div class=\"large-12 small-12 columns\"><div class=\"small-3 columns\"><label for=\"' + inputName + '\" class=\"right inline\">' + langString + '</label></div><div class=\"small-6 large-7 columns\"><input id=\"' + inputName + '\" name=\"' + inputName + '\" type=\"text\" class=\"validurl\"/></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button inline  left alert\" name=\"langrm\" value=\"' + langCode + '\">' + rmbtn + '</button></div></div>');
 };
 
 var createRowTaskParams = function (label1, label2) {
@@ -355,6 +360,9 @@ var createRowTaskParams = function (label1, label2) {
 };
 
 
+var spinImage = $('#spinner');
+
+
 var BINIT = {
     initFvalidators: function () {
 
@@ -364,7 +372,6 @@ var BINIT = {
         $("ul.validatorbuttons button").on('click', function (e) {
             var link = $(this).attr("value");
             var fvform = $('#fvform');
-            var spinner = $('#spinner');
             $.ajax({
                 type: "GET",
                 url: link,
@@ -372,7 +379,7 @@ var BINIT = {
                 cache: true,
                 dataType: "json",
                 success: function (data) {
-                    spinner.hide();
+                    spinImage.hide();
                     if (data) {
                         var vfedid = data.fedid;
                         var fvalidid = data.id;
@@ -388,11 +395,10 @@ var BINIT = {
                 },
                 beforeSend: function () {
                     $("#fvresult").hide();
-                    spinner.show();
 
                 },
                 error: function () {
-                    spinner.hide();
+                    spinImage.hide();
                     fvform.hide();
                     $('#fvresult').hide();
                 }
@@ -499,11 +505,11 @@ var GINIT = {
                                 $.each(data[entgroupkey], function (i, v) {
                                     entstate = '';
 
-                                    if(v.penabled === false){
-                                        entstate = entstate+'<span class="label alert">disabled</span> ';
+                                    if (v.penabled === false) {
+                                        entstate = entstate + '<span class="label alert">disabled</span> ';
                                     }
-                                    if(v.mdisabled === 1 || v.mbanned === 1){
-                                        entstate = entstate+'<span class="label alert">membership suspended</span> ';
+                                    if (v.mdisabled === 1 || v.mbanned === 1) {
+                                        entstate = entstate + '<span class="label alert">membership suspended</span> ';
                                     }
                                     ++nr;
 
@@ -516,7 +522,7 @@ var GINIT = {
 
                                     out[++o] = '<div class="large-5 column">' + nr + '. <a href="' + preurl + v.pid + '">' + v.pname + '</a></div>';
                                     out[++o] = '<div class="large-5 column">' + v.entityid + '</div>';
-                                    out[++o] = '<div class="large-2 column">'+entstate+'</div>';
+                                    out[++o] = '<div class="large-2 column">' + entstate + '</div>';
 
                                     out[++o] = '</div>';
 
@@ -614,7 +620,7 @@ var GINIT = {
                         result.append(div_data);
                     });
                     if (refreshbtn !== null) {
-                        refreshbutton = '<a class="refreshurl right" href="#"  data-jagger-getmoreajaxonclick= "' + refreshbtn + '" data-jagger-response-msg="prdetails"><i class="fi-refresh" ></i></a>';
+                        refreshbutton = '<a class="refreshurl float-right" href="#"  data-jagger-getmoreajaxonclick= "' + refreshbtn + '" data-jagger-response-msg="prdetails"><i class="fa fa-refresh" ></i></a>';
                     }
                     targetelement.empty().append(refreshbutton).append(result).show();
 
@@ -652,7 +658,6 @@ var GINIT = {
 
 
         $("#loginbtn").on('click', function (event) {
-            event.preventDefault();
             var url = $(this).attr('href');
             var loginform = $("#loginform");
             var submitbutton = $(loginform).find(":submit").first();
@@ -672,7 +677,7 @@ var GINIT = {
                             usernamerow.show();
                             passwordrow.show();
                             loginresponse.hide();
-                            loginform.foundation('reveal', 'open');
+                            loginform.foundation('open');
                             return false;
                         }
                         if (data.twofactor === 1 && data.secondfactor !== null) {
@@ -684,7 +689,7 @@ var GINIT = {
                             if (data.html) {
                                 secondfactorrow.html(data.html).show();
                             }
-                            loginform.foundation('reveal', 'open');
+                            loginform.foundation('open');
                             return false;
                         }
                     }
@@ -697,7 +702,7 @@ var GINIT = {
                     usernamerow.show();
                     passwordrow.show();
                     loginresponse.hide();
-                    loginform.foundation('reveal', 'open');
+                    loginform.foundation('open');
                 }
             });
 
@@ -709,21 +714,36 @@ var GINIT = {
             $(this).foundation('reveal', 'close');
         });
 
-        $('#providerlogtab').on('toggled', function (event, tab) {
-            console.log(tab);
-            var link = $(this).attr("data-reveal-ajax-tab");
-            if (link !== undefined) {
+        $('#providerdetail-tabs[data-tabs]').on('change.zf.tabs', function (e) {
+            console.log('Those tabs sure did change!');
+            var tabActive = $('div[data-tabs-content="' + $(this).attr('id') + '"]').children('.tabs-panel.is-active');
+            var ajaxTab = tabActive.attr('data-reveal-ajax-tab');
+            if (ajaxTab !== undefined) {
                 $.ajax({
                     cache: true,
                     type: 'GET',
-                    url: link,
-                    success: function (data) {
-                        $('#providerlogtab').empty().append(data);
-                        $(document).foundation('accordion', 'reflow');
+                    url: ajaxTab,
+                    success: function (response) {
+                        var data;
+                        try {
+                            data = JSON.parse(response);
+                        }
+                        catch (e) {
+                            data = response;
+                            tabActive.empty().append(data);
+
+
+                        }
+                        tabActive.foundation();
+                        return false;
+
                     }
                 });
             }
+
         });
+
+
         $("#newusermodal").on('submit', 'form', function (e) {
             e.preventDefault();
             var modal = $(this);
@@ -737,8 +757,8 @@ var GINIT = {
                     msgdiv.hide().empty();
                 },
                 success: function (data) {
-                    if (data && data === 'OK') {
-                        $("#newusermodal").foundation('reveal', 'close');
+                    if (data && data.trim() === 'OK') {
+                        $("#newusermodal").foundation('close');
                         msgdiv.hide().empty();
                         location.reload();
 
@@ -751,7 +771,7 @@ var GINIT = {
 
         });
 
-        $("button.cleartarget").on('click', function (e) {
+        $(".cleartarget").on('click', function (e) {
 
             e.preventDefault();
             var targetname1 = $(this).attr('data-jagger-textarea');
@@ -765,7 +785,7 @@ var GINIT = {
             return false;
         });
 
-        $("button.postajax").on('click', function (e) {
+        $(".postajax").on('click', function (e) {
             e.preventDefault();
             var form = $(this).closest("form");
             var targetresponseid = $(this).attr('data-jagger-response-msg');
@@ -821,7 +841,7 @@ var GINIT = {
                         });
                         listbody.append(result.join(''));
                         content.append(listbody);
-                        modal.foundation('reveal', 'open');
+                        modal.foundation('open');
                     }
                 }
 
@@ -848,7 +868,7 @@ var GINIT = {
                         });
                         listbody.append(result.join(''));
                         content.append(listbody);
-                        modal.foundation('reveal', 'open');
+                        modal.foundation('open');
                     }
                 }
 
@@ -875,7 +895,7 @@ var GINIT = {
             closebtn.hide();
 
 
-            modal.foundation('reveal', 'open');
+            modal.foundation('open');
             return false;
         });
 
@@ -941,7 +961,7 @@ var GINIT = {
                     else {
                         $('a[data-jagger-ec="' + ecid + '"]').closest('tr').hide();
                     }
-                    $("#confirmremover").foundation('reveal', 'close');
+                    $("#confirmremover").foundation('close');
                 },
                 error: function (xhr, status, error) {
                     var alertmsg = '' + error + '';
@@ -975,7 +995,7 @@ var GINIT = {
             else {
                 form.attr('data-jagger-regpolicy', regid);
             }
-            formremover.foundation('reveal', 'open');
+            formremover.foundation('open');
 
         });
 
@@ -1029,13 +1049,13 @@ var GINIT = {
                             GINIT.initialize();
                         }
                     });
-                    $('#spinner').hide();
+                    spinImage.hide();
                     revealAlert(data, 'OK');
 
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     result.css('color', 'red');
                     revealAlert('<div data-alert class="alert-box alert">' + jqXHR.responseText + '</div>', 'OK');
                 }
@@ -1062,10 +1082,10 @@ var GINIT = {
                     result.css('color', 'black');
                     $("form#availablelogos div.buttons").hide().appendTo("form#availablelogos");
 
-                    $('#spinner').show();
+                    spinImage.show();
                 },
                 success: function (data1) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     result.html(data1);
                     revealAlert($('div.uploadresult').text(), 'OK');
                     $.ajax({
@@ -1083,7 +1103,7 @@ var GINIT = {
                             GINIT.initialize();
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
-                            $('#spinner').hide();
+                            spinImage.hide();
                             $('#availablelogos').unbind();
                             $('#assignedlogos').unbind();
                             $('#uploadlogo').unbind();
@@ -1107,7 +1127,7 @@ var GINIT = {
                             GINIT.initialize();
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
-                            $('#spinner').hide();
+                            spinImage.hide();
                             $('#availablelogos').unbind();
                             $('#uploadlogo').unbind();
                             $("table#details").unbind();
@@ -1119,7 +1139,7 @@ var GINIT = {
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     revealAlert('<div data-alert class="alert-box alert">' + jqXHR.responseText + '</div>', 'OK');
 
                 }
@@ -1161,15 +1181,15 @@ var GINIT = {
                 cache: false,
                 beforeSend: function () {
                     result.html('');
-                    $('#spinner').show();
+                    spinImage.show();
                 },
                 success: function (data) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     result.html(data);
                     $("form#applyforaccount").remove();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     result.html(jqXHR.responseText);
                     result.css('color', 'red');
                     $("form#applyforaccount").remove();
@@ -1194,19 +1214,19 @@ var GINIT = {
                 beforeSend: function () {
                     $("div#unsignlogosbtn").hide().appendTo("form#assignedlogos");
                     result.html('');
-                    $('#spinner').show();
+                    spinImage.show();
                 },
                 success: function (data) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     infomsg.html(data);
-                    messagereveal.foundation('reveal', 'open');
+                    messagereveal.foundation('open');
                     checkedObj.parent().remove();
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     infomsg.html(jqXHR.responseText);
-                    messagereveal.foundation('reveal', 'open');
+                    messagereveal.foundation('open');
 
                 }
             });
@@ -1243,7 +1263,7 @@ var GINIT = {
                 dataType: "json",
                 timeout: 120000,
                 success: function (data) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     if (!data) {
                         alert('no data received from upstream server');
                     }
@@ -1276,10 +1296,10 @@ var GINIT = {
                 beforeSend: function () {
                     $("span#fvreturncode").text('');
                     $("div#fvmessages").text('');
-                    $('#spinner').show();
+                    spinImage.show();
                 },
                 error: function (x, t, m) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     if (t === 'timeout') {
                         window.alert('got timeout from validation server');
                     }
@@ -1292,7 +1312,7 @@ var GINIT = {
             //return false;
         });
 
-        $("#rejectqueue").on('submit',function(e){
+        $("#rejectqueue").on('submit', function (e) {
             var serializedData = $(this).serializeArray();
             var posturl = $(this).attr('action');
             $.ajax({
@@ -1300,20 +1320,20 @@ var GINIT = {
                 url: posturl,
                 data: serializedData,
                 dataType: "json",
-                success: function(data){
-                    if(data){
+                success: function (data) {
+                    if (data) {
                         alert(data.message);
                         window.location.href = baseurl;
                     }
                 },
-                error: function(jqXHR, textStatus, errorThrown){
-                     window.alert('Error occured: ' + errorThrown);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    window.alert('Error occured: ' + errorThrown);
                 }
             });
             return false;
         });
 
-        $("form#approvequeue").submit(function (e) {
+        $("#approvequeue").submit(function (e) {
             var result = 0;
             var validators = 0;
 
@@ -1335,7 +1355,7 @@ var GINIT = {
         $(document).on('click', '.fmembers', 'a', function () {
 
             var link = $(this), url = link.attr("href");
-            var row = $(this).parent().parent();
+            var row = link.parent().parent();
             if ($(row).hasClass('opened') === true) {
                 $(row).next().remove();
                 $(row).removeClass('opened').removeClass('highlight');
@@ -1349,7 +1369,7 @@ var GINIT = {
                     timeout: 9500,
                     cache: true,
                     success: function (data) {
-                        $('#spinner').hide();
+                        spinImage.hide();
                         var stitle;
                         var nlist;
                         var div_data;
@@ -1400,10 +1420,10 @@ var GINIT = {
 
                     },
                     beforeSend: function () {
-                        $('#spinner').show();
+                        spinImage.show();
                     },
                     error: function () {
-                        $('#spinner').hide();
+                        spinImage.hide();
                         window.alert('problem with loading data');
                     }
                 }).done(function () {
@@ -1427,7 +1447,7 @@ var GINIT = {
                 cache: true,
                 dataType: "json",
                 success: function (data) {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     if (!data) {
                         window.alert('no data');
                     }
@@ -1454,10 +1474,10 @@ var GINIT = {
                     }
                 },
                 beforeSend: function () {
-                    $('#spinner').show();
+                    spinImage.show();
                 },
                 error: function () {
-                    $('#spinner').hide();
+                    spinImage.hide();
                     window.alert('problem with loading data');
                 }
 
@@ -1500,8 +1520,10 @@ var GINIT = {
 
 
 $(document).ready(function () {
-
-    var spinner = $('#spinner');
+    $('fieldset').addClass('fieldset');
+    $('pre code').each(function (i, block) {
+        hljs.highlightBlock(block);
+    });
 
     $(window).scroll(function () {
         if ($(this).scrollTop() >= 100) {
@@ -1531,7 +1553,7 @@ $(document).ready(function () {
             url: dataLink,
             dataTypa: 'json',
             beforeSend: function () {
-                spinner.show();
+                spinImage.show();
             },
             success: function (json) {
                 var administrator = json.definitions.admin;
@@ -1542,8 +1564,7 @@ $(document).ready(function () {
                 var dictUsername = json.definitions.dictionary.username;
                 var dictIsAdmin = 'Administrator';
                 var dictIsYou = 'You';
-
-                spinner.hide();
+                spinImage.hide();
                 var tbl = [];
                 tbl.push('<table><thead><tr><th>' + dictUsername + '</th>');
                 $.each(json.definitions.actions, function (a, action) {
@@ -1581,10 +1602,10 @@ $(document).ready(function () {
 
                             }
                             if (d.perms[action] === true) {
-                                tbl.push('<td>' + dictHasAccess + ' <div><button ' + disableBtn + ' class="tiny alert ' + disableBtnClass + '" value="' + k + '$|$' + action + '$|$deny" name="changeaccess" type="submit" >' + dictDeny + '</button></div></td>');
+                                tbl.push('<td>' + dictHasAccess + ' <div><button ' + disableBtn + ' class="button small alert ' + disableBtnClass + '" value="' + k + '$|$' + action + '$|$deny" name="changeaccess" type="submit" >' + dictDeny + '</button></div></td>');
                             }
                             else {
-                                tbl.push('<td>' + dictHasNoAccess + ' <div><button ' + disableBtn + ' class="tiny ' + disableBtnClass + '" value="' + k + '$|$' + action + '$|$allow" name="changeaccess" type="submit">' + dictAllow + '</button></div></td>');
+                                tbl.push('<td>' + dictHasNoAccess + ' <div><button ' + disableBtn + ' class="button small ' + disableBtnClass + '" value="' + k + '$|$' + action + '$|$allow" name="changeaccess" type="submit">' + dictAllow + '</button></div></td>');
                             }
                         }
                     });
@@ -1600,7 +1621,7 @@ $(document).ready(function () {
 
             },
             error: function (xhr, status, error) {
-                spinner.hide();
+                spinImage.hide();
                 window.alert(xhr.responseText);
             }
         });
@@ -1663,35 +1684,39 @@ $(document).ready(function () {
 
 
                 var markersSet = false;
-                tabMap.on('toggled', function (event, tab) {
 
-                    if (markersSet === false) {
-                        var bounds = new google.maps.LatLngBounds();
-                        for (var i = 0, tot = markers.length; i < tot; i++) {
-                            var myLatlng = new google.maps.LatLng(markers[i][0], markers[i][1]);
-                            var marker = new google.maps.Marker({
-                                position: myLatlng,
-                                map: map,
-                                title: ''
-                            });
+                providerEditForm.on('change.zf.tabs', '[data-tabs]', function (e) {
 
-                            marker.setMap(map);
-                            gMarkers.push(marker);
-                            bounds.extend(marker.position);
-                        }
-                        markersSet = true;
+                    //     if (markersSet === false) {
 
-                        var center = map.getCenter();
-                        google.maps.event.trigger(map, "resize");
-                        map.setCenter(center);
-                        if (markers.length > 0) {
-                            map.fitBounds(bounds);
-                        }
+                    var bounds = new google.maps.LatLngBounds();
+                    for (var i = 0, tot = markers.length; i < tot; i++) {
+                        var myLatlng = new google.maps.LatLng(markers[i][0], markers[i][1]);
+                        var marker = new google.maps.Marker({
+                            position: myLatlng,
+                            map: map,
+                            title: ''
+                        });
+
+                        marker.setMap(map);
+                        gMarkers.push(marker);
+                        bounds.extend(marker.position);
+                    }
+                    markersSet = true;
+                    //     }
+                    var center = map.getCenter();
+                    google.maps.event.trigger(map, "resize");
+                    map.setCenter(center);
+                    if (markers.length > 0) {
+                        map.fitBounds(bounds);
                     }
                     var listener = google.maps.event.addListener(map, "idle", function () {
-                        if (map.getZoom() > 16) map.setZoom(16);
+                        if (map.getZoom() > 16) {
+                            map.setZoom(16);
+                        }
                         google.maps.event.removeListener(listener);
                     });
+
                 });
             }
             else {
@@ -1729,7 +1754,7 @@ $(document).ready(function () {
                 for (var i = 0; i < 5; i++) {
                     rname += possible.charAt(Math.floor(Math.random() * possible.length));
                 }
-                var html = '<div class="small-12 column collapse georow"><div class="small-11 column"><input name="f[uii][idpsso][geo][' + rname + ']" type="text" value="' + inputgeo + '" readonly="readonly"></div><div class="small-1 column"><a href="#" class="rmgeo"><i class="fi-trash alert" style="color: red"></i></a></div></div>';
+                var html = '<div class="small-12 column collapse georow"><div class="small-11 column"><input name="f[uii][idpsso][geo][' + rname + ']" type="text" value="' + inputgeo + '" readonly="readonly"></div><div class="small-1 column"><a href="#" class="rmgeo"><i class="fa fa-trash alert" style="color: red"></i></a></div></div>';
                 $(html).appendTo($('#geogroup'));
                 if (typeof google === 'object' && typeof google.maps === 'object') {
                     var bounds = new google.maps.LatLngBounds();
@@ -1888,7 +1913,7 @@ $(document).ready(function () {
             var rmbtn = $("button#helperbutttonrm").html();
             selected.attr('disabled', true).attr('selected', false);
 
-            $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][spsso][desc][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][spsso][desc][" + nf + "]\" name=\"f[uii][spsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"uiispdescrm\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
+            $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][spsso][desc][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][spsso][desc][" + nf + "]\" name=\"f[uii][spsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button left inline alert\" name=\"uiispdescrm\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         });
 
         $("#spadduiikeywords").click(function () {
@@ -1901,7 +1926,7 @@ $(document).ready(function () {
             var rmbtn = $("button#helperbutttonrm").html();
             selected.attr('disabled', true).attr('selected', false);
 
-            $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][spsso][keywords][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][spsso][keywords][" + nf + "]\" name=\"f[uii][spsso][keywords][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"btn langinputrm button tiny left inline alert\" name=\"uiispkeywordsrm\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
+            $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][spsso][keywords][" + nf + "]\" class=\"right inline\">" + nfv + "</label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][spsso][keywords][" + nf + "]\" name=\"f[uii][spsso][keywords][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"><button type=\"button\" class=\"langinputrm button  left inline alert\" name=\"uiispkeywordsrm\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         });
 
         $("button#addlname").click(function () {
@@ -1968,7 +1993,7 @@ $(document).ready(function () {
             var nfv = selected.text();
             var inputname = $(this).attr('value');
             selected.attr('disabled', true).attr('selected', false);
-            $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][idpsso][desc][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline\" name=\"ldesc\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
+            $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][idpsso][desc][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][idpsso][desc][" + nf + "]\" name=\"f[uii][idpsso][desc][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\" langinputrm button  left inline alert\" name=\"ldesc\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         });
         $("button#idpadduiikeywords").click(function () {
             var selected = $("span.idpuiikeywordsadd option:selected").first();
@@ -1980,9 +2005,9 @@ $(document).ready(function () {
             var nfv = selected.text();
             var inputname = $(this).attr('value');
             selected.attr('disabled', true).attr('selected', false);
-            $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][idpsso][keywords][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][idpsso][keywords][" + nf + "]\" name=\"f[uii][idpsso][keywords][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"btn langinputrm button tiny left inline\" name=\"lkeywords\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
+            $("<div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for=\"f[uii][idpsso][keywords][" + nf + "]\" class=\"right inline\">" + nfv + " </label></div><div class=\"small-6 large-7 columns\"><textarea id=\"f[uii][idpsso][keywords][" + nf + "]\" name=\"f[uii][idpsso][keywords][" + nf + "]\" rows=\"5\" cols=\"40\"/></textarea></div><div class=\"small-3 large-2 columns\"> <button type=\"button\" class=\"langinputrm button  left inline alert\" name=\"lkeywords\" value=\"" + nf + "\">" + rmbtn + "</button></div></div>").insertBefore($(this).closest('span').parent());
         });
-        
+
         $("button#addlprivacyurlspsso").click(function () {
             var selected = $("span.addlprivacyurlspsso option:selected").first();
             var nf = selected.val();
@@ -2015,7 +2040,7 @@ $(document).ready(function () {
         $("#ncontactbtn").click(function () {
             var rname = genRandomStr(5);
             var btnvalues = $(this).attr('value').split('|');
-            var newelement = '<div class="group"><div class="small-12 columns"><fieldset><legend>' + btnvalues[5] + '</legend><div><div class="small-12 columns"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][type]" class="right inline">' + btnvalues[1] + '</label></div><div class="small-8 large-7 columns inline"><select name="f[contact][n_' + rname + '][type]"> <option value="administrative">Administrative</option> <option value="technical">Technical</option> <option value="support" selected="selected">Support</option> <option value="billing">Billing</option> <option value="other">Other</option> </select></div><div class="small-1 large-2 columns"></div></div> <div class="small-12 columns"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][fname]" class="right inline">' + btnvalues[2] + '</label></div><div  class="small-8 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][fname]" value="" id="f[contact][n_' + rname + '][fname]" class="right inline" /></div><div class="small-1 large-2 columns"></div></div> <div class="small-12 columns"><div  class="small-3 columns"><label for="f[contact][n_' + rname + '][sname]" class="right inline">' + btnvalues[3] + '</label></div><div class="small-8 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][sname]" value="" id="f[contact][n_' + rname + '][sname]" class="right inline" /></div><div class="small-1 large-2 columns"></div></div><div class="small-12 columns"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][email]" class="right inline ">' + btnvalues[4] + '</label></div><div class="small-8 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][email]" value="" id="f[contact][n_' + rname + '][email]" class="right inline" /></div><div class="small-1 large-2 columns"></div></div><div class="rmelbtn small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="btn contactrm tiny alert button inline right" name="contact" value="' + rname + '">' + btnvalues[0] + '</button></div><div class="small-3 large-2 columns"></div></div></div></fieldset></div></div>';
+            var newelement = '<div class="group"><div class="small-12 columns"><fieldset><legend>' + btnvalues[5] + '</legend><div><div class="small-12 columns"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][type]" class="right inline">' + btnvalues[1] + '</label></div><div class="small-8 large-7 columns inline"><select name="f[contact][n_' + rname + '][type]"> <option value="administrative">Administrative</option> <option value="technical">Technical</option> <option value="support" selected="selected">Support</option> <option value="billing">Billing</option> <option value="other">Other</option> </select></div><div class="small-1 large-2 columns"></div></div> <div class="small-12 columns"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][fname]" class="right inline">' + btnvalues[2] + '</label></div><div  class="small-8 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][fname]" value="" id="f[contact][n_' + rname + '][fname]" class="right inline" /></div><div class="small-1 large-2 columns"></div></div> <div class="small-12 columns"><div  class="small-3 columns"><label for="f[contact][n_' + rname + '][sname]" class="right inline">' + btnvalues[3] + '</label></div><div class="small-8 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][sname]" value="" id="f[contact][n_' + rname + '][sname]" class="right inline" /></div><div class="small-1 large-2 columns"></div></div><div class="small-12 columns"><div class="small-3 columns"><label for="f[contact][n_' + rname + '][email]" class="right inline ">' + btnvalues[4] + '</label></div><div class="small-8 large-7 columns"><input type="text" name="f[contact][n_' + rname + '][email]" value="" id="f[contact][n_' + rname + '][email]" class="right inline" /></div><div class="small-1 large-2 columns"></div></div><div class="rmelbtn small-12 columns"><div class="small-9 large-10 columns"><button type="button" class="btn contactrm  alert button inline right" name="contact" value="' + rname + '">' + btnvalues[0] + '</button></div><div class="small-3 large-2 columns"></div></div></div></fieldset></div></div>';
             $(this).parent().before(newelement);
 
         });
@@ -2034,37 +2059,37 @@ $(document).ready(function () {
         });
         $("#nspssocert").click(function () {
             var rname = 'newx' + genRandomStr(5);
-            var newelement = '<div class="certgroup small-12 columns"><div class="small-12 columns hidden"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][type]" class="right inline">Certificate type</label></div><div class="small-8 large-7 columns"><select name="f[crt][spsso][' + rname + '][type]"><option value="x509">x509</option></select> </div><div class="small-1 large-2 columns end"></div></div><div class="small-12  columns"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][usage]" class="right inline">Certificate use</label></div><div class="small-8 large-7 columns"><select name="f[crt][spsso][' + rname + '][usage]"><option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select></div><div class="small-1 large-2 columns end"></div></div><div class="small-12 columns hidden"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][keyname]" class="right inline">KeyName</label></div><div class="small-8 large-7 columns"><input type="text" name="f[crt][spsso][' + rname + '][keyname]" value="" id="f[crt][spsso][' + rname + '][keyname]" class=""  /></div><div class="small-1 large-2 columns end"></div> </div><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][certdata]" class="right inline">Certificate</label></div><div class="small-8 large-7 columns"><textarea name="f[crt][spsso][' + rname + '][certdata]" cols="65" rows="20" id="f[crt][spsso][' + rname + '][certdata]" class="certdata" ></textarea></div><div class="small-1 large-2 columns end"></div></div><div class="small-12 columns"><div class="small-3 columns">&nbsp;</div><div class="small-6 large-7 columns"><button class="certificaterm button alert tiny right" value="' + rname + '" name="certificate" type="button">Remove certificate</button></div><div class="small-3 large-2 columns"></div></div></div>';
+            var newelement = '<div class="certgroup small-12 columns"><div class="small-12 columns hidden"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][type]" class="right inline">Certificate type</label></div><div class="small-8 large-7 columns"><select name="f[crt][spsso][' + rname + '][type]"><option value="x509">x509</option></select> </div><div class="small-1 large-2 columns end"></div></div><div class="small-12  columns"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][usage]" class="right inline">Certificate use</label></div><div class="small-8 large-7 columns"><select name="f[crt][spsso][' + rname + '][usage]"><option value="signing">signing</option> <option value="encryption">encryption</option> <option value="both" selected="selected">signing and encryption</option> </select></div><div class="small-1 large-2 columns end"></div></div><div class="small-12 columns hidden"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][keyname]" class="right inline">KeyName</label></div><div class="small-8 large-7 columns"><input type="text" name="f[crt][spsso][' + rname + '][keyname]" value="" id="f[crt][spsso][' + rname + '][keyname]" class=""  /></div><div class="small-1 large-2 columns end"></div> </div><div class="small-12 columns"><div class="small-3 columns"><label for="f[crt][spsso][' + rname + '][certdata]" class="right inline">Certificate</label></div><div class="small-8 large-7 columns"><textarea name="f[crt][spsso][' + rname + '][certdata]" cols="65" rows="20" id="f[crt][spsso][' + rname + '][certdata]" class="certdata" ></textarea></div><div class="small-1 large-2 columns end"></div></div><div class="small-12 columns"><div class="small-3 columns">&nbsp;</div><div class="small-6 large-7 columns"><button class="certificaterm button alert  right" value="' + rname + '" name="certificate" type="button">Remove certificate</button></div><div class="small-3 large-2 columns"></div></div></div>';
             $(this).parent().before(newelement);
 
         });
 
         $("#nacsbtn").click(function () {
             var rname = genRandomStr(5);
-            var newelement = '<div class=\"srvgroup\"><div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for="f[srv][AssertionConsumerService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class=\"small-5 columns inline\"><select name="f[srv][AssertionConsumerService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:PAOS">urn:oasis:names:tc:SAML:2.0:bindings:PAOS</option> <option value="urn:oasis:names:tc:SAML:2.0:profiles:browser-post">urn:oasis:names:tc:SAML:2.0:profiles:browser-post</option> <option value="urn:oasis:names:tc:SAML:1.0:profiles:browser-post">urn:oasis:names:tc:SAML:1.0:profiles:browser-post</option> <option value="urn:oasis:names:tc:SAML:1.0:profiles:artifact-01">urn:oasis:names:tc:SAML:1.0:profiles:artifact-01</option> </select></div> <div class="small-4 columns"><div class="small-6 columns"><input type="text" name="f[srv][AssertionConsumerService][n_' + rname + '][order]" value="" id="f[srv][AssertionConsumerService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div><div class="small-6 columns"><label for="f[srv][AssertionConsumerService][n_' + rname + '][default]">Is default</label><input type="radio" name="f[srv][AssertionConsumerService][n_' + rname + '][default]" value="1" id="f[srv][AssertionConsumerService][n_' + rname + '][default]" class="acsdefault"/></div></div> </div>          <div class="small-12 columns"><div class="small-3 columns"><label for="f[srv][AssertionConsumerService][n_' + rname + '][url]" class=\"right inline\">URL</label></div><div class=\"small-8 large-7 columns inline\"><input name="f[srv][AssertionConsumerService][n_' + rname + '][url]" id="f[srv][AssertionConsumerService][n_' + rname + '][url]" type="text"></div><div class=\"small-3 large-2 columns\"><button class="inline left button tiny alert rmfield"  name="rmfield" type="button">Remove</button></div></div></div>';
+            var newelement = '<div class=\"srvgroup\"><div class=\"small-12 columns\"><div class=\"small-3 columns\"><label for="f[srv][AssertionConsumerService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class=\"small-5 columns inline\"><select name="f[srv][AssertionConsumerService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign">urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign</option> <option value="urn:oasis:names:tc:SAML:2.0:bindings:PAOS">urn:oasis:names:tc:SAML:2.0:bindings:PAOS</option> <option value="urn:oasis:names:tc:SAML:2.0:profiles:browser-post">urn:oasis:names:tc:SAML:2.0:profiles:browser-post</option> <option value="urn:oasis:names:tc:SAML:1.0:profiles:browser-post">urn:oasis:names:tc:SAML:1.0:profiles:browser-post</option> <option value="urn:oasis:names:tc:SAML:1.0:profiles:artifact-01">urn:oasis:names:tc:SAML:1.0:profiles:artifact-01</option> </select></div> <div class="small-4 columns"><div class="small-6 columns"><input type="text" name="f[srv][AssertionConsumerService][n_' + rname + '][order]" value="" id="f[srv][AssertionConsumerService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div><div class="small-6 columns"><label for="f[srv][AssertionConsumerService][n_' + rname + '][default]">Is default</label><input type="radio" name="f[srv][AssertionConsumerService][n_' + rname + '][default]" value="1" id="f[srv][AssertionConsumerService][n_' + rname + '][default]" class="acsdefault"/></div></div> </div>          <div class="small-12 columns"><div class="small-3 columns"><label for="f[srv][AssertionConsumerService][n_' + rname + '][url]" class=\"right inline\">URL</label></div><div class=\"small-8 large-7 columns inline\"><input name="f[srv][AssertionConsumerService][n_' + rname + '][url]" id="f[srv][AssertionConsumerService][n_' + rname + '][url]" type="text"></div><div class=\"small-3 large-2 columns\"><button class="inline left button  alert rmfield"  name="rmfield" type="button">Remove</button></div></div></div>';
             $(this).parent().before(newelement);
 
         });
         $("#nidpartifactbtn").click(function () {
             var rname = genRandomStr(5);
-            var newelement = '<div class="srvgroup"><div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][IDPArtifactResolutionService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class="small-6 large-7 columns inline"><select name="f[srv][IDPArtifactResolutionService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:SOAP</option> <option value="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding">urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding</option></select></div> <div class="small-2 large-1 columns end"><input type="text" name="f[srv][IDPArtifactResolutionService][n_' + rname + '][order]" value="" id="f[srv][IDPArtifactResolutionService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div></div> <div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][IDPArtifactResolutionService][n_' + rname + '][url]" class=\"right inline\">URL</label></div><div class="small-6 large-7 columns inline"><input name="f[srv][IDPArtifactResolutionService][n_' + rname + '][url]" id="f[srv][IDPArtifactResolutionService][n_' + rname + '][url]" type="text"></div><div class="small-3 large-2 columns"><button class="inline left button tiny alert rmfield" value="" name="rmfield" type="button">Remove</button></div></div>';
+            var newelement = '<div class="srvgroup"><div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][IDPArtifactResolutionService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class="small-6 large-7 columns inline"><select name="f[srv][IDPArtifactResolutionService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:SOAP</option> <option value="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding">urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding</option></select></div> <div class="small-2 large-1 columns end"><input type="text" name="f[srv][IDPArtifactResolutionService][n_' + rname + '][order]" value="" id="f[srv][IDPArtifactResolutionService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div></div> <div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][IDPArtifactResolutionService][n_' + rname + '][url]" class=\"right inline\">URL</label></div><div class="small-6 large-7 columns inline"><input name="f[srv][IDPArtifactResolutionService][n_' + rname + '][url]" id="f[srv][IDPArtifactResolutionService][n_' + rname + '][url]" type="text"></div><div class="small-3 large-2 columns"><button class="inline left button  alert rmfield" value="" name="rmfield" type="button">Remove</button></div></div>';
             $(this).parent().before(newelement);
         });
 
 
         $("#nspartifactbtn").click(function () {
             var rname = genRandomStr(5);
-            var newelement = '<div class="srvgroup"><div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class=\"small-8 large-7 columns inline\"><select name="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:SOAP</option> <option value="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding">urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding</option></select> </div> <div class=\"small-1  columns left\"><input type="text" name="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" value="" id="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div></div>           <div class="small-12 columns"><div class="small-3 columns"><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" class="right inline">URL</label></div><div class=\"small-6 large-7 columns inline\"><input name="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" id="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" type="text"> </div><div class=\"small-3 large-2 columns\"><button class="inline left button tiny alert rmfield"  name="rmfield" type="button">Remove</button></div></div>';
+            var newelement = '<div class="srvgroup"><div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class=\"small-8 large-7 columns inline\"><select name="f[srv][SPArtifactResolutionService][n_' + rname + '][bind]"> <option value="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" selected="selected">urn:oasis:names:tc:SAML:2.0:bindings:SOAP</option> <option value="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding">urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding</option></select> </div> <div class=\"small-1  columns left\"><input type="text" name="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" value="" id="f[srv][SPArtifactResolutionService][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div></div>           <div class="small-12 columns"><div class="small-3 columns"><label for="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" class="right inline">URL</label></div><div class=\"small-6 large-7 columns inline\"><input name="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" id="f[srv][SPArtifactResolutionService][n_' + rname + '][url]" type="text"> </div><div class=\"small-3 large-2 columns\"><button class="inline left button  alert rmfield"  name="rmfield" type="button">Remove</button></div></div>';
             $(this).parent().before(newelement);
         });
         $("#ndrbtn").click(function () {
             var rname = genRandomStr(5);
-            var newelement = '<div class="srvgroup"><div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][DiscoveryResponse][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class="small-6 large-7 columns"><select name="f[srv][DiscoveryResponse][n_' + rname + '][bind]"><option value="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol">urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol</option></select> </div><div class="small-1 columns end"><input type="text" name="f[srv][DiscoveryResponse][n_' + rname + '][order]" value="" id="f[srv][DiscoveryResponse][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div></div><div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][DiscoveryResponse][n_' + rname + '][url]" class="right inline">URL</label></div><div class="small-6 large-7 columns"><input name="f[srv][DiscoveryResponse][n_' + rname + '][url]" id="f[srv][DiscoveryResponse][n_' + rname + '][url]" type="text"></div><div class="small-1 columns end"><button class="rmfield button alert tiny left" name="rmfield">Remove</button></div></div></div>';
+            var newelement = '<div class="srvgroup"><div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][DiscoveryResponse][n_' + rname + '][bind]" class=\"right inline\">Binding Name</label></div><div class="small-6 large-7 columns"><select name="f[srv][DiscoveryResponse][n_' + rname + '][bind]"><option value="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol">urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol</option></select> </div><div class="small-1 columns end"><input type="text" name="f[srv][DiscoveryResponse][n_' + rname + '][order]" value="" id="f[srv][DiscoveryResponse][n_' + rname + '][order]" size="2" maxlength="2" class="acsindex "  /></div></div><div class="small-12 columns"><div class=\"small-3 columns\"><label for="f[srv][DiscoveryResponse][n_' + rname + '][url]" class="right inline">URL</label></div><div class="small-6 large-7 columns"><input name="f[srv][DiscoveryResponse][n_' + rname + '][url]" id="f[srv][DiscoveryResponse][n_' + rname + '][url]" type="text"></div><div class="small-1 columns end"><button class="rmfield button alert  left" name="rmfield">Remove</button></div></div></div>';
             $(this).parent().before(newelement);
         });
         $("#nribtn").click(function () {
             var rname = genRandomStr(5);
-            var newelement = '<div class="small-12 columns srvgroup"><div class="small-3 columns"><label for="f[srv][RequestInitiator][n_' + rname + '][url]" class="right inline">URL</label></div><div class="small-6 large-7 columns"><input name="f[srv][RequestInitiator][n_' + rname + '][url]" id="f[srv][RequestInitiator][n_' + rname + '][url]" type="text"></div><div class="small-3 large-2 columns"><button type="button" class="inline left button tiny alert rmfield" name="rmfield" value="">remove</button></div></div>';
+            var newelement = '<div class="small-12 columns srvgroup"><div class="small-3 columns"><label for="f[srv][RequestInitiator][n_' + rname + '][url]" class="right inline">URL</label></div><div class="small-6 large-7 columns"><input name="f[srv][RequestInitiator][n_' + rname + '][url]" id="f[srv][RequestInitiator][n_' + rname + '][url]" type="text"></div><div class="small-3 large-2 columns"><button type="button" class="inline left button  alert rmfield" name="rmfield" value="">remove</button></div></div>';
             $(this).parent().before(newelement);
         });
 
@@ -2255,10 +2280,10 @@ $(document).ready(function () {
             cache: false,
             dataType: "json",
             beforeSend: function () {
-                spinner.show();
+                spinImage.show();
             },
             success: function (json) {
-                spinner.hide();
+                spinImage.hide();
                 if (json) {
 
                     var attrdefs = json.attrs;
@@ -2287,7 +2312,7 @@ $(document).ready(function () {
                         tbl += '<tr><td data-jagger-entidlink="' + a.idpid + '" class="searchcol"><a href="' + prefurl + '/' + a.idpid + '" title="' + a.entityid + '" >' + a.name + '</a><span class="hidden">' + i + '</span></td>';
                         $.each(attrdefs, function (k, v) {
                             cl = '';
-                            requiredAttr = a['data']['attributes']['' + k + ''];
+                            requiredAttr = a.data.attributes['' + k + ''];
                             cell = v[0].toUpperCase();
                             if (requiredAttr === undefined) {
                                 cl = 'dis';
@@ -2317,7 +2342,7 @@ $(document).ready(function () {
                 }
             },
             error: function () {
-                spinner.hide();
+                spinImage.hide();
             }
         });
     });
@@ -2326,23 +2351,27 @@ $(document).ready(function () {
     if ($('#attrpols').length > 0) {
         var attrpolsVar = $('#attrpols').first();
         var attrpolstabVar = $('#attrpolstab').first();
+        var doReloadTab = function () {
+            attrpolstabVar.foundation('_handleTabChange', $('li.tabs-title.is-active'));
+        };
+
         var arpmaddspecattrVar = $('#arpmaddspecattr').first();
         providerdetailurl = attrpolsVar.attr('data-jagger-providerdetails');
         var fedid;
-        attrpolstabVar.on('toggled', function (event, tab) {
+        attrpolstabVar.on('change.zf.tabs', function (event, tab) {
 
             var progressbarHTML = '<div class="progress"><span class="meter" style="width: 10%"></span></div>';
             var progressbar = $($.parseHTML(progressbarHTML));
             var meter = progressbar.find('span.meter').first();
-            var addbtn = $('#addattrsupport');
-            var addentcatbtn = $('#addentcatattr');
-            var addspecbtn = $('#addespecattr');
+            var addbtn = $('#addattrsupport').clone(true);
+            var addentcatbtn = $('#addentcatattr').clone(true);
+            var addspecbtn = $('#addespecattr').clone(true);
             console.log(event, tab);
             var link = $(tab).attr('data-reveal-ajax-tab');
             if (link === undefined) {
                 return false;
             }
-            var target = attrpolsVar.find('section.active').first();
+            var target = attrpolsVar.find('section.is-active').first();
             //  progressbar.appendTo(target);
             var tbl;
             $.ajax({
@@ -2350,10 +2379,10 @@ $(document).ready(function () {
                 method: 'GET',
                 dataType: 'json',
                 beforeSend: function () {
-                    spinner.show();
+                    spinImage.show();
                 },
                 success: function (data) {
-                    spinner.hide();
+                    spinImage.hide();
                     meter.css('width', '100%');
                     var idf, supplbl, policy, datajaggersupm, support = [];
                     if (data.type === 'supported') {
@@ -2393,9 +2422,9 @@ $(document).ready(function () {
                             tbl += '</td><td>';
 
 
-                            tbl += '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + a + '" data-jagger-attrsupport="' + datajaggersup + '" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="edit" data-jagger-arp="global"><i class="fi-pencil"></i></a>';
+                            tbl += '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + a + '" data-jagger-attrsupport="' + datajaggersup + '" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="edit" data-jagger-arp="global"><i class="fa fa-pencil"></i></a>';
                             if (idf === -1) {
-                                tbl += '&nbsp;&nbsp;&nbsp;<a href="#" class="modalconfirm" data-jagger-attrsupport="' + datajaggersup + '" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="delete" data-jagger-arp="global"><i class="fi-trash alert"></i></a>';
+                                tbl += '&nbsp;&nbsp;&nbsp;<a href="#" class="modalconfirm" data-jagger-attrsupport="' + datajaggersup + '" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="delete" data-jagger-arp="global"><i class="fa fa-trash alert"></i></a>';
 
                             }
 
@@ -2416,7 +2445,7 @@ $(document).ready(function () {
                         var nrcols = 0;
                         var fpolicy, labelclass;
 
-                        var federationStr = data.definitions.lang['federation'];
+                        var federationStr = data.definitions.lang.federation;
 
                         tbl = '<div class="small-12 column"><table class="table"><thead><tr>';
                         $.each(data.definitions.columns, function (i, v) {
@@ -2425,7 +2454,7 @@ $(document).ready(function () {
                         });
                         tbl += '</tr></thead>';
                         var nrcols2 = nrcols - 2;
-                        var statusstr = data['definitions']['statusstr'];
+                        var statusstr = data.definitions.statusstr;
 
                         var feid, idf1;
                         $.each(data.data.fedpols, function (i, v) {
@@ -2461,10 +2490,10 @@ $(document).ready(function () {
                                     supportCopy.splice(idf, 1);
                                 }
 
-                                tbl += '</td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-attrpolicy="' + w + '" data-jagger-arp="fed" data-jagger-action="edit" data-jagger-fedid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-attrname="' + data.definitions.attrs[j] + '"><i class="fi-pencil"></i></a></td></tr>';
+                                tbl += '</td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-attrpolicy="' + w + '" data-jagger-arp="fed" data-jagger-action="edit" data-jagger-fedid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-attrname="' + data.definitions.attrs[j] + '"><i class="fa fa-pencil"></i></a></td></tr>';
                             });
                             $.each(supportCopy, function (jk, wk) {
-                                tbl += '<tr><td>' + data.definitions.attrs[wk] + '</td><td><span class="label secondary">' + data.definitions.policy[100] + '</span></td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-attrname="' + data.definitions.attrs[wk] + '" data-jagger-attrpolicy="100" data-jagger-fedid="' + i + '" data-jagger-action="edit" data-jagger-attrid="' + wk + '"><i class="fi-pencil"></i></a></td></tr>';
+                                tbl += '<tr><td>' + data.definitions.attrs[wk] + '</td><td><span class="label secondary">' + data.definitions.policy[100] + '</span></td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-attrname="' + data.definitions.attrs[wk] + '" data-jagger-attrpolicy="100" data-jagger-fedid="' + i + '" data-jagger-action="edit" data-jagger-attrid="' + wk + '"><i class="fa fa-pencil"></i></a></td></tr>';
                             });
 
 
@@ -2494,7 +2523,7 @@ $(document).ready(function () {
                         tbl += '</tr></thead>';
 
                         $.each(data.data.entcats, function (i, v) {
-                            tbl += '<tr><td colspan="' + nrcols + '" class="highlight">EntityCategory: ' + data.definitions.entcats[i]['name'] + '  ' + data.definitions.entcats[i]['value'] + ' <i class="ecmembers fi-list"  data-jagger-jsource="' + ecmemberurl + '/' + i + '"></i></td></tr>';
+                            tbl += '<tr><td colspan="' + nrcols + '" class="highlight">EntityCategory: ' + data.definitions.entcats[i]['name'] + '  ' + data.definitions.entcats[i]['value'] + ' <i class="ecmembers fa fa-list"  data-jagger-jsource="' + ecmemberurl + '/' + i + '"></i></td></tr>';
 
                             $.each(v, function (j, w) {
                                 unsupwttr = '';
@@ -2516,7 +2545,7 @@ $(document).ready(function () {
 
 
                                 tbl += '<tr>';
-                                tbl += '<td>' + data.definitions.attrs[j] + '</td><td><span class="label ' + labelclass + '">' + data.definitions.policy[w] + '</span>' + unsupwttr + '</td><td><a href="#" class="modalconfirm" data-jagger-arp="entcat" data-jagger-entcatid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-arp="entcat" data-jagger-action="edit" data-jagger-attrname="' + data.definitions.attrs[j] + '" data-jagger-attrpolicy="' + w + '"><i class="fi-pencil"></i></a></td>';
+                                tbl += '<td>' + data.definitions.attrs[j] + '</td><td><span class="label ' + labelclass + '">' + data.definitions.policy[w] + '</span>' + unsupwttr + '</td><td><a href="#" class="modalconfirm" data-jagger-arp="entcat" data-jagger-entcatid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-arp="entcat" data-jagger-action="edit" data-jagger-attrname="' + data.definitions.attrs[j] + '" data-jagger-attrpolicy="' + w + '"><i class="fa fa-pencil"></i></a></td>';
                                 tbl += '</tr>';
                             });
 
@@ -2551,7 +2580,7 @@ $(document).ready(function () {
 
                         $.each(data.data.sps, function (i, v) {
 
-                                var spReqAttr = new Array();
+                                var spReqAttr = [];
                                 if (v.req !== undefined) {
                                     $.each(v.req, function (p, w) {
                                         spReqAttr[p] = w;
@@ -2613,7 +2642,7 @@ $(document).ready(function () {
                                             '<td>' + data.definitions.req[spReqAttrStr] + '</td>' +
                                             '<td>' +
                                             '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + l + '" data-jagger-entityid="' + data.definitions.sps[i]['entityid'] + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + j + '">' +
-                                            '<i class="fi-pencil"></i></a></td></tr>';
+                                            '<i class="fa fa-pencil"></i></a></td></tr>';
                                     });
                                     for (var vkey in spReqAttr) {
                                         customattrpol = '';
@@ -2644,7 +2673,7 @@ $(document).ready(function () {
                                             tbl += '<tr><td>' + attrName + '</td>' +
                                                 '<td><span class="label ' + policyLabels['100'] + '">' + data.definitions.policy['100'] + '</span>  ' + supportedStatus + ' ' + customattrpol + '</td>' +
                                                 '<td>' + data.definitions.req[spReqAttr[vkey]] + '</td>' +
-                                                '<td><a href="#" class="modalconfirm" data-jagger-attrpolicy="100" data-jagger-entityid="' + data.definitions.sps[i]['entityid'] + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fi-pencil"></i></i></td></tr>';
+                                                '<td><a href="#" class="modalconfirm" data-jagger-attrpolicy="100" data-jagger-entityid="' + data.definitions.sps[i]['entityid'] + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fa fa-pencil"></i></i></td></tr>';
                                         }
                                     }
 
@@ -2665,7 +2694,7 @@ $(document).ready(function () {
 
                 },
                 error: function (xhr, status, error) {
-                    spinner.hide();
+                    spinImage.hide();
                     target.html('<div data-aler class="alert-box alert">' + xhr.responseText + '</div>');
                 }
             });
@@ -2682,16 +2711,17 @@ $(document).ready(function () {
         });
         attrpolsVar.on('click', 'a.modalconfirm', function (event) {
             event.preventDefault();
-            var arptype = $(this).attr('data-jagger-arp');
-            var arpaction = $(this).attr('data-jagger-action');
-            var attrname = $(this).attr('data-jagger-attrname');
-            var attrid = $(this).attr('data-jagger-attrid');
-            var fedid = $(this).attr('data-jagger-fedid');
-            var entcatid = $(this).attr('data-jagger-entcatid');
-            var attrsupport = $(this).attr('data-jagger-attrsupport');
-            var attrpolicy = $(this).attr('data-jagger-attrpolicy');
-            var spid = $(this).attr('data-jagger-spid');
-            var entityid = $(this).attr('data-jagger-entityid');
+            var thisObj = $(this);
+            var arptype = thisObj.attr('data-jagger-arp');
+            var arpaction = thisObj.attr('data-jagger-action');
+            var attrname = thisObj.attr('data-jagger-attrname');
+            var attrid = thisObj.attr('data-jagger-attrid');
+            var fedid = thisObj.attr('data-jagger-fedid');
+            var entcatid = thisObj.attr('data-jagger-entcatid');
+            var attrsupport = thisObj.attr('data-jagger-attrsupport');
+            var attrpolicy = thisObj.attr('data-jagger-attrpolicy');
+            var spid = thisObj.attr('data-jagger-spid');
+            var entityid = thisObj.attr('data-jagger-entityid');
             var baseurl = $("[name='baseurl']").val();
             var modal;
             if (arptype !== undefined && arpaction !== undefined) {
@@ -2703,7 +2733,7 @@ $(document).ready(function () {
                     modal.find('input[name="attrname"]').first().val(attrname);
                     modal.find('input[name="attrid"]').first().val(attrid);
                     modal.find('span.attributename').first().html(attrname);
-                    modal.foundation('reveal', 'open');
+                    modal.foundation('open');
                 }
                 else if (arptype === 'global' && arpaction === 'edit') {
                     modal = $("#arpmeditglobalattr");
@@ -2720,7 +2750,7 @@ $(document).ready(function () {
                     }
                     modal.find('[name="policy"] option').prop('selected', false).filter('[value="' + attrpolicy + '"]').prop('selected', true);
 
-                    modal.foundation('reveal', 'open');
+                    modal.foundation('open');
                 }
                 else if (arptype === 'fed' && arpaction === 'edit') {
                     modal = $("#arpmeditfedattr");
@@ -2729,7 +2759,7 @@ $(document).ready(function () {
                     modal.find('input[name="attrid"]').first().val(attrid);
                     modal.find('input[name="fedid"]').first().val(fedid);
                     modal.find('[name="policy"] option').prop('selected', false).filter('[value="' + attrpolicy + '"]').prop('selected', true);
-                    modal.foundation('reveal', 'open');
+                    modal.foundation('open');
                 }
                 else if (arptype === 'entcat' && arpaction === 'edit') {
                     modal = $('#arpmeditentcatattr');
@@ -2738,7 +2768,7 @@ $(document).ready(function () {
                     modal.find('input[name="attrid"]').first().val(attrid);
                     modal.find('input[name="entcatid"]').first().val(entcatid);
                     modal.find('[name="policy"] option').prop('selected', false).filter('[value="' + attrpolicy + '"]').prop('selected', true);
-                    modal.foundation('reveal', 'open');
+                    modal.foundation('open');
                 }
                 else if (arptype === 'sp' && arpaction === 'edit') {
                     modal = $('#arpmeditspattr');
@@ -2790,7 +2820,7 @@ $(document).ready(function () {
                             }
                         }
                     });
-                    modal.foundation('reveal', 'open');
+                    modal.foundation('open');
                 }
             }
 
@@ -2806,8 +2836,8 @@ $(document).ready(function () {
                 dataType: "json",
                 data: serializedData,
                 success: function (json) {
-                    $('#arpmdelattr').foundation('reveal', 'close');
-                    attrpolstabVar.find('a[href="#attrpol-1"]').first().trigger('click');
+                    $('#arpmdelattr').foundation('close');
+                    doReloadTab();
 
                 }
             });
@@ -2822,8 +2852,8 @@ $(document).ready(function () {
                 dataType: "json",
                 data: serializedData,
                 success: function (json) {
-                    $('#arpmeditglobalattr').foundation('reveal', 'close');
-                    attrpolstabVar.find('a[href="#attrpol-1"]').first().trigger('click');
+                    $('#arpmeditglobalattr').foundation('close');
+                    doReloadTab();
 
                 },
                 error: function (xhr, status, error) {
@@ -2853,7 +2883,7 @@ $(document).ready(function () {
 
                 }
             });
-            $('#arpmaddattr').foundation('reveal', 'open');
+            $('#arpmaddattr').foundation('open');
         });
 
         attrpolsVar.on('click', '#addentcatattr button', function (event) {
@@ -2887,7 +2917,7 @@ $(document).ready(function () {
 
                 }
             });
-            $('#arpmaddentcatattr').foundation('reveal', 'open');
+            $('#arpmaddentcatattr').foundation('open');
         });
 
         attrpolsVar.on('click', '#addespecattr button', function (event) {
@@ -2928,7 +2958,7 @@ $(document).ready(function () {
 
                 }
             });
-            modal.foundation('reveal', 'open');
+            modal.foundation('open');
             spdropdown.select2({width: "100%"});
             attrdropdown.select2({width: "100%"});
         });
@@ -2943,8 +2973,8 @@ $(document).ready(function () {
                 dataType: "json",
                 data: serializedData,
                 success: function (json) {
-                    $('#arpmaddattr').foundation('reveal', 'close');
-                    attrpolstabVar.find('a[href="#attrpol-1"]').first().trigger('click');
+                    $('#arpmaddattr').foundation('close');
+                    doReloadTab();
 
                 },
                 error: function (xhr, status, error) {
@@ -2964,8 +2994,8 @@ $(document).ready(function () {
                 dataType: "json",
                 data: serializedData,
                 success: function (json) {
-                    $('#arpmeditfedattr').foundation('reveal', 'close');
-                    attrpolstabVar.find('a[href="#attrpol-2"]').first().trigger('click');
+                    $('#arpmeditfedattr').foundation('close');
+                    doReloadTab();
 
                 },
                 error: function (xhr, status, error) {
@@ -3003,8 +3033,8 @@ $(document).ready(function () {
                 data: serializedData,
                 success: function (json) {
                     response.empty().removeClass('alert').removeClass('alert-box').hide();
-                    modal.foundation('reveal', 'close');
-                    attrpolstabVar.find('a[href="#attrpol-4"]').first().trigger('click');
+                    modal.foundation('close');
+                    doReloadTab();
                 },
                 error: function (xhr, status, error) {
 
@@ -3025,8 +3055,8 @@ $(document).ready(function () {
                 dataType: "json",
                 data: serializedData,
                 success: function (json) {
-                    $('#arpmeditspattr').foundation('reveal', 'close');
-                    attrpolstabVar.find('a[href="#attrpol-4"]').first().trigger('click');
+                    $('#arpmeditspattr').foundation('close');
+                    doReloadTab();
 
                 },
                 error: function (xhr, status, error) {
@@ -3047,9 +3077,8 @@ $(document).ready(function () {
                 dataType: "json",
                 data: serializedData,
                 success: function (json) {
-                    $('#arpmeditentcatattr').foundation('reveal', 'close');
-                    attrpolstabVar.find('a[href="#attrpol-3"]').first().trigger('click');
-
+                    $('#arpmeditentcatattr').foundation('close');
+                    doReloadTab();
                 },
                 error: function (xhr, status, error) {
 
@@ -3068,8 +3097,8 @@ $(document).ready(function () {
                 dataType: "json",
                 data: serializedData,
                 success: function (json) {
-                    $('#arpmaddentcatattr').foundation('reveal', 'close');
-                    attrpolstabVar.find('a[href="#attrpol-3"]').first().trigger('click');
+                    $('#arpmaddentcatattr').foundation('close');
+                    doReloadTab();
 
                 },
                 error: function (xhr, status, error) {
@@ -3083,19 +3112,23 @@ $(document).ready(function () {
     }
 
 
+    var matrixloader = $('#matrixloader').first();
+    var matrixdiv = $('#idpmatrixdiv').first();
+    var formupdater = $('#policyupdater').first();
     ////////////// new idpmatrix
-    if ($('#matrixloader').length > 0) {
-        var formupdater = $('#policyupdater');
+    if (matrixloader.length === 1) {
+
         var formupdaterUrl = formupdater.attr('data-jagger-link');
-        var formupdaterAction = $(formupdater).find('form').first();
-        var providerdetailurl = $('#matrixloader').attr('data-jagger-providerdetails');
-        var mrequester = $(formupdater).find("span.mrequester").first();
-        var mattribute = $(formupdater).find("span.mattribute").first();
-        var updatebutton = $(formupdater).find("div.yes").first();
-        var attrflow = $(formupdater).find("div.attrflow").first();
-        var matrixdiv = $('#idpmatrixdiv');
+        var formupdaterAction = formupdater.find('form').first();
+        var providerdetailurl = matrixloader.attr('data-jagger-providerdetails');
+        var mrequester = formupdater.find("span.mrequester").first();
+        var mattribute = formupdater.find("span.mattribute").first();
+        var updatebutton = formupdater.find("div.yes").first();
+        var attrflow = formupdater.find("div.attrflow").first();
+
+
         var clickedcell;
-        formupdater.on('click', 'div.yes', function (event) {
+        formupdater.on('click', '.yes', function (event) {
             event.preventDefault();
 
             var actionUrl = formupdaterAction.attr('action');
@@ -3104,7 +3137,7 @@ $(document).ready(function () {
                 url: actionUrl,
                 data: formupdaterAction.serializeArray(),
                 success: function (data) {
-                    formupdater.foundation('reveal', 'close');
+                    formupdater.foundation('close');
                     if (!clickedcell.hasClass('dis')) {
                         var cell = $.trim(clickedcell.text());
                         if ((data === "2" && (cell === "R" || cell === "D")) || (data === "1" && cell === "R")) {
@@ -3125,20 +3158,17 @@ $(document).ready(function () {
             });
         });
         matrixdiv.on('click', 'td', function (event) {
+            spinImage.show();
             clickedcell = $(this);
 
-            var splink = $(this).attr("data-jagger-entidlink");
+            var splink = clickedcell.attr("data-jagger-entidlink");
             if (splink !== undefined) {
                 document.location.href = providerdetailurl + '/' + splink;
                 return false;
             }
-
-            var spiddata = $(this).attr("data-jagger-spid");
-            var attrdata = $(this).attr("data-jagger-attrid");
-            //var attrclass = $(this).class();
+            var spiddata = clickedcell.attr("data-jagger-spid");
+            var attrdata = clickedcell.attr("data-jagger-attrid");
             if (spiddata !== undefined && attrdata !== undefined) {
-                //formupdater.foundation('reveal', 'open');
-                //alert(spiddata + 'and '+attrdata);
                 $.ajax({
                     type: "GET",
                     url: formupdaterUrl + '/' + spiddata + '/' + attrdata,
@@ -3163,13 +3193,14 @@ $(document).ready(function () {
                         tbl.append(tbody_data);
                         pl.append(tbl);
                         attrflow.html(pl.html());
-                        formupdater.foundation('reveal', 'open');
+                        formupdater.foundation('open');
 
+                        spinImage.hide();
                     }
                 });
             }
         });
-        var pid = $('#matrixloader').attr("data-jagger-link");
+        var pid = matrixloader.attr("data-jagger-link");
         if (typeof pid === "undefined") {
             return false;
         }
@@ -3179,7 +3210,7 @@ $(document).ready(function () {
             cache: false,
             dataType: "json",
             success: function (json) {
-                spinner.hide();
+                spinImage.hide();
 
                 if (json) {
                     var startTime = new Date();
@@ -3273,10 +3304,10 @@ $(document).ready(function () {
                 }
             },
             beforeSend: function () {
-                spinner.show();
+                spinImage.show();
             },
             error: function (xhr, status, error) {
-                spinner.hide();
+                spinImage.hide();
                 var alerthtml = '<div class="small-12 medium-11 columns small-centered"><div data-alert class="alert-box error">' + error + '</div></div>';
                 matrixdiv.html(alerthtml);
                 return false;
@@ -3312,7 +3343,7 @@ $(document).ready(function () {
                     fedmodalDropdown.find("option:selected").prop("selected", false);
                     fedmodalDropdown.find("option[value=" + data.policy + "]").prop("selected", true);
                     fedattrnameval.html(fedattrname);
-                    fedmodal.foundation('reveal', 'open');
+                    fedmodal.foundation('open');
 
                 },
                 error: function () {
@@ -3332,77 +3363,14 @@ $(document).ready(function () {
                 data: serializedData,
                 dataType: "json",
                 success: function (data) {
-                    modal.foundation('reveal', 'close');
+                    modal.foundation('close');
                     dynstate.html(data.policystr);
                 }
             });
         });
     }
 ///////////////////
-    if ($('#defaultarptab').length > 0) {
 
-        var arptable = $('#defaultarptab');
-        var modal = $('#globalpolicyupdater');
-        var modalForm = $('#globalpolicyupdater').find("form").first();
-        var addDefaultForm = $('#adddefaultpolicy');
-        var modalAttrId = modal.find("input[name='attribute']").first();
-        var modalDropdown = modal.find("select[name='policy']").first();
-        var link1 = modal.attr("data-jagger-link");
-        var attrnameval = modal.find("span.dynamicval").first();
-        arptable.on('click', 'a', function (e) {
-            e.preventDefault();
-            var attrid = $(this).attr('data-jagger-attrid');
-            var attrname = $(this).attr('data-jagger-attrname');
-            modalAttrId.val(attrid);
-            $.ajax({
-                type: "GET",
-                url: link1 + '/' + attrid,
-                cache: false,
-                success: function (data) {
-                    modalDropdown.find("option:selected").prop("selected", false);
-                    modalDropdown.find("option[value=" + data + "]").prop("selected", true);
-                    attrnameval.html(attrname);
-                    modal.foundation('reveal', 'open');
-
-                },
-                error: function () {
-                    alert('error');
-                }
-            });
-
-
-        });
-        modal.on('click', '.yes', function (e) {
-            e.preventDefault();
-            var posturl = modalForm.attr('action');
-            var serializedData = modalForm.serializeArray();
-            $.ajax({
-                type: "POST",
-                url: posturl,
-                data: serializedData,
-                dataType: "json",
-                success: function (data) {
-                    modal.foundation('reveal', 'close');
-                    location.reload();
-                }
-            });
-        });
-        addDefaultForm.on('click', 'button', function (e) {
-            e.preventDefault();
-            var posturl = addDefaultForm.attr('action');
-            var serializedData = addDefaultForm.serializeArray();
-            $.ajax({
-                type: "POST",
-                url: posturl,
-                data: serializedData,
-                dataType: "json",
-                success: function (data) {
-                    modal.foundation('reveal', 'close');
-                    location.reload();
-                }
-            });
-        });
-    }
 
     var helpactivity = $("#showhelps");
     if (helpactivity.length) {
@@ -3421,8 +3389,9 @@ $(document).ready(function () {
     var browsertimezone = -browsertime.getTimezoneOffset();
     fedlogin.attr('href', '' + fedloginurl + '/' + browsertimezone + '');
 
-    if ($('#fedcategories dd.active').length) {
-        var url = $('dd.active').find('a').first().attr('href');
+    if ($('#fedcategories li.active').length) {
+        var url = $('#fedcategories li.active').find('a').first().attr('href');
+
         var value = $('table.fedistpercat');
         var data;
         $.ajax({
@@ -3432,7 +3401,7 @@ $(document).ready(function () {
             dataType: "json",
             value: $('table.fedistpercat'),
             success: function (data) {
-                spinner.hide();
+                spinImage.hide();
                 if (!data) {
                     window.alert('no data in federation category');
                 }
@@ -3451,8 +3420,8 @@ $(document).ready(function () {
 
     $(".fedcategory").on('click', '', function (event) {
 
-        $('dd').removeClass('active');
-        $(this).closest('dd').addClass('active');
+        $(this).closest('ul').find('li').removeClass('active');
+        $(this).closest('li').addClass('active');
         var url = $(this).attr("href");
         var value = $('table.fedistpercat');
         var data;
@@ -3463,7 +3432,7 @@ $(document).ready(function () {
             dataType: "json",
             value: value,
             success: function (data) {
-                spinner.hide();
+                spinImage.hide();
                 if (!data) {
                     window.alert('no data in federation category');
                 }
@@ -3477,10 +3446,10 @@ $(document).ready(function () {
 
             },
             beforeSend: function () {
-                spinner.show();
+                spinImage.show();
             },
             error: function () {
-                spinner.hide();
+                spinImage.hide();
                 window.alert('problem with loading data');
             }
         }).done(function () {
@@ -3568,10 +3537,10 @@ $(function () {
 
     var iqcounter = $('#qcounter');
 
-    if(iqcounter.length > 0) {
+    if (iqcounter.length > 0) {
         var iqsrc = iqcounter.attr('data-jagger-src');
         var qcounterFromSession = sessionStorage.getItem('jaggerqcounter');
-        if(qcounterFromSession !== null){
+        if (qcounterFromSession !== null) {
             iqcounter.html(parseInt(qcounterFromSession));
         }
         var refresherFn = function () {
@@ -3591,33 +3560,33 @@ $(function () {
                     sessionStorage.setItem('jaggerqcounter', thesum);
 
                     iqcounter.html(thesum);
-                    if(dashresponsecontainer){
+                    if (dashresponsecontainer) {
                         var rows = [];
-                        if(result.definitions){
+                        if (result.definitions) {
                             var defs = result.definitions;
-                            rows.push('<table id="detailsi" class="itablesorter"><thead><tr><th>' +defs.date+'</th><th>'+defs.requester+'</th><th>'+defs.requesttype+'</th><th></th></tr><thead><tbody>');
+                            rows.push('<table id="detailsi" class="itablesorter"><thead><tr><th>' + defs.date + '</th><th>' + defs.requester + '</th><th>' + defs.requesttype + '</th><th></th></tr><thead><tbody>');
                         }
                         else {
                             rows.push('<table id="detailsi" class="itablesorter"><thead><tr><th>Date</th><th>Requester</th><th>Request type</th><th></th></tr><thead><tbody>');
                         }
-                        if(result.data.q){
-                            $.each(result.data.q, function(v,k){
+                        if (result.data.q) {
+                            $.each(result.data.q, function (v, k) {
 
-                                rows.push('<tr><td>'+ k.idate+'</td><td>'+ k.requesterCN + ' '+ k.mail+'</td><td>'+ k.type+' - '+ k.action+'</td><td><a href="'+baseurl+'reports/awaiting/detail/'+ k.token+'"><i class="fi-arrow-right"></i></a></td></tr>');
+                                rows.push('<tr><td>' + k.idate + '</td><td>' + k.requesterCN + ' ' + k.mail + '</td><td>' + k.type + ' - ' + k.action + '</td><td><a href="' + baseurl + 'reports/awaiting/detail/' + k.token + '"><i class="fa fa-arrow-right"></i></a></td></tr>');
                             });
                         }
-                        if(result.data.s){
-                             $.each(result.data.s, function(v,k){
-                                rows.push('<tr><td>&nbsp;</td><td>'+k.subscriber+' &lt'+k.subscriber_email+'&gt;</td><td>'+k.type+'</td><td><a href="'+k.url+'"><i class="fi-arrow-right"></i></a></td></tr>');
-                             });
+                        if (result.data.s) {
+                            $.each(result.data.s, function (v, k) {
+                                rows.push('<tr><td>&nbsp;</td><td>' + k.subscriber + ' &lt' + k.subscriber_email + '&gt;</td><td>' + k.type + '</td><td><a href="' + k.url + '"><i class="fa fa-arrow-right"></i></a></td></tr>');
+                            });
                         }
                         rows.push('</tbody></table>');
                         var tableresult = rows.join('');
                         dashresponsecontainer.html(tableresult);
                     }
                 },
-                error: function(){
-                    if(dashresponsecontainer){
+                error: function () {
+                    if (dashresponsecontainer) {
                         var errmsg = '<div data-alert class="alert-box alert center">Could not refresh queue</div>';
                         dashresponsecontainer.html(errmsg);
                     }
@@ -3626,19 +3595,16 @@ $(function () {
 
             });
         };
-        setTimeout(refresherFn,1000);
+        setTimeout(refresherFn, 1000);
         var refreshInterval = setInterval(refresherFn, 30000);
         refreshInterval;
     }
 
 
-
-$("#responsecontainer").load(baseurl + "reports/awaiting/ajaxrefresh");
-   setInterval(function () {
+    $("#responsecontainer").load(baseurl + "reports/awaiting/ajaxrefresh");
+    setInterval(function () {
         $("#responsecontainer").load(baseurl + 'reports/awaiting/ajaxrefresh');
     }, 172000);
-
-
 
 
     $('#languageset').on('change', 'select', function (e) {
@@ -3649,7 +3615,7 @@ $("#responsecontainer").load(baseurl + "reports/awaiting/ajaxrefresh");
             timeout: 2500,
             cache: false
         }).done(function () {
-            $('#languageset').foundation('reveal', 'close');
+            $('#languageset').foundation('close');
 
             setTimeout(function () {
                 go_to_private_page();
@@ -3747,7 +3713,7 @@ $("#responsecontainer").load(baseurl + "reports/awaiting/ajaxrefresh");
             dataType: "json",
             success: function (data) {
                 i = null;
-                $('#spinner').hide();
+                spinImage.hide();
                 if (!data) {
                     window.alert('no data');
                 }
@@ -3764,10 +3730,10 @@ $("#responsecontainer").load(baseurl + "reports/awaiting/ajaxrefresh");
 
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinImage.show();
             },
             error: function () {
-                $('#spinner').hide();
+                spinImage.hide();
                 window.alert('problem with loading data');
             }
 
@@ -3977,13 +3943,13 @@ $("#usepredefined").click(function () {
 
 
 $("#nattrreqbtn").click(function (ev) {
-    ev.preventDefault();
     var rname = genRandomStr(5);
     var attrselect = $('select[name="nattrreq"]');
     var attrname = attrselect.find(":selected").text();
     var attrid = attrselect.find(":selected").val();
-    var newelement = '<fieldset><legend>' + attrname + '</legend><div class="small-12 columns"><div class="medium-3 columns medium-text-right"><select name="f[reqattr][' + rname + '][status]"><option value="required">required</option><option value="desired">desired</option></select><input type="hidden" name="f[reqattr][' + rname + '][attrname]" value="' + attrname + '"><input type="hidden" name="f[reqattr][' + rname + '][attrid]" value="' + attrid + '"></div><div class="medium-6 collumns end"><textarea name="f[reqattr][' + rname + '][reason]"></textarea></div></div></fieldset>';
+    var newelement = '<fieldset class="fieldset"><legend>' + attrname + '</legend><div class="small-12 columns"><div class="medium-3 columns medium-text-right"><select name="f[reqattr][' + rname + '][status]"><option value="required">required</option><option value="desired">desired</option></select><input type="hidden" name="f[reqattr][' + rname + '][attrname]" value="' + attrname + '"><input type="hidden" name="f[reqattr][' + rname + '][attrid]" value="' + attrid + '"></div><div class="medium-6 columns"><textarea name="f[reqattr][' + rname + '][reason]"></textarea></div><div class="medium-3 column end"><button class="btn reqattrrm inline left button alert" type="button" name="f[reqattr][' + rname + ']">Remove</button></div></div></fieldset>';
     $(this).parent().parent().before(newelement);
+    return false;
 
 });
 
@@ -4009,12 +3975,6 @@ $(document).ready(function () {
     if (baseurl === undefined) {
         baseurl = '';
     }
-// Preload Images
-    var img1 = new Image(16, 16);
-    img1.src = baseurl + 'images/spinner.gif';
-
-    var img2 = new Image(220, 19);
-    img2.src = baseurl + 'images/ajax-loader.gif';
 
     if ($("#eds2").is('*')) {
         $("#idpSelect").modal(
@@ -4030,15 +3990,15 @@ $(document).ready(function () {
             type: "GET",
             url: baseurl + 'smanage/reports/vormversion',
             success: function (data) {
-                $('#spinner').hide();
+                spinImage.hide();
                 $("#rvormversion").show();
                 $("tr#rvormversion td:first-child").html(data);
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinImage.show();
             },
             error: function () {
-                $('#spinner').hide();
+                spinImage.hide();
                 window.alert('Error occurred');
             }
         });
@@ -4050,15 +4010,15 @@ $(document).ready(function () {
             type: "GET",
             url: baseurl + 'smanage/reports/vschema',
             success: function (data) {
-                $('#spinner').hide();
+                spinImage.hide();
                 $("#rvschema").show();
                 $("tr#rvschema td:first-child").html(data);
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinImage.show();
             },
             error: function () {
-                $('#spinner').hide();
+                spinImage.hide();
                 window.alert('Error ocured');
             }
         });
@@ -4070,15 +4030,15 @@ $(document).ready(function () {
             type: "GET",
             url: baseurl + 'smanage/reports/vschemadb',
             success: function (data) {
-                $('#spinner').hide();
+                spinImage.hide();
                 $("#rvschemadb").show();
                 $("tr#rvschemadb td:first-child").html(data);
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinImage.show();
             },
             error: function () {
-                $('#spinner').hide();
+                spinImage.hide();
                 window.alert('Error ocured');
             }
         });
@@ -4090,15 +4050,15 @@ $(document).ready(function () {
             type: "GET",
             url: baseurl + 'smanage/reports/vmigrate',
             success: function (data) {
-                $('#spinner').hide();
+                spinImage.hide();
                 $("#rvmigrate").show();
                 $("tr#rvmigrate td:first-child").html(data);
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinImage.show();
             },
             error: function () {
-                $('#spinner').hide();
+                spinImage.hide();
                 window.alert('Error ocured');
             }
         });
@@ -4145,15 +4105,15 @@ $(document).ready(function () {
                 });
                 rows.push('</tbody></table>');
                 var result = rows.join('');
-                $('#spinner').hide();
+                spinImage.hide();
                 $("#rvcerts").show();
                 $("tr#rvcerts td:first-child").html(result);
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinImage.show();
             },
             error: function () {
-                $('#spinner').hide();
+                spinImage.hide();
                 window.alert('Error ocured');
             }
         });
@@ -4162,6 +4122,7 @@ $(document).ready(function () {
 
 
     $('button[name="fedstatus"]').click(function (ev) {
+
         var btnVal = $(this).attr('value');
         var additionalMsg = $(this).attr('title');
         if (additionalMsg === undefined) {
@@ -4170,7 +4131,7 @@ $(document).ready(function () {
         var csrfname = $("[name='csrfname']").val();
         var csrfhash = $("[name='csrfhash']").val();
         var baseurl = $("[name='baseurl']").val();
-        var fedname = $("span#fednameencoded").text();
+        var fedname = $("#fednameencoded").text();
         var url = baseurl + 'federations/fedactions/changestatus';
         var data = [{name: 'status', value: btnVal}, {name: csrfname, value: csrfhash}, {
             name: 'fedname',
@@ -4279,7 +4240,7 @@ $(document).ready(function () {
             success: function (data) {
                 $(".message").html(data);
                 if (data === 'OK') {
-                    $('#notificationaddmodal').foundation('reveal', 'close');
+                    $('#notificationaddmodal').foundation('close');
                     location.reload();
                 }
             },
@@ -4291,7 +4252,7 @@ $(document).ready(function () {
 
     });
 
-    $(document).on('open.fndtn.reveal', '#notificationaddmodal', function () {
+    $(document).on('open.zf.reveal', '#notificationaddmodal', function () {
         var modal = $(this);
         $('select#sfederation').parent().hide();
         $('select#sprovider').parent().hide();
@@ -4348,29 +4309,20 @@ $(document).ready(function () {
     function sconfirm(message, callback) {
         var modal = $('#sconfirm');
         modal.find('.message').html(message + '&nbsp;');
-        modal.foundation('reveal', 'open');
-        modal.foundation('reflow');
-        modal.on('opened.fndtn.reveal', function (e) {
+        modal.on('open.zf.reveal', function (e) {
             var yesbtn = modal.find('.yes').first();
             var nobtn = modal.find('.no').first();
             yesbtn.off().on('click', function () {
                 callback.apply();
-                modal.foundation('reveal', 'close');
+                modal.foundation('close');
             });
             nobtn.off().on('click', function () {
-                modal.foundation('reveal', 'close');
+                modal.foundation('close');
             });
         });
-
-
+        modal.foundation('open');
     }
-
-
 });
-
-function go_to_private_page() {
-    window.location.reload();
-}
 
 
 $(".submit").click(function () {
@@ -4403,7 +4355,7 @@ $('#joinfed').on('change', '#fedid', function (e) {
             data: postdata,
             dataType: "json",
             success: function (data) {
-                $('#spinner').hide();
+                spinImage.hide();
                 if (data) {
                     var validatorButtons = $("ul.validatorbuttons");
                     $.each(data, function (i, v) {
@@ -4413,10 +4365,11 @@ $('#joinfed').on('change', '#fedid', function (e) {
                 }
             },
             beforeSend: function () {
-                $('#spinner').show();
+                spinImage.show();
+
             },
             error: function () {
-                $('#spinner').hide();
+                spinImage.hide();
                 $('#fvform').hide();
                 $('#fvresult').hide();
             }
@@ -4491,7 +4444,7 @@ $("#notificationupdateform").on('submit', function (e) {
 
             }
 
-            $('#notificationupdatemodal').foundation('reveal', 'close');
+            $('#notificationupdatemodal').foundation('close');
             location.reload();
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -4503,7 +4456,7 @@ $("#notificationupdateform").on('submit', function (e) {
 
 });
 
-$(document).on('submit', 'div#loginform form', function (e) {
+$(document).on('submit', '#loginform form', function (e) {
     e.preventDefault();
     var loginform = $("#loginform");
     var submitbutton = $(loginform).find(":submit").first();
@@ -4528,7 +4481,8 @@ $(document).on('submit', 'div#loginform form', function (e) {
         success: function (data) {
             if (data) {
                 if (data.success === true && data.result === 'OK') {
-                    $('#loginform').foundation('reveal', 'close');
+                    loginform.foundation('close');
+                    spinImage.show();
                     setTimeout(function () {
 
                         window.location.href = baseurl;
@@ -4583,8 +4537,7 @@ if ($('#providerslistresultv2').length) {
         cache: true,
         dataType: "json",
         success: function (result) {
-
-            $('#spinner').hide();
+            spinImage.hide();
             var langdefs = result.definitions.lang;
             var table = $('<table/>');
             var thead = $('<thead/>');
@@ -4641,7 +4594,10 @@ if ($('#providerslistresultv2').length) {
                                 }
                             }
                             else if (s === 'contacts') {
-                                cell = cell + w.contacts.join("<br />");
+                                $.each(w.contacts, function (j, h) {
+                                    cell = cell + '<span class="label">' + h.type.charAt(0).toUpperCase() + '</span> ' + h.mail + '<br />';
+                                });
+                                //cell = cell + w.contacts.join("<br />");
                             }
                             else {
                                 cell = cell + '  ' + w[s];
@@ -4736,10 +4692,10 @@ if ($('#providerslistresultv2').length) {
 
         },
         beforeSend: function () {
-            $('#spinner').show();
+            spinImage.show();
         },
         error: function (xhr, status, error) {
-            $('#spinner').hide();
+            spinImage.hide();
             window.alert(error);
 
         }
@@ -4750,6 +4706,7 @@ if ($('#providerslistresultv2').length) {
 
 // get list providers with dynamic list columns: in progress
 $(".afilter").click(function () {
+
     var url = $(this).attr("href");
 
     var filter;
@@ -4770,7 +4727,7 @@ $(".afilter").click(function () {
         cache: true,
         dataType: "json",
         success: function (result) {
-            $('#spinner').hide();
+            spinImage.hide();
             if (filter === 1) {
                 $('dd.filterext').addClass('active');
             }
@@ -4866,10 +4823,11 @@ $(".afilter").click(function () {
             $('dd.afilter').removeClass('active');
             $('div#providerslistresult').empty();
             $('div.alert-box').empty().hide();
-            $('#spinner').show();
+            spinImage.show();
+
         },
         error: function (xhr, status, error) {
-            $('#spinner').hide();
+            spinImage.hide();
             $('div.subtitle').empty();
             $('div.alert-box').append(error).show();
 
@@ -4937,7 +4895,7 @@ $('button[name="update2f"]').click(function (e) {
                 });
                 $('span#val2f').empty().append(txtToReplace.substring(0, txtToReplace.length - 1));
             }
-            $('#m2f').foundation('reveal', 'close');
+            $('#m2f').foundation('close');
 
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -4967,7 +4925,7 @@ $(document).on('click', '#resetloginform', function (e) {
         cache: false,
         success: function (data) {
             $(".secondfactorrow").empty();
-            $("#loginform").foundation('reveal', 'close');
+            $("#loginform").foundation('close');
             return false;
         }
     });
@@ -4987,7 +4945,7 @@ $(document).on('click', '#duo_form', function (e) {
         success: function (data) {
             if (data) {
                 if (data.success === true && data.result === 'OK') {
-                    $('#loginform').foundation('reveal', 'close');
+                    $('#loginform').foundation('close');
 
                     setTimeout(function () {
                         go_to_private_page();
@@ -5049,9 +5007,10 @@ $('.oidclink').on('click', function (e) {
 
 $("#updateprefsmodal").on('submit', function (e) {
     e.preventDefault();
-    var link = $(this).attr('data-jagger-link');
-    var alertDiv = $(this).find('div.alert').first();
-    var form = $(this).find('form').first();
+    var modal = $(this);
+    var link = modal.attr('data-jagger-link');
+    var alertDiv = modal.find('div.alert').first();
+    var form = modal.find('form').first();
     $.ajax({
         'url': link,
         'type': 'POST',
@@ -5077,7 +5036,7 @@ $("#updateprefsmodal").on('submit', function (e) {
                         sStatus.addClass('alert').html(data.statusstring);
                     }
 
-                    $(document).foundation('reveal', 'close');
+                    modal.foundation('close');
                 }
                 else if (data.error) {
                     alertDiv.html(data.error).show();
@@ -5147,12 +5106,11 @@ $(document).on('click', 'a.updateprefs', function (e) {
 
     });
 
-
-    modal.foundation('reveal', 'open');
+    modal.foundation('open');
     return false;
 
 });
-$("#updatemembership").on('click', '.yes', function(e){
+$("#updatemembership").on('click', '.yes', function (e) {
 
     var form = $("#updatemembership").find('form');
     var url = form.attr('action');
@@ -5162,29 +5120,29 @@ $("#updatemembership").on('click', '.yes', function(e){
         type: 'post',
         data: data,
         dataType: 'json',
-        success: function(result){
-            if(result.message){
-                revealAlert(result.message,'OK');
+        success: function (result) {
+            if (result.message) {
+                revealAlert(result.message, 'OK');
             }
         },
-        error: function(jqXHR, textStatus, errorThrown){
-            revealAlert('<div data-alert class="alert-box alert ">'+jqXHR.responseText+'</div>','OK');
+        error: function (jqXHR, textStatus, errorThrown) {
+            revealAlert('<div class="alert-box alert ">' + jqXHR.responseText + '</div>', 'OK');
         }
     });
     return false;
 });
 
-$('button.revealc').on('click', function(){
+$('button.revealc').on('click', function () {
     var valtopass = $(this).val();
     var msg = $(this).attr('data-jagger-desc');
     var modal = $("#updatemembership");
     var msgdesc = modal.find('div.message').first();
-    if(msgdesc){
+    if (msgdesc) {
         msgdesc.html(msg);
     }
     var updatedata = modal.find('input[name="updatedata"]');
     updatedata.val(valtopass);
-    modal.foundation('reveal', 'open');
+    modal.foundation('open');
 });
 
 

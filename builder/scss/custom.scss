@@ -7,10 +7,7 @@ $warning-background: orange;
 
 
 
-body {
-height: 100%;
 
-}
 #footer {
  min-height: 100px;
  background-color: darken(#074E68,10%) !important;
@@ -103,8 +100,6 @@ div.error {
  min-height: 100%;
   background-color: lighten($body-bg, 5%);
   border: 1px solid darken(white,10%);
- 
-
 }
 .spinner {
     position: fixed;
@@ -148,68 +143,7 @@ div.error {
 }
 
 
-#idpmatrix th {
-    padding: 1px;
-    border-left: 1px gray solid;
-    border-bottom: 1px gray solid;
-    border-top: 1px gray solid;
-}
-#idpmatrix tr th:last-child {
-    border-right: 1px gray solid;
-}
-#idpmatrix td {
-    padding: 0px;
-    text-align: center;
-    border-left: 0px gray solid;
-    border-bottom: 0px gray solid;
-    box-sizing: border-box;
-}
-#idpmatrix tr td:not(:first-child) {
 
-  text-transform: uppercase;
-}
-#idpmatrix td:first-child {
-    text-align: left;
-    padding-left: 5px;
-}
-#idpmatrix td:last-child {
-    border-right: 1px gray solid;
-}
-
-
-div.perm, td.perm, span.perm {
-    background-color: #00FF00;
-    text-transform: uppercase;
-    font-weight: bold;
-}
-div.dis, td.dis , span.dis{
-    background-color: #E3E5FF;
-    text-transform: uppercase;
-
-    font-weight: bold;
-}
-div.spec, td.spec, span.spec {
-    background-color: #FFFF00;
-    text-transform: uppercase;
-
-    font-weight: bold;
-}
-div.den, td.den, span.den {
-    background-color: red;
-   text-transform: uppercase;
-
-    font-weight: bold;
-}
-div.perm:not(:empty),div.dis:not(:empty), td.dis:not(:empty), div.spec:not(:empty),div.den:not(:empty){
-   cursor: pointer;
-}
-td.perm:not(:empty),div.dis:not(:empty), td.dis:not(:empty), div.spec:not(:empty),div.den:not(:empty){
-   cursor: pointer;
-}
-#idpmatrixdiv td {
-  cursor: pointer;
-
-}
 
 fieldset {
 

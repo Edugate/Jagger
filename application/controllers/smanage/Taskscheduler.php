@@ -249,7 +249,7 @@ class Taskscheduler extends MY_Controller
                 $lastRunHtml,
                 $nextrun,
                 $isEnabledHtml,
-                '<a href="' . base_url('smanage/taskscheduler/taskedit/' . $t->getId() . '') . '"<i class="fi-pencil"></i></a>',
+                '<a href="' . base_url('smanage/taskscheduler/taskedit/' . $t->getId() . '') . '"<i class="fa fa-pencil"></i></a>',
             );
 
         }

@@ -74,6 +74,8 @@ class Attrrequirement extends MY_Controller
                 );
             }
         }
+        $fedurl = base64url_encode($fed->getName());
+
         $add_attr_final = array_diff_key($add_attr, $alreadyInAttr);
         $data['already_in_attr'] = $alreadyInAttr;
         $data['add_attr_final'] = $add_attr_final;
@@ -82,6 +84,12 @@ class Attrrequirement extends MY_Controller
         $data['fed_encoded'] = base64url_encode($fed->getName());
         $data['titlepage'] = lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . $data['fed_encoded'] . '">' . $data['fed_name'] . '</a>';
         $data['subtitlepage'] = lang('rr_requiredattributes');
+         $data['breadcrumbs'] = array(
+            array('url' => base_url('federations/manage'), 'name' => lang('rr_federations')),
+            array('url' => base_url('federations/manage/show/' . $fedurl . ''), 'name' => '' . $fed->getName() . ''),
+            array('url' => '#', 'type' => 'current', 'name' => lang('rr_requiredattributes'))
+
+        );
         $data['head'] = lang('rr_attributerequirements') . ': ' . $fed->getName();
         $this->load->view(MY_Controller::$page, $data);
     }

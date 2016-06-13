@@ -50,8 +50,8 @@ function jSAMLDecoder($encoded)
 {
 	$str1 = rawurldecode(stripslashes($encoded));
 	$str2 = base64_decode($str1);
-	$str3 = gzinflate($str2);
-	if($str3 != FALSE)
+	$str3 = @gzinflate($str2);
+	if($str3 !== FALSE)
 	{
 		return $str3;
 	}

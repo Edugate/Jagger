@@ -27,6 +27,6 @@ echo '</div>';
 
 echo '</div>';
 
-echo '<button type="submit" name="next" class="advancedmode button" value="' . base_url() . 'providers/'.$formtype.'/advanced">' . lang('nextstep') . '</button>';
+echo '<div class="row text-center"><button type="submit" name="next" class="advancedmode button" value="' . base_url() . 'providers/'.$formtype.'/advanced">' . lang('nextstep') . '</button></div>';
 echo '<span class="modalnotice hidden">'.lang('nometainsertnotice').'</span>';
 echo form_close();

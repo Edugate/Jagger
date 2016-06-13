@@ -29,7 +29,7 @@ function showHelp($string)
 function showBubbleHelp($string)
 {
     
-    $h = '<span data-tooltip class="has-tip" data-options="show_on:large" title="'.htmlspecialchars($string).'"><i class="fi-info" ></i></span>';
+    $h = '<span data-tooltip class="has-tip" data-options="show_on:large" title="'.htmlspecialchars($string).'"><i class="fa fa-info" ></i></span>';
     return $h;
 
 }
@@ -39,7 +39,7 @@ function genIcon($type, $title=null)
     $preurl = base_url().'images/icons/';
     
     $icons = array(
-          'locked' => 'fi-lock',
+          'locked' => 'fa fa-lock',
           'disabled' => 'minus-button.png',
           'expired' => 'calendar--minus.png',
           'mstatic' => 'ui-toolbar--arrow.png',
