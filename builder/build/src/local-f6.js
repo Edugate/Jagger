@@ -4330,6 +4330,7 @@ $(".submit").click(function () {
 });
 
 $('#joinfed').on('change', '#fedid', function (e) {
+
     $("div.validaronotice").hide();
     $("ul.validatorbuttons").replaceWith('<ul class="button-group validatorbuttons"></ul>');
     var csrfname = $("[name='csrfname']").val();
@@ -4346,6 +4347,7 @@ $('#joinfed').on('change', '#fedid', function (e) {
     var postdata = {};
     postdata[csrfname] = csrfhash;
     postdata.fedid = soption;
+
     if (soption !== 0) {
         $.ajax({
             type: "POST",
@@ -4359,7 +4361,7 @@ $('#joinfed').on('change', '#fedid', function (e) {
                 if (data) {
                     var validatorButtons = $("ul.validatorbuttons");
                     $.each(data, function (i, v) {
-                        validatorButtons.append('<li><button  value="' + jsurl + '/' + v.fedid + '/' + v.id + '" class="small">' + v.name + '</button></li>');
+                        validatorButtons.append('<li><button  value="' + jsurl + '/' + v.fedid + '/' + v.id + '" class="button">' + v.name + '</button></li>');
                     });
                     $("div.validaronotice").show();
                 }
