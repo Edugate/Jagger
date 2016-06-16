@@ -658,7 +658,7 @@ var GINIT = {
 
 
         $("#loginbtn").on('click', function (event) {
-            var url = $(this).attr('href');
+            var url = $(this).attr('data-jagger-link');
             var loginform = $("#loginform");
             var submitbutton = $(loginform).find(":submit").first();
             var usernamerow = $(loginform).find("div.usernamerow").first();
@@ -3954,7 +3954,7 @@ $("#nattrreqbtn").click(function (ev) {
 });
 
 $(".pCookieAccept").on('click', function () {
-    var link = $(this).attr("href");
+    var link = $(this).attr("value");
     $.ajax({
         url: link,
         timeout: 2500

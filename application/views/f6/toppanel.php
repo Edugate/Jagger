@@ -165,15 +165,15 @@ if ($loggedin) {
     if ($logged !== 1 && $partialLogged === 1) {
         $topbarArray['right'][] = array(
             'name'     => lang('toploginbtn'),
-            'link'     => $base_url . 'authenticate/getloginform',
-            'linkprop' => 'class="button  small alert autoclick" id="loginbtn"'
+            'link'     => '#',
+            'linkprop' => 'class="button  small alert autoclick" id="loginbtn" data-jagger-link="'.$base_url.'authenticate/getloginform"',
         );
 
     } else {
         $topbarArray['right'][] = array(
             'name'     => lang('toploginbtn'),
-            'link'     => $base_url . 'authenticate/getloginform',
-            'linkprop' => ' class="button  small alert" id="loginbtn"'
+            'link'     => '#',
+            'linkprop' => ' class="button  small alert" id="loginbtn" data-jagger-link="'.$base_url.'authenticate/getloginform"'
         );
     }
 }
