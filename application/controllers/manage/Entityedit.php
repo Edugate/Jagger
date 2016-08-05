@@ -218,6 +218,7 @@ class Entityedit extends MY_Controller
                     $this->form_validation->set_rules('f[scopes][aa]', lang('rr_scope'), 'trim|strtolower|valid_scopes|max_length[2500]');
                 }
             } else {
+                $this->form_validation->set_rules('f[federation]', lang('rr_federation'), 'trim|required|entfedcheck');
                 $this->form_validation->set_rules('f[entityid]', lang('rr_entityid'), 'trim|required|valid_urnorurl|min_length[5]|max_length[255]|entity_unique');
                 if (!$loggedin) {
                     $this->form_validation->set_rules('f[primarycnt][mail]', lang('rr_youcntmail'), 'trim|required|valid_email');

@@ -31,20 +31,54 @@ class MY_form_validation extends CI_form_validation
         $result = false;
         $arr = unserialize($arr);
         if (empty($str) && count($arr) === 0) {
-                return true;
-        } 
+            return true;
+        }
 
         $ar1 = explode(",", $str);
         if (count(array_diff($ar1, $arr)) == 0 && count(array_diff($arr, $ar1)) == 0) {
-             $result = true;
+            $result = true;
         }
 
-        
+
         if (!$result) {
-            $this->set_message('str_matches_array', 'The %s  must not been changed to ' . htmlentities($str));
+            $this->set_message('str_matches_array', 'The %s  must not been changed to ' . html_escape($str));
         }
 
         return $result;
+    }
+
+    public function entfedcheck($str) {
+        $fedRequired = $this->CI->config->item('jforms');
+        if (is_array($fedRequired) && isset($fedRequired['entregister']['required']['federeation']) && $fedRequired['entregister']['required']['federeation'] === true) {
+            if (trim($str) === 'none' || trim($str) === '') {
+                $this->set_message('entfedcheck', 'Please select federation');
+                return false;
+            }
+            try {
+                /**
+                 * @var models\Federation $fed
+                 */
+                $fed = $this->em->getRepository('models\Federation')->findOneBy(array('name' => $str));
+            }
+            catch (Exception $e){
+                log_message('error',__METHOD__.' :: '.$e);
+                $this->set_message('entfedcheck', 'Problem access to DB');
+                return false;
+            }
+            if($fed === null){
+                $this->set_message('entfedcheck', 'Could not found selected federation');
+                return false;
+            }
+            $ispublic = $fed->getPublic();
+            $isactive = $fed->getActive();
+
+            if(!$isactive || !$ispublic){
+                $this->set_message('entfedcheck', 'Selected federation "'.html_escape($str).'" is not available during registration process');
+                return false;
+            }
+
+        }
+        return true;
     }
 
     public function mustmatch_value($str1, $str2) {
