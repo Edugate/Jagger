@@ -49,7 +49,7 @@ class MY_form_validation extends CI_form_validation
 
     public function entfedcheck($str) {
         $fedRequired = $this->CI->config->item('jforms');
-        if (is_array($fedRequired) && isset($fedRequired['entregister']['required']['federeation']) && $fedRequired['entregister']['required']['federeation'] === true) {
+        if (is_array($fedRequired) && isset($fedRequired['entregister']['required']['federation']) && $fedRequired['entregister']['required']['federation'] === true) {
             if (trim($str) === 'none' || trim($str) === '') {
                 $this->set_message('entfedcheck', 'Please select federation');
                 return false;
