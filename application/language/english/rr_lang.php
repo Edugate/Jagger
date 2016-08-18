@@ -172,6 +172,7 @@ $lang['rr_uii']                     = 'User Interface Information';
 $lang['rr_coc']                     = 'Data protection Code of Conduct';
 $lang['rr_entcats']                 = 'Entity Categories';
 $lang['rr_entattrs']                 = 'Entity Attributes';
+$lang['rr_entattr']                 = 'Entity Attribute';
 $lang['hasbeenadded']               = 'has been added';
 $lang['rr_entcatadded']                = 'Entity Category has been added';
 $lang['rr_entattradded']                = 'Entity Attribute has been added';
