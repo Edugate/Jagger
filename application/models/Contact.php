@@ -31,6 +31,7 @@ class Contact {
 
     /**
      * @Id
+     * @HasLifecycleCallbacks
      * @Column(type="bigint", nullable=false)
      * @GeneratedValue(strategy="AUTO")
      */
@@ -57,6 +58,11 @@ class Contact {
     protected $type;
 
     /**
+     * @Column(type="boolean", nullable=false)
+     */
+    protected $issirfty;
+
+    /**
      * @Column(type="string", length=24, nullable=true)
      */
     protected $phone;
@@ -67,6 +73,11 @@ class Contact {
      * @JoinTable(name="provider_contacts" )
      */
     protected $provider;
+
+
+    public function __construct() {
+        $this->issirfty = false;
+    }
 
     // Begin generic set/get methods
     public function setFullName($name)
@@ -113,6 +124,15 @@ class Contact {
         }
     }
 
+    /**
+     * @param $arg
+     * @return $this
+     */
+    public function setSirfti($arg){
+        $this->issirfty = $arg;
+        return $this;
+    }
+
     public function setProvider(Provider $provider = null)
     {
         $this->provider = $provider;
@@ -132,7 +152,8 @@ class Contact {
         $this->surname = $contact->getSurname();
         $this->type = $contact->getType();
         $this->phone = $contact->getPhone();
-        $this->email = $this->getEmail();
+        $this->email = $contact->getEmail();
+        $this->issirfty = $contact->isSirfti();
     }
 
     public function getId()
@@ -169,11 +190,33 @@ class Contact {
     {
         return $this->type;
     }
+
+    public function getTypeToForm(){
+        if($this->issirfty){
+            return 'other-sirfti';
+        }
+        return $this->type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSirfti(){
+        return $this->issirfty;
+    }
+
     public function setAllInfoNoProvider($fname,$sname,$type,$mail)
     {
         $this->email = $mail;
         $this->givenname = $fname;
-        $this->type = $type;
+
+         if($type === 'other-sirfti') {
+            $this->type = 'other';
+            $this->issirfty = true;
+        }
+        else {
+            $this->type = $type;
+        }
         $this->surname = $sname;
         return $this;
     }
@@ -181,7 +224,13 @@ class Contact {
     {
         $this->email = $mail;
         $this->givenname = $fname;
-        $this->type = $type;
+        if($type === 'other-sirfti') {
+            $this->type = 'other';
+            $this->issirfty = true;
+        }
+        else {
+            $this->type = $type;
+        }
         $this->surname = $sname;
         $this->setProvider($provider);
         $provider->setContact($this);
@@ -194,18 +243,35 @@ class Contact {
         $this->setType($c['type']);
         $this->setPhone($c['phone']);
         $this->setEmail($c['email']);
+        if(array_key_exists('issirfti')){
+            $sirfti = (bool) $c['issirfti'];
+            $this->setEmail($sirfti);
+        }
+        return $this;
     }
 
     public function convertToArray()
     {
-        $c = array();
-        $c['fullname'] = $this->getFullname();
-        $c['givenname'] = $this->getGivenname();
-        $c['surname'] = $this->getSurname();
-        $c['type'] = $this->getType();
-        $c['phone'] = $this->getPhone();
-        $c['email'] = $this->getEmail();
-        return $c;
+        return array(
+            'fullname' => $this->getFullname(),
+            'givenname' => $this->getGivenname(),
+            'surname' => $this->getSurname(),
+            'type' => $this->getType(),
+            'phone' =>  $this->getPhone(),
+            'email'=> $this->getEmail(),
+            'issirfti' => $this->isSirfti()
+        );
+    }
+
+
+    /**
+     * @PostPersist
+    */
+    public function verifySirfty(){
+        if($this->issirfty){
+            $this->type = 'other';
+        }
+        return $this;
     }
 
 }

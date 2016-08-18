@@ -558,7 +558,7 @@ class Providerupdater
         foreach ($origContacts as $v) {
             $contactID = $v->getId();
 
-            $origcntArray[] = '' . $v->getType() . ' : (' . $v->getGivenName() . ' ' . $v->getSurName() . ') ' . $v->getEmail();
+            $origcntArray[] = '' . $v->getTypeToForm() . ' : (' . $v->getGivenName() . ' ' . $v->getSurName() . ') ' . $v->getEmail();
             if (!array_key_exists($contactID, $newContacts)) {
                 $ent->removeContact($v);
                 $this->em->remove($v);

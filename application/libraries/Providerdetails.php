@@ -393,13 +393,14 @@ class Providerdetails
             'administrative' => lang('rr_cnt_type_admin'),
             'support' => lang('rr_cnt_type_support'),
             'billing' => lang('rr_cnt_type_bill'),
-            'other' => lang('rr_cnt_type_other')
+            'other' => lang('rr_cnt_type_other'),
+            'other-sirfti' => lang('rr_cnt_type_other-sirfti'),
         );
         if (count($contacts) > 0) {
             foreach ($contacts as $c) {
                 $part = array(
                     array('header' => lang('rr_contact')),
-                    array('name' => lang('type'), 'value' => $typesInLang['' . strtolower($c->getType()) . '']),
+                    array('name' => lang('type'), 'value' => $typesInLang['' . strtolower($c->getTypeToForm()) . '']),
                     array('name' => lang('rr_contactfirstname'), 'value' => html_escape($c->getGivenname())),
                     array('name' => lang('rr_contactlastname'), 'value' => html_escape($c->getSurname())),
                     array('name' => lang('rr_contactemail'), 'value' => '<span data-jagger-contactmail="' . html_escape($c->getEmail()) . '">' . html_escape($c->getEmail()) . '</span>'),
@@ -592,7 +593,7 @@ class Providerdetails
         $entityCategories = array();
         $a = array();
 
-        $d[++$i]['name'] = lang('rr_entcats');
+        $d[++$i]['name'] = lang('rr_entattr');
         $coc = $ent->getCoc();
         if ($coc->count() > 0) {
             foreach ($coc as $k => $v) {
@@ -883,21 +884,21 @@ class Providerdetails
 
         $d = array();
         if (count($entityCategories) == 0) {
-            $d[]['2cols'] = '<div data-alert class="alert-box notice">' . lang('entcat_notdefined') . '</div>';
+            $d[]['2cols'] = '<div data-alert class="alert-box notice">' . lang('entattr_notdefined') . '</div>';
         } else {
             foreach ($entityCategories as $entcat) {
-                $d[]['header'] = lang('title_entcat');
-                $d[] = array('name' => lang('entcat_displayname'), 'value' => html_escape($entcat->getName()));
+                $d[]['header'] = lang('title_entattr');
+                $d[] = array('name' => lang('entattr_displayname'), 'value' => html_escape($entcat->getName()));
                 $d[] = array('name' => lang('rr_attr_name'), 'value' => $entcat->getSubtype());
-                $d[] = array('name' => lang('entcat_value'), 'value' => html_escape($entcat->getUrl()));
-                $d[] = array('name' => lang('entcat_description'), 'value' => html_escape($entcat->getDescription()));
+                $d[] = array('name' => lang('entattr_value'), 'value' => html_escape($entcat->getUrl()));
+                $d[] = array('name' => lang('entattr_description'), 'value' => html_escape($entcat->getDescription()));
                 $entcatStatus = $entcat->getAvailable();
                 if (!$entcatStatus) {
                     $d[] = array('name' => '', 'value' => '<div class="label alert">' . lang('rr_disabled') . '</div>');
                 }
             }
         }
-        $subresult[12] = array('section' => 'entcats', 'title' => '' . lang('tabEntcats') . '', 'data' => $d);
+        $subresult[12] = array('section' => 'entcats', 'title' => '' . lang('tabEntattrs') . '', 'data' => $d);
 
 
         $subresult[3] = array('section' => 'contacts', 'title' => '' . lang('tabContacts') . '', 'data' => $this->genContactsTab());

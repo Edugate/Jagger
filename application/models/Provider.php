@@ -23,6 +23,7 @@ class Provider
     protected $logo_url;
     protected $ci;
     protected $federations;
+    protected $sirftyEntAttr = null;
 
     /**
      * @Id
@@ -326,6 +327,7 @@ class Provider
         $this->is_approved = true;
         $this->hidepublic = false;
         $this->is_locked = false;
+        $this->sirftyEntAttr = null;
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
     }
@@ -410,7 +412,7 @@ class Provider
      * @PreUpdate
      */
     public function updated() {
-        \log_message('debug', 'GG update providers updated time for:' . $this->entityid);
+        \log_message('debug', __METHOD__. ' update time for:' . $this->entityid);
         $this->updatedAt = new \DateTime('now', new \DateTimeZone('UTC'));
     }
 
@@ -418,6 +420,7 @@ class Provider
      * @PostLoad
      */
     public function setAddionals() {
+        $this->sirftyEntAttr = null;
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
     }
@@ -1209,6 +1212,7 @@ class Provider
                 $cn->setType($nctn->getType());
                 $cn->setGivenName($nctn->getGivenName());
                 $cn->setSurName($nctn->getSurName());
+                $cn->setSirfti($nctn->isSirfti());
                 $provider->getContacts()->remove($counterIdx);
             } else {
                 $this->removeContact($cn);
@@ -1353,6 +1357,19 @@ class Provider
 
     public function getCoc() {
         return $this->coc;
+    }
+
+
+    /**
+     * @return null|bool
+     */
+    public function isSirfty(){
+        return $this->sirftyEntAttr;
+    }
+
+    public function setSirfty($bool){
+        $this->sirftyEntAttr = $bool;
+        return $this;
     }
 
     public function getProtocol() {
@@ -2468,6 +2485,7 @@ class Provider
                 $tc->setEmail($c['email']);
                 $tc->setSurName($c['surname']);
                 $tc->setGivenName($c['givenname']);
+                $tc->setSirfti($c['issirfti']);
                 $tc->setProvider($this);
                 $this->setContact($tc);
             }

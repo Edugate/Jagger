@@ -1205,7 +1205,7 @@ class Entityedit extends MY_Controller
             }
         } else {
 
-            $tabs[] = array('id' => 'entcategories', 'value' => '' . lang('tabentcategories') . '', 'form' => $this->formelement->NgenerateEntityCategoriesForm($ent, $entsession));
+            $tabs[] = array('id' => 'entcategories', 'value' => '' . lang('tabentattributes') . '', 'form' => $this->formelement->NgenerateEntityCategoriesForm($ent, $entsession));
             if (strcasecmp($this->type, 'IDP') != 0) {
                 $tabs[] = array('id' => 'reqattrs', 'value' => '' . lang('tabreqattrs') . '', 'form' => $this->formelement->nGenerateAttrsReqs($ent, $entsession));
             }

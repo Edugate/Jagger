@@ -29,12 +29,12 @@ class Ec extends MY_Controller
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
-        $this->title = lang('title_entcats');
+        $this->title = lang('title_entattrs');
         $hasWriteAccess = $this->zacl->check_acl('coc', 'write', 'default', '');
         /**
          * @var models\Coc[] $entCategories
          */
-        $entCategories = $this->em->getRepository("models\Coc")->findBy(array('type' => 'entcat'));
+        $entCategories = $this->em->getRepository("models\Coc")->findBy(array('type' => array('entcat')));
         $preDefAvailFor = array(
             'idp' => 'idp',
             'sp' => 'sp',
@@ -80,7 +80,7 @@ class Ec extends MY_Controller
         $data['titlepage'] = lang('ent_list_title');
 
         $data['breadcrumbs'] = array(
-            array('url' => '#', 'name' => lang('entcats_menulink'), 'type' => 'current'),
+            array('url' => '#', 'name' => lang('entattrs_menulink'), 'type' => 'current'),
         );
         $data['content_view'] = 'manage/coc_show_view';
         $this->load->view(MY_Controller::$page, $data);
@@ -177,7 +177,7 @@ class Ec extends MY_Controller
             $this->em->persist($ncoc);
             $this->em->flush();
 
-            $data['success_message'] = lang('rr_entcatadded');
+            $data['success_message'] = lang('rr_entattradded');
         } else {
             $this->load->library('formelement');
             $form = form_open() .
@@ -189,8 +189,8 @@ class Ec extends MY_Controller
             $data['form'] = $form;
         }
         $data['breadcrumbs'] = array(
-            array('url' => base_url('manage/ec/show'), 'name' => lang('title_entcats')),
-            array('url' => '#', 'name' => lang('title_addentcat'), 'type' => 'current'),
+            array('url' => base_url('manage/ec/show'), 'name' => lang('title_entattrs')),
+            array('url' => '#', 'name' => lang('title_addentattr'), 'type' => 'current'),
         );
         $data['content_view'] = 'manage/coc_add_view';
         $this->load->view(MY_Controller::$page, $data);
@@ -254,7 +254,7 @@ class Ec extends MY_Controller
             '<button type="reset" name="reset" value="reset" class="button alert">' . lang('rr_reset') . '</button> ' .
             '<button type="submit" name="modify" value="submit" class="button">' . lang('rr_save') . '</button></div></div>' . form_close();
         $data['breadcrumbs'] = array(
-            array('url' => base_url('manage/ec/show'), 'name' => lang('title_entcats')),
+            array('url' => base_url('manage/ec/show'), 'name' => lang('title_entattrs')),
             array('url' => '#', 'name' => lang('title_editform'), 'type' => 'current'),
         );
         $data['content_view'] = 'manage/coc_edit_view';

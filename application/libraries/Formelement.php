@@ -205,7 +205,8 @@ class Formelement
             'technical'      => lang('rr_cnt_type_tech'),
             'support'        => lang('rr_cnt_type_support'),
             'billing'        => lang('rr_cnt_type_bill'),
-            'other'          => lang('rr_cnt_type_other')
+            'other'          => lang('rr_cnt_type_other'),
+            'other-sirfti'   => lang('rr_cnt_type_other-sirfti'),
         );
         $sessform = (null === $ses) ? false : true;
         $result = array();
@@ -217,7 +218,7 @@ class Formelement
             }
             if ($sessform) {
                 if (isset($ses['contact']['' . $tid . ''])) {
-                    $t1 = set_value($ses['contact'][$tid]['type'], $cnt->getType());
+                    $t1 = set_value($ses['contact'][$tid]['type'], $cnt->getTypeToForm());
                     $t2 = $ses['contact'][$tid]['fname'];
                     $t3 = $ses['contact'][$tid]['sname'];
                     $t4 = $ses['contact'][$tid]['email'];
@@ -225,7 +226,7 @@ class Formelement
                     continue;
                 }
             } else {
-                $t1 = $cnt->getType();
+                $t1 = $cnt->getTypeToForm();
                 $t2 = $cnt->getGivenName();
                 $t3 = $cnt->getSurName();
                 $t4 = $cnt->getEmail();

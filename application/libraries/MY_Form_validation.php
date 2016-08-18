@@ -416,7 +416,7 @@ class MY_form_validation extends CI_form_validation
     }
 
     public function valid_contact_type($str) {
-        $allowed = array('administrative', 'technical', 'support', 'billing', 'other');
+        $allowed = array('administrative', 'technical', 'support', 'billing', 'other', 'other-sirfti');
         if (empty($str) || !in_array($str, $allowed)) {
             $this->set_message('valid_contact_type', 'Invalid contact type');
 

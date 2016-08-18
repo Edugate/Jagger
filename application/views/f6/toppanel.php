@@ -57,7 +57,7 @@ if ($loggedin) {
             'link' => $base_url . 'manage/fedcategory/show',
         ),
         array(
-            'name' => lang('entcats_menulink'),
+            'name' => lang('entattrs_menulink'),
             'link' => $base_url . 'manage/ec/show',
         ),
         array(
