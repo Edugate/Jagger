@@ -254,10 +254,6 @@ class Provider
      */
     protected $notifications;
 
-    /**
-     * @OneToMany(targetEntity="MetadataRevision", mappedBy="provider", cascade={"persist", "remove"})
-     */
-    protected $metadatadumps;
 
     /**
      * @OneToMany(targetEntity="Contact", mappedBy="provider", cascade={"all"})
