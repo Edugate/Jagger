@@ -34,7 +34,7 @@ class ExtendMetadata {
 
     /**
      * @Id
-     * @Column(type="integer", nullable=false)
+     * @Column(name="id", type="integer", nullable=false)
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -85,7 +85,7 @@ class ExtendMetadata {
      */
     protected $attrs;
 
-    function __construct()
+    public function __construct()
     {
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
     }
