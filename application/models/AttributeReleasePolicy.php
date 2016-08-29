@@ -96,6 +96,9 @@ class AttributeReleasePolicy {
         return $this->idp;
     }
 
+    /**
+     * @return integer|null
+     */
     public function getPolicy()
     {
         return $this->policy;
@@ -109,19 +112,19 @@ class AttributeReleasePolicy {
 
     public function getRelease()
     {
-        $result = "";
-        $p = $this->getPolicy();
-        if ($p == 0)
+        $result = '';
+        $policy = $this->getPolicy();
+        if ($policy === 0)
         {
-            $result = "never permit";
+            $result = 'never permit';
         }
-        elseif ($p == 1)
+        elseif ($policy === 1)
         {
-            $result = "permit only if required";
+            $result = 'permit only if required';
         }
-        elseif ($p == 2)
+        elseif ($policy === 2)
         {
-            $result = "permit when required or desired";
+            $result = 'permit when required or desired';
         }
         return $result;
     }

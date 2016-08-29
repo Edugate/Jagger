@@ -2,34 +2,35 @@
 namespace models;
 
 
-/**
- * ResourceRegistry3
- * 
- * @package     RR3
- * @author      Middleware Team HEAnet 
- * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
- * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
- */
-/**
- * Federation Class
- * 
- * @package     RR3
- * @subpackage  Models
- * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- */
+    /**
+     * ResourceRegistry3
+     *
+     * @package     RR3
+     * @author      Middleware Team HEAnet
+     * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+     * @license     MIT http://www.opensource.org/licenses/mit-license.php
+     *
+     */
+    /**
+     * Federation Class
+     *
+     * @package     RR3
+     * @subpackage  Models
+     * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+     */
 
 /**
  * Federation Model
  *
  * This model for federations definitions
- * 
+ *
  * @Entity
  * @HasLifecycleCallbacks
  * @Table(name="federation")
  * @author janusz
  */
-class Federation {
+class Federation
+{
 
     protected $fedmembers;
 
@@ -96,7 +97,7 @@ class Federation {
      *
      * @Column(name="is_lexport", type="boolean", nullable=false)
      */
-    protected $is_lexport = FALSE;
+    protected $is_lexport = false;
 
     /**
      * set if federation is localy created or external like edugain
@@ -118,7 +119,7 @@ class Federation {
      * deprecated
      * @Column(name="attrreq_inmeta", type="boolean", nullable=false)
      */
-    protected $attrreq_inmeta = FALSE;
+    protected $attrreq_inmeta = false;
 
     /**
      * optional terms of use for federation it can be included in metadata as a comment
@@ -131,7 +132,7 @@ class Federation {
      * @Column(name="usealtmetaurl",type="boolean", nullable=false)
      */
     protected $usealtmetaurl;
-    
+
     /**
      * @Column(name="altmetaurl",type="string" , length=512, nullable=true)
      */
@@ -182,339 +183,298 @@ class Federation {
      */
     protected $owner;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->membership = new \Doctrine\Common\Collections\ArrayCollection();
         $this->fedmembers = new \Doctrine\Common\Collections\ArrayCollection();
         $this->fvalidator = new \Doctrine\Common\Collections\ArrayCollection();
         $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
         $this->attributeRequirement = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->is_protected = FALSE;
-        $this->is_local = TRUE;
-        $this->usealtmetaurl = FALSE;
+        $this->is_protected = false;
+        $this->is_local = true;
+        $this->usealtmetaurl = false;
         // deprecate//
-        $this->attrreq_inmeta = TRUE;
+        $this->attrreq_inmeta = true;
     }
 
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
+
         return $this;
     }
 
-    public function setSysname($name)
-    {
+    public function setSysname($name) {
         $this->sysname = trim($name);
+
         return $this;
     }
 
-    public function setDescriptorId($str=null)
-    {
-        if(is_null($str) || strlen(trim($str)) == 0)
-        {
+    public function setDescriptorId($str = null) {
+        if (trim($str) === '') {
             $this->descriptorid = null;
-        }
-        else {
+        } else {
             $this->descriptorid = trim($str);
         }
+
         return $this;
     }
 
-    public function setDigest($a = null)
-    {
+    public function setDigest($a = null) {
         $this->digest = $a;
+
         return $this;
     }
 
-    public function setDigestExport($a = null)
-    {
+    public function setDigestExport($a = null) {
         $this->digestexport = $a;
+
         return $this;
     }
 
-    public function setUrn($urn)
-    {
+    public function setUrn($urn) {
         $this->urn = $urn;
+
         return $this;
     }
-    
-    public function setAltMetaUrl($url=null)
-    {
+
+    public function setAltMetaUrl($url = null) {
         $this->altmetaurl = $url;
+
         return $this;
     }
-    
-    public function setAltMetaUrlEnabled($arg)
-    {
+
+    public function setAltMetaUrlEnabled($arg) {
         $this->usealtmetaurl = $arg;
+
         return $this;
     }
 
-    public function setPublisher($publisher = null)
-    {
-        if (!empty($publisher))
-        {
-            $this->publisher = trim($publisher);
-        }
-        else
-        {
-            $this->publisher = null;
+    public function setPublisher($param = null) {
+        $publisherName = trim($param);
+        $this->publisher = null;
+        if ($publisherName !== '') {
+            $this->publisher = $publisherName;
         }
         return $this;
     }
 
-    public function setPublisherExport($publisher = null)
-    {
-        if($publisher !== null){
-            $publisher = trim($publisher);
-            if(empty($publisher)){
-                $publisher = null;
+    public function setPublisherExport($param = null) {
+        if ($param !== null) {
+            $param = trim($param);
+            if (empty($param)) {
+                $param = null;
             }
         }
-        $this->publisherexport = $publisher;
+        $this->publisherexport = $param;
+
         return $this;
     }
 
-    public function setDescription($description = null)
-    {
+    public function setDescription($description = null) {
         $this->description = $description;
+
         return $this;
     }
 
-    public function setLocalExport($a = FALSE)
-    {
-        $this->is_lexport = (boolean) $a;
+    public function setLocalExport($a = false) {
+        $this->is_lexport = (boolean)$a;
     }
 
-    public function setAsActive()
-    {
-        $is_active = TRUE;
+    public function setAsActive() {
+        $is_active = true;
         $this->setActive($is_active);
+
         return $this;
     }
 
-    public function setAsDisactive()
-    {
-        $is_active = FALSE;
+    public function setAsDisactive() {
+        $is_active = false;
         $this->setActive($is_active);
+
         return $this;
     }
 
-    public function setActive($is_active = null)
-    {
-        if (!empty($is_active))
-        {
+    public function setActive($is_active = null) {
+        if (!empty($is_active)) {
             $this->is_active = '1';
-        }
-        else
-        {
+        } else {
             $this->is_active = '0';
         }
+
         return $this;
     }
 
-    public function setPublic($is_public = null)
-    {
+    public function setPublic($is_public = null) {
         $this->is_public = $is_public;
+
         return $this;
     }
 
-    public function publish()
-    {
-        $public = TRUE;
+    public function publish() {
+        $public = true;
         $this->setPublic($public);
+
         return $this;
     }
 
-    public function unPublish()
-    {
-        $public = FALSE;
+    public function unPublish() {
+        $public = false;
         $this->setPublic($public);
+
         return $this;
     }
 
-    public function setProtected($is_protected = null)
-    {
+    public function setProtected($is_protected = null) {
         $this->is_protected = $is_protected;
+
         return $this;
     }
 
-    public function setLocal($l = null)
-    {
-        if (!empty($l))
-        {
+    public function setLocal($l = null) {
+        if (!empty($l)) {
             $this->is_local = 1;
-        }
-        else
-        {
+        } else {
             $this->is_local = 0;
         }
     }
 
-    public function setAsLocal()
-    {
+    public function setAsLocal() {
         $this->is_local = 1;
+
         return $this;
     }
 
-    public function setAsExternal()
-    {
+    public function setAsExternal() {
         $this->is_local = 0;
+
         return $this;
     }
 
-    public function setTou($txt = null)
-    {
+    public function setTou($txt = null) {
         $this->tou = $txt;
+
         return $this;
     }
 
-   
 
-    public function setAttributesRequirement(AttributeRequirement $attribute)
-    {
+    public function setAttributesRequirement(AttributeRequirement $attribute) {
         $this->getAttributesRequirement()->add($attribute);
+
         return $this;
     }
 
-    public function addValidator(FederationValidator $validator)
-    {
+    public function addValidator(FederationValidator $validator) {
         $exist = $this->getValidators()->contains($validator);
-        if (empty($exist))
-        {
+        if (empty($exist)) {
             $this->getValidators()->add($validator);
         }
+
         return $this;
     }
 
-    public function addMember(Provider $provider)
-    {
+    public function addMember(Provider $provider) {
         $doFilter['provider_id'] = array('' . $provider->getId() . '');
         $membership = $this->getMembership()->filter(
-                function($entry) use($doFilter)
-        {
-            return (in_array($doFilter['provider_id']));
-        }
+            function ($entry) use ($doFilter) {
+                return (in_array($doFilter['provider_id']));
+            }
         );
 
 
-        if ($membership->count() == 0)
-        {
+        if ($membership->count() == 0) {
             $newMembership = new FederationMembers();
             $provider->addMembership($newMembership);
             $this->addMembership($newMembership);
         }
+
         return $this->getMembers()->toArray();
     }
 
-    public function addCategory(FederationCategory $category)
-    {
+    public function addCategory(FederationCategory $category) {
         $isin = $this->getCategories()->contains($category);
-        if (empty($isin))
-        {
+        if (empty($isin)) {
             $this->getCategories()->add($category);
         }
+
         return $this;
     }
 
-    public function addNotification(NotificationList $notification)
-    {
+    public function addNotification(NotificationList $notification) {
         $isin = $this->getNotifications()->contains($notification);
-        if (empty($isin))
-        {
+        if (empty($isin)) {
             $this->getNotifications()->add($notification);
         }
+
         return $this;
     }
 
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
-    public function getSysname()
-    {
+    public function getSysname() {
         return $this->sysname;
     }
 
-    public function getDescriptorId()
-    {
+    public function getDescriptorId() {
         return $this->descriptorid;
     }
 
-    public function getLocal()
-    {
+    public function getLocal() {
         return $this->is_local;
     }
 
-    public function getUrn()
-    {
+    public function getUrn() {
         return $this->urn;
     }
 
-    public function getActive()
-    {
+    public function getActive() {
         return $this->is_active;
     }
 
     // deprecated
-    public function getAttrsInmeta()
-    {
+    public function getAttrsInmeta() {
         return $this->attrreq_inmeta;
     }
-    
-    public function getAltMetaUrlEnabled()
-    {
-        return  $this->usealtmetaurl;
+
+    public function getAltMetaUrlEnabled() {
+        return $this->usealtmetaurl;
     }
-    
-    public function getAltMetaUrl()
-    {
+
+    public function getAltMetaUrl() {
         return $this->altmetaurl;
     }
 
     //deprecated
-    public function setAttrsInmeta($r)
-    {
-        if ($r === TRUE)
-        {
+    public function setAttrsInmeta($r) {
+        if ($r === true) {
             $this->attrreq_inmeta = true;
-        }
-        elseif ($r === FALSE)
-        {
+        } elseif ($r === false) {
             $this->attrreq_inmeta = false;
         }
     }
 
-    public function getLocalExport()
-    {
+    public function getLocalExport() {
         return $this->is_lexport;
     }
 
-    public function getDescription()
-    {
+    public function getDescription() {
         return $this->description;
     }
 
-    public function getValidators()
-    {
+    public function getValidators() {
         return $this->fvalidator;
     }
 
-    public function getMembership()
-    {
+    public function getMembership() {
         return $this->membership;
     }
 
-    public function addMembership(FederationMembers $membership)
-    {
-        if (!$this->membership->contains($membership))
-        {
+    public function addMembership(FederationMembers $membership) {
+        if (!$this->membership->contains($membership)) {
             $this->membership->add($membership);
             $membership->setFederation($this);
         }
@@ -522,120 +482,100 @@ class Federation {
         return $this;
     }
 
-    public function getMembershipProviders()
-    {
+    public function getMembershipProviders() {
         $mem = $this->membership;
         $result = new \Doctrine\Common\Collections\ArrayCollection();
-        foreach ($mem as $m)
-        {
+        foreach ($mem as $m) {
             $result->set($m->getId(), $m->getProvider());
         }
+
         return $result;
     }
 
-    public function getMembers()
-    {
+    public function getMembers() {
         $mem = $this->membership;
         $result = new \Doctrine\Common\Collections\ArrayCollection();
-        foreach ($mem as $m)
-        {
-            if ($m->getJoinState() != 2)
-            {
-                $result->set($m->getProvider()->getEntityId(), $m->getProvider());
-                ;
+        foreach ($mem as $m) {
+            if ($m->getJoinState() != 2) {
+                $result->set($m->getProvider()->getEntityId(), $m->getProvider());;
             }
         }
+
         return $result;
     }
 
-    public function getActiveMembers()
-    {
+    public function getActiveMembers() {
         $members = new \Doctrine\Common\Collections\ArrayCollection();
         $mem = $this->membership;
-        foreach ($mem as $m)
-        {
+        foreach ($mem as $m) {
             $isOK = $m->isFinalMembership();
-            if ($isOK)
-            {
+            if ($isOK) {
                 $members->set($m->getProvider()->getEntityId(), $m->getProvider());
             }
         }
+
         return $members;
     }
 
-    public function getMembersForExport()
-    {
+    public function getMembersForExport() {
         $members = new \Doctrine\Common\Collections\ArrayCollection();
         $mem = $this->membership;
-        foreach ($mem as $m)
-        {
+        foreach ($mem as $m) {
             $isOK = !(($m->getJoinState() == 3) || ($m->getJoinState() == 2)) && !($m->isDisabled() || $m->isBanned());
-            if ($isOK)
-            {
+            if ($isOK) {
                 $members->set($m->getProvider()->getEntityId(), $m->getProvider());
             }
         }
+
         return $members;
     }
 
-    public function getCategories()
-    {
+    public function getCategories() {
         return $this->categories;
     }
 
-    public function getNotifications()
-    {
+    public function getNotifications() {
         return $this->notifications;
     }
 
-    public function getAttributesRequirement()
-    {
+    public function getAttributesRequirement() {
         return $this->attributeRequirement;
     }
 
-    public function getPublic()
-    {
+    public function getPublic() {
         return $this->is_public;
     }
 
-    public function isJoinAllowedForNew()
-    {
-        return (boolean) ($this->is_active && $this->is_active);
+    public function isJoinAllowedForNew() {
+        return (boolean)($this->is_active && $this->is_active);
     }
-    
-    public function getProtected()
-    {
+
+    public function getProtected() {
         return $this->is_protected;
     }
 
-    public function getTou()
-    {
+    public function getTou() {
         return $this->tou;
     }
 
-    public function getDigest()
-    {
+    public function getDigest() {
         return $this->digest;
     }
 
-    public function getDigestExport()
-    {
+    public function getDigestExport() {
         return $this->digestexport;
     }
 
-    
 
-    public function getPublisher()
-    {
+    public function getPublisher() {
         return $this->publisher;
     }
 
-    public function getPublisherExport()
-    {
+    public function getPublisherExport() {
         return $this->publisherexport;
     }
-    public function importFromArray(array $r)
-    {
+
+    public function importFromArray(array $r) {
         $this->setName($r['name']);
         $this->setSysname($r['sysname']);
         $this->setUrn($r['urn']);
@@ -645,18 +585,16 @@ class Federation {
         $this->setProtected($r['is_protected']);
         $this->setLocal($r['is_local']);
         $this->setTou($r['tou']);
-        if (isset($r['publisher']))
-        {
+        if (isset($r['publisher'])) {
             $this->setPublisher($r['publisher']);
         }
+
         return $this;
     }
 
-    public function convertToArray()
-    {
+    public function convertToArray() {
         $r = array();
-        if (!empty($this->id))
-        {
+        if (!empty($this->id)) {
             $r['id'] = $this->id;
         }
         $r['name'] = $this->getName();
@@ -668,14 +606,14 @@ class Federation {
         $r['is_protected'] = $this->getProtected();
         $r['is_local'] = $this->getLocal();
         $r['tou'] = $this->getTou();
+
         return $r;
     }
 
     /**
      * @PostLoad
      */
-    function createMembersCollection()
-    {
+    public function createMembersCollection() {
         $this->fedmembers = new \Doctrine\Common\Collections\ArrayCollection();
     }
 

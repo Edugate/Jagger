@@ -93,47 +93,45 @@ class Certificate
      */
     protected $keyname;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->is_default = true;
     }
 
     // Begin generic set/get methods
-    public function setCertdata($certdata = null)
-    {
+    public function setCertdata($certdata = null) {
 
         $this->certdata = trim($certdata);
+
         return $this;
     }
 
-    public function setKeyname($keyname = null)
-    {
+    public function setKeyname($keyname = null) {
         $this->keyname = str_replace(' ', '', $keyname);
+
         return $this;
     }
 
-    public function setProvider(Provider $provider)
-    {
+    public function setProvider(Provider $provider) {
         $this->provider = $provider;
+
         return $this;
     }
 
-    public function unsetProvider(Provider $provider)
-    {
+    public function unsetProvider(Provider $provider) {
         $this->provider = null;
+
         return $this;
     }
 
     /**
      * only null,signing,encryption may be set
      */
-    public function setCertUse($use = NULL)
-    {
-        if (!empty($use) && ($use === 'signing' || $use === 'encryption')) {
+    public function setCertUse($use = null) {
+        $this->certusage = null;
+        if ($use === 'signing' || $use === 'encryption') {
             $this->certusage = $use;
-        } else {
-            $this->certusage = NULL;
         }
+
         return $this;
     }
 
@@ -141,38 +139,39 @@ class Certificate
     /**
      * setAsSSO() or setAsAA()
      */
-    public function setType($type = null)
-    {
+    public function setType($type = null) {
         if (empty($type)) {
             $type = 'sso';
         }
         $this->type = $type;
+
         return $this;
     }
 
-    public function setAsSPSSO()
-    {
+    public function setAsSPSSO() {
         $this->setType('spsso');
+
         return $this;
     }
 
-    public function setAsIDPSSO()
-    {
+    public function setAsIDPSSO() {
         $this->setType('idpsso');
+
         return $this;
     }
-    public function setCertType($type = null)
-    {
+
+    public function setCertType($type = null) {
         if (empty($type) || $type === 'x509') {
             $type = 'X509Certificate';
         }
         $this->certtype = $type;
+
         return $this;
     }
 
-    public function setSubject($sub)
-    {
+    public function setSubject($sub) {
         $this->subject = $sub;
+
         return $this;
     }
 
@@ -180,98 +179,91 @@ class Certificate
      * it's private because preferred calling functions
      * setAsDefault() or setAsNonDefault()
      */
-    private function setDefault($bool)
-    {
+    private function setDefault($bool) {
         $this->is_default = $bool;
+
         return $this;
     }
 
     /**
      * set default as true
      */
-    public function setAsDefault()
-    {
+    public function setAsDefault() {
         $this->setDefault(true);
+
         return $this;
     }
 
-    public function setEncryptMethods($enc = null)
-    {
+    public function setEncryptMethods($enc = null) {
 
+        $this->encmethods = null;
         if (!empty($enc) && is_array($enc)) {
             $this->encmethods = serialize(array_unique($enc));
-        } else {
-            $this->encmethods = null;
         }
+
         return $this;
 
     }
 
-    public function addEncryptionMethod($str)
-    {
-        $r = $this->getEncryptMethods();
-        $r[] = trim($str);
-        $this->setEncryptMethods($r);
+    public function addEncryptionMethod($str) {
+        $encmethods = $this->getEncryptMethods();
+        $encmethods[] = trim($str);
+        $this->setEncryptMethods($encmethods);
         return $this;
     }
 
     /**
      * set default as false
      */
-    public function setAsNonDefault()
-    {
-        $bool = FALSE;
+    public function setAsNonDefault() {
+        $bool = false;
         $this->setDefault($bool);
+
         return $this;
     }
 
 
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
-    public function getType()
-    {
+    public function getType() {
         return $this->type;
     }
 
-    public function getCertUse()
-    {
+    public function getCertUse() {
         return $this->certusage;
     }
 
-    public function getCertUseInStr()
-    {
-        if(empty($this->certusage))
-        {
+    public function getCertUseInStr() {
+        if (empty($this->certusage)) {
             return 'both';
         }
+
         return $this->certusage;
     }
 
     /**
      * return certificate without BEGIN/END Certificate
      */
-    public function getCertDataNoHeaders()
-    {
+    public function getCertDataNoHeaders() {
         $cert = $this->certdata;
         $output = null;
         if (!empty($cert)) {
-            if ($this->getCertType() == 'X509Certificate') {
+            if ($this->getCertType() === 'X509Certificate') {
                 $output = str_replace('-----BEGIN CERTIFICATE-----', '', $cert);
                 $output = str_replace('-----END CERTIFICATE-----', '', $output);
             }
         }
+
         return $output;
     }
 
-    public function getCertDataWithHeaders()
-    {
+    public function getCertDataWithHeaders() {
         $cert = trim($this->certdata);
         $output = null;
         if (!empty($cert)) {
-            if ($this->getCertType() == 'X509Certificate') {
+            if ($this->getCertType() === 'X509Certificate') {
                 $output = str_replace('-----BEGIN CERTIFICATE-----', '', $cert);
                 $output = str_replace('-----END CERTIFICATE-----', '', $output);
             }
@@ -279,21 +271,19 @@ class Certificate
         $output2 = '-----BEGIN CERTIFICATE-----';
         $output2 .= $output;
         $output2 .= '-----END CERTIFICATE-----';
+
         return $output2;
     }
 
-    public function getCertData()
-    {
+    public function getCertData() {
         return $this->certdata;
     }
 
-    public function isDefault()
-    {
+    public function isDefault() {
         return $this->is_default;
     }
 
-    public function getEncryptMethods()
-    {
+    public function getEncryptMethods() {
         $result = $this->encmethods;
         if ($result !== null) {
             return unserialize($result);
@@ -302,18 +292,15 @@ class Certificate
         }
     }
 
-    public function getKeyname()
-    {
+    public function getKeyname() {
         return $this->keyname;
     }
 
-    public function getCertType()
-    {
+    public function getCertType() {
         return $this->certtype;
     }
 
-    public function getFingerprint($alg = null)
-    {
+    public function getFingerprint($alg = null) {
         if (empty($alg)) {
             $alg = 'md5';
         }
@@ -324,34 +311,34 @@ class Certificate
         $certdata = trim($certdata);
         $certdata = str_replace(array("\n\r", "\n", "\r"), '', $certdata);
         $bin = base64_decode($certdata);
+
         return $alg($bin);
     }
 
-    public function getTimeValidTo()
-    {
+    public function getTimeValidTo() {
         $cert = $this->getPEM($this->getCertData());
         if (empty($cert)) {
             return null;
         }
-        if ($this->getCertType() == 'X509Certificate') {
+        if ($this->getCertType() === 'X509Certificate') {
             $parsed = openssl_x509_parse($cert);
-            $validTo = date('Y-m-d H:i:s', $parsed['validTo_time_t']);
-            return $validTo;
-        } else {
-            return null;
+
+            return date('Y-m-d H:i:s', $parsed['validTo_time_t']);
         }
+
+        return null;
+
     }
 
     /**
      * decide if you want just boolean return or number of days
      */
-    public function getTimeValid($type = null)
-    {
+    public function getTimeValid($type = null) {
         $cert = $this->getPEM($this->getCertData());
         if (empty($cert)) {
             return null;
         }
-        if ($this->getCertType() == 'X509Certificate') {
+        if ($this->getCertType() === 'X509Certificate') {
             $parsed = openssl_x509_parse($cert);
             $period = $parsed['validTo_time_t'] - time();
             $days = (int)$period / 60 / 60 / 24;
@@ -375,8 +362,7 @@ class Certificate
     /**
      * @prePersist
      */
-    public function fixCert()
-    {
+    public function fixCert() {
         if ($this->certtype === 'X509Certificate') {
             if (!empty($this->certdata)) {
                 $i = explode("\n", $this->certdata);
@@ -393,9 +379,8 @@ class Certificate
     /**
      * @PreUpdate
      */
-    public function updated()
-    {
-        if ($this->certtype == 'X509Certificate') {
+    public function updated() {
+        if ($this->certtype === 'X509Certificate') {
             if (!empty($this->certdata)) {
                 $this->certdata = self::reformatPEM($this->certdata);
             }
@@ -403,31 +388,25 @@ class Certificate
     }
 
 
-    public function importFromArray(array $c)
-    {
-        $this->setType($c['type']);
-        $this->setCertUse($c['usage']);
-        $this->setCertData($c['certdata']);
-        $this->setKeyname($c['keyname']);
-        $this->setCertType($c['certtype']);
+    public function importFromArray(array $cdata) {
+        $this->setType($cdata['type']);
+        $this->setCertUse($cdata['usage']);
+        $this->setCertdata($cdata['certdata']);
+        $this->setKeyname($cdata['keyname']);
+        $this->setCertType($cdata['certtype']);
     }
 
-    public function convertToArray()
-    {
-        $c = array();
-        $c['type'] = $this->getType();
-        $c['usage'] = $this->getCertUse();
-        $c['certdata'] = $this->getCertData();
-        $c['keyname'] = $this->getKeyname();
-        $c['certtype'] = $this->getCertType();
-        return $c;
-
+    public function convertToArray() {
+        return array(
+            'type'     => $this->getType(),
+            'usage'    => $this->getCertUse(),
+            'certdata' => $this->getCertData(),
+            'keyname'  => $this->getKeyname(),
+            'certtype' => $this->getCertType()
+        );
     }
 
-    function getPEM($value, $raw = false)
-    {
-
-        $cleaned_value = preg_replace('#(\\\r)#', '', $value);
+    public function getPEM($value, $raw = false) {
         $cleaned_value = preg_replace('#(\\\n)#', "\n", $value);
 
         $cleaned_value = trim($cleaned_value);
@@ -449,8 +428,7 @@ class Certificate
         return $cleaned_value;
     }
 
-    static function  reformatPEM($value)
-    {
+    public static function reformatPEM($value) {
         if (!empty($value)) {
             $pattern = array(
                 '0' => '/(.*)-----BEGIN CERTIFICATE-----/s',
@@ -461,15 +439,17 @@ class Certificate
                 '1' => ''
             );
             $cleaned_value = preg_replace($pattern, $cleaner, $value);
-            $cleaned_value = preg_replace("/\r\n/", "", $cleaned_value);
-            $cleaned_value = preg_replace("/\n+/", "", $cleaned_value);
-            $cleaned_value = preg_replace('/\s\s+/', "", $cleaned_value);
-            $cleaned_value = preg_replace('/\s*/', "", $cleaned_value);
+            $cleaned_value = preg_replace("/\r\n/", '', $cleaned_value);
+            $cleaned_value = preg_replace("/\n+/", '', $cleaned_value);
+            $cleaned_value = preg_replace('/\s\s+/', '', $cleaned_value);
+            $cleaned_value = preg_replace('/\s*/', '', $cleaned_value);
             $cleaned_value = trim($cleaned_value);
             $pem = chunk_split($cleaned_value, 64, PHP_EOL);
             $pem = '-----BEGIN CERTIFICATE-----' . PHP_EOL . $pem . '-----END CERTIFICATE-----';
+
             return $pem;
         }
+
         return $value;
     }
 

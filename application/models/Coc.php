@@ -132,15 +132,13 @@ class Coc
         if ($type === 'both' || $this->availfor === 'both' || $this->availfor === null) {
             return true;
         }
-        if ($type === $this->availfor) {
-            return true;
-        }
-        return false;
 
+        return $type === $this->availfor;
     }
 
     public function setName($name) {
         $this->name = trim($name);
+
         return $this;
     }
 
@@ -151,40 +149,46 @@ class Coc
      */
     public function setType($type) {
         $this->type = $type;
+
         return $this;
     }
 
     public function setSubtype($subtype) {
         $this->subtype = $subtype;
+
         return $this;
     }
 
     public function setUrl($url) {
         $this->url = trim($url);
+
         return $this;
     }
 
     public function setDescription($desc) {
         $this->cdescription = trim($desc);
+
         return $this;
     }
 
     public function setLang($lang) {
         $this->lang = trim($lang);
+
         return $this;
     }
 
     public function setProvider($provider) {
         $this->getProviders()->add($provider);
+
         return $this;
     }
 
     public function setAvailable($a = null) {
+        $this->is_enabled = false;
         if ($a === true) {
             $this->is_enabled = true;
-        } else {
-            $this->is_enabled = false;
         }
+
         return $this;
     }
 
@@ -192,6 +196,7 @@ class Coc
         if (in_array($type, array('idp', 'sp', 'both'), true)) {
             $this->availfor = $type;
         }
+
         return $this;
     }
 
@@ -203,6 +208,7 @@ class Coc
         $this->cdescription = trim($description);
         $this->is_enabled = $isavailable;
         $this->type = 'entcat';
+
         return $this;
     }
 
