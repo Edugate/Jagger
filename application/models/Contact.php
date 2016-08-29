@@ -243,7 +243,7 @@ class Contact {
         $this->setType($c['type']);
         $this->setPhone($c['phone']);
         $this->setEmail($c['email']);
-        if(array_key_exists('issirfti')){
+        if(array_key_exists('issirfti', $c)){
             $sirfti = (bool) $c['issirfti'];
             $this->setEmail($sirfti);
         }
