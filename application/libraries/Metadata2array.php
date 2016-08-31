@@ -82,7 +82,7 @@ class Metadata2array
             $reducedList = array_unique($attrvalues);
             foreach ($reducedList as $r) {
                 $existing = $this->em->getRepository("models\Coc")->findOneBy(array('url' => $r, 'type' => 'entcat', 'subtype' => $attrname));
-                if (empty($existing)) {
+                if (null === $existing) {
                     $nconduct = new models\Coc;
                     $nconduct->setEntityCategory($r, $r, $attrname, '' . $attrname . ': ' . $r . '', false);
                     $this->em->persist($nconduct);
@@ -93,7 +93,7 @@ class Metadata2array
             $reducedList = array_unique($v);
             foreach ($reducedList as $c) {
                 $existing = $this->em->getRepository("models\Coc")->findOneBy(array('url' => $c, 'type' => 'regpol', 'lang' => $k));
-                if (empty($existing)) {
+                if (null === $existing) {
                     $nregpol = new models\Coc;
                     $nregpol->setUrl($c);
                     $nregpol->setName($c);
@@ -228,8 +228,14 @@ class Metadata2array
                             foreach ($enode->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Attribute') as $enode2) {
                                 if ($enode2->hasAttributes() && in_array($enode2->getAttribute('Name'), $this->allowedEntcats) && $enode2->hasChildNodes()) {
                                     foreach ($enode2->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AttributeValue') as $enode3) {
-                                        $entity['coc']['' . $enode2->getAttribute('Name') . ''][] = trim($enode3->nodeValue);
-                                        $this->coclist['' . $enode2->getAttribute('Name') . ''][] = trim($enode3->nodeValue);
+                                        $tmpNodeName = $enode2->getAttribute('Name');
+                                        $tmpNodeVal = trim($enode3->nodeValue);
+                                        if (!(array_key_exists($tmpNodeName, $entity['coc']) && in_array($tmpNodeVal, $entity['coc']['' . $tmpNodeName . '']))) {
+                                            $entity['coc']['' . $tmpNodeName . ''][] = $tmpNodeVal;
+                                        } else {
+                                            log_message('warning', __METHOD__ . ' found duplicated entity attribue in imported metadata ' . $entity['entityid'] . ' :: ' . $tmpNodeName . ' :  ' . $tmpNodeVal);
+                                        }
+                                        $this->coclist['' . $tmpNodeName . ''][] = $tmpNodeVal;
                                     }
                                 }
                             }
@@ -270,7 +276,7 @@ class Metadata2array
             $entity['type'] = 'SP';
         }
 
-        if($isSp) {
+        if ($isSp) {
             if (isset($entity['details']['spssodescriptor']['nameid']) && is_array($entity['details']['spssodescriptor']['nameid']) && count($entity['details']['spssodescriptor']['nameid']) > 0) {
                 if (in_array('urn:oasis:names:tc:SAML:2.0:nameid-format:persistent', $entity['details']['spssodescriptor']['nameid']) && array_key_exists('persistentId', $this->nameidsattrs)) {
                     $entity['details']['reqattrs'][] = array('name' => $this->nameidsattrs['persistentId'], 'req' => 'True');
@@ -576,7 +582,7 @@ class Metadata2array
 
     private function contactPersonConvert(\DOMElement $node) {
         $isSirfty = false;
-        if($node->hasAttributeNS('http://refeds.org/metadata','contactType')){
+        if ($node->hasAttributeNS('http://refeds.org/metadata', 'contactType')) {
             $isSirfty = true;
         }
         $cnt = array(
@@ -584,7 +590,7 @@ class Metadata2array
             'surname' => null,
             'givenname' => null,
             'email' => null,
-            'issirfti' =>$isSirfty
+            'issirfti' => $isSirfty
         );
         foreach ($node->childNodes as $cnode) {
             if ($cnode->localName === 'SurName') {
