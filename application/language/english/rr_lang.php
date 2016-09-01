@@ -872,6 +872,7 @@ $lang['rr_fed_local']               = 'local';
 $lang['rr_fed_notpublic']           = 'not public';
 $lang['rr_fed_public']              = 'public';
 $lang['rr_isfedpublic']             = 'Is federation public';
+$lang['nopublicfedsfoundforreg']       = 'No public federations found';
 $lang['rhelp_onlypublicfeds']       = 'Only public federations are listed. Non public federations are available after approval';
 $lang['rhelppublicfed']             = 'If set as public federation then the federation will be listed on IdP/SP registration form';
 $lang['rr_alertrmspecpoliciecsp']     = 'Be aware of consequences! As result for every IdP which has lost trust relation with your SP - specific attribute release policy will be removed.  In the future if your entity establish relations with IdP then Administrator of IdP will need to set up the policy again.'; 
