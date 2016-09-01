@@ -30,6 +30,7 @@ class Metadata2array
     private $nameidsattrs = array();
     private $newNameSpaces = array();
     protected $ci;
+    protected $convertNameIdToAttrs;
     protected $allowedEntcats = array();
     /**
      * @var Doctrine\ORM\EntityManager $em
@@ -44,6 +45,13 @@ class Metadata2array
     public function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
+        $cnfConvertNameIdsToAttrs = $this->ci->config->item('importnameidstoattrs');
+        $this->convertNameIdToAttrs = true;
+        if($cnfConvertNameIdsToAttrs === false){
+            $this->convertNameIdToAttrs = false;
+        }
+
+
         $this->i = 0;
         $this->occurance = array();
         $this->metaArray = array();
@@ -277,7 +285,7 @@ class Metadata2array
             $entity['type'] = 'SP';
         }
 
-        if ($isSp) {
+        if ($this->convertNameIdToAttrs && $isSp) {
             if (isset($entity['details']['spssodescriptor']['nameid']) && is_array($entity['details']['spssodescriptor']['nameid']) && count($entity['details']['spssodescriptor']['nameid']) > 0) {
                 if (in_array('urn:oasis:names:tc:SAML:2.0:nameid-format:persistent', $entity['details']['spssodescriptor']['nameid']) && array_key_exists('persistentId', $this->nameidsattrs)) {
                     $entity['details']['reqattrs'][] = array('name' => $this->nameidsattrs['persistentId'], 'req' => 'True');
