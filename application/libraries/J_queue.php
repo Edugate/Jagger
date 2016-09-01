@@ -71,6 +71,36 @@ class J_queue
         return $result;
     }
 
+    /**
+     * button to approve/reject idp/sp registration request
+     *
+     * @param $qid
+     * @param bool $onlycancel
+     * @return string
+     */
+    public function queueRegProviderButtons($qid, $onlycancel = false) {
+        /* add approve form */
+        $select = '<div class="row"><div class="medium-6 column"><select  name="accesslevel" ><option value="none">Do not assign</option><option value="write">Write access</option><option value="manage">Manage access</option></select></div><div class="medium-6 column"><label for="accesslevel">Assign access</label></div></div>';
+        $approveForm = '';
+        $rejecttext = lang('rr_cancel');
+        if (!$onlycancel) {
+            $rejecttext = lang('rr_submitreject');
+            $approveForm = form_open('reports/awaiting/approve', array('id' => 'approvequeue'), array('qaction' => 'approve', 'qid' => $qid, 'setfederation' => 'yes')) .
+                '<div class="small-12 column"><button type="submit" name="mysubmit" value="Accept request!" class="button savebutton saveicon right">' . lang('rr_submitapprove') . '</button></div>' .
+                '<div>'.$select.'</div>'.
+                form_close();
+        }
+
+        /* add reject form */
+        $rejectHiddenAttrs = array('qaction' => 'reject', 'qid' => $qid);
+        $reject_attrid = array('id' => 'rejectqueue');
+        $rejectForm = form_open('reports/queueactions/reject', $reject_attrid, $rejectHiddenAttrs).
+            '<button type="submit" name="mysubmit" value="Reject request!" class="button resetbutton reseticon left alert">' . $rejecttext . '</button>' . form_close();
+        $result = '<div class="small-12  columns"><div class="small-6 column" >' . $rejectForm . '</div><div class="small-6 column">' . $approveForm . '</div></div>';
+
+        return $result;
+    }
+
     public function createUserFromQueue(models\Queue $queue) {
         $objdata = $queue->getData();
         if (!is_array($objdata)) {

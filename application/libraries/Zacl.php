@@ -27,6 +27,12 @@ class Zacl
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
 
+        $this->initiateAcls();
+
+    }
+
+
+    public function initiateAcls(){
         $this->acl = new Zend\Permissions\Acl\Acl();
         $this->acl->addRole(new Zend\Permissions\Acl\Role\GenericRole('default_role'));
         /**
@@ -144,7 +150,6 @@ class Zacl
         }
 
         $this->acl->allow('Administrator');
-
     }
 
     public function check_acl($resource, $action, $group = '', $role = '') {
