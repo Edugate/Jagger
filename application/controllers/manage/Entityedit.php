@@ -891,12 +891,13 @@ class Entityedit extends MY_Controller
             );
         }
 
+
+
         /**
          * @var $fedCollection models\Federation[]
          */
         $fedCollection = $this->em->getRepository("models\Federation")->findBy(array('is_public' => true, 'is_active' => true));
         if (count($fedCollection) > 0) {
-            $data['federations'] = array();
             /**
              *  generate dropdown list of public federations
              */
@@ -905,6 +906,9 @@ class Entityedit extends MY_Controller
                 $keyName = $key->getName();
                 $data['federations']['' . $keyName . ''] = $keyName;
             }
+        }
+        else {
+            $data['federations']['none'] = lang('nopublicfedsfoundforreg');
         }
 
 
