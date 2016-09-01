@@ -2413,7 +2413,7 @@ class Provider
                 }
             }
         }
-        if ($full && !empty($a['algs'])) {
+        if (!empty($a['algs'])) {
 
             foreach ($a['algs'] as $alg) {
                 $e = new ExtendMetadata();
