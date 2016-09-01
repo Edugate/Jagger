@@ -111,9 +111,9 @@ class Metadata2array
     }
 
     public function entitiesConvert(\DOMElement $doc, $full = false) {
-        if ($doc->localName === 'EntityDescriptor') {
+        if ($doc->localName === 'EntityDescriptor' && $doc->namespaceURI === 'urn:oasis:names:tc:SAML:2.0:metadata') {
             $this->entityConvert($doc, $full);
-        } elseif ($doc->localName === 'EntitiesDescriptor') {
+        } elseif ($doc->localName === 'EntitiesDescriptor' && $doc->namespaceURI === 'urn:oasis:names:tc:SAML:2.0:metadata' ) {
             $lxpath = new \DomXPath($this->doc);
             foreach ($lxpath->query('namespace::*', $doc) as $pnode) {
                 $prefix = $pnode->prefix;
@@ -209,12 +209,13 @@ class Metadata2array
             if ($gnode->localName === 'Extensions') {
                 if ($gnode->hasChildNodes()) {
                     foreach ($gnode->childNodes as $enode) {
-                        if ($enode->nodeName === 'mdrpi:RegistrationInfo' && $enode->hasAttributes()) {
+
+                        if ($enode->localName === 'RegistrationInfo' && $enode->namespaceURI === 'urn:oasis:names:tc:SAML:metadata:rpi' && $enode->hasAttributes()) {
                             $entity['registrar'] = $enode->getAttribute('registrationAuthority');
                             $entity['regdate'] = $enode->getAttribute('registrationInstant');
                             if ($enode->hasChildNodes()) {
                                 foreach ($enode->childNodes as $ch) {
-                                    if ($ch->nodeName === 'mdrpi:RegistrationPolicy') {
+                                    if ($ch->localName === 'RegistrationPolicy') {
                                         $chlang = strtolower($ch->getAttribute('xml:lang'));
                                         $chvalue = trim($ch->nodeValue);
                                         if (!empty($chlang) && !empty($chvalue)) {
@@ -224,7 +225,7 @@ class Metadata2array
                                     }
                                 }
                             }
-                        } elseif ($enode->nodeName === 'mdattr:EntityAttributes' && $enode->hasChildNodes()) {
+                        } elseif ($enode->localName === 'EntityAttributes' && $enode->namespaceURI === 'urn:oasis:names:tc:SAML:metadata:attribute' && $enode->hasChildNodes()) {
                             foreach ($enode->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Attribute') as $enode2) {
                                 if ($enode2->hasAttributes() && in_array($enode2->getAttribute('Name'), $this->allowedEntcats) && $enode2->hasChildNodes()) {
                                     foreach ($enode2->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AttributeValue') as $enode3) {
@@ -239,12 +240,12 @@ class Metadata2array
                                     }
                                 }
                             }
-                        } elseif ($enode->nodeName === 'alg:DigestMethod') {
+                        } elseif ($enode->localName === 'DigestMethod' && $enode->namespaceURI === 'urn:oasis:names:tc:SAML:metadata:algsupport') {
                             $entity['algs'][] = array(
                                 'name' => 'DigestMethod',
                                 'algorithm' => $enode->getAttribute('Algorithm'),
                             );
-                        } elseif ($enode->nodeName === 'alg:SigningMethod') {
+                        } elseif ($enode->localName === 'SigningMethod' && $enode->namespaceURI === 'urn:oasis:names:tc:SAML:metadata:algsupport') {
                             $tmlentry = array(
                                 'name' => 'SigningMethod',
                                 'algorithm' => $enode->getAttribute('Algorithm'),
@@ -455,13 +456,16 @@ class Metadata2array
         $usecase = $node->getAttribute('use');
         $cert['use'] = $usecase;
         foreach ($node->childNodes as $child) {
-            if ($child->nodeName === 'ds:KeyInfo') {
+
+            if ($child->localName === 'KeyInfo' && $child->namespaceURI === 'http://www.w3.org/2000/09/xmldsig#') {
                 foreach ($child->childNodes as $gchild) {
-                    if ($gchild->nodeName === 'ds:KeyName') {
+                    log_message('debug', 'JANUSZ ::: ' . $gchild->nodeName . ' ::' . $gchild->namespaceURI);
+                    if ($gchild->localName === 'KeyName' && $gchild->namespaceURI === 'http://www.w3.org/2000/09/xmldsig#') {
                         $cert['keyname'][] = $gchild->nodeValue;
-                    } elseif ($gchild->nodeName === 'ds:X509Data') {
+                    } elseif ($gchild->localName === 'X509Data' && $gchild->namespaceURI === 'http://www.w3.org/2000/09/xmldsig#') {
+
                         foreach ($gchild->childNodes as $enode) {
-                            if ($enode->nodeName === 'ds:X509Certificate') {
+                            if ($enode->localName === 'X509Certificate' && $enode->namespaceURI === 'http://www.w3.org/2000/09/xmldsig#') {
                                 if (!empty($enode->nodeValue)) {
                                     $cert['x509data']['x509certificate'] = reformatPEM($enode->nodeValue);
                                 } else {
@@ -471,7 +475,7 @@ class Metadata2array
                         }
                     }
                 }
-            } elseif ($child->nodeName === 'md:EncryptionMethod' || $child->nodeName === 'EncryptionMethod') {
+            } elseif ($child->localName === 'EncryptionMethod' && $child->namespaceURI === 'urn:oasis:names:tc:SAML:2.0:metadata') {
                 $cert['encmethods'][] = $child->getAttribute('Algorithm');
             }
         }
@@ -482,7 +486,7 @@ class Metadata2array
     private function aaExtensionsToArray(\DOMElement $node) {
         $result = array();
         foreach ($node->childNodes as $enode) {
-            if ($enode->nodeName === 'shibmd:Scope' || $enode->nodeName === 'saml1md:Scope') {
+            if ($enode->localName === 'Scope' && $enode->namespaceURI === 'urn:mace:shibboleth:metadata:1.0') {
                 $result['aascope'][] = trim($enode->nodeValue);
             }
         }
@@ -493,34 +497,35 @@ class Metadata2array
     private function extensionsToArray(\DOMElement $node) {
         $ext = array();
         foreach ($node->childNodes as $enode) {
-            if ($enode->nodeName === 'shibmd:Scope' || $enode->nodeName === 'saml1md:Scope') {
+            if ($enode->localName === 'Scope' && $enode->namespaceURI === 'urn:mace:shibboleth:metadata:1.0') {
                 $ext['scope'][] = trim($enode->nodeValue);
                 continue;
             }
-            if ($enode->nodeName === 'idpdisc:DiscoveryResponse') {
+            if ($enode->localName === 'DiscoveryResponse' && $enode->namespaceURI === 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol') {
                 $ext['idpdisc'][] = array('binding' => $enode->getAttribute('Binding'), 'url' => $enode->getAttribute('Location'), 'order' => $enode->getAttribute('index'));
                 continue;
             }
-            if ($enode->nodeName === 'init:RequestInitiator') {
+            if ($enode->localName === 'RequestInitiator'  && $enode->namespaceURI === 'urn:oasis:names:tc:SAML:profiles:SSO:request-init') {
                 $ext['init'][] = array('binding' => $enode->getAttribute('Binding'), 'url' => $enode->getAttribute('Location'));
                 continue;
             }
-            if ($enode->nodeName === 'mdui:UIInfo' && $enode->hasChildNodes()) {
+            if ($enode->localName === 'UIInfo' && $enode->namespaceURI === 'urn:oasis:names:tc:SAML:metadata:ui' && $enode->hasChildNodes()) {
+
                 $tmpMapping = array(
-                    'mdui:Description' => 'desc',
-                    'mdui:DisplayName' => 'displayname',
-                    'mdui:PrivacyStatementURL' => 'privacyurl',
-                    'mdui:InformationURL' => 'informationurl',
-                    'mdui:Logo' => 'logo',
-                    'mdui:Keywords' => 'keywords'
+                    'Description' => 'desc',
+                    'DisplayName' => 'displayname',
+                    'PrivacyStatementURL' => 'privacyurl',
+                    'InformationURL' => 'informationurl',
+                    'Logo' => 'logo',
+                    'Keywords' => 'keywords'
                 );
                 foreach ($enode->childNodes as $gnode) {
-                    if (in_array($gnode->nodeName, array('mdui:Description', 'mdui:DisplayName', 'mdui:PrivacyStatementURL', 'mdui:InformationURL', 'mdui:Keywords'), true)) {
-                        $keynodeName = $tmpMapping['' . $gnode->nodeName . ''];
+                    if (in_array($gnode->localName, array('Description', 'DisplayName', 'PrivacyStatementURL', 'InformationURL', 'Keywords'), true)) {
+                        $keynodeName = $tmpMapping['' . $gnode->localName . ''];
                         $ext['' . $keynodeName . ''][] = array('lang' => $gnode->getAttribute('xml:lang'), 'val' => trim($gnode->nodeValue));
                         continue;
                     }
-                    if ($gnode->nodeName === 'mdui:Logo') {
+                    if ($gnode->localName === 'Logo') {
                         $logoval = trim($gnode->nodeValue);
                         $ext['logo'][] = array('height' => $gnode->getAttribute('height'), 'width' => $gnode->getAttribute('width'), 'xml:lang' => $gnode->getAttribute('xml:lang'), 'val' => $logoval);
 
@@ -528,16 +533,16 @@ class Metadata2array
                 }
                 continue;
             }
-            if ($enode->nodeName === 'mdui:DiscoHints' && $enode->hasChildNodes()) {
+            if ($enode->localName === 'DiscoHints' && $enode->namespaceURI === 'urn:oasis:names:tc:SAML:metadata:ui' && $enode->hasChildNodes()) {
                 foreach ($enode->childNodes as $agnode) {
-                    if ($agnode->nodeName === 'mdui:GeolocationHint') {
+                    if ($agnode->localName === 'GeolocationHint') {
                         $geovalue = $this->convertGeoToArray($agnode->nodeValue);
                         if (is_array($geovalue)) {
                             $ext['geo'][] = $geovalue;
                         }
-                    } elseif ($agnode->nodeName === 'mdui:IPHint') {
+                    } elseif ($agnode->localName === 'IPHint') {
                         $ext['iphint'][] = trim($agnode->nodeValue);
-                    } elseif ($agnode->nodeName === 'mdui:DomainHint') {
+                    } elseif ($agnode->localName === 'DomainHint') {
                         $ext['domainhint'][] = trim($agnode->nodeValue);
                     }
                 }
@@ -572,7 +577,7 @@ class Metadata2array
         if ($node->hasChildNodes()) {
             foreach ($node->childNodes as $child) {
                 if (!$child instanceOf DOMText) {
-                    $org['' . str_replace('md:', '', $child->nodeName) . '']['' . $child->getAttribute('xml:lang') . ''] = trim($child->nodeValue);
+                    $org['' . $child->localName . '']['' . $child->getAttribute('xml:lang') . ''] = trim($child->nodeValue);
                 }
             }
         }

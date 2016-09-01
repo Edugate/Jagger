@@ -247,7 +247,7 @@ class Importer extends MY_Controller
         );
         $this->xmlbody = $this->curl->simple_get('' . $metadataurl . '', array(), $curloptions);
         if (empty($this->xmlbody)) {
-            $this->otherErrors[] = $this->curl->debug();
+            $this->otherErrors[] = html_escape($this->curl->error_string);
             return false;
         }
         libxml_use_internal_errors(true);
