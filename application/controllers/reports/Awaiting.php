@@ -217,7 +217,14 @@ class Awaiting extends MY_Controller
 
         if (strcasecmp($objType, 'Provider') == 0) {
             $result = $this->detailProvider($queueObject);
-            $result['data']['provider'][]['2cols'] = $this->j_queue->queueRegProviderButtons($queueObject->getId(), !$approveaccess);
+            if($objAction === 'Create'){
+                $createapprove = $this->jqueueaccess->hasApproveByFedadmin($queueObject);
+                $result['data']['provider'][]['2cols'] = $this->j_queue->queueRegProviderButtons($queueObject->getId(), !$createapprove);
+            }
+            else {
+                $result['data']['provider'][]['2cols'] = $this->j_queue->queueRegProviderButtons($queueObject->getId(), !$approveaccess);
+            }
+
 
         } elseif (strcasecmp($objType, 'Federation') == 0) {
             $result = $this->j_queue->detailFederation($queueObject);
@@ -438,6 +445,11 @@ class Awaiting extends MY_Controller
         $rEntity = $this->em->getRepository('models\Provider')->findOneBy(array('entityid' => $rEntityID));
         if ($rEntity !== null && $rUsername !== null && $accessLevel !== null) {
             $this->zacl->initiateAcls();
+
+            /**
+             * @todo need to fix - when approving person is not Administrator but Federation admin (approval right)  - acls cannot be set
+             */
+
             if ($accessLevel === 'write') {
                 $this->zacl->add_access_toUser($rEntity->getId(), 'write', $rUsername, 'entity', null);
                 $this->zacl->add_access_toUser($rEntity->getId(), 'read', $rUsername, 'entity', null);

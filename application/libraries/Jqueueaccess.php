@@ -49,13 +49,15 @@ class Jqueueaccess
             }
         } elseif (strcasecmp($action, 'Create') == 0 && strcasecmp($objType, 'Provider') == 0) {
 
+
             $objData = $queue->getData();
             $providerData = new models\Provider();
             $providerData->importFromArray($objData);
-            
+
             $feds = $providerData->getFederations();
             $nofeds = $feds->count();
             if ($nofeds === 1) {
+
                 $firstFed = $feds->first();
                 $fedindb = $this->em->getRepository('models\Federation')->findOneBy(array('sysname' => '' . $firstFed->getSysname() . ''));
                 if ($fedindb !== null) {
@@ -77,6 +79,9 @@ class Jqueueaccess
     }
 
     public function hasApproveByFedadmin(\models\Queue $queue) {
+        if ($this->ci->jauth->isAdministrator()) {
+            return true;
+        }
         $objData = $queue->getData();
         $providerData = new models\Provider();
         $providerData->importFromArray($objData);
@@ -92,6 +97,7 @@ class Jqueueaccess
 
         return false;
     }
+
     public function hasApproveAccess(\models\Queue $q) {
         $result = false;
         if ($this->ci->jauth->isAdministrator()) {

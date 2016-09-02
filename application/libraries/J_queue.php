@@ -80,7 +80,7 @@ class J_queue
      */
     public function queueRegProviderButtons($qid, $onlycancel = false) {
         /* add approve form */
-        $select = '<div class="row"><div class="medium-6 column"><select  name="accesslevel" ><option value="none">Do not assign</option><option value="write">Write access</option><option value="manage">Manage access</option></select></div><div class="medium-6 column"><label for="accesslevel">Assign access</label></div></div>';
+        $select = '<div class="row"><div class="medium-6 column"><select  name="accesslevel" ><option value="none">'.lang('rrdontassign').'</option><option value="write">'.lang('rr_write').'</option><option value="manage">'.lang('rr_management').'</option></select></div><div class="medium-6 column"><label for="accesslevel">'.lang('lbl_setaccesslvl').' <span class="label">if not anonymous</span></label></div></div>';
         $approveForm = '';
         $rejecttext = lang('rr_cancel');
         if (!$onlycancel) {
@@ -96,7 +96,7 @@ class J_queue
         $reject_attrid = array('id' => 'rejectqueue');
         $rejectForm = form_open('reports/queueactions/reject', $reject_attrid, $rejectHiddenAttrs).
             '<button type="submit" name="mysubmit" value="Reject request!" class="button resetbutton reseticon left alert">' . $rejecttext . '</button>' . form_close();
-        $result = '<div class="small-12  columns"><div class="small-6 column" >' . $rejectForm . '</div><div class="small-6 column">' . $approveForm . '</div></div>';
+        $result = '<div class="small-12  columns"><div class="medium-6 column" >' . $rejectForm . '</div><div class="medium-6 column">' . $approveForm . '</div></div>';
 
         return $result;
     }
