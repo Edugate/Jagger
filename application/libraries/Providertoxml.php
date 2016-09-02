@@ -194,9 +194,8 @@ class Providertoxml
                 $xml->writeAttribute('Name', $k);
                 $xml->writeAttribute('NameFormat', 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri');
                 foreach ($v as $v1) {
-                   $v1Url = $v1->getUrl();
-                    if($v1Url === 'https://refeds.org/sirtfi' && $k === 'urn:oasis:names:tc:SAML:attribute:assurance-certification'){
-                        log_message('debug','JNL OLO');
+                    $v1Url = $v1->getUrl();
+                    if ($v1Url === 'https://refeds.org/sirtfi' && $k === 'urn:oasis:names:tc:SAML:attribute:assurance-certification') {
                         $ent->setSirfty(true);
                     }
                     $xml->startElementNs('saml', 'AttributeValue', null);
@@ -223,7 +222,7 @@ class Providertoxml
     }
 
     private function createContacts(\XMLWriter $xml, \models\Provider $ent) {
-        $isProviderSirfti = (bool) $ent->isSirfty();
+        $isProviderSirfti = (bool)$ent->isSirfty();
         $contacts = $ent->getContacts();
         foreach ($contacts as $c) {
             $givenName = $c->getGivenname();
@@ -232,10 +231,8 @@ class Providertoxml
             $isContactSirfti = $c->isSirfti();
             $xml->startElementNs('md', 'ContactPerson', null);
             $xml->writeAttribute('contactType', $c->getType());
-            if($isProviderSirfti && $isContactSirfti){
-             //   $xml->writeAttribute('xmlns:remd', 'http://refeds.org/metadata');
-                $xml->writeAttributeNs('remd','contactType','http://refeds.org/metadata','http://refeds.org/metadata/contactType/security');
-          //      $xml->writ
+            if ($isProviderSirfti && $isContactSirfti) {
+                $xml->writeAttributeNs('remd', 'contactType', 'http://refeds.org/metadata', 'http://refeds.org/metadata/contactType/security');
             }
             if (!empty($givenName)) {
                 $xml->startElementNs('md', 'GivenName', null);
@@ -276,7 +273,7 @@ class Providertoxml
         }
         $xml->startElementNs('mdui', 'UIInfo', null);
         $enLang = array();
-        foreach (array('DisplayName', 'Description', 'Keywords','InformationURL', 'PrivacyStatementURL') as $mduiElement) {
+        foreach (array('DisplayName', 'Description', 'Keywords', 'InformationURL', 'PrivacyStatementURL') as $mduiElement) {
 
             $enLang['' . $mduiElement . ''] = false;
 
