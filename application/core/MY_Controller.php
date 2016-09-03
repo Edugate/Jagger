@@ -5,10 +5,10 @@ if (!defined('BASEPATH')) {
 /**
  * ResourceRegistry3
  *
- * @package   RR3
+ * @package   Jagger
  * @author    Middleware Team HEAnet
  * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- * @copyright Copyright (c) 2015, HEAnet Limited (http://www.heanet.ie)
+ * @copyright 2016, HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
  */
