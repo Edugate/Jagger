@@ -467,7 +467,6 @@ class Metadata2array
 
             if ($child->localName === 'KeyInfo' && $child->namespaceURI === 'http://www.w3.org/2000/09/xmldsig#') {
                 foreach ($child->childNodes as $gchild) {
-                    log_message('debug', 'JANUSZ ::: ' . $gchild->nodeName . ' ::' . $gchild->namespaceURI);
                     if ($gchild->localName === 'KeyName' && $gchild->namespaceURI === 'http://www.w3.org/2000/09/xmldsig#') {
                         $cert['keyname'][] = $gchild->nodeValue;
                     } elseif ($gchild->localName === 'X509Data' && $gchild->namespaceURI === 'http://www.w3.org/2000/09/xmldsig#') {

@@ -1061,6 +1061,9 @@ class Providerupdater
                         $newScopes = array_filter(preg_split("/[\s,]+/", $ch['scopes'][$scopeType]));
                         $newScopesByType[''.$scopeType.''] = array_unique($newScopes);
                     }
+                    else {
+                        $newScopesByType[''.$scopeType.''] = array();
+                    }
                 }
                 if ( empty($entid)) {
                     foreach (array('idpsso','aa') as $scopeType) {

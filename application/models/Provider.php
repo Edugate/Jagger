@@ -1417,13 +1417,19 @@ class Provider
         }
     }
 
+    /**
+     * @return array
+     */
     public function getScopeFull() {
-        $s = @unserialize($this->scope);
-        if (!empty($s)) {
-            return $s;
-        } else {
-            return array('aa' => array(), 'idpsso' => array());
+        $s = (array) @unserialize($this->scope);
+        $result = array('aa'=>array(),'idpsso'=>array());
+        if(isset($s['aa'])){
+            $result['aa'] = $s['aa'];
         }
+        if(isset($result['idpsso'])){
+            $result['idpsso'] = $s['idpsso'];
+        }
+        return $result;
     }
 
     /**
