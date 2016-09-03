@@ -77,12 +77,14 @@ class Entityedit extends MY_Controller
         if (empty($data)) {
             log_message('warning', __METHOD__ . 'External validator : returned empty result: ' . $this->curl->error_string);
             $this->tmpError .= 'Federation validator : returned empty response, please tray again or contact support';
+
             return false;
         }
         log_message('debug', __METHOD__ . 'External validator : data received from validator: ' . $data);
         $expectedDocumentType = $fedValidator->getDocutmentType();
         if (strcmp($expectedDocumentType, 'xml') != 0) {
             log_message('warning', 'External validator : Other than xml not supported yet');
+
             return true;
         } else {
             libxml_use_internal_errors(true);
@@ -90,6 +92,7 @@ class Entityedit extends MY_Controller
             if (!$sxe) {
                 log_message('warning', __METHOD__ . ' Received invalid xml document from external validator');
                 $this->tmpError .= 'Received invalid response from  External validator, please tray again or contact support';
+
                 return false;
             }
             /**
@@ -101,6 +104,7 @@ class Entityedit extends MY_Controller
             $codeDoms = null;
             if (count($returncodeElements) == 0) {
                 log_message('error', 'External validator (' . $fedValidator->getId() . ') is misconfigured - has not defined returned codes');
+
                 return true;
             }
             foreach ($returncodeElements as $v) {
@@ -113,6 +117,7 @@ class Entityedit extends MY_Controller
             if (empty($codeDoms->length)) {
                 log_message('warning', __METHOD__ . ' External validator: expected return code element not received from externalvalidaor');
                 $this->tmpError .= 'Received invalid response from  External validator, please tray again or contact support';
+
                 return false;
             }
             $codeDomeValue = trim($codeDoms->item(0)->nodeValue);
@@ -121,6 +126,7 @@ class Entityedit extends MY_Controller
             } else {
                 log_message('warning', __METHOD__ . ' found expected element but with no value');
                 $this->tmpError .= 'Received invalid response from  External validator, please tray again or contact support';
+
                 return false;
             }
             $expectedReturnValues = $fedValidator->getReturnCodeValues();
@@ -128,6 +134,7 @@ class Entityedit extends MY_Controller
             $mergedReturns = array_merge($typesOfReturns, $expectedReturnValues);
             if (in_array($codeDomeValue, $mergedReturns['success']) || in_array($codeDomeValue, $mergedReturns['warning'])) {
                 log_message('info', __METHOD__ . ' returned value found in expected success/warning - passed');
+
                 return true;
             }
             $elementWithMessage = $fedValidator->getMessageCodeElements();
@@ -180,6 +187,7 @@ class Entityedit extends MY_Controller
 
             }
         }
+
         return false;
 
 
@@ -349,10 +357,11 @@ class Entityedit extends MY_Controller
              */
             $grantEncrMeths = j_KeyEncryptionAlgorithms();
             $grantEncrMethsList = implode(",", $grantEncrMeths);
+            $certsCounter = array('idpsso' => 0, 'spsso' => 0, 'aa' => 0);
             $certGroups = array(
-                'spsso' => 'SPSSODescriptor',
+                'spsso'  => 'SPSSODescriptor',
                 'idpsso' => 'IDPSSODescriptor',
-                'aa' => 'AttributeAuthorityDescriptor'
+                'aa'     => 'AttributeAuthorityDescriptor'
             );
             if (array_key_exists('crt', $y['f'])) {
                 foreach ($certGroups as $key => $val) {
@@ -366,6 +375,7 @@ class Entityedit extends MY_Controller
                             $this->form_validation->set_rules('f[crt][' . $key . '][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
                             $this->form_validation->set_rules('f[crt][' . $key . '][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $grantEncrMethsList . ']');
 
+                            $certsCounter[''.$key.''] = $certsCounter[''.$key.''] + 1;
 
                         }
                     }
@@ -549,6 +559,7 @@ class Entityedit extends MY_Controller
 
                 if (empty($idpssoSrvsLocations) && empty($aaSrvsLocations) && !$isStaticDefault) {
                     $this->tmpError = lang('errmissssoaasrvs');
+
                     return false;
                 }
                 if (!empty($nossobindings) && is_array($nossobindings) && count($nossobindings) > 0 && count(array_unique($nossobindings)) < count($nossobindings)) {
@@ -561,6 +572,10 @@ class Entityedit extends MY_Controller
                 }
                 if (!empty($nospslo) && is_array($nospslo) && count($nospslo) > 0 && count(array_unique($nospslo)) < count($nospslo)) {
                     $this->tmpError = 'duplicate binding protocols for SP SLO found in sent form';
+                    $optValidationsPassed = false;
+                }
+                if($certsCounter['idpsso'] === 0){
+                    $this->tmpError = 'At least on certificate must be set for IDPSSODescriptor';
                     $optValidationsPassed = false;
                 }
             }
@@ -667,6 +682,7 @@ class Entityedit extends MY_Controller
 
     private function getFromDraft($id) {
         $n = 'entform' . $id;
+
         return $this->session->userdata($n);
     }
 
@@ -680,8 +696,10 @@ class Entityedit extends MY_Controller
 
         if (!$has_write_access) {
             show_error('No access to edit', 403);
+
             return false;
         }
+
         return true;
     }
 
@@ -796,6 +814,7 @@ class Entityedit extends MY_Controller
         if (!empty($showsuccess)) {
             $data['success_message'] = lang('updated');
             $data['content_view'] = 'manage/entityedit_success_view';
+
             return $this->load->view(MY_Controller::$page, $data);
 
         }
@@ -832,6 +851,7 @@ class Entityedit extends MY_Controller
      */
     private function isFromSimpleRegistration() {
         $fromSimpleMode = $this->input->post('advanced');
+
         return (!empty($fromSimpleMode) && strcmp($fromSimpleMode, 'advanced') == 0);
 
     }
@@ -840,7 +860,7 @@ class Entityedit extends MY_Controller
         MY_Controller::$menuactive = 'reg';
 
         $data = array(
-            'registerForm' => true,
+            'registerForm'    => true,
             'error_messages2' => &$this->tmpError
         );
         $data['jsAddittionalFiles'][] = 'https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places';
@@ -879,18 +899,17 @@ class Entityedit extends MY_Controller
          */
         $data['anonymous'] = true;
         if ($this->jauth->isLoggedIn()) {
-            $data['anonymous'] = FALSE;
+            $data['anonymous'] = false;
             $currentusername = $this->jauth->getLoggedinUsername();
             $u = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $currentusername . ''));
             $data['loggeduser'] = array(
                 'username' => '' . $currentusername . '',
                 'fullname' => '' . $u->getFullname() . '',
-                'fname' => '' . $u->getGivenname() . '',
-                'lname' => '' . $u->getSurname() . '',
-                'email' => '' . $u->getEmail() . '',
+                'fname'    => '' . $u->getGivenname() . '',
+                'lname'    => '' . $u->getSurname() . '',
+                'email'    => '' . $u->getEmail() . '',
             );
         }
-
 
 
         /**
@@ -906,8 +925,7 @@ class Entityedit extends MY_Controller
                 $keyName = $key->getName();
                 $data['federations']['' . $keyName . ''] = $keyName;
             }
-        }
-        else {
+        } else {
             $data['federations']['none'] = lang('nopublicfedsfoundforreg');
         }
 
@@ -925,11 +943,11 @@ class Entityedit extends MY_Controller
                  */
 
                 $metadataDOM = new \DOMDocument();
-                $metadataDOM->strictErrorChecking = FALSE;
-                $metadataDOM->WarningChecking = FALSE;
+                $metadataDOM->strictErrorChecking = false;
+                $metadataDOM->WarningChecking = false;
                 $metadataDOM->loadXML($metadatabody);
 
-                $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, FALSE, FALSE);
+                $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, false, false);
                 if (!$isValid) {
                     log_message('warning', __METHOD__ . ' invalid metadata had been pasted in registration form');
                     $this->tmpError = lang('err_pastedtxtnotvalidmeta');
@@ -1079,8 +1097,12 @@ class Entityedit extends MY_Controller
                         $this->load->library('providertoxml');
                         $options['attrs'] = 1;
                         $xmlOut = $this->providertoxml->entityConvertNewDocument($ent, $options);
-                        $tmpid = rand(10, 1000);
+                        $tmpid = mt_rand(10, 1000);
                         log_message('debug', 'JAGGER RAND: ' . $tmpid);
+                        if(empty($xmlOut)){
+
+                            show_error('Some validations broke - couldn generate metadata for entity based on provided information');
+                        }
                         $xmloutput = $xmlOut->outputMemory();
                         $this->j_ncache->savePreregisterMetadata($tmpid, $xmloutput);
                         $isFvalidatoryMandatory = false;
@@ -1121,11 +1143,11 @@ class Entityedit extends MY_Controller
                             $q->setToken();
                             $sourceIP = $this->input->ip_address();
                             $messageTemplateParams = array(
-                                'requestermail' => $contactMail,
-                                'token' => $q->getToken(),
+                                'requestermail'     => $contactMail,
+                                'token'             => $q->getToken(),
                                 'requestersourceip' => $sourceIP,
-                                'orgname' => $ent->getName(),
-                                'serviceentityid' => $ent->getEntityId(),
+                                'orgname'           => $ent->getName(),
+                                'serviceentityid'   => $ent->getEntityId(),
                             );
                             if (!empty($u)) {
 
@@ -1138,15 +1160,15 @@ class Entityedit extends MY_Controller
                             $nowUtc = new \DateTime('now', new \DateTimeZone('UTC'));
 
                             $messageTemplateArgs = array(
-                                'token' => $q->getToken(),
-                                'srcip' => $sourceIP,
-                                'entorgname' => $ent->getName(),
-                                'entityid' => $ent->getEntityId(),
-                                'reqemail' => $contactMail,
+                                'token'       => $q->getToken(),
+                                'srcip'       => $sourceIP,
+                                'entorgname'  => $ent->getName(),
+                                'entityid'    => $ent->getEntityId(),
+                                'reqemail'    => $contactMail,
                                 'requsername' => '' . $requsername . '',
                                 'reqfullname' => $reqfullname,
                                 'datetimeutc' => '' . $nowUtc->format('Y-m-d h:i:s') . ' UTC',
-                                'qurl' => '' . base_url() . 'reports/awaiting/detail/' . $q->getToken() . '');
+                                'qurl'        => '' . base_url() . 'reports/awaiting/detail/' . $q->getToken() . '');
 
 
                             $messageTemplate = $this->emailsender->generateLocalizedMail($mailTemplateGroup, $messageTemplateArgs);
@@ -1156,7 +1178,7 @@ class Entityedit extends MY_Controller
                             if (!empty($messageTemplate)) {
                                 $notifGroups = (array)$notificationGroup;
                                 array_push($notifGroups, 'greqisterreq');
-                                $this->emailsender->addToMailQueue($notifGroups, null, $messageTemplate['subject'], $messageTemplate['body'], array(), FALSE);
+                                $this->emailsender->addToMailQueue($notifGroups, null, $messageTemplate['subject'], $messageTemplate['body'], array(), false);
                             }
 
 
@@ -1168,6 +1190,7 @@ class Entityedit extends MY_Controller
                             } catch (Exception $e) {
                                 log_message('error', __METHOD__ . ' ' . $e);
                                 show_error('Internal Server Error', 500);
+
                                 return;
                             }
                         } else {
