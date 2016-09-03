@@ -41,6 +41,7 @@ if (!defined('BASEPATH')) {
  * @property Arp_generator $arp_generator
  * @property Arpgen $arpgen
  * @property Providerdetails $providerdetails
+ * @property Providerupdater $providerupdater
  * @property Jalert $jalert
  * @property Gearmanw $gearmanw
  * @property Rrpreference $rrpreference

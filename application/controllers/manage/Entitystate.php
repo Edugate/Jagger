@@ -23,37 +23,59 @@ class Entitystate extends MY_Controller
     public function __construct() {
         parent::__construct();
 
-        $this->current_site = current_url();
-
-
         $this->tmpProviders = new models\Providers;
         $this->load->library(array('formelement', 'form_validation', 'metadatavalidator', 'zacl'));
         $this->tmpProviders = new models\Providers();
         $this->entity = null;
     }
-    
+
+    private function validateAccess() {
+        $result = array(
+            'access' => true,
+            'code'   => 200,
+            'msg'    => 'OK'
+        );
+        if (!$this->jauth->isLoggedIn()) {
+            $result = array(
+                'access' => false,
+                'code'   => 401,
+                'msg'    => 'Access denied - not authenticated'
+            );
+        };
+        if (!$this->input->is_ajax_request()) {
+            $result = array(
+                'access' => false,
+                'code'   => 401,
+                'msg'    => 'Access denied'
+            );
+        };
+        if(empty($this->input->post('updatedata'))) {
+             $result = array(
+                'access' => false,
+                'code'   => 401,
+                'msg'    => 'missing input'
+            );
+        };
+
+        return $result;
+    }
+
 
     public function updatemembership() {
-        if (!$this->jauth->isLoggedIn()) {
-            return $this->output->set_status_header(401)->set_output('Access denied - not authenticated');
+        $validation = $this->validateAccess();
+        if($validation['access'] === false){
+            return $this->output->set_status_header($validation['code'])->set_output($validation['msg']);
         }
-        if (!$this->input->is_ajax_request()) {
-            return $this->output->set_status_header(401)->set_output('Access denied');
-        }
-        $inputdata = $this->input->post('updatedata');
-        if (empty($inputdata)) {
-            return $this->output->set_status_header(401)->set_output('missing input');
-        }
-        $inputInArray = explode('|', $inputdata);
+        $inputInArray = explode('|', $this->input->post('updatedata'));
         if (count($inputInArray) != 4) {
             return $this->output->set_status_header(401)->set_output('incorrect input');
         }
-
         $entID = $inputInArray[0];
         $fedID = $inputInArray[1];
         $action = $inputInArray[2];
         $state = $inputInArray[3];
-        $isValid = (bool)(ctype_digit($entID) && ctype_digit($fedID) && in_array($action, array('ban', 'dis')) && ctype_digit($state));
+
+        $isValid = (bool)(ctype_digit($entID) && ctype_digit($fedID) && in_array($action, array('ban', 'dis'), true) && ctype_digit($state));
         if (!$isValid) {
             return $this->output->set_status_header(401)->set_output('wrong  input');
         }
@@ -92,8 +114,10 @@ class Entitystate extends MY_Controller
 
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
+
             return $this->output->set_status_header(500)->set_output('unkwonn problem');
         }
+
         return $this->output->set_content_type('application/json')->set_output(json_encode(array('message' => lang('membershibupdated') . '. ' . lang('needrefreshpage'))));
 
 
@@ -108,6 +132,7 @@ class Entitystate extends MY_Controller
         $this->form_validation->set_rules('validfromtime', 'Valid from time', 'trim|valid_time_hhmm');
         $this->form_validation->set_rules('validfromdate', 'Valid from date', 'trim|valid_date');
         $this->form_validation->set_rules('validuntildate', 'Valid until date', 'trim|valid_date');
+
         return $this->form_validation->run();
     }
 
@@ -122,7 +147,7 @@ class Entitystate extends MY_Controller
 
         $this->entity = $this->tmpProviders->getOneById($id);
 
-        if (empty($this->entity)) {
+        if (null === $this->entity) {
             show_error('Provider not found', 404);
         }
         $type = $this->entity->getType();
@@ -165,6 +190,7 @@ class Entitystate extends MY_Controller
         if (!$_POST) {
             $data['r'] = $this->formelement->NgenerateRegistrationPolicies($this->entity);
             $data['content_view'] = 'manage/entityedit_regpolicies';
+
             return $this->load->view(MY_Controller::$page, $data);
         }
 
@@ -209,7 +235,7 @@ class Entitystate extends MY_Controller
         } else {
             $this->entity = $this->tmpProviders->getOneById($id);
         }
-        if (!isset($this->entity)) {
+        if (null === $this->entity) {
             show_error('Provider not found', 404);
         }
         $type = $this->entity->getType();
@@ -223,12 +249,12 @@ class Entitystate extends MY_Controller
         $lang = MY_Controller::getLang();
         $titlename = $this->entity->getNameToWebInLang($lang, $type);
         $data = array(
-            'titlepage' => $titleprefix . ': <a href="' . base_url() . 'providers/detail/show/' . $this->entity->getId() . '">' . $titlename . '</a>',
-            'subtitlepage' => lang('rr_status_mngmt'),
-            'entid' => $id,
-            'current_locked' => $this->entity->getLocked(),
-            'current_active' => $this->entity->getActive(),
-            'current_extint' => $this->entity->getLocal(),
+            'titlepage'             => $titleprefix . ': <a href="' . base_url() . 'providers/detail/show/' . $this->entity->getId() . '">' . $titlename . '</a>',
+            'subtitlepage'          => lang('rr_status_mngmt'),
+            'entid'                 => $id,
+            'current_locked'        => $this->entity->getLocked(),
+            'current_active'        => $this->entity->getActive(),
+            'current_extint'        => $this->entity->getLocal(),
             'current_publicvisible' => (int)$this->entity->getPublicVisible()
         );
 
@@ -280,7 +306,7 @@ class Entitystate extends MY_Controller
             $validuntildate = $this->input->post('validuntildate');
             $validuntiltime = $this->input->post('validuntiltime');
             $differ = array();
-            if (isset($locked)) {
+            if (null !== $locked) {
                 if ($data['current_locked'] != $locked) {
 
                     if ($locked == '1') {
@@ -292,7 +318,7 @@ class Entitystate extends MY_Controller
                     }
                 }
             }
-            if (isset($active)) {
+            if (null !== $active) {
                 if ($data['current_active'] != $active) {
                     if ($active == '1') {
                         $this->entity->Activate();
@@ -303,7 +329,7 @@ class Entitystate extends MY_Controller
                     }
                 }
             }
-            if (isset($publicvisible)) {
+            if (null !== $publicvisible) {
                 if ($data['current_publicvisible'] != $publicvisible) {
                     if ($publicvisible == '1') {
                         $this->entity->setVisiblePublic();
@@ -314,7 +340,7 @@ class Entitystate extends MY_Controller
                     }
                 }
             }
-            if (isset($extint)) {
+            if (null !== $extint) {
                 if ($data['current_extint'] != $extint) {
                     if ($extint == '1') {
                         $this->entity->setAsLocal();
