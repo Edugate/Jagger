@@ -11,6 +11,11 @@ $config['syncpass'] = 'verystrongpasss';
 
 $config['support_mailto'] = 'support@example.com';
 
+/**
+ * Federation Registration
+**/
+$config['fedname_min_length'] = 5
+
 
 /**
  * if TRUE feadmin may remove member from his fed without approve queue
