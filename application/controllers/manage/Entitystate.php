@@ -49,7 +49,8 @@ class Entitystate extends MY_Controller
                 'msg'    => 'Access denied'
             );
         };
-        if(empty($this->input->post('updatedata'))) {
+        $updateData = $this->input->post('updatedata');
+        if(empty($updateData)) {
              $result = array(
                 'access' => false,
                 'code'   => 401,
@@ -307,46 +308,46 @@ class Entitystate extends MY_Controller
             $validuntiltime = $this->input->post('validuntiltime');
             $differ = array();
             if (null !== $locked) {
-                if ($data['current_locked'] != $locked) {
+                if ($data['current_locked'] !== $locked) {
 
-                    if ($locked == '1') {
+                    if ($locked === '1') {
                         $differ['Lock'] = array('before' => 'unlocked', 'after' => 'locked');
                         $this->entity->Lock();
-                    } elseif ($locked == '0') {
+                    } elseif ($locked === '0') {
                         $this->entity->Unlock();
                         $differ['Lock'] = array('before' => 'locked', 'after' => 'unlocked');
                     }
                 }
             }
             if (null !== $active) {
-                if ($data['current_active'] != $active) {
-                    if ($active == '1') {
+                if ($data['current_active'] !== $active) {
+                    if ($active === '1') {
                         $this->entity->Activate();
                         $differ['Active'] = array('before' => 'disabled', 'after' => 'enabled');
-                    } elseif ($active == '0') {
+                    } elseif ($active === '0') {
                         $this->entity->Disactivate();
                         $differ['Active'] = array('before' => 'enabled', 'after' => 'disabled');
                     }
                 }
             }
             if (null !== $publicvisible) {
-                if ($data['current_publicvisible'] != $publicvisible) {
-                    if ($publicvisible == '1') {
+                if ($data['current_publicvisible'] !== $publicvisible) {
+                    if ($publicvisible === '1') {
                         $this->entity->setVisiblePublic();
                         $differ['PublicVisible'] = array('before' => 'disabled', 'after' => 'enabled');
-                    } elseif ($publicvisible == '0') {
+                    } elseif ($publicvisible === '0') {
                         $this->entity->setHidePublic();
                         $differ['PublicVisible'] = array('before' => 'enabled', 'after' => 'disabled');
                     }
                 }
             }
             if (null !== $extint) {
-                if ($data['current_extint'] != $extint) {
-                    if ($extint == '1') {
+                if ($data['current_extint'] !== $extint) {
+                    if ($extint === '1') {
                         $this->entity->setAsLocal();
                         $this->entity->createAclResource();
                         $differ['Local/External'] = array('before' => 'external', 'after' => 'local');
-                    } elseif ($extint == '0') {
+                    } elseif ($extint === '0') {
                         $this->entity->setAsExternal();
                         $differ['Local/External'] = array('before' => 'local', 'after' => 'external');
                     }
