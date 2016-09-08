@@ -484,12 +484,12 @@ class J_queue
                 if ($v->getMandatory()) {
                     $hidden = array('fedid' => $v->getFederation()->getId(), 'qtoken' => $queue->getToken(), 'fvid' => $v->getId());
                     $valMandatory .= form_open(base_url() . 'federations/fvalidator/validate', $attrs, $hidden);
-                    $valMandatory .= '<button id="' . $v->getId() . '" title="' . $v->getDescription() . '" name="mandatory">' . $v->getName() . '</button> ';
+                    $valMandatory .= '<button class="button" id="' . $v->getId() . '" title="' . $v->getDescription() . '" name="mandatory">' . $v->getName() . '</button> ';
                     $valMandatory .= form_close();
                 } else {
                     $hidden = array('fedid' => $v->getFederation()->getId(), 'qtoken' => $queue->getToken(), 'fvid' => $v->getId());
                     $valOptional .= form_open(base_url() . 'federations/fvalidator/validate', $attrs, $hidden);
-                    $valOptional .= '<button id="' . $v->getId() . '" title="' . $v->getDescription() . '">' . $v->getName() . '</button> ';
+                    $valOptional .= '<button class="button" id="' . $v->getId() . '" title="' . $v->getDescription() . '">' . $v->getName() . '</button> ';
                     $valOptional .= form_close();
                 }
             }
@@ -657,9 +657,9 @@ class J_queue
                 $hidden = array('fedid' => $federation->getId(), 'provid' => $provider->getId(), 'fvid' => $v->getId());
                 $valOptional .= form_open(base_url() . 'federations/fvalidator/validate', $attrs, $hidden);
                 if ($v->getMandatory()) {
-                    $valMandatory .= '<button id="' . $v->getId() . '" title="' . $v->getDescription() . '" name="mandatory">' . $v->getName() . '</button> ';
+                    $valMandatory .= '<button class="button" id="' . $v->getId() . '" title="' . $v->getDescription() . '" name="mandatory">' . $v->getName() . '</button> ';
                 } else {
-                    $valOptional .= '<button id="' . $v->getId() . '" title="' . $v->getDescription() . '">' . $v->getName() . '</button> ';
+                    $valOptional .= '<button class="button" id="' . $v->getId() . '" title="' . $v->getDescription() . '">' . $v->getName() . '</button> ';
                 }
                 $valMandatory .= form_close();
             }

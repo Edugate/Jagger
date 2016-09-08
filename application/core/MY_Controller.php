@@ -5,10 +5,10 @@ if (!defined('BASEPATH')) {
 /**
  * ResourceRegistry3
  *
- * @package   RR3
+ * @package   Jagger
  * @author    Middleware Team HEAnet
  * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- * @copyright Copyright (c) 2015, HEAnet Limited (http://www.heanet.ie)
+ * @copyright 2016, HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
  */
@@ -41,6 +41,7 @@ if (!defined('BASEPATH')) {
  * @property Arp_generator $arp_generator
  * @property Arpgen $arpgen
  * @property Providerdetails $providerdetails
+ * @property Providerupdater $providerupdater
  * @property Jalert $jalert
  * @property Gearmanw $gearmanw
  * @property Rrpreference $rrpreference

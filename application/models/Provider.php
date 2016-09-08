@@ -14,10 +14,12 @@ namespace models;
  * @Entity
  * @HasLifecycleCallbacks
  * @Table(name="provider",indexes={@Index(name="type_idx", columns={"type"}),@Index(name="pname_idx", columns={"name"}),@Index(name="islocal_idx", columns={"is_local"})})
- * @author janusz
  */
 class Provider
 {
+    /**
+     * @var \Doctrine\ORM\EntityManager $em
+     */
 
     protected $em;
     protected $logo_url;
@@ -26,8 +28,7 @@ class Provider
     protected $sirftyEntAttr = null;
 
     /**
-     * @Id
-     * @Column(type="bigint", nullable=false)
+     * @Id @Column(type="bigint", nullable=false)
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
@@ -328,10 +329,6 @@ class Provider
         $this->em = $this->ci->doctrine->em;
     }
 
-    public function __toString() {
-        return $this->entityid;
-    }
-
     /**
      * @prePersist
      */
@@ -408,7 +405,7 @@ class Provider
      * @PreUpdate
      */
     public function updated() {
-        \log_message('debug', __METHOD__. ' update time for:' . $this->entityid);
+        \log_message('debug', __METHOD__ . ' update time for:' . $this->entityid);
         $this->updatedAt = new \DateTime('now', new \DateTimeZone('UTC'));
     }
 
@@ -453,6 +450,9 @@ class Provider
         return $this;
     }
 
+    /**
+     * @param null|array $name
+     */
     public function setLocalDisplayName($name = null) {
         if (is_array($name)) {
             foreach ($name as $k => $v) {
@@ -500,6 +500,7 @@ class Provider
         } else {
             $this->wantassertsigned = false;
         }
+
         return $this;
     }
 
@@ -1156,7 +1157,7 @@ class Provider
         foreach ($provider->getServiceLocations() as $r) {
             $this->setServiceLocation($r);
             $order = $r->getOrder();
-            if (is_null($order)) {
+            if (null === $order) {
                 $r->setOrder(1);
             }
         }
@@ -1272,14 +1273,15 @@ class Provider
             if ($offset < 0) {
                 return \date($format, $this->registerdate->format('U') - abs($offset));
             }
+
             return \date($format, $this->registerdate->format('U') + $offset);
         }
 
         return null;
     }
 
-    public function getWantAssertionSigned(){
-        return (bool) $this->wantassertsigned;
+    public function getWantAssertionSigned() {
+        return (bool)$this->wantassertsigned;
     }
 
     /**
@@ -1359,12 +1361,13 @@ class Provider
     /**
      * @return null|bool
      */
-    public function isSirfty(){
+    public function isSirfty() {
         return $this->sirftyEntAttr;
     }
 
-    public function setSirfty($bool){
+    public function setSirfty($bool) {
         $this->sirftyEntAttr = $bool;
+
         return $this;
     }
 
@@ -1421,14 +1424,15 @@ class Provider
      * @return array
      */
     public function getScopeFull() {
-        $s = (array) @unserialize($this->scope);
-        $result = array('aa'=>array(),'idpsso'=>array());
-        if(isset($s['aa'])){
+        $s = (array)@unserialize($this->scope);
+        $result = array('aa' => array(), 'idpsso' => array());
+        if (isset($s['aa'])) {
             $result['aa'] = $s['aa'];
         }
-        if(isset($result['idpsso'])){
+        if (isset($result['idpsso'])) {
             $result['idpsso'] = $s['idpsso'];
         }
+
         return $result;
     }
 
@@ -1886,26 +1890,26 @@ class Provider
 
     public function convertToArray($addmeta = false) {
         $r = array(
-            'id' => $this->id,
-            'entityid' => $this->entityid,
-            'type' => $this->type,
-            'validfrom' => $this->getValidFrom(),
-            'validto' => $this->getValidTo(),
-            'is_local' => $this->getLocal(),
-            'is_approved' => $this->getApproved(),
-            'is_active' => $this->getActive(),
-            'is_locked' => $this->getLocked(),
-            'is_static' => $this->getStatic(),
-            'name' => $this->getName(),
-            'displayname' => $this->getDisplayname(),
-            'nameid' => array(),
-            'protocol' => array(),
-            'scope' => $this->getScope('idpsso'),
-            'aascope' => $this->getScope('aa'),
-            'helpdeskurl' => $this->getHelpdeskUrl(),
-            'privacyurl' => $this->getPrivacyUrl(),
-            'contacts' => array(),
-            'services' => array(),
+            'id'           => $this->id,
+            'entityid'     => $this->entityid,
+            'type'         => $this->type,
+            'validfrom'    => $this->getValidFrom(),
+            'validto'      => $this->getValidTo(),
+            'is_local'     => $this->getLocal(),
+            'is_approved'  => $this->getApproved(),
+            'is_active'    => $this->getActive(),
+            'is_locked'    => $this->getLocked(),
+            'is_static'    => $this->getStatic(),
+            'name'         => $this->getName(),
+            'displayname'  => $this->getDisplayname(),
+            'nameid'       => array(),
+            'protocol'     => array(),
+            'scope'        => $this->getScope('idpsso'),
+            'aascope'      => $this->getScope('aa'),
+            'helpdeskurl'  => $this->getHelpdeskUrl(),
+            'privacyurl'   => $this->getPrivacyUrl(),
+            'contacts'     => array(),
+            'services'     => array(),
             'certificates' => array()
         );
 
@@ -2098,10 +2102,10 @@ class Provider
         }
 
         $otherExtends = array(
-            'desc' => 'Description',
-            'keywords' => 'Keywords',
-            'displayname' => 'DisplayName',
-            'privacyurl' => 'PrivacyStatementURL',
+            'desc'           => 'Description',
+            'keywords'       => 'Keywords',
+            'displayname'    => 'DisplayName',
+            'privacyurl'     => 'PrivacyStatementURL',
             'informationurl' => 'InformationURL'
         );
 
@@ -2264,7 +2268,7 @@ class Provider
             $this->ssoDescriptorExtensionsFromArray($b['extensions'], 'sp');
         }
         $this->setWantAssertionSigned(false);
-        if (array_key_exists('wantassertsigned', $b) && $b['wantassertsigned'] === true){
+        if (array_key_exists('wantassertsigned', $b) && $b['wantassertsigned'] === true) {
             $this->setWantAssertionSigned(true);
         }
         if (array_key_exists('nameid', $b) && is_array($b['nameid'])) {
@@ -2283,7 +2287,7 @@ class Provider
                 if (isset($s['order'])) {
                     $sso->setOrder($s['order']);
                 }
-                if (array_key_exists('isdefault',$s) && $s['isdefault'] === 'true') {
+                if (array_key_exists('isdefault', $s) && $s['isdefault'] === 'true') {
                     $sso->setDefault(true);
                 }
                 $sso->setProvider($this);

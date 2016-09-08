@@ -5,13 +5,10 @@ if (!defined('BASEPATH')) {
 
 
 /**
- * ResourceRegistry3
- *
- * @package   RR3
- * @copyright Copyright (c) 2013, HEAnet Limited (http://www.heanet.ie)
- * @license   MIT http://www.opensource.org/licenses/mit-license.php
- * @author    Middleware Team HEAnet
+ * @package   Jagger
  * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
+ * @copyright 2013 HEAnet Limited (http://www.heanet.ie)
+ * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 class Detail extends MY_Controller
 {
@@ -110,7 +107,7 @@ class Detail extends MY_Controller
         }
 
         $hasWriteAccess = $this->zacl->check_acl($providerID, 'write', 'entity', '');
-        if ($hasWriteAccess !== TRUE) {
+        if ($hasWriteAccess !== true) {
             return $this->load->view('providers/showlogs_view', array('d' => array()));
         }
 
@@ -162,7 +159,7 @@ class Detail extends MY_Controller
         }
 
         $hasWriteAccess = $this->zacl->check_acl($providerID, 'write', 'entity', '');
-        if ($hasWriteAccess !== TRUE) {
+        if ($hasWriteAccess !== true) {
             return $this->load->view('providers/showlogs_view', array('d' => array()));
         }
 
@@ -286,6 +283,9 @@ class Detail extends MY_Controller
         foreach ($members as $m) {
             $feds = array();
             $name = $m->getNameToWebInLang($myLang);
+            /**
+             * @var models\Federation[] $y
+             */
             $y = $m->getFederations();
             foreach ($y as $yv) {
                 $feds[] = $yv->getName();

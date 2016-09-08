@@ -15,7 +15,7 @@ class Providerupdater
 
     protected $ci;
     /**
-     * @var $em Doctrine\ORM\EntityManager
+     * @var $em \Doctrine\ORM\EntityManager
      */
     protected $em;
     protected $logtracks;
