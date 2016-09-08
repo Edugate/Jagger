@@ -16,13 +16,6 @@ install(){
      mkdir ${LOGOS}
      echo "done"
    fi
- 
-   GESHI="geshi"
-   if [ ! -d "${LIBRARYPATH}/${GESHI}" ]
-   then
-     wget "http://downloads.sourceforge.net/project/geshi/geshi/GeSHi%201.0.8.11/GeSHi-1.0.8.11.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fgeshi%2Ffiles%2Flatest%2Fdownload%3Fsource%3Dfiles&ts=1346371975&use_mirror=heanet" -O ${TMPDIR}/GeSHi-1.0.8.11.tar.gz
-     tar zxf ${TMPDIR}/GeSHi-1.0.8.11.tar.gz -C ${LIBRARYPATH}/
-   fi
   
   XMLSECLIB="xmlseclibs"
    if [ ! -d "${LIBRARYPATH}/${XMLSECLIB}" ]
