@@ -181,7 +181,7 @@ class J_cache
 	 * @param	boolean
 	 * @return	mixed
 	 */
-	function get($filename = NULL, $use_expires = true)
+	public function get($filename = NULL, $use_expires = true)
 	{
 		// Check if cache was requested with the function or uses this object
 		if ($filename !== NULL)

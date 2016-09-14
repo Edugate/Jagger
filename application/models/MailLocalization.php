@@ -53,7 +53,7 @@ class MailLocalization {
      */
     protected $alwaysattach;
     
-    function __construct()
+    public function __construct()
     {
         $this->alwaysattach = FALSE;
         $this->isenabled = TRUE;

@@ -77,7 +77,7 @@ class AclResource
      */
     protected $acls;
 
-    function __construct() {
+    public function __construct() {
         $this->default_value = 0;
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
         $this->acls = new \Doctrine\Common\Collections\ArrayCollection();

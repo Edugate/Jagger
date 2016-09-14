@@ -22,7 +22,7 @@ class Rrpreference
 
     protected $globalPrefs = null;
 
-    function __construct() {
+    public function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
     }

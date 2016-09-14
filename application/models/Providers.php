@@ -21,7 +21,7 @@ class Providers
     protected $em;
     protected $ci;
 
-    function __construct() {
+    public function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->providers = new \Doctrine\Common\Collections\ArrayCollection();

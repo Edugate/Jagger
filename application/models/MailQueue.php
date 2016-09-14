@@ -80,7 +80,7 @@ class MailQueue {
      */
     protected $issent;
 
-    function __construct()
+    public function __construct()
     {
         $this->deliverytype = 'mail';
         $this->issent = false;
