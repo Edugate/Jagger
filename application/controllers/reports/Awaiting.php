@@ -24,6 +24,8 @@ class Awaiting extends MY_Controller
         $this->title = lang('title_approval');
     }
 
+
+
     /**
      * @return CI_Output
      */
@@ -71,7 +73,6 @@ class Awaiting extends MY_Controller
             $cUsername = 'anonymous';
             $cCN = 'Anonymous';
             $creator = $q->getCreator();
-            $access = $this->jqueueaccess->hasQAccess($q);
             if ($creator !== null) {
                 $cUsername = $creator->getUsername();
                 $cCN = $creator->getFullname();
