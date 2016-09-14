@@ -26,7 +26,7 @@ class Curl {
     public $error_string;    // Error message returned as a string
     public $info;      // Returned after request (elapsed time, etc)
 
-    function __construct($url = '') {
+    public function __construct($url = '') {
         $this->_ci = & get_instance();
         log_message('debug', 'cURL Class Initialized');
 
@@ -37,7 +37,7 @@ class Curl {
         $url AND $this->create($url);
     }
 
-    function __call($method, $arguments) {
+    public function __call($method, $arguments) {
         if (in_array($method, array('simple_get', 'simple_post', 'simple_put', 'simple_delete'))) {
             // Take off the "simple_" and past get/post/put/delete to _simple_call
             $verb = str_replace('simple_', '', $method);
