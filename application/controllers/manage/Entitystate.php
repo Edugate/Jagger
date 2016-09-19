@@ -32,29 +32,29 @@ class Entitystate extends MY_Controller
     private function validateAccess() {
         $result = array(
             'access' => true,
-            'code'   => 200,
-            'msg'    => 'OK'
+            'code' => 200,
+            'msg' => 'OK'
         );
         if (!$this->jauth->isLoggedIn()) {
             $result = array(
                 'access' => false,
-                'code'   => 401,
-                'msg'    => 'Access denied - not authenticated'
+                'code' => 401,
+                'msg' => 'Access denied - not authenticated'
             );
         };
         if (!$this->input->is_ajax_request()) {
             $result = array(
                 'access' => false,
-                'code'   => 401,
-                'msg'    => 'Access denied'
+                'code' => 401,
+                'msg' => 'Access denied'
             );
         };
         $updateData = $this->input->post('updatedata');
-        if(empty($updateData)) {
-             $result = array(
+        if (empty($updateData)) {
+            $result = array(
                 'access' => false,
-                'code'   => 401,
-                'msg'    => 'missing input'
+                'code' => 401,
+                'msg' => 'missing input'
             );
         };
 
@@ -64,7 +64,7 @@ class Entitystate extends MY_Controller
 
     public function updatemembership() {
         $validation = $this->validateAccess();
-        if($validation['access'] === false){
+        if ($validation['access'] === false) {
             return $this->output->set_status_header($validation['code'])->set_output($validation['msg']);
         }
         $inputInArray = explode('|', $this->input->post('updatedata'));
@@ -233,9 +233,9 @@ class Entitystate extends MY_Controller
         }
         if (!ctype_digit($id)) {
             show_error('Incorrect entity id provided', 404);
-        } else {
-            $this->entity = $this->tmpProviders->getOneById($id);
         }
+        $this->entity = $this->tmpProviders->getOneById($id);
+
         if (null === $this->entity) {
             show_error('Provider not found', 404);
         }
@@ -250,12 +250,12 @@ class Entitystate extends MY_Controller
         $lang = MY_Controller::getLang();
         $titlename = $this->entity->getNameToWebInLang($lang, $type);
         $data = array(
-            'titlepage'             => $titleprefix . ': <a href="' . base_url() . 'providers/detail/show/' . $this->entity->getId() . '">' . $titlename . '</a>',
-            'subtitlepage'          => lang('rr_status_mngmt'),
-            'entid'                 => $id,
-            'current_locked'        => $this->entity->getLocked(),
-            'current_active'        => $this->entity->getActive(),
-            'current_extint'        => $this->entity->getLocal(),
+            'titlepage' => $titleprefix . ': <a href="' . base_url() . 'providers/detail/show/' . $this->entity->getId() . '">' . $titlename . '</a>',
+            'subtitlepage' => lang('rr_status_mngmt'),
+            'entid' => $id,
+            'current_locked' => $this->entity->getLocked(),
+            'current_active' => $this->entity->getActive(),
+            'current_extint' => $this->entity->getLocal(),
             'current_publicvisible' => (int)$this->entity->getPublicVisible()
         );
 
@@ -387,20 +387,18 @@ class Entitystate extends MY_Controller
         $data['id'] = $this->entity->getId();
         $data['type'] = strtolower($this->entity->getType());
         $validfrom = $this->entity->getValidFrom();
+        $validfromdate = '';
+        $validfromtime = '';
         if (!empty($validfrom)) {
             $validfromdate = jaggerDisplayDateTimeByOffset($validfrom, 0, 'Y-m-d');
             $validfromtime = jaggerDisplayDateTimeByOffset($validfrom, 0, 'H:i');
-        } else {
-            $validfromdate = '';
-            $validfromtime = '';
         }
         $validuntil = $this->entity->getValidTo();
+        $validuntildate = '';
+        $validuntiltime = '';
         if (!empty($validuntil)) {
             $validuntildate = jaggerDisplayDateTimeByOffset($validuntil, 0, 'Y-m-d');
             $validuntiltime = jaggerDisplayDateTimeByOffset($validuntil, 0, 'H:i');
-        } else {
-            $validuntildate = '';
-            $validuntiltime = '';
         }
         $data['current_validuntildate'] = $validuntildate;
         $data['current_validuntiltime'] = $validuntiltime;

@@ -14,7 +14,7 @@ $config['support_mailto'] = 'support@example.com';
 /**
  * Federation Registration
 **/
-$config['fedname_min_length'] = 5
+$config['fedname_min_length'] = 5;
 
 
 /**
