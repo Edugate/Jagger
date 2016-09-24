@@ -36,7 +36,7 @@ if ($showform)
     echo '</div>';
     $btns = array(
         '<a href="'.$providerurl.'" class="button alert">'.lang('rr_cancel').'</a>',
-        '<button name="submit" type="submit" id="submit" value="Remove" class="resetbutton deleteicon">' . lang('rr_btn_rmprovider') . '</button>');
+        '<button name="submit" type="submit" id="submit" value="Remove" class="button">' . lang('rr_btn_rmprovider') . '</button>');
     echo revealBtnsRow($btns);
 
     echo form_close();

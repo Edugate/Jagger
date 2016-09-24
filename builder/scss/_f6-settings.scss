@@ -528,8 +528,9 @@ $tab-margin: 0;
 
 @if not variable_exists(tab-background-active) {
   $tab-background-active: lighten($black, 20%);
-}
 
+}
+$tab-background-active: red;
 @if not variable_exists(tab-background-second-level) {
   $tab-background-second-level: lighten($black, 10%);
 }
