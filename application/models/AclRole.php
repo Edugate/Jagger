@@ -1,19 +1,21 @@
 <?php
 namespace models;
+
 use \Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * ResourceRegistry3
- * 
+ *
  * @package     RR3
- * @author      Middleware Team HEAnet 
+ * @author      Middleware Team HEAnet
  * @copyright   Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
  * @license     MIT http://www.opensource.org/licenses/mit-license.php
- *  
+ *
  */
 
 /**
  * Aclrole Class
- * 
+ *
  * @package     RR3
  * @subpackage  Models
  * @author      Janusz Ulanowski <janusz.ulanowski@heanet.ie>
@@ -23,14 +25,14 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * Aclrole Model
  *
  * This model for Identity and Service Providers definitions
- * 
+ *
  * @Entity
  * @HasLifecycleCallbacks
  * @Table(name="acl_role")
  * @author janusz
  */
-
-class AclRole {
+class AclRole
+{
     /**
      * @Id
      * @Column(type="bigint", nullable=false)
@@ -41,32 +43,32 @@ class AclRole {
     /**
      * @Column(type="string",length=255)
      */
-     protected $name;
+    protected $name;
 
-     /**
-      * @Column(type="string",length=10)
-      */
-      protected $type;
-     /**
-      * @OneToMany(targetEntity="Acl",mappedBy="role",cascade={"persist","remove"})
-      */
-     protected $acls;
+    /**
+     * @Column(type="string",length=10)
+     */
+    protected $type;
+    /**
+     * @OneToMany(targetEntity="Acl",mappedBy="role",cascade={"persist","remove"})
+     */
+    protected $acls;
 
-     /**
-      * @Column(type="string",length=128)
-      */
-      protected $description;
+    /**
+     * @Column(type="string",length=128)
+     */
+    protected $description;
 
-      /**
-       * @ManyToOne(targetEntity="AclRole",inversedBy="children")
-       * @JoinColumn(name="parent_id", referencedColumnName="id")
-       */
-       protected $parent;
+    /**
+     * @ManyToOne(targetEntity="AclRole",inversedBy="children")
+     * @JoinColumn(name="parent_id", referencedColumnName="id")
+     */
+    protected $parent;
 
-     /**
-      * @OneToMany(targetEntity="AclRole", mappedBy="parent")
-      */
-     protected $children;
+    /**
+     * @OneToMany(targetEntity="AclRole", mappedBy="parent")
+     */
+    protected $children;
 
     /**
      * @ManyToMany(targetEntity="User", mappedBy="roles", indexBy="username")
@@ -76,80 +78,71 @@ class AclRole {
     protected $members;
 
 
-     function __construct()
-     {
-     
+    public function __construct() {
+
         $this->acls = new \Doctrine\Common\Collections\ArrayCollection();
         $this->members = new \Doctrine\Common\Collections\ArrayCollection();
-     }
+    }
 
-     public function getId()
-     {
+    public function getId() {
         return $this->id;
-     }
+    }
 
-     public function getName()
-     {
+    public function getName() {
         return $this->name;
-     }
+    }
 
-     public function getType()
-     {
+    public function getType() {
         return $this->type;
-     }
+    }
 
     /**
      * @return AclRole|null
      */
-     public function getParent()
-     {
+    public function getParent() {
         return $this->parent;
-     }
-     public function getChildren()
-     {
+    }
+
+    public function getChildren() {
         return $this->children;
-     }
-     public function getDescription()
-     {
+    }
+
+    public function getDescription() {
         return $this->description;
-     }
+    }
 
-     public function getMembers()
-     {
+    public function getMembers() {
         return $this->members;
-     }
+    }
 
-     public function getAcls()
-     {
+    public function getAcls() {
         return $this->acls;
-     }
+    }
 
-     public function setName($name)
-     {
+    public function setName($name) {
         $this->name = $name;
-     }
+    }
 
-     public function setMember(User $member)
-     {
+    public function setMember(User $member) {
         $member->setRole($this);
-     }
-     /**
-      * type only may be: group,user
-      */
-     public function setType($type)
-     {
+    }
+
+    /**
+     * type only may be: group,user
+     */
+    public function setType($type) {
         $this->type = $type;
-     }
-     public function setParent(AclRole $parent = null)
-     {
+    }
+
+    public function setParent(AclRole $parent = null) {
         $this->parent = $parent;
-     }
-     public function setDescription($description)
-     {
+    }
+
+    public function setDescription($description) {
         $this->description = $description;
-     }
-     public function setAcl($acl)
-     {
+    }
+
+    public function setAcl($acl) {
         $this->getAcls()->add($acl);
-     }
+    }
 }

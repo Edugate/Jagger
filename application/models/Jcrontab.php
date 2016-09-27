@@ -107,7 +107,7 @@ class Jcrontab
     protected $lastrun;
 
 
-    function __construct()
+    public function __construct()
     {
         $this->jminute = 1;
         $this->jhour = 8;

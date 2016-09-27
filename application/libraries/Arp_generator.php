@@ -1,7 +1,7 @@
 <?php
-
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 /**
  * ResourceRegistry3
  * 
@@ -24,7 +24,7 @@ class Arp_generator {
     private $idp;
     private $tmp_providers;
 
-    function __construct()
+    public function __construct()
     {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;

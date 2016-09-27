@@ -20,9 +20,9 @@ if (!defined('BASEPATH'))
  */
 class Logo {
 
-    var $logo_basepath = null;
-    var $logo_baseurl = null;
-    function __construct() {
+    protected $logo_basepath = null;
+    protected $logo_baseurl = null;
+    public function __construct() {
         $this->ci = & get_instance();
         $this->ci->load->library('doctrine');
         $this->em = $this->ci->doctrine->em;
@@ -37,7 +37,7 @@ class Logo {
     }
 
 
-    function getImageFiles()
+    public function getImageFiles()
     {
         $handle = opendir($this->logo_basepath);
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -62,7 +62,7 @@ class Logo {
         finfo_close($finfo); 
         return $imagestable;
     }
-    function displayCurrentInGridForm(models\Provider $provider, $etype, $checkboxes = FALSE)
+    public function displayCurrentInGridForm(models\Provider $provider, $etype, $checkboxes = FALSE)
     {
         $result = null;
         
@@ -140,7 +140,7 @@ class Logo {
 
 
     }
-    function displayAvailableInGridForm($attrname="filename",$columns=2)
+    public function displayAvailableInGridForm($attrname="filename",$columns=2)
     {
          $images = $this->getImageFiles();
          $no_images =  count($images);
@@ -163,8 +163,8 @@ class Logo {
          }
 
          $tables_style=array('table_open'  => '<table  id="details" class="zebra" style="width: 100%">');
-         $ntable = $this->ci->table->set_template($tables_style);
-         $ntable = $this->ci->table->set_caption(lang('rr_logosonthestorage'));
+         $this->ci->table->set_template($tables_style);
+         $this->ci->table->set_caption(lang('rr_logosonthestorage'));
          $ntable = $this->ci->table->make_columns($table_images,$columns);
          $result = $this->ci->table->generate($ntable);
          $this->ci->table->clear();

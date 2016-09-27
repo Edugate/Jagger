@@ -96,7 +96,7 @@ class NotificationList
      */
     protected $updatedAt;
 
-    function __construct()
+    public function __construct()
     {
         $this->is_enabled = false;
         $this->is_approved = false;

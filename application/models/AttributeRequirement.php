@@ -75,7 +75,7 @@ class AttributeRequirement
 
 
 
-    function __construct()
+    public function __construct()
     {
         $this->reason = '';
     }

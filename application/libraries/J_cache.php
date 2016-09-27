@@ -27,7 +27,7 @@ class J_cache
 	/**
 	 * Constructor - Initializes and references CI
 	 */
-	function __construct()
+	public function __construct()
 	{
 		log_message('debug', "J_Cache Class Initialized.");
 
@@ -137,7 +137,7 @@ class J_cache
 	/**
 	 * Helper functions for the dependencies property
 	 */
-	function set_dependencies($dependencies)
+	public function set_dependencies($dependencies)
 	{
 		if (is_array($dependencies))
 		{
@@ -151,7 +151,7 @@ class J_cache
 		return $this;
 	}
 
-	function add_dependencies($dependencies)
+	public function add_dependencies($dependencies)
 	{
 		if (is_array($dependencies))
 		{
@@ -165,12 +165,12 @@ class J_cache
 		return $this;
 	}
 
-	function get_dependencies() { return $this->_dependencies; }
+	public function get_dependencies() { return $this->_dependencies; }
 
 	/**
 	 * Helper function to get the cache creation date
 	 */
-	function get_created($created) { return $this->_created; }
+	public function get_created($created) { return $this->_created; }
 
 
 	/**
@@ -181,7 +181,7 @@ class J_cache
 	 * @param	boolean
 	 * @return	mixed
 	 */
-	function get($filename = NULL, $use_expires = true)
+	public function get($filename = NULL, $use_expires = true)
 	{
 		// Check if cache was requested with the function or uses this object
 		if ($filename !== NULL)
@@ -274,7 +274,7 @@ class J_cache
 	 * @param	array
 	 * @return	void
 	 */
-	function write($contents = NULL, $filename = NULL, $expires = NULL, $dependencies = array())
+	public function write($contents = NULL, $filename = NULL, $expires = NULL, $dependencies = array())
 	{
 		// Check if cache was passed with the function or uses this object
 		if ($contents !== NULL)
@@ -363,7 +363,7 @@ class J_cache
 	 * @param	string
 	 * @return	void
 	 */
-	function delete($filename = NULL)
+	public function delete($filename = NULL)
 	{
 		if ($filename !== NULL) $this->_filename = $filename;
 
@@ -418,7 +418,7 @@ class J_cache
 	 * @param	string
 	 * @return	void
 	 */
-	function delete_all($dirname = '')
+	public function delete_all($dirname = '')
 	{
 		if (empty($this->_path))
 		{

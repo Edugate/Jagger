@@ -31,6 +31,7 @@ if (!defined('BASEPATH')) {
  * @property J_cache $j_cache
  * @property J_ncache $j_ncache
  * @property J_queue $j_queue
+ * @property Jqueue $jqueue
  * @property Jqueueaccess $jqueueaccess
  * @property Approval $approval
  * @property Tracker $tracker

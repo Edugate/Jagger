@@ -51,7 +51,7 @@ class FederationMembers
     protected $isBanned;
 
 
-    function __construct()
+    public function __construct()
     {
         $this->joinstate = 0;
         $this->isDisabled = 0;

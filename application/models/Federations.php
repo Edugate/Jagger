@@ -25,7 +25,7 @@ class Federations
     protected $federations;
     protected $em;
 
-    function __construct()
+    public function __construct()
     {
         $this->ci = & get_instance();
         $this->em = $this->ci->doctrine->em;

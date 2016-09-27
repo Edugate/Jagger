@@ -25,16 +25,13 @@ if (!defined('BASEPATH')) {
 class Regpolicy extends MY_Controller
 {
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
 
     }
 
-    public function show($id = null)
-    {
-        $loggedin = $this->jauth->isLoggedIn();
-        if (!$loggedin) {
+    public function show($id = null) {
+        if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
         $this->load->helper('form');
@@ -43,6 +40,7 @@ class Regpolicy extends MY_Controller
         $this->title = lang('title_regpols');
         if (isset($id)) {
             show_error('Argument passed to page  not allowed', 403);
+
             return;
 
         }
@@ -59,7 +57,7 @@ class Regpolicy extends MY_Controller
                 if ($has_write_access) {
                     $l = '<a href="' . base_url() . 'manage/regpolicy/edit/' . $c->getId() . '" ><i class="fa fa-pencil"></i></a>';
                     if (!$isEnabled) {
-                        $l .= '&nbsp;&nbsp;<a href="' . base_url() . 'manage/regpolicy/remove/' . $c->getId() . '" class="withconfirm" data-jagger-regpolicy="' . $c->getId() . '" data-jagger-fieldname="'.$c->getName().'"  data-jagger-counter="'.$countProviders.'"><i class="fa fa-trash"></i></a>';
+                        $l .= '&nbsp;&nbsp;<a href="' . base_url() . 'manage/regpolicy/remove/' . $c->getId() . '" class="withconfirm" data-jagger-regpolicy="' . $c->getId() . '" data-jagger-fieldname="' . $c->getName() . '"  data-jagger-counter="' . $countProviders . '"><i class="fa fa-trash"></i></a>';
                     }
                 } else {
                     $l = '';
@@ -70,25 +68,25 @@ class Regpolicy extends MY_Controller
                 } else {
                     $lbl = '<span class="lbl lbl-disabled">' . lang('rr_disabled') . '</span>';
                 }
-                $lbl .= '<span class="label secondary policymembers" data-jagger-jsource="'.base_url('manage/regpolicy/getmembers/'.$c->getId().'').'">' . $countProviders . '</span> ';
+                $lbl .= '<span class="label secondary policymembers" data-jagger-jsource="' . base_url('manage/regpolicy/getmembers/' . $c->getId() . '') . '">' . $countProviders . '</span> ';
                 /**
                  * @todo add extracting row to show providers connected to policy
                  */
-                $data['rows'][] = array($c->getName(), $c->getLang(),  anchor($c->getUrl(), $c->getUrl(), array('target' => '_blank', 'class' => 'new_window')), $c->getDescription(),$lbl, $l);
+                $data['rows'][] = array($c->getName(), $c->getLang(), anchor($c->getUrl(), $c->getUrl(), array('target' => '_blank', 'class' => 'new_window')), $c->getDescription(), $lbl, $l);
 
             }
         } else {
             $data['error_message'] = lang('rr_noregpolsregistered');
         }
-        $data['showaddbutton'] = FALSE;
+        $data['showaddbutton'] = false;
         if ($has_write_access) {
-            $data['showaddbutton'] = TRUE;
+            $data['showaddbutton'] = true;
         }
 
         $data['titlepage'] = lang('title_regpols');
 
         $data['breadcrumbs'] = array(
-            array('url'=>'#','name'=>lang('title_regpols'),'type'=>'current'),
+            array('url' => '#', 'name' => lang('title_regpols'), 'type' => 'current'),
         );
 
 
@@ -97,28 +95,27 @@ class Regpolicy extends MY_Controller
 
     }
 
-    private function _add_submit_validate()
-    {
+    private function _add_submit_validate() {
         $this->form_validation->set_rules('name', lang('regpol_shortname'), 'required|trim|cocname_unique');
         $this->form_validation->set_rules('regpollang', lang('regpol_language'), 'required|trim|match_language');
         $this->form_validation->set_rules('url', lang('regpol_url'), 'required|trim|valid_url');
         $this->form_validation->set_rules('description', lang('regpol_description'), 'xss_clean');
         $this->form_validation->set_rules('cenabled', lang('regpol_enabled'), 'xss_clean');
+
         return $this->form_validation->run();
     }
 
-    private function _edit_submit_validate($id)
-    {
+    private function _edit_submit_validate($id) {
         $this->form_validation->set_rules('name', lang('regpol_shortname'), 'required|trim|cocname_unique_update[' . $id . ']');
         $this->form_validation->set_rules('url', lang('regpol_url'), 'required|trim|valid_url');
         $this->form_validation->set_rules('regpollang', lang('regpol_language'), 'required|trim|match_language');
         $this->form_validation->set_rules('description', lang('regpol_description'), 'xss_clean');
         $this->form_validation->set_rules('cenabled', lang('regpol_enabled'), 'xss_clean');
+
         return $this->form_validation->run();
     }
 
-    public function add()
-    {
+    public function add() {
         $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
             redirect('auth/login', 'location');
@@ -131,10 +128,11 @@ class Regpolicy extends MY_Controller
         $has_write_access = $this->zacl->check_acl('regpol', 'write', 'default', '');
         if (!$has_write_access) {
             show_error('No access', 401);
+
             return;
         }
 
-        if ($this->_add_submit_validate() === TRUE) {
+        if ($this->_add_submit_validate() === true) {
             $name = $this->input->post('name');
             $url = $this->input->post('url');
             $cenabled = $this->input->post('cenabled');
@@ -150,9 +148,9 @@ class Regpolicy extends MY_Controller
                 $ncoc->setDescription($description);
             }
             if (!empty($cenabled) && $cenabled == 'accept') {
-                $ncoc->setAvailable(TRUE);
+                $ncoc->setAvailable(true);
             } else {
-                $ncoc->setAvailable(FALSE);
+                $ncoc->setAvailable(false);
             }
             $ncoc->setLang($lang);
             $this->em->persist($ncoc);
@@ -171,21 +169,20 @@ class Regpolicy extends MY_Controller
             $data['form'] = $f;
         }
         $data['breadcrumbs'] = array(
-            array('url'=>base_url('manage/regpolicy/show'),'name'=>lang('title_regpols')),
-            array('url'=>'#','name'=>lang('title_addregpol'),'type'=>'current'),
+            array('url' => base_url('manage/regpolicy/show'), 'name' => lang('title_regpols')),
+            array('url' => '#', 'name' => lang('title_addregpol'), 'type' => 'current'),
         );
         $data['content_view'] = 'manage/regpol_add_view';
         $this->load->view(MY_Controller::$page, $data);
     }
 
-    public function edit($id)
-    {
+    public function edit($id) {
         $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
             redirect('auth/login', 'location');
         }
         $this->load->helper('form');
-        $this->load->library(array('form_validation','zacl'));
+        $this->load->library(array('form_validation', 'zacl'));
         $this->title = lang('title_regpoledit');
 
         if (empty($id) || !ctype_digit($id)) {
@@ -203,15 +200,15 @@ class Regpolicy extends MY_Controller
             show_error('No access', 401);
         }
         $data = array(
-            'titlepage'=>lang('title_regpol') . ': ' . html_escape($coc->getName()),
-            'subtitlepage'=> lang('title_regpoledit')
+            'titlepage'    => lang('title_regpol') . ': ' . html_escape($coc->getName()),
+            'subtitlepage' => lang('title_regpoledit')
         );
-        if ($this->_edit_submit_validate($id) === TRUE) {
+        if ($this->_edit_submit_validate($id) === true) {
             $enable = $this->input->post('cenabled');
             if (!empty($enable) && $enable == 'accept') {
-                $coc->setAvailable(TRUE);
+                $coc->setAvailable(true);
             } else {
-                $coc->setAvailable(FALSE);
+                $coc->setAvailable(false);
             }
             $coc->setName($this->input->post('name'));
             $coc->setUrl($this->input->post('url'));
@@ -229,8 +226,8 @@ class Regpolicy extends MY_Controller
         $f .= '<button type="submit" name="modify" value="submit" class="button">' . lang('rr_save') . '</button></div></div>';
         $f .= form_close();
         $data['breadcrumbs'] = array(
-            array('url'=>base_url('manage/regpolicy/show'),'name'=>lang('title_regpols')),
-            array('url'=>'#','name'=>lang('title_editform'),'type'=>'current'),
+            array('url' => base_url('manage/regpolicy/show'), 'name' => lang('title_regpols')),
+            array('url' => '#', 'name' => lang('title_editform'), 'type' => 'current'),
         );
         $data['form'] = $f;
         $data['content_view'] = 'manage/regpol_edit_view';
@@ -238,84 +235,72 @@ class Regpolicy extends MY_Controller
 
     }
 
-    public function getMembers($regpolid)
-    {
-        if(!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn())
-        {
-            set_status_header(403);
-            echo 'Access denied';
-            return;
+    public function getMembers($regpolid) {
+        if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
 
         $myLang = MY_Controller::getLang();
         /**
          * @var $regPolicy models\Coc
          */
-        $regPolicy = $this->em->getRepository("models\Coc")->findOneBy(array('id'=>$regpolid));
-        if(empty($regPolicy))
-        {
-            set_status_header(404);
-            echo 'no members found';
-            return;
+        $regPolicy = $this->em->getRepository("models\Coc")->findOneBy(array('id' => $regpolid));
+        if ($regPolicy === null) {
+            return $this->output->set_status_header(404)->set_output('no members found');
+
         }
         /**
          * @var $policyMembers models\Provider[]
          */
         $policyMembers = $regPolicy->getProviders();
         $result = array();
-        foreach($policyMembers as $member)
-        {
+        foreach ($policyMembers as $member) {
             $result[] = array(
-                'entityid'=>$member->getEntityId(),
-                'provid'=>$member->getId(),
-                'name'=>$member->getNameToWebInLang($myLang),
+                'entityid' => $member->getEntityId(),
+                'provid'   => $member->getId(),
+                'name'     => $member->getNameToWebInLang($myLang),
             );
         }
         $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
 
-    function remove($id = null)
-    {
+    public function remove($id = null) {
         $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
-            set_status_header(403);
-            echo 'access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         $this->load->helper('form');
         $this->load->library('form_validation');
         $this->load->library('zacl');
         if (empty($id) || !ctype_digit($id)) {
-            set_status_header(404);
-            echo 'incorrect id or id not provided';
-            return;
+            return $this->output->set_status_header(404)->set_output('incorrect id or id not provided');
         }
         if (!$this->input->is_ajax_request()) {
-            set_status_header(403);
-            echo 'access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
 
         $has_write_access = $this->zacl->check_acl('regpol', 'write', 'default', '');
         if (!$has_write_access) {
-            set_status_header(403);
-            echo 'access denied';
-            return;
+            return $this->output->set_status_header(403)->set_output('Access denied');
         }
         /**
          * @var $regpol models\Coc
          */
         $regpol = $this->em->getRepository("models\Coc")->findOneBy(array('id' => '' . $id . '', 'type' => 'regpol', 'is_enabled' => false));
         if (empty($regpol)) {
-            set_status_header(403);
-            echo 'Registration policy doesnt exist or is not disabled';
-            return;
+            return $this->output->set_status_header(403)->set_output('Registration policy doesnt exist or is not disabled');
         }
         $this->em->remove($regpol);
-        $this->em->flush();
-        echo "OK";
-        return;
+        try {
+            $this->em->flush();
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ' ' . $e);
+
+            return $this->output->set_status_header(500)->set_output('Error occurred during string data in DB');
+        }
+
+        return $this->output->set_status_header(200)->set_output('OK');
     }
 
 }

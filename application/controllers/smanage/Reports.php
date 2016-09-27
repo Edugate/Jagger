@@ -113,15 +113,14 @@ class Reports extends MY_Controller
             echo '<div class="success alert-box" data-alert>Installed PHP VERSION: ' . PHP_VERSION . ' : ' . lang('rr_meetsminimumreq') . '</div>';
         }
 
-        if(defined('CI_VERSION')) {
+        if (defined('CI_VERSION')) {
             $ciMinVersion = version_compare(CI_VERSION, '3.0.6', '>=');
             if (!$ciMinVersion) {
                 echo '<div class="alert alert-box" data-alert>Installed CI VERSION: ' . CI_VERSION . ' : ' . lang('rr_mimumreqversion') . ' 3.0.6.</div>';
             } else {
                 echo '<div class="success alert-box" data-alert>Installed CI VERSION: ' . CI_VERSION . ' : ' . lang('rr_meetsminimumreq') . '</div>';
             }
-        }
-        else {
+        } else {
             echo '<div class="alert alert-box" data-alert>Cannot recognize installed CI VERSION</div>';
         }
 
