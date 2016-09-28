@@ -1168,7 +1168,7 @@ class Providerdetails
         $str = '';
         foreach ($data[$key] as $val) {
             $attr = $val->getAttributes();
-            $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . html_escape($val->getEvalue()) . '<br />';
+            $str .= '<b>' . $attr['xml:lang'] . ':</b> ' . nl2br(html_escape($val->getEvalue())) . '<br />';
         }
 
         return $str;
