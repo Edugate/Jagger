@@ -69,7 +69,8 @@ echo form_textarea(array(
 ));
 echo '</div>';
 echo '</div>';
-echo '<div class="buttons small-12 column"><div class="large-10 columns end text-right"><button type="submit" name="submit" class="button">'. lang('rr_submit').'</button></div></div>';
+echo '<div class="small-12 column button-group"><div class="large-10 columns end text-right"><a href='.base_url('attributes/attributes/show').' class="button alert">Cancel</a><button type="submit" name="submit" class="button">'. lang('rr_submit').'</button></div></div>';
 
 
 echo form_close();
+
