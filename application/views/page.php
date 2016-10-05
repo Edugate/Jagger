@@ -324,6 +324,11 @@ if (!$loggedin) {
 }
 ?>
 <script>
+    var Jagger = {
+        base_url : '<?php echo $base_url;?>',
+        csrfname : '<?php echo $this->security->get_csrf_token_name();?>',
+        csrfhash: '<?php echo $this->security->get_csrf_hash();?>'
+    }
 </script>
 <?php
 // load local final js
