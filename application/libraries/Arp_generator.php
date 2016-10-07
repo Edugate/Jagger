@@ -277,8 +277,7 @@ class Arp_generator {
             log_message('error', 'PE: arpToArrayByInherit couldnt');
             return null;
         }
-
-        log_message('debug', 'PE: start arpToArrayByInherit for entityid: ' . $idp);
+        
 
         $global_policy = array();
         $tmp_attrs = new models\Attributes();
