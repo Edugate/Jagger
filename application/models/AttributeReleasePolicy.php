@@ -91,6 +91,9 @@ class AttributeReleasePolicy {
         return $this->type;
     }
 
+    /**
+     * @return null|Provider
+     */
     public function getProvider()
     {
         return $this->idp;

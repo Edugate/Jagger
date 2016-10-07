@@ -15,15 +15,7 @@ class Attributes extends MY_Controller
 
     public function __construct() {
         parent::__construct();
-        $loggedin = $this->jauth->isLoggedIn();
-        $this->current_site = current_url();
-        if (!$loggedin) {
-            $this->session->set_flashdata('target', $this->current_site);
-            redirect('auth/login', 'location');
-        }
-        $this->session->set_userdata(array('currentMenu' => 'general'));
         $this->load->library('form_validation');
-        MY_Controller::$menuactive = 'admins';
     }
 
     private function addSubmitValidate() {
@@ -38,8 +30,12 @@ class Attributes extends MY_Controller
     }
 
     public function add() {
+        if (!$this->jauth->isLoggedIn()) {
+            redirect('auth/login', 'location');
+        }
         $this->title = lang('rr_newattr_title');
         $isAdmin = $this->jauth->isAdministrator();
+        MY_Controller::$menuactive = 'admins';
         $data['titlepage'] = lang('rr_newattr_title');
         $data['breadcrumbs'] = array(
             array('url' => base_url('attributes/attributes/show'), 'name' => lang('attrsdeflist')),
@@ -61,7 +57,7 @@ class Attributes extends MY_Controller
             $attr->setName($attrname);
             $attr->setFullname($attrfullname);
             $attr->setOid($attroid);
-         
+
             $attr->setUrn($attrurn);
 
             $attr->setDescription($description);
@@ -83,6 +79,10 @@ class Attributes extends MY_Controller
     }
 
     public function show() {
+        if (!$this->jauth->isLoggedIn()) {
+            redirect('auth/login', 'location');
+        }
+        MY_Controller::$menuactive = 'admins';
         $this->title = lang('attrsdeflist');
         /**
          * @var $attributes models\Attribute[]
@@ -100,7 +100,7 @@ class Attributes extends MY_Controller
             if ($i === false) {
                 $notice = '<br />' . $excluded;
             }
-            $dataRows[] = array(showBubbleHelp($a->getDescription()) . ' ' . $a->getName() . $notice, $a->getFullname(), $a->getOid(), $a->getUrn());
+            $dataRows[] = array(showBubbleHelp($a->getDescription()) . ' ' . $a->getName() . $notice, $a->getFullname(), $a->getOid(), $a->getUrn(), '<a class="attrinfo" data-jagger-attrid="' . $a->getId() . '"><i class="fa fa-expand"></i></a>');
         }
         $data['isadmin'] = $this->jauth->isAdministrator();
         $data['breadcrumbs'] = array(
@@ -112,4 +112,35 @@ class Attributes extends MY_Controller
         $this->load->view(MY_Controller::$page, $data);
     }
 
+
+    /**
+     * @param null $attrid
+     * @return CI_Output
+     */
+    public function byid($attrid = null) {
+        if (!$this->jauth->isLoggedIn() || !$this->jauth->isAdministrator()) {
+            return $this->output->set_status_header(401)->set_output('Access denied');
+        }
+        if (!ctype_digit($attrid)) {
+            return $this->output->set_status_header(404)->set_output('Not found');
+        }
+
+        $attr = new models\Attributes();
+        try {
+            $result = $attr->getAttributeUsageById($attrid);
+        } catch (Exception $e) {
+            log_message('error', __METHOD__ . ': ' . $e);
+
+            return $this->output->set_status_header(500)->set_output('Internal server error');
+        }
+        if (null === $result) {
+            return $this->output->set_status_header(404)->set_output('Not found');
+        }
+
+        $result['status'] = 'success';
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
+
+    }
+
 }
+

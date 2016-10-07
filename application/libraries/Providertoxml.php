@@ -259,7 +259,7 @@ class Providertoxml
             'type' => array($role),
             'namespace' => array('mdui')
         );
-        $extendMeta = $ent->getExtendMetadata()->filter(
+        $extendMeta =  $ent->getExtendMetadata()->filter(
             function (models\ExtendMetadata $entry) use ($doFilter) {
                 return in_array($entry->getType(), $doFilter['type']) && in_array($entry->getElement(), $doFilter['elements']) && in_array($entry->getNamespace(), $doFilter['namespace']);
             }

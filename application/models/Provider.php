@@ -1110,16 +1110,13 @@ class Provider
         $this->setDisplayName($provider->getDisplayName());
         $this->setLocalDisplayName($provider->getLocalDisplayName());
         $this->overwriteScopeFull($provider);
-        $this->setEntityId($provider->getEntityId());
         $this->setRegistrationAuthority($provider->getRegistrationAuthority());
-
-
         $r1 = $this->getRegistrationDateInFormat('YmdHis');
         $r2 = $provider->getRegistrationDateInFormat('YmdHis');
         if ($r1 !== $r2) {
             $this->setRegistrationDate($provider->getRegistrationDate());
         }
-
+        $this->setEntityId($provider->getEntityId());
         $this->overwriteWithNameid($provider);
         foreach (array('idpsso', 'aa', 'spsso') as $a) {
             $this->setProtocolSupport($a, $provider->getProtocolSupport($a));
@@ -1429,7 +1426,7 @@ class Provider
         if (isset($s['aa'])) {
             $result['aa'] = $s['aa'];
         }
-        if (isset($result['idpsso'])) {
+        if (isset($s['idpsso'])) {
             $result['idpsso'] = $s['idpsso'];
         }
 
@@ -1692,6 +1689,10 @@ class Provider
 
     public function getEntityId() {
         return $this->entityid;
+    }
+
+    public function getEntityIdToLowerCase(){
+        return strtolower($this->entityid);
     }
 
     public function getType() {
