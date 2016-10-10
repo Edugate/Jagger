@@ -1,17 +1,18 @@
 /* jshint strict: false */
 /*jslint browser: true */
 /*jslint plusplus: true */
-/*global $, jQuery, alert*/
+/*global $, jQuery, alert, google, console, Chart, Jagger */
 ////////////////////////////////////
 ////////////////////////////////////
 /////// plugins ///////////////////
 $.fn.dataTable.ext.search.push(
     function (settings, data, dataIndex) {
         var category = $('#entityc').val(), stype = data[0];
-        if (category === undefined || category === '' || (stype === '1' && category === 'local') || (stype === '0' && category === 'external')) {
-            return true;
-        }
-        return false;
+        return (category === undefined || category === '' || (stype === '1' && category === 'local') || (stype === '0' && category === 'external'));
+        // if (category === undefined || category === '' || (stype === '1' && category === 'local') || (stype === '0' && category === 'external')) {
+        //     return true;
+        // }
+        // return false;
     }
 );
 /*global $ */
@@ -426,9 +427,9 @@ var GINIT = {
                     var entgroups = ['idp', 'sp', 'both'];
                     var entgroupkey;
                     var countGroups = [];
-                    countGroups['idp'] = 0;
-                    countGroups['sp'] = 0;
-                    countGroups['both'] = 0;
+                    countGroups.idp = 0;
+                    countGroups.sp = 0;
+                    countGroups.both = 0;
                     $.ajax({
                         url: srclink,
                         type: 'GET',
@@ -726,13 +727,10 @@ var GINIT = {
                     success: function (response) {
                         var data;
                         try {
-                            data = JSON.parse(response);
+                            JSON.parse(response);
                         }
                         catch (e) {
-                            data = response;
-                            tabActive.empty().append(data);
-
-
+                            tabActive.empty().append(response);
                         }
                         tabActive.foundation();
                         return false;
@@ -1118,8 +1116,7 @@ var GINIT = {
                         url: gridUrl,
                         cache: false,
                         success: function (data2) {
-                            $("form#availablelogos").replaceWith(data2);
-                            $('form#availablelogos').unbind();
+                            $("form#availablelogos").replaceWith(data2).unbind();
                             $('form#assignedlogos').unbind();
                             $('#uploadlogo').unbind();
                             $("table#details").unbind();
@@ -2141,9 +2138,8 @@ $(document).ready(function () {
 
         $('button.getlogo').click(function () {
 
-            var alertlogoretrieve, imgdiv;
+            var alertlogoretrieve, imgdiv, logourl, logoreview;
             var btnname = $(this).attr('name');
-            var logourl, logoreview;
             var link = $(this).attr("value");
             if (btnname === 'idpgetlogo') {
                 logoreview = $('#idpreviewlogo');
@@ -2151,7 +2147,7 @@ $(document).ready(function () {
                 alertlogoretrieve = $("small.idplogoretrieve");
                 alertlogoretrieve.empty().hide();
                 logourl = $("[name='idplogoretrieve']").val();
-                imgdiv = $("#idpreviewlogo").find("div.imgsource").first();
+                imgdiv = logoreview.find("div.imgsource").first();
             }
             else {
                 logoreview = $('#spreviewlogo');
@@ -2159,7 +2155,7 @@ $(document).ready(function () {
                 alertlogoretrieve = $("small.splogoretrieve");
                 alertlogoretrieve.empty().hide();
                 logourl = $("[name='splogoretrieve']").val();
-                imgdiv = $("#spreviewlogo").find("div.imgsource").first();
+                imgdiv = logoreview.find("div.imgsource").first();
 
             }
 
@@ -2463,7 +2459,7 @@ $(document).ready(function () {
                             idf1 = data.data.activefeds.indexOf(fedid);
 
                             if (idf1 === -1) {
-                                tbl += '<tr><td colspan="' + nrcols + '" class="highlight">' + federationStr + ': ' + data.definitions.feds[i] + ' <span class="label alert">' + statusstr['inactive'] + '</span></td></tr>';
+                                tbl += '<tr><td colspan="' + nrcols + '" class="highlight">' + federationStr + ': ' + data.definitions.feds[i] + ' <span class="label alert">' + statusstr.inactive + '</span></td></tr>';
                             }
                             else {
                                 tbl += '<tr><td colspan="' + nrcols + '" class="highlight">' + federationStr + ': ' + data.definitions.feds[i] + '</td></tr>';
@@ -2484,7 +2480,7 @@ $(document).ready(function () {
                                 }
                                 tbl += '<tr><td>' + data.definitions.attrs[j] + '</td><td><span class="label ' + labelclass + '">' + data.definitions.policy[w] + '</span>';
                                 if (idf === -1) {
-                                    tbl += '&nbsp;<span class="label alert">' + data.definitions.lang['unsupported'] + '</span>';
+                                    tbl += '&nbsp;<span class="label alert">' + data.definitions.lang.unsupported + '</span>';
                                 }
                                 else {
                                     supportCopy.splice(idf, 1);
@@ -2504,7 +2500,7 @@ $(document).ready(function () {
                         target.html(tbl);
                     }
                     else if (data.type === 'entcat') {
-                        nrcols = 0;
+                        var nrcols = 0;
                         labelclass = '';
                         var entpolicy;
                         var idf;
@@ -2523,7 +2519,7 @@ $(document).ready(function () {
                         tbl += '</tr></thead>';
 
                         $.each(data.data.entcats, function (i, v) {
-                            tbl += '<tr><td colspan="' + nrcols + '" class="highlight">EntityCategory: ' + data.definitions.entcats[i]['name'] + '  ' + data.definitions.entcats[i]['value'] + ' <i class="ecmembers fa fa-list"  data-jagger-jsource="' + ecmemberurl + '/' + i + '"></i></td></tr>';
+                            tbl += '<tr><td colspan="' + nrcols + '" class="highlight">EntityCategory: ' + data.definitions.entcats[i].name + '  ' + data.definitions.entcats[i].value + ' <i class="ecmembers fa fa-list"  data-jagger-jsource="' + ecmemberurl + '/' + i + '"></i></td></tr>';
 
                             $.each(v, function (j, w) {
                                 unsupwttr = '';
@@ -2555,8 +2551,9 @@ $(document).ready(function () {
                         tbl += '</table></div>';
                         //target.html(tbl);
                         addentcatbtn.show().prependTo(target.html(tbl));
-                    } else if (data.type === 'sp') {
-                        nrcols = 1;
+                    }
+                    else if (data.type === 'sp') {
+                        var nrcols = 1;
                         tbl = '<div class="small-12 column"><table class="table"><thead><tr>';
                         $.each(data.definitions.columns, function (i, v) {
                             nrcols = nrcols + 1;
@@ -2592,7 +2589,7 @@ $(document).ready(function () {
                                     }
                                     else {
                                         if (data.definitions.sps.hasOwnProperty(i)) {
-                                            tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight">' + data.definitions.sps[i]['entityid'] + ' <span class="label alert">disabled</span></td></tr>';
+                                            tbl += '<tr><td data-jagger-entidlink="' + i + '" colspan="' + nrcols + '" class="highlight">' + data.definitions.sps[i].entityid + ' <span class="label alert">disabled</span></td></tr>';
                                         }
                                         else {
                                             console.log('undefined ' + i + ' in data.definitions.sps');
@@ -2621,16 +2618,16 @@ $(document).ready(function () {
                                         }
                                         if (v.custom !== undefined && v.custom[j] !== undefined) {
 
-                                            if (v.custom[j]['deny'] !== undefined) {
+                                            if (v.custom[j].deny !== undefined) {
                                                 customattrpol += '<span class="label alert">denied values:  ';
-                                                $.each(v.custom[j]['deny'], function (ip, iv) {
+                                                $.each(v.custom[j].deny, function (ip, iv) {
                                                     customattrpol += iv + ', ';
                                                 });
                                                 customattrpol += '</span>';
                                             }
                                             else {
                                                 customattrpol += '<span class="label success">permited values: ';
-                                                $.each(v.custom[j]['permit'], function (ip, iv) {
+                                                $.each(v.custom[j].permit, function (ip, iv) {
                                                     customattrpol += iv + ', ';
                                                 });
                                                 customattrpol += '</span>';
@@ -2641,23 +2638,23 @@ $(document).ready(function () {
                                             '<td><span class="label ' + policyLabels[l] + '">' + data.definitions.policy[l] + '</span>  ' + supportedStatus + ' ' + customattrpol + '</td>' +
                                             '<td>' + data.definitions.req[spReqAttrStr] + '</td>' +
                                             '<td>' +
-                                            '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + l + '" data-jagger-entityid="' + data.definitions.sps[i]['entityid'] + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + j + '">' +
+                                            '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + l + '" data-jagger-entityid="' + data.definitions.sps[i].entityid + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + j + '">' +
                                             '<i class="fa fa-pencil"></i></a></td></tr>';
                                     });
                                     for (var vkey in spReqAttr) {
                                         customattrpol = '';
                                         if (v.custom !== undefined && v.custom[vkey] !== undefined) {
 
-                                            if (v.custom[vkey]['deny'] !== undefined) {
+                                            if (v.custom[vkey].deny !== undefined) {
                                                 customattrpol += '<span class="label alert">denied values:  ';
-                                                $.each(v.custom[vkey]['deny'], function (ip, iv) {
+                                                $.each(v.custom[vkey].deny, function (ip, iv) {
                                                     customattrpol += iv + ', ';
                                                 });
                                                 customattrpol += '</span>';
                                             }
                                             else {
                                                 customattrpol += '<span class="label success">permited values: ';
-                                                $.each(v.custom[vkey]['permit'], function (ip, iv) {
+                                                $.each(v.custom[vkey].permit, function (ip, iv) {
                                                     customattrpol += iv + ', ';
                                                 });
                                                 customattrpol += '</span>';
@@ -2673,7 +2670,7 @@ $(document).ready(function () {
                                             tbl += '<tr><td>' + attrName + '</td>' +
                                                 '<td><span class="label ' + policyLabels['100'] + '">' + data.definitions.policy['100'] + '</span>  ' + supportedStatus + ' ' + customattrpol + '</td>' +
                                                 '<td>' + data.definitions.req[spReqAttr[vkey]] + '</td>' +
-                                                '<td><a href="#" class="modalconfirm" data-jagger-attrpolicy="100" data-jagger-entityid="' + data.definitions.sps[i]['entityid'] + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fa fa-pencil"></i></i></td></tr>';
+                                                '<td><a href="#" class="modalconfirm" data-jagger-attrpolicy="100" data-jagger-entityid="' + data.definitions.sps[i].entityid + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fa fa-pencil"></i></i></td></tr>';
                                         }
                                     }
 
@@ -2910,8 +2907,8 @@ $(document).ready(function () {
                         $.each(json.data.entcats, function (l, w) {
                             entcatdropdown
                                 .append($("<option></option>")
-                                    .attr("value", w['entcatid'])
-                                    .text(w['value']));
+                                    .attr("value", w.entcatid)
+                                    .text(w.value));
                         });
                     }
 
@@ -2941,16 +2938,16 @@ $(document).ready(function () {
                         $.each(json.members, function (k, v) {
                             spdropdown
                                 .append($("<option></option>")
-                                    .attr("value", v['pid'])
-                                    .text(v['name'] + ' (' + v['entityid'] + ')'));
+                                    .attr("value", v.pid)
+                                    .text(v.name + ' (' + v.entityid + ')'));
                         });
                     }
                     if (json.attrs) {
                         $.each(json.attrs, function (l, w) {
                             attrdropdown
                                 .append($("<option></option>")
-                                    .attr("value", w['attrid'])
-                                    .text(w['name']));
+                                    .attr("value", w.attrid)
+                                    .text(w.name));
                         });
                     }
 
@@ -3247,14 +3244,14 @@ $(document).ready(function () {
                         tbl += '<tr><td data-jagger-entidlink="' + a.spid + '" class="searchcol"><span data-tooltip aria-haspopup="true" class="has-tip" data-options="disable_for_touch:true" title="' + i + '" >' + a.name + '</span><span class="hidden">' + i + '</span></td>';
                         $.each(attrdefs, function (k, v) {
                             requiredAttr = null;
-                            if (a['attributes'][k] !== undefined) {
-                                pAttr = a['attributes'][k];
+                            if (a.attributes[k] !== undefined) {
+                                pAttr = a.attributes[k];
                             }
                             else {
                                 pAttr = null;
                             }
-                            if (a['req'][k] !== undefined) {
-                                requiredAttr = a['req'][k];
+                            if (a.req[k] !== undefined) {
+                                requiredAttr = a.req[k];
                             }
                             if (requiredAttr !== null) {
                                 cell = requiredAttr[0].toUpperCase();
@@ -3267,7 +3264,7 @@ $(document).ready(function () {
                                     cl = 'den';
                                 }
                                 else if (pAttr === 1) {
-                                    if (a['custom'][k] !== undefined) {
+                                    if (a.custom[k] !== undefined) {
                                         cl = 'spec';
                                     }
                                     else {
@@ -3473,7 +3470,7 @@ $(document).ready(function () {
             $.ajax({
                 'type': 'GET',
                 'url': addtitionalLogout,
-                'cache': false,
+                'cache': false
             });
         }
         $.ajax({
@@ -4104,10 +4101,9 @@ $(document).ready(function () {
                     calerts = [];
                 });
                 rows.push('</tbody></table>');
-                var result = rows.join('');
                 spinImage.hide();
                 $("#rvcerts").show();
-                $("tr#rvcerts td:first-child").html(result);
+                $("tr#rvcerts td:first-child").html(rows.join(''));
             },
             beforeSend: function () {
                 spinImage.show();
@@ -4591,8 +4587,8 @@ if ($('#providerslistresultv2').length) {
                                 cell = cell + '<a href="' + w.phelpurl + '">' + w.phelpurl + '</a>';
                             }
                             else if (s === 'plocked' || s === 'pactive' || s === 'plocal' || s === 'pstatic' || s === 'pvisible' || s === 'pavailable') {
-                                if (result['statedefs'][s][w[s]] !== undefined) {
-                                    cell = cell + ' <span class="lbl lbl-' + s + '-' + w[s] + '">' + result['statedefs'][s][w[s]] + '</span>';
+                                if (result.statedefs[s][w[s]] !== undefined) {
+                                    cell = cell + ' <span class="lbl lbl-' + s + '-' + w[s] + '">' + result.statedefs[s][w[s]] + '</span>';
                                 }
                             }
                             else if (s === 'contacts') {
@@ -4619,11 +4615,11 @@ if ($('#providerslistresultv2').length) {
                 buttons: [
                     {
                         text: langdefs.btnexternal,
-                        className: 'tiny',
+                        className: 'tiny'
                     },
                     {
                         text: langdefs.btnlocal,
-                        className: 'tiny',
+                        className: 'tiny'
                     },
                     {
                         className: 'tiny',
@@ -4655,7 +4651,7 @@ if ($('#providerslistresultv2').length) {
                     "infoFiltered": "(filtered from _MAX_ total records)",
                     "paginate": {
                         "next": langdefs.next,
-                        "previous": langdefs.previous,
+                        "previous": langdefs.previous
                     }
                 },
                 "defereRender": true
@@ -4785,8 +4781,8 @@ $(".afilter").click(function () {
                                         cell = cell + '<a href="' + w.phelpurl + '">' + w.phelpurl + '</a>';
                                     }
                                     else if (s === 'plocked' || s === 'pactive' || s === 'plocal' || s === 'pstatic' || s === 'pvisible' || s === 'pavailable') {
-                                        if (result['statedefs'][s][w[s]] !== undefined) {
-                                            cell = cell + ' <span class="lbl lbl-' + s + '-' + w[s] + '">' + result['statedefs'][s][w[s]] + '</span>';
+                                        if (result.statedefs[s][w[s]] !== undefined) {
+                                            cell = cell + ' <span class="lbl lbl-' + s + '-' + w[s] + '">' + result.statedefs[s][w[s]] + '</span>';
                                         }
                                     }
                                     else {
@@ -5151,7 +5147,92 @@ $('button.revealc').on('click', function () {
 $(".select2").select2();
 $("#itestcombo").select2();
 
+function genAttrUsage(jsondata, returnType) {
+    var prefixUrl = Jagger.base_url + 'providers/detail/show/';
+    var b = [];
+    var fedsList = [];
+    var spsList = [];
+    $.each(jsondata.requested_by, function (k, v) {
+        if (v.type === 'provider') {
+            spsList.push('<div><a href="' + prefixUrl + v.id + '">' + v.entityid + '</a></div>');
+        }
+        else if (v.type === 'federation') {
+            fedsList.push('<div>Federation: ' + v.name + '</div>');
+        }
+    });
+    b.push('<div class="small-12 column">');
+    b.push('Name: ' + jsondata.name);
+    b.push('</div>');
+    b.push('<div class="small-12 column">');
 
+
+    b.push('<ul class="accordion" data-accordion data-allow-all-closed="true" data-multi-expand="true">');
+    b.push('<li class="accordion-item" data-accordion-item>' +
+        '<a href="#" class="accordion-title">supported by ' + jsondata.supported_by.length + ' Identity Providers</a>' +
+        '<div class="accordion-content" data-tab-content>');
+    $.each(jsondata.supported_by, function (k, v) {
+        b.push('<div><a href="' + prefixUrl + v.id + '">' + v.entityid + '</a></div>');
+    });
+    b.push('</div></li>');
+    b.push('<li class="accordion-item" data-accordion-item>' +
+        '<a href="#" class="accordion-title">requested by ' + spsList.length + ' Service Providers');
+    if (fedsList.length > 0) {
+        b.push(' and ' + fedsList.length + ' Federations');
+    }
+    b.push('</a>');
+    b.push('<div class="accordion-content" data-tab-content>');
+    b.push(fedsList.join(''));
+    b.push(spsList.join(''))
+    b.push('</div></li>');
+    b.push('</ul>');
+    b.push('</div>');
+
+    return b.join('');
+
+}
+$(".attrinfo").click(function (e) {
+    var thisElement = $(this);
+    var thisI = thisElement.find('i').first();
+    var attrid = thisElement.attr('data-jagger-attrid');
+    var currRow = thisElement.closest('tr');
+    var nextRow = currRow.next();
+    if (nextRow.hasClass('attrexpanded')) {
+        nextRow.remove();
+        thisI.toggleClass('fa-compress', false).toggleClass('fa-expand', true);
+        return false;
+    }
+    var noCells = currRow.find('td').length;
+    var newRow = $('<tr class="attrexpanded"><td colspan="' + noCells + '"></td></tr>');
+    var newRowBody = [];
+    var ajaxCall;
+    thisI.toggleClass('fa-compress', true).toggleClass('fa-expand', false);
+    if (isNaN(attrid)) {
+        newRowBody.push('<div> alert </div>');
+        ajaxCall = $.ajax();
+    }
+    else {
+        ajaxCall = $.ajax({
+            type: 'GET',
+            url: Jagger.base_url + 'attributes/attributes/byid/' + attrid,
+            dataType: 'json',
+            cache: true,
+            success: function (result) {
+                var z = genAttrUsage(result, 'html');
+
+                newRowBody.push(z);
+
+            }
+        });
+    }
+
+    ajaxCall.done(function () {
+        var inss = newRowBody.join('');
+        newRow.find('td').append(inss);
+        currRow.after(newRow);
+        newRow.foundation();
+    });
+
+});
 
 
 

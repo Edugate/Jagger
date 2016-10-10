@@ -79,6 +79,7 @@ class Attributes
         foreach ($attrSupportcol as $a) {
             $p = $a->getProvider();
             $col1[] = array(
+                'id' => $p->getId(),
                 'entityid'  => $p->getEntityId(),
                 'is_local'  => $p->getLocal(),
                 'is_active' => $p->getActive(),
@@ -86,10 +87,11 @@ class Attributes
             );
         }
         foreach ($attrReq as $a) {
-            $ptype = $a->getType();
+            $ptype = strtolower($a->getType());
             if ($ptype === 'sp') {
                 $p = $a->getSP();
                 $col2[] = array(
+                    'id' => $p->getId(),
                     'entityid'  => $p->getEntityId(),
                     'type'      => 'provider',
                     'is_local'  => $p->getLocal(),
