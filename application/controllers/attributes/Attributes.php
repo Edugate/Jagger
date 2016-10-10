@@ -104,8 +104,10 @@ class Attributes extends MY_Controller
         }
         $data['isadmin'] = $this->jauth->isAdministrator();
         $data['breadcrumbs'] = array(
-            array('url' => '#', 'name' => lang('attrsdeflist'), 'type' => 'current'),
-
+            array(
+                'url' => '#',
+                'name' => lang('attrsdeflist'),
+                'type' => 'current')
         );
         $data['attributes'] = $dataRows;
         $data['content_view'] = 'attribute_list_view';
