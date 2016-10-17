@@ -7,7 +7,7 @@
         "zendframework/zend-permissions-acl": "2.0.*",
         "mtdowling/cron-expression": "1.1.*",
         "phpseclib/phpseclib": "2.0.*",
-        "gree/jose": "^2.0",
-        "lcobucci/jwt": "^3.0"
+        "lcobucci/jwt": "^3.0",
+        "gree/jose": "dev-master"
     }
 }
