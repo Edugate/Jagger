@@ -432,14 +432,15 @@ class Metadata2import
                     $importedProvider->setLocal($local);
                     $importedProvider->setActive($active);
                     // coc begin
-
                     foreach ($ent['coc'] as $attrname => $v) {
-                        if (isset($this->coclistarray['' . $attrname . ''])) {
-                            $y = array_search($v, $this->coclistarray['' . $attrname . '']);
-                            if ($y !== null && $y !== false) {
-                                $celement = $this->coclistconverted['' . $y . ''];
-                                if (!empty($celement)) {
-                                    $importedProvider->setCoc($celement);
+                        if (isset($this->ncoclistarray['' . $attrname . ''])) {
+                            foreach ($v as $item) {
+                                $y = array_search($item, $this->ncoclistarray['' . $attrname . '']);
+                                if ($y !== false) {
+                                    $celement = $this->coclistconverted['' . $y . ''];
+                                    if (!empty($celement)) {
+                                        $importedProvider->setCoc($celement);
+                                    }
                                 }
                             }
                         }
