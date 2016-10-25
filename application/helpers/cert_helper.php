@@ -105,6 +105,22 @@ function reformatPEM($value)
     }
 }
 
+function cleanPEMToOneLine($value){
+    if(!empty($value))
+    {
+       $cleaned_value = $value;
+       $cleaned_value = str_replace('-----BEGIN CERTIFICATE-----', '', $cleaned_value);
+       $cleaned_value = str_replace('-----END CERTIFICATE-----', '', $cleaned_value);
+       $cleaned_value = preg_replace("/\r\n/","", $cleaned_value);
+       $cleaned_value = preg_replace("/\n+/","", $cleaned_value);
+       $cleaned_value = preg_replace('/\s\s+/', "", $cleaned_value);
+       $cleaned_value = preg_replace('/\s*/', "", $cleaned_value);
+       $cleaned_value= trim($cleaned_value);
+       return $cleaned_value;
+    }
+    return '';
+}
+
 // Get PEM formated certificate from quickform input
 // if raw is true, then ommit the begin/end certificate delimiter
 function getPEM($value=null, $raw = false)

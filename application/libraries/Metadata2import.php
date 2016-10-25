@@ -46,6 +46,7 @@ class Metadata2import
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->library('metadata2array');
+        $this->ci->load->library('tracker');
         $this->metadata = null;
         $this->full = false;
         $this->copyFedAttrReq = false;
@@ -54,7 +55,12 @@ class Metadata2import
         $this->ncoclistarray = array();
         $this->regpollistconverted = array();
         $this->regpollistarray = array();
+        $this->setDefaults();
+        $this->other = null;
+    }
 
+
+    private function setDefaults() {
         $this->defaults = array(
             'localimport'    => false,
             'static'         => true,
@@ -67,7 +73,6 @@ class Metadata2import
             'overwritelocal' => false,
             'attrreqinherit' => false,
         );
-        $this->other = null;
     }
 
     /**
@@ -92,7 +97,7 @@ class Metadata2import
         foreach ($sections as $section => $sectionTitle) {
             if (count($report['provider']['' . $section . '']) > 0) {
                 $structureChanged = true;
-                $body .= PHP_EOL.':: '.$sectionTitle . ' ::' . PHP_EOL;
+                $body .= PHP_EOL . ':: ' . $sectionTitle . ' ::' . PHP_EOL;
                 foreach ($report['provider']['' . $section . ''] as $a) {
                     $body .= $a . PHP_EOL;
                 }
@@ -346,6 +351,7 @@ class Metadata2import
                         $report['provider']['joinfed'][] = $existingProvider->getEntityId();
 
                     }
+
                     $this->em->persist($existingProvider);
                 }
                 if ($counter > 300) {
@@ -550,7 +556,7 @@ class Metadata2import
          */
         foreach ($origReqAttrs as $reqAttr) {
             $oid = $reqAttr->getAttribute()->getOid();
-            if (in_array('' . $oid . '', $duplicateControl)) {
+            if (in_array('' . $oid . '', $duplicateControl, true)) {
                 $origReqAttrs->removeElement($reqAttr);
                 $this->em->remove($reqAttr);
                 continue;
@@ -561,6 +567,7 @@ class Metadata2import
             $found = false;
             $roid = $r->getAttribute()->getOid();
             foreach ($newReqAttrs as $k => $v) {
+
                 if (strcmp($roid, $v['name']) == 0) {
                     $found = true;
                     if (isset($v['req']) && strcasecmp($v['req'], 'true') == 0) {
@@ -638,6 +645,7 @@ class Metadata2import
         foreach ($provider->getCoc() as $currCoc) {
             $currentCocsByType['' . $currCoc->getType() . ''][] = $currCoc;
         }
+
         return $currentCocsByType;
     }
 
@@ -679,7 +687,7 @@ class Metadata2import
             foreach ($ent['regpol'] as $k => $v) {
                 if (strcmp($c->getUrl(), $v['url']) == 0 && strcasecmp($c->getLang(), $v['lang']) == 0) {
                     $cExist = true;
-                    unset($ent['regpol'][''.$k.'']);
+                    unset($ent['regpol']['' . $k . '']);
                     break;
                 }
             }

@@ -1220,11 +1220,96 @@ class Provider
         }
 
 
-        foreach ($this->getExtendMetadata() as $f) {
-            $this->removeExtendWithChildren($f);
+        /**
+         * if bug found then replace back with below commented code
+         */
+        $this->overwriteExtendMetadata($provider);
+
+        /**
+         * next commented code is old version of about block
+         */
+        /**
+         * foreach ($this->getExtendMetadata() as $f) {
+         * $this->removeExtendWithChildren($f);
+         * }
+         * foreach ($provider->getExtendMetadata() as $gg) {
+         * $this->setExtendMetadata($gg);
+         * }
+         */
+
+        return $this;
+    }
+
+    private function overwriteExtendMetadata(Provider $provider) {
+        $importedExtends = $provider->getExtendsToMultiArray();
+        $newExtends = $importedExtends['data'];
+        $origParents = array();
+        foreach ($this->getExtendMetadata() as $item) {
+            $itype = $item->getType();
+            $inamespace = $item->getNameSpace();
+            $ielement = $item->getElement();
+            $parent = $item->getParent();
+            if ($parent !== null) {
+                $ptype = $parent->getType();
+                $pnamespace = $parent->getNameSpace();
+                $pelement = $parent->getElement();
+                $origParents[$ptype][$pnamespace][$pelement] = $parent;
+                if (isset($newExtends[$itype][$inamespace][$pelement][$ielement])) {
+                    $upE = array_shift($newExtends[$itype][$inamespace][$pelement][$ielement]);
+                    if ($upE !== null && $upE instanceof ExtendMetadata) {
+                        $item->setValue($upE->getEvalue());
+                        $item->setAttributes($upE->getAttributes());
+                        $provider->getExtendMetadata()->removeElement($upE);
+                    } else {
+                        $this->getExtendMetadata()->removeElement($item);
+                        $this->em->remove($item);
+                    }
+                } else {
+                    $this->getExtendMetadata()->removeElement($item);
+                    $this->em->remove($item);
+                }
+            } elseif ($inamespace === 'mdui' && ($ielement === 'DiscoHints' || $ielement === 'UIInfo')) {
+                $origParents[$itype][$inamespace][$ielement] = $item;
+            } else {
+                if (isset($newExtends[$itype][$inamespace][$ielement])) {
+                    $upE = array_shift($newExtends[$itype][$inamespace][$ielement]);
+                    if ($upE !== null && $upE instanceof ExtendMetadata) {
+                        $item->setValue($upE->getEvalue());
+                        $item->setAttributes($upE->getAttributes());
+                        $provider->getExtendMetadata()->removeElement($upE);
+                    } else {
+                        $this->getExtendMetadata()->removeElement($item);
+                        $this->em->remove($item);
+                    }
+                } else {
+                    $this->getExtendMetadata()->removeElement($item);
+                    $this->em->remove($item);
+                }
+            }
         }
         foreach ($provider->getExtendMetadata() as $gg) {
-            $this->setExtendMetadata($gg);
+            $gtype = $gg->getType();
+            $gnamespace = $gg->getNamespace();
+            $gelement = $gg->getElement();
+            $gparent = $gg->getParent();
+
+            if ($gparent === null) {
+
+                if ($gnamespace === 'mdui' && ($gelement === 'DiscoHints' || $gelement === 'UIInfo')) {
+                    continue;
+                }
+                $this->setExtendMetadata($gg);
+            } else {
+                $gparentElement = $gparent->getElement();
+                if (isset($origParents[$gtype][$gnamespace][$gparentElement])) {
+                    $this->setExtendMetadata($gg);
+                    $gg->setParent($origParents[$gtype][$gnamespace][$gparentElement]);
+                } else {
+                    $this->setExtendMetadata($gparent);
+                    $this->setExtendMetadata($gg);
+                }
+            }
+
         }
 
         return $this;
@@ -1478,6 +1563,9 @@ class Provider
         return $federations;
     }
 
+    /**
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
     public function getActiveFederations() {
         $mem = $this->membership;
         $federations = new \Doctrine\Common\Collections\ArrayCollection();
@@ -1691,7 +1779,7 @@ class Provider
         return $this->entityid;
     }
 
-    public function getEntityIdToLowerCase(){
+    public function getEntityIdToLowerCase() {
         return strtolower($this->entityid);
     }
 
@@ -1737,6 +1825,38 @@ class Provider
 
     public function getExtendMetadata() {
         return $this->extend;
+    }
+
+    public function getExtendsToMultiArray() {
+        $extend = $this->getExtendMetadata();
+        $result = array();
+        $parents = array();
+        if (!empty($extend)) {
+            foreach ($extend as $item) {
+                $t = $item->getType();
+                $n = $item->getNamespace();
+                $e = $item->getElement();
+                $parent = $item->getParent();
+                if ($parent !== null) {
+                    $pt = $parent->getType();
+                    $pn = $parent->getNamespace();
+                    $pe = $parent->getElement();
+                    $result[$pt][$pn][$pe][$e][] = $item;
+                } elseif ($n === 'mdui' && ($e === 'UIInfo' || $e === 'DiscoHints')) {
+                    $parents[$t][$n][$e] = $item;
+                } else {
+                    $result[$t][$n][$e][] = $item;
+                }
+
+
+            }
+        }
+        $finalResult = array(
+            'parents' => $parents,
+            'data'    => $result
+        );
+
+        return $finalResult;
     }
 
     public function isStaticMetadata() {

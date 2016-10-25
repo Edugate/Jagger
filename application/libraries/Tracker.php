@@ -50,7 +50,7 @@ class Tracker
         /**
          * @var models\Tracker[] $tracks
          */
-        $tracks = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $entityid, 'resourcetype' => array('idp', 'sp')));
+        $tracks = $this->em->getRepository("models\Tracker")->findBy(array('resourcename' => $entityid, 'resourcetype' => array('idp', 'sp', 'both', 'ent')));
         if ($tracks !== null) {
             foreach ($tracks as $t) {
                 $this->em->remove($t);
