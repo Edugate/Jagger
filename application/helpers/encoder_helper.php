@@ -62,7 +62,7 @@ function arrayWithKeysToHtml($a)
 {
 	$str = '';
 	foreach ($a as $key => $value) {
-		$str .= htmlentities($key) . ': ' . htmlentities($value) . '<br />';
+		$str .= html_escape($key) . ': ' . html_escape($value) . '<br />';
 	}
 	return $str;
 

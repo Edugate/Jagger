@@ -167,6 +167,10 @@ class Contact
         return $this->type;
     }
 
+    public function toStrLog(){
+        return ''.$this->getTypeToForm().': '.$this->getFullName().' ('.$this->getEmail().')';
+    }
+
     /**
      * return contact type used in forms
      *
