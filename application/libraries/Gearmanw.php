@@ -40,11 +40,11 @@ class Gearmanw
         sleep(1);
         $storage = $ci->config->item('datastorage_path');
         $img_mimes = array(
-            'image/jpeg'  => 'jpg',
+            'image/jpeg' => 'jpg',
             'image/pjpeg' => 'jpg',
-            'image/png'   => 'png',
+            'image/png' => 'png',
             'image/x-png' => 'png',
-            'image/gif'   => 'gif',
+            'image/gif' => 'gif',
         );
 
         if (empty($storage)) {
@@ -152,7 +152,10 @@ class Gearmanw
             } elseif ($expectedformat === 'svg' && $mimeType === 'image/svg+xml') {
                 $extension = 'svg';
                 $statformat = 'svg';
+            } else {
+                log_message('error', 'GEARMAN ::' . __METHOD__ . ' not allowed mimetype: ' . $mimeType);
             }
+
             sleep(1);
             $job->sendStatus(7, 10);
 
@@ -181,7 +184,11 @@ class Gearmanw
                         $em->persist($s);
                         $job->sendStatus(9, 10);
                     }
-                    $em->flush();
+                    try {
+                        $em->flush();
+                    } catch (Exception $e) {
+                        log_message('error', __METHOD__ . ' ' . $e);
+                    }
                     $job->sendStatus(10, 10);
                 }
             }
@@ -225,7 +232,7 @@ class Gearmanw
                 }
             }
         }
-        while ($gm->work());
+        while ($gm->work()) ;
     }
 
     public function worker() {

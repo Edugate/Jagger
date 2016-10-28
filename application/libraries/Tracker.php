@@ -22,10 +22,10 @@ class Tracker
     }
 
     /**
-     * sync_with_db - it should be always false.
+     * sync - it should be always false.
      * you can set to true if u dont have any other db operations in you controller/libr etc
      */
-    public function save_track($resourcetype, $subtype, $resourcename, $details, $sync_with_db = false) {
+    public function save_track($resourcetype, $subtype, $resourcename, $details, $sync = false) {
         $track = new models\Tracker;
         $current_user = $this->ci->jauth->getLoggedinUsername();
         $track->setUser($current_user);
@@ -34,7 +34,7 @@ class Tracker
         $track->setDetail($details);
         $track->setResourceName($resourcename);
         $this->em->persist($track);
-        if ($sync_with_db === true) {
+        if ($sync === true) {
             $this->em->flush();
         }
     }
