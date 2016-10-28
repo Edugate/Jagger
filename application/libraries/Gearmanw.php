@@ -181,7 +181,11 @@ class Gearmanw
                         $em->persist($s);
                         $job->sendStatus(9, 10);
                     }
-                    $em->flush();
+                    try {
+                        $em->flush();
+                    } catch(Exception $e){
+                        log_message('error',__METHOD__.' '.$e);
+                    }
                     $job->sendStatus(10, 10);
                 }
             }
