@@ -1,7 +1,8 @@
 /* jshint strict: false */
 /*jslint browser: true */
 /*jslint plusplus: true */
-/*global $, jQuery, alert, google, console, Chart, Jagger */
+/*global $, jQuery, alert, google, console, Chart, Jagger, hljs */
+
 ////////////////////////////////////
 ////////////////////////////////////
 /////// plugins ///////////////////
@@ -9,10 +10,6 @@ $.fn.dataTable.ext.search.push(
     function (settings, data, dataIndex) {
         var category = $('#entityc').val(), stype = data[0];
         return (category === undefined || category === '' || (stype === '1' && category === 'local') || (stype === '0' && category === 'external'));
-        // if (category === undefined || category === '' || (stype === '1' && category === 'local') || (stype === '0' && category === 'external')) {
-        //     return true;
-        // }
-        // return false;
     }
 );
 /*global $ */
@@ -244,6 +241,34 @@ jQuery.uiTableFilter.has_words = function (str, words, caseSensitive) {
 ////////////////
 /// JAGGER /////
 ////////////////
+
+Jagger.helperModal = $("#helpermodal");
+Jagger.confirmFormModal = function (htmlObj) {
+    htmlObj.foundation('open');
+};
+Jagger.genFormModal = function () {
+    var strHtml = [];
+    strHtml.push('<form>');
+
+    strHtml.push('</form>');
+};
+Jagger.dictionary.en = {
+    hello: "Hello",
+    close: "Close",
+    cancel: "Cancel",
+    submit: "Submit",
+    accept: "Accept",
+    approve: "Approve",
+    remove: "Remove",
+    areyousure: "Are you sure",
+    uwtremoveattr: "you want to remove attribute"
+};
+Jagger.getLangLine = function (key) {
+    if (Jagger.dictionary[Jagger.lang] && Jagger.dictionary[Jagger.lang][key]) {
+        return Jagger.dictionary[Jagger.lang][key];
+    }
+    return Jagger.dictionary.en[key];
+}
 var jlettersdigits = 'abcdefghijklmnopqrstuvwxyz0123456789';
 var jLetters = 'abcdefghijklmnopqrstuvwxyz';
 var jDigits = '0123456789';
@@ -319,7 +344,9 @@ function mapInitialize() {
 
         map.fitBounds(bounds);
         var listener = google.maps.event.addListener(map, "idle", function () {
-            if (map.getZoom() > 16) map.setZoom(16);
+            if (map.getZoom() > 16) {
+                map.setZoom(16);
+            }
             google.maps.event.removeListener(listener);
         });
 
@@ -1266,8 +1293,8 @@ var GINIT = {
                     }
                     else {
                         if (data.returncode) {
-                            $("span#fvreturncode").append(data.returncode);
-                            $("div#fvresult").show();
+                            $("#fvreturncode").append(data.returncode);
+                            $("#fvresult").show();
                         }
                         if (data.returncode === "success") {
                             fvform.find("button:focus").css("background-color", "#00aa00");
@@ -1282,7 +1309,7 @@ var GINIT = {
                             $.each(data.message, function (i, v) {
                                 $.each(v, function (j, m) {
                                     msgdata = '<div>' + i + ': ' + m + '</div>';
-                                    $("div#fvmessages").append(msgdata);
+                                    $("#fvmessages").append(msgdata);
                                 });
                             });
 
@@ -1291,17 +1318,17 @@ var GINIT = {
                     }
                 },
                 beforeSend: function () {
-                    $("span#fvreturncode").text('');
-                    $("div#fvmessages").text('');
+                    $("#fvreturncode").text('');
+                    $("#fvmessages").text('');
                     spinImage.show();
                 },
                 error: function (x, t, m) {
                     spinImage.hide();
                     if (t === 'timeout') {
-                        window.alert('got timeout from validation server');
+                        revealAlert('got timeout from validation server', 'Close');
                     }
                     else {
-                        window.alert("unknown problem with receiving data");
+                        revealAlert('unknown problem with receiving data', 'Close');
                     }
                 }
             });
@@ -1343,8 +1370,8 @@ var GINIT = {
             });
 
             if (validators !== result) {
-                window.alert('All mandatory validations have to pass successfully!');
-                e.preventDefault();
+                revealAlert('All mandatory validations have to pass successfully!', 'Close');
+                return false;
             }
         });
 
@@ -1372,7 +1399,7 @@ var GINIT = {
                         var div_data;
                         $(row).addClass('opened').addClass('highlight');
                         if (!data) {
-                            window.alert('no data');
+                            revealAlert('No data', 'Close');
                         }
                         else {
                             if (!data.idp && !data.sp && !data.both) {
@@ -1421,7 +1448,7 @@ var GINIT = {
                     },
                     error: function () {
                         spinImage.hide();
-                        window.alert('problem with loading data');
+                        revealAlert('problem with loading data', 'Close');
                     }
                 }).done(function () {
                         var nextrow = '<tr class="feddetails"><td colspan="7"><ul class="feddetails">' + value.html() + '</ul></td></tr>';
@@ -1446,42 +1473,44 @@ var GINIT = {
                 success: function (data) {
                     spinImage.hide();
                     if (!data) {
-                        window.alert('no data');
+                        revealAlert('No data', 'Close');
+                        return false;
                     }
-                    else {
-                        var nlist = $('<div/>');
-                        nlist.addClass('zebralist row');
-                        nlist.css("list-style-type", "decimal");
-                        var div_data;
-                        var n = 1;
-                        var counter = 1;
-                        $.each(data, function (i, v) {
-                            var span_feds = $('<span/>');
-                            $.each(v.feds, function (x, z) {
-                                var spanb = '<span class="label">' + z + '</span>&nbsp;';
-                                span_feds.append(spanb);
-                            });
-                            div_data = '<div class="large-12 columns" style="margin-top: 2px; margin-bottom: 2px"><div class="large-9 columns">' + counter + '. <a href="' + v.url + '">' + v.name + '</a> <i> (' + v.entityid + ') </i></div><div class="fedlbl large-3 end text-right columns">' + span_feds.html() + '</div></div>';
-                            nlist.append(div_data);
-                            n = n + 1;
-                            counter = counter + 1;
-                        });
-                        value.append(nlist);
+                    var nlist = '<div class="zebralist row" style="list-style-type : decimal" >';
 
-                    }
+                    var div_data;
+                    var n = 1;
+                    var counter = 1;
+                    var spanb;
+                    var span_feds;
+                    $.each(data, function (i, v) {
+                        span_feds = '<span>';
+                        spanb = '';
+                        $.each(v.feds, function (x, z) {
+                            spanb += '<span class="label">' + z + '</span>&nbsp;';
+                        });
+                        span_feds += spanb;
+                        span_feds += '</span>';
+                        div_data = '<div class="large-12 columns" style="margin-top: 2px; margin-bottom: 2px"><div class="large-9 columns">' + counter + '. <a href="' + v.url + '">' + v.name + '</a> <i> (' + v.entityid + ') </i></div><div class="fedlbl large-3 end text-right columns">' + span_feds + '</div></div>';
+                        nlist += div_data;
+                        n = n + 1;
+                        counter = counter + 1;
+                    });
+                    nlist += '</div>';
+                    value.append(nlist);
+
+
                 },
                 beforeSend: function () {
                     spinImage.show();
                 },
                 error: function () {
                     spinImage.hide();
-                    window.alert('problem with loading data');
+                    revealAlert('problem with loading data', 'Close');
                 }
-
             }).done(function () {
                 var nextrow = value.html();
-                //$(nextrow).insertAfter(row);
-                $("div#membership").replaceWith(nextrow);
+                $("#membership").replaceWith(nextrow);
 
             });
             return false;
@@ -1619,7 +1648,7 @@ $(document).ready(function () {
             },
             error: function (xhr, status, error) {
                 spinImage.hide();
-                window.alert(xhr.responseText);
+                revealAlert(xhr.responseText, 'Close');
             }
         });
 
@@ -2380,7 +2409,7 @@ $(document).ready(function () {
                 success: function (data) {
                     spinImage.hide();
                     meter.css('width', '100%');
-                    var idf, supplbl, policy, datajaggersupm, support = [];
+                    var idf, supplbl, nrcols, policy, datajaggersupm, support = [];
                     if (data.type === 'supported') {
                         $.each(data.data.support, function (k, v) {
                             support.push(v);
@@ -2438,7 +2467,7 @@ $(document).ready(function () {
                             support.push(v);
                         });
 
-                        var nrcols = 0;
+                        nrcols = 0;
                         var fpolicy, labelclass;
 
                         var federationStr = data.definitions.lang.federation;
@@ -2500,10 +2529,8 @@ $(document).ready(function () {
                         target.html(tbl);
                     }
                     else if (data.type === 'entcat') {
-                        var nrcols = 0;
-                        labelclass = '';
+                        nrcols = 0;
                         var entpolicy;
-                        var idf;
                         var unsupwttr;
                         var ecmemberurl = data.definitions.ecmembers;
 
@@ -2553,7 +2580,7 @@ $(document).ready(function () {
                         addentcatbtn.show().prependTo(target.html(tbl));
                     }
                     else if (data.type === 'sp') {
-                        var nrcols = 1;
+                        nrcols = 1;
                         tbl = '<div class="small-12 column"><table class="table"><thead><tr>';
                         $.each(data.definitions.columns, function (i, v) {
                             nrcols = nrcols + 1;
@@ -2642,35 +2669,37 @@ $(document).ready(function () {
                                             '<i class="fa fa-pencil"></i></a></td></tr>';
                                     });
                                     for (var vkey in spReqAttr) {
-                                        customattrpol = '';
-                                        if (v.custom !== undefined && v.custom[vkey] !== undefined) {
-
-                                            if (v.custom[vkey].deny !== undefined) {
-                                                customattrpol += '<span class="label alert">denied values:  ';
-                                                $.each(v.custom[vkey].deny, function (ip, iv) {
-                                                    customattrpol += iv + ', ';
-                                                });
-                                                customattrpol += '</span>';
-                                            }
-                                            else {
-                                                customattrpol += '<span class="label success">permited values: ';
-                                                $.each(v.custom[vkey].permit, function (ip, iv) {
-                                                    customattrpol += iv + ', ';
-                                                });
-                                                customattrpol += '</span>';
-                                            }
-                                        }
-                                        supportedStatus = '';
-                                        idf = support.indexOf(parseInt(vkey));
-                                        if (idf === -1) {
-                                            supportedStatus = unsupportedLbl;
-                                        }
-                                        attrName = data.data.definitions.attrs[vkey];
                                         if (spReqAttr.hasOwnProperty(vkey)) {
-                                            tbl += '<tr><td>' + attrName + '</td>' +
-                                                '<td><span class="label ' + policyLabels['100'] + '">' + data.definitions.policy['100'] + '</span>  ' + supportedStatus + ' ' + customattrpol + '</td>' +
-                                                '<td>' + data.definitions.req[spReqAttr[vkey]] + '</td>' +
-                                                '<td><a href="#" class="modalconfirm" data-jagger-attrpolicy="100" data-jagger-entityid="' + data.definitions.sps[i].entityid + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fa fa-pencil"></i></i></td></tr>';
+                                            customattrpol = '';
+                                            if (v.custom !== undefined && v.custom[vkey] !== undefined) {
+
+                                                if (v.custom[vkey].deny !== undefined) {
+                                                    customattrpol += '<span class="label alert">denied values:  ';
+                                                    $.each(v.custom[vkey].deny, function (ip, iv) {
+                                                        customattrpol += iv + ', ';
+                                                    });
+                                                    customattrpol += '</span>';
+                                                }
+                                                else {
+                                                    customattrpol += '<span class="label success">permited values: ';
+                                                    $.each(v.custom[vkey].permit, function (ip, iv) {
+                                                        customattrpol += iv + ', ';
+                                                    });
+                                                    customattrpol += '</span>';
+                                                }
+                                            }
+                                            supportedStatus = '';
+                                            idf = support.indexOf(parseInt(vkey));
+                                            if (idf === -1) {
+                                                supportedStatus = unsupportedLbl;
+                                            }
+                                            attrName = data.data.definitions.attrs[vkey];
+                                            if (spReqAttr.hasOwnProperty(vkey)) {
+                                                tbl += '<tr><td>' + attrName + '</td>' +
+                                                    '<td><span class="label ' + policyLabels['100'] + '">' + data.definitions.policy['100'] + '</span>  ' + supportedStatus + ' ' + customattrpol + '</td>' +
+                                                    '<td>' + data.definitions.req[spReqAttr[vkey]] + '</td>' +
+                                                    '<td><a href="#" class="modalconfirm" data-jagger-attrpolicy="100" data-jagger-entityid="' + data.definitions.sps[i].entityid + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fa fa-pencil"></i></i></td></tr>';
+                                            }
                                         }
                                     }
 
@@ -3117,7 +3146,7 @@ $(document).ready(function () {
 
         var formupdaterUrl = formupdater.attr('data-jagger-link');
         var formupdaterAction = formupdater.find('form').first();
-        var providerdetailurl = matrixloader.attr('data-jagger-providerdetails');
+        providerdetailurl = matrixloader.attr('data-jagger-providerdetails');
         var mrequester = formupdater.find("span.mrequester").first();
         var mattribute = formupdater.find("span.mattribute").first();
         var updatebutton = formupdater.find("div.yes").first();
@@ -3312,60 +3341,6 @@ $(document).ready(function () {
         });
     }
 
-    if ($('#fedarptab').length > 0) {
-        var fedarptable = $('#fedarptab').find('table').first();
-        var fedmodal = $('#fedpolicyupdater');
-        var fedmodalForm = $('#fedpolicyupdater').find("form").first();
-        var fedmodalAttrId = fedmodal.find("input[name='attribute']").first();
-        var fedmodalFedId = fedmodal.find("input[name='fedid']").first();
-        var fedmodalDropdown = fedmodal.find("select[name='policy']").first();
-        var fedlink1 = fedmodal.attr("data-jagger-link");
-        var fedattrnameval = fedmodal.find("span.dynamicval").first();
-        var dynstate;
-        fedarptable.on('click', 'a', function (e) {
-            e.preventDefault();
-            var tablerow = $(this).closest('tr');
-            dynstate = tablerow.find('span.dynstate').first();
-            var fedattrid = $(this).attr('data-jagger-attrid');
-            var fedattrname = $(this).attr('data-jagger-attrname');
-            var fedid = $(this).attr('data-jagger-fedid');
-            fedmodalAttrId.val(fedattrid);
-            fedmodalFedId.val(fedid);
-            $.ajax({
-                type: "GET",
-                url: fedlink1 + '/' + fedid + '/' + fedattrid,
-                cache: false,
-                dataType: 'json',
-                success: function (data) {
-                    fedmodalDropdown.find("option:selected").prop("selected", false);
-                    fedmodalDropdown.find("option[value=" + data.policy + "]").prop("selected", true);
-                    fedattrnameval.html(fedattrname);
-                    fedmodal.foundation('open');
-
-                },
-                error: function () {
-                    alert('error');
-                }
-            });
-
-
-        });
-        fedmodal.on('click', '.yes', function (e) {
-            e.preventDefault();
-            var posturl = fedmodalForm.attr('action');
-            var serializedData = fedmodalForm.serializeArray();
-            $.ajax({
-                type: "POST",
-                url: posturl,
-                data: serializedData,
-                dataType: "json",
-                success: function (data) {
-                    modal.foundation('close');
-                    dynstate.html(data.policystr);
-                }
-            });
-        });
-    }
 ///////////////////
 
 
@@ -3593,8 +3568,7 @@ $(function () {
             });
         };
         setTimeout(refresherFn, 1000);
-        var refreshInterval = setInterval(refresherFn, 30000);
-        refreshInterval;
+        setInterval(refresherFn, 30000);
     }
 
 
@@ -3604,15 +3578,16 @@ $(function () {
     }, 172000);
 
 
-    $('#languageset').on('change', 'select', function (e) {
-        var link = $("div#languageset form").attr('action');
+    var languageset = $('#languageset');
+    languageset.on('change', 'select', function (e) {
+        var link = languageset.find('form').first().attr('action');
         var url = link + this.value;
         $.ajax({
             url: url,
             timeout: 2500,
             cache: false
         }).done(function () {
-            $('#languageset').foundation('close');
+            languageset.foundation('close');
 
             setTimeout(function () {
                 go_to_private_page();
@@ -5182,7 +5157,7 @@ function genAttrUsage(jsondata, returnType) {
     b.push('</a>');
     b.push('<div class="accordion-content" data-tab-content>');
     b.push(fedsList.join(''));
-    b.push(spsList.join(''))
+    b.push(spsList.join(''));
     b.push('</div></li>');
     b.push('</ul>');
     b.push('</div>');
@@ -5190,6 +5165,109 @@ function genAttrUsage(jsondata, returnType) {
     return b.join('');
 
 }
+
+
+var genModalForm = function (params, size) {
+    var method = 'POST';
+    var submittext = 'submit';
+    var canceltext = 'cancel';
+    if (params.method) {
+        method = params.method;
+    }
+    if (params.submittext) {
+        submittext = params.submittext;
+    }
+    if (params.canceltext) {
+        canceltext = params.canceltext;
+    }
+    var el = [];
+    el.push('<div class="reveal '+size+'" data-reveal>');
+    el.push('<div class="small-12 column response alert-box alert hidden" alert-data></div>');
+    el.push('<form method="' + method + '" action="' + Jagger.base_url + params.actionuri + '" class="'+params.formclass+'">');
+    el.push('<input type="hidden" name="' + Jagger.csrfname + '" value="' + Jagger.csrfhash + '">');
+    if(params.confirmationtext){
+        el.push('<div class="small-12 column"><h5>'+params.confirmationtext+'</h5></div>');
+    }
+    if(params.forminputs){
+        var item;
+        var formInputsLength = params.forminputs.length;
+        for(var i = 0 ; i < formInputsLength ; i++){
+            item = params.forminputs[i];
+            console.log(item);
+            if(item.element === 'input'){
+                if(item.type === 'hidden'){
+                    el.push('<input type="hidden" name="' + item.name + '" value="' + item.value + '">');
+                }
+            }
+        }
+    }
+    el.push('<div class="small-12 column text-right"><div class="button-group"><a data-close class="button alert cancel">' + Jagger.getLangLine(canceltext) + '</a><button type="submit" class="button submit">' + Jagger.getLangLine(submittext) + '</button></div></div>');
+    el.push('</form>');
+    el.push('</div>');
+    return $('' + el.join('') + '').foundation();
+};
+
+$(document).on('submit','.delattrform', function(){
+    var mythis = $(this);
+    var myform = mythis.closest('form');
+    var attrid = myform.find("[name='attrid']").val()
+    var mymodal = mythis.closest('div.reveal');
+    var response = mymodal.find('.response').first();
+    $.ajax({
+        url: myform.attr('action'),
+        method: myform.attr('method'),
+        data: myform.serialize(),
+        fataType: "json",
+        beforeSend: function(){
+            response.empty().hide();
+        },
+        success: function(e){
+            var mycell = $("[data-jagger-attrid='"+attrid+"']");
+            if(mycell !== 'undefined'){
+                mycell.closest('tr').remove();
+            }
+            mymodal.foundation('close');
+        },
+        error: function(xhr, status, error){
+            console.log(xhr);
+            response.html(xhr.responseText).show();
+        }
+    });
+    return false;
+});
+
+$(".delattribute").click(function (e) {
+    var thisElement = $(this);
+    var attrid = thisElement.attr('data-jagger-attrid');
+    var attrname = thisElement.attr('data-jagger-attrname');
+
+    var params = {
+        method: "POST",
+        formclass: "delattrform",
+        actionuri: "attributes/attributes/remove",
+        confirmationtext: "Are you sure you want to remove attribute:  "+attrname+"?",
+        submittext: "remove",
+        canceltext: "cancel",
+        forminputs: [
+            {
+                name: "attrid",
+                value: attrid,
+                element: "input",
+                type: "hidden"
+            },
+            {
+                name: "attrname",
+                value: attrname,
+                element: "input",
+                type: "hidden"
+            }
+        ]
+    };
+    //   Jagger.confirmFormModal(Jagger.helperModal);
+    Jagger.confirmFormModal(genModalForm(params,'tiny'));
+});
+
+
 $(".attrinfo").click(function (e) {
     var thisElement = $(this);
     var thisI = thisElement.find('i').first();

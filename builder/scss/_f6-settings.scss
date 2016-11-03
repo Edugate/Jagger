@@ -48,28 +48,22 @@ $global-font-size: 95%;
 $global-width: rem-calc(1400);
 $global-lineheight: 1.5;
 
-@if not variable_exists(foundation-palette) {
-  $foundation-palette: (
+$foundation-palette: (
           primary: #178acc,
           secondary: #777,
           success: #59822c,
           warning: lighten(#aa4200, 10%),
           alert: #9a161a,
           info: #022241,
-  );
-}
+  ) !default;
 
 $light-gray: #e6e6e6;
 $medium-gray: #cacaca;
 $dark-gray: #8a8a8a;
 $black: #0a0a0a;
 $white: #fefefe;
-@if not variable_exists(body-background){
-  $body-background: lighten(#F6F7F7,10%);
-}
-@if not variable_exists(body-font-color){
-  $body-font-color: $black;
-}
+$body-background: lighten(#F6F7F7,10%) !default;
+$body-font-color: $black !default;
 $body-font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;
 $body-antialiased: true;
 $global-margin: 1rem;
@@ -518,31 +512,19 @@ $show-header-for-stacked: false;
 // --------
 
 $tab-margin: 0;
-@if not variable_exists(tab-background) {
-  $tab-background: #258CFD;
-}
+$tab-background: #258CFD !default;
 //$tab-background: $white;
-@if not variable_exists(tab-item-color) {
-  $tab-item-color: foreground($tab-background);
-}
+$tab-item-color: foreground($tab-background) !default;
 
-@if not variable_exists(tab-background-active) {
-  $tab-background-active: lighten($black, 20%);
+$tab-background-active: lighten($black, 20%) !default;
 
-}
 $tab-background-active: red;
-@if not variable_exists(tab-background-second-level) {
-  $tab-background-second-level: lighten($black, 10%);
-}
+$tab-background-second-level: lighten($black, 10%) !default;
 
 
-@if not variable_exists(tab-item-color-hover) {
-  $tab-item-color-hover: foreground($tab-background, $white);
-}
+$tab-item-color-hover: foreground($tab-background, $white) !default;
 $tab-item-font-size: rem-calc(12);
-@if not variable_exists(tab-item-background-hover) {
-  $tab-item-background-hover: $white;
-}
+$tab-item-background-hover: $white !default;
 $tab-item-padding: 1.25rem 1.5rem;
 $tab-expand-max: 6;
 $tab-content-background: $white;
@@ -590,12 +572,8 @@ $tooltip-radius: $global-radius;
 $topbar-padding: 0.5rem;
 // janusz
 //$topbar-background: $light-gray;
-@if not variable_exists(topbar-background){
-  $topbar-background: #014289;
-}
-@if not variable_exists(topbar-submenu-background) {
-  $topbar-submenu-background: $topbar-background;
-}
+$topbar-background: #014289 !default;
+$topbar-submenu-background: $topbar-background !default;
 $topbar-title-spacing: 1rem;
 $topbar-input-width: 200px;
 $topbar-unstack-breakpoint: medium;

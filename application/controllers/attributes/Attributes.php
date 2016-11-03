@@ -7,7 +7,7 @@ if (!defined('BASEPATH')) {
  * @package   Jagger
  * @author    Middleware Team HEAnet
  * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @copyright 2016 HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
 class Attributes extends MY_Controller
@@ -27,6 +27,71 @@ class Attributes extends MY_Controller
         $this->form_validation->set_rules('description', lang('rr_description'), 'trim|required|min_length[3]|max_length[128]|xss_clean');
 
         return $this->form_validation->run();
+    }
+
+    private function deleteSubmitValidate(){
+        $this->form_validation->set_rules('attrname', lang('attrname'), 'trim|required|min_length[1]|max_length[128]|xss_clean|no_white_spaces');
+        $this->form_validation->set_rules('attrid', 'attrid', 'trim|required|numeric');
+        return $this->form_validation->run();
+    }
+
+    public function remove() {
+        if (!$this->jauth->isLoggedIn() || !$this->jauth->isAdministrator()) {
+            return $this->output->set_status_header(401)->set_output('Access denied');
+        }
+
+        if($this->deleteSubmitValidate() !== true){
+            return $this->output->set_status_header(401)->set_output(validation_errors());
+        }
+
+        /**
+         * @var models\Attribute $attribute
+         */
+        try {
+            $attribute = $this->em->getRepository('models\Attribute')->findOneBy(array(
+                'id' => $this->input->post('attrid'),
+                'name' => $this->input->post('attrname')
+            ));
+        }catch (Exception $e){
+            log_message('error',__METHOD__.' '.$e);
+            return $this->output->set_status_header(500)->set_output('Internal server error');
+        }
+        if(null === $attribute){
+            return $this->output->set_status_header(404)->set_output('Could not found attribute');
+        }
+
+        /**
+         * @var models\AttributeRequirement[] $attributeReq
+         * @var models\AttributeReleasePolicy[] $attributePol
+         */
+
+        $attributeReq = $this->em->getRepository('models\AttributeRequirement')->findBy(array('attribute_id'=>$attribute));
+        $attributePol = $this->em->getRepository('models\AttributeReleasePolicy')->findBy(array('attribute'=>$attribute));
+        foreach ($attributeReq as $item){
+            $this->em->remove($item);
+        }
+        foreach ($attributePol as $item){
+            $this->em->remove($item);
+        }
+        $this->em->remove($attribute);
+
+        $body = 'Dear user,'.PHP_EOL;
+        $body .=''.$this->jauth->getLoggedinUsername().' just removed attribute: '.$attribute->getName().' from the system'.PHP_EOL;
+        $body .= 'SRC IP: '.$this->input->ip_address().PHP_EOL;
+        $this->emailsender->addToMailQueue(array(), null, 'Attribute removed from the system', $body, array(), false);
+        try {
+            $this->em->flush();
+        }catch (Exception $e){
+            log_message('error',__METHOD__.' '.$e);
+            return $this->output->set_status_header(500)->set_output('Internal server error');
+        }
+
+
+        $result = array(
+            'status'  => 200,
+            'message' => 'success'
+        );
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
     public function add() {
@@ -100,12 +165,16 @@ class Attributes extends MY_Controller
             if ($i === false) {
                 $notice = '<br />' . $excluded;
             }
-            $dataRows[] = array(showBubbleHelp($a->getDescription()) . ' ' . $a->getName() . $notice, $a->getFullname(), $a->getOid(), $a->getUrn(), '<a class="attrinfo" data-jagger-attrid="' . $a->getId() . '"><i class="fa fa-expand"></i></a>');
+            $y = '';
+            if ($this->jauth->isAdministrator()) {
+                $y = '<a class="delattribute alert"  data-jagger-attrname="' . $a->getName() . '" data-jagger-attrid="' . $a->getId() . '"><i class="fa fa-trash alert"></i></a>';
+            }
+            $dataRows[] = array(showBubbleHelp($a->getDescription()) . ' ' . $a->getName() . $notice, $a->getFullname(), $a->getOid(), $a->getUrn(), '<a class="attrinfo" data-jagger-attrid="' . $a->getId() . '"><i class="fa fa-expand"></i></a>' . ' ' . $y . '');
         }
         $data['isadmin'] = $this->jauth->isAdministrator();
         $data['breadcrumbs'] = array(
             array(
-                'url' => '#',
+                'url'  => '#',
                 'name' => lang('attrsdeflist'),
                 'type' => 'current')
         );
@@ -140,8 +209,8 @@ class Attributes extends MY_Controller
         }
 
         $result['status'] = 'success';
-        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
 }
