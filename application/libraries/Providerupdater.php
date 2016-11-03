@@ -75,7 +75,7 @@ class Providerupdater
 
     private function cleanIncorrectServices(\models\Provider $ent) {
         $entityType = strtolower($ent->getType());
-        if (strcmp($entityType, 'both') == 0) {
+        if ($entityType === 'both') {
             return true;
         }
         /**
@@ -85,7 +85,7 @@ class Providerupdater
         $services = $ent->getServiceLocations();
         foreach ($services as $srv) {
             $srvType = $srv->getType();
-            if (!in_array($srvType, $typesToCheck)) {
+            if (!in_array($srvType, $typesToCheck, true)) {
                 log_message('error', __METHOD__ . ' ' . $ent->getEntityId() . ' found incorrect ServiceLocation type: "' . $srvType . '"" ... removing');
                 $ent->removeServiceLocation($srv);
                 $this->em->remove($srv);
@@ -104,12 +104,12 @@ class Providerupdater
         $inputKeys = array_keys($srvInput);
         foreach ($entityTypes as $k => $v) {
             if ($v === true) {
-                $allowed = $allowed + $this->srvTypes[$k];
+                $allowed  += $this->srvTypes[$k];
             }
 
         }
         foreach ($inputKeys as $in) {
-            if (!in_array($in, $allowed)) {
+            if (!in_array($in, $allowed, true)) {
                 unset($srvInput['' . $in . '']);
                 log_message('debug', __METHOD__ . ' unsetting: ' . $in . ' from form input');
             }
@@ -238,7 +238,7 @@ class Providerupdater
 
             if (in_array($srvType, array('IDPArtifactResolutionService', 'SPArtifactResolutionService', 'DiscoveryResponse'), true)) {
                 if (in_array($inputBind, $validationBinds['' . $srvType . ''])) {
-                    if (in_array($inputOrder, $servicesIndexes['' . $srvType . '']) || is_null($inputOrder)) {
+                    if (in_array($inputOrder, $servicesIndexes['' . $srvType . '']) || null === $inputOrder) {
                         $inputOrder = $c++;
                     }
                     $srv->setUrl($inputUrl);
@@ -263,7 +263,7 @@ class Providerupdater
                         continue;
                     }
                     $srv->setUrl($inputUrl);
-                    $srv->setBindingName($inputBind);;
+                    $srv->setBindingName($inputBind);
                     $this->em->persist($srv);
                     $validationBinds['' . $srvType . '']['' . $inputBind . ''] = true;
                     unset($cData['srv']['' . $srvType . '']['' . $srv->getId() . '']);
@@ -277,7 +277,7 @@ class Providerupdater
             if ($srvType === 'AssertionConsumerService') {
 
                 if (in_array($inputBind, $validationBinds['' . $srvType . ''])) {
-                    if (in_array($inputOrder, $servicesIndexes['' . $srvType . '']) || is_null($inputOrder)) {
+                    if (in_array($inputOrder, $servicesIndexes['' . $srvType . '']) || $inputOrder === null) {
                         $inputOrder = $c++;
                     }
                     $srv->setUrl($inputUrl);
@@ -316,7 +316,7 @@ class Providerupdater
                 }
             } elseif (in_array($srvType, array('IDPArtifactResolutionService', 'SPArtifactResolutionService', 'DiscoveryResponse'), true)) {
                 foreach ($v as $k1 => $v1) {
-                    if (!empty($v1['bind']) && !empty($v1['url']) && in_array($v1['bind'], $validationBinds['' . $srvType . ''])) {
+                    if (!empty($v1['bind']) && !empty($v1['url']) && in_array($v1['bind'], $validationBinds['' . $srvType . ''], true)) {
                         $newservice = new models\ServiceLocation();
                         if (array_key_exists('order', $v1) && is_numeric($v1['order']) && !in_array($v1['order'], $servicesIndexes['' . $srvType . ''])) {
                             $newservice->setOrder($v1['order']);
@@ -449,8 +449,7 @@ class Providerupdater
             unset($cData['crt']['spsso']);
         }
         if ($this->entityTypes['idp'] !== true) {
-            unset($cData['crt']['idpsso']);
-            unset($cData['crt']['aa']);
+            unset($cData['crt']['idpsso'],$cData['crt']['aa']);
         }
         foreach ($cData['crt'] as $k1 => $v1) {
             if (!in_array($k1, array('spsso', 'idpsso', 'aa'))) {
@@ -673,6 +672,9 @@ class Providerupdater
         $extendsCollection = $ent->getExtendMetadata()->filter(function (models\ExtendMetadata $entry) use ($doFilter) {
             return in_array($entry->getElement(), $doFilter['elements']) && $entry->getNamespace() === $doFilter['namespace'];
         });
+        /**
+         * @var models\ExtendMetadata[][] $extendsInArray
+         */
         $extendsInArray = array();
         foreach ($extendsCollection as $e) {
             $extendsInArray['' . $e->getElement() . ''][] = $e;
@@ -852,7 +854,7 @@ class Providerupdater
                             $attrs['xml:lang'] = $ve['lang'];
                         }
                         $size = explode('x', $ve['size']);
-                        if (count($size) == 2) {
+                        if (count($size) === 2) {
                             foreach ($size as $sv) {
                                 if (!is_numeric($sv)) {
                                     $canAdd = false;
@@ -1054,7 +1056,7 @@ class Providerupdater
             /**
              * set scopes
              */
-            if (array_key_exists('scopes', $ch) && !in_array('scope', $dissalowedparts)) {
+            if (array_key_exists('scopes', $ch) && !in_array('scope', $dissalowedparts, true)) {
                 $newScopesByType = array('idpsso'=>array(), 'aa'=>array());
                 foreach (array('idpsso','aa') as $scopeType) {
                     if (array_key_exists($scopeType, $ch['scopes']) && !empty($ch['scopes'][$scopeType])) {
@@ -1092,7 +1094,7 @@ class Providerupdater
         }
         if (array_key_exists('entityid', $ch) && !empty($ch['entityid'])) {
             if (!empty($entid)) {
-                if (strcmp($ent->getEntityId(), $ch['entityid']) != 0 && !in_array('entityid', $dissalowedparts)) {
+                if (strcmp($ent->getEntityId(), $ch['entityid']) != 0 && !in_array('entityid', $dissalowedparts, true)) {
                     $changeList['EntityID'] = array('before' => $ent->getEntityId(), 'after' => $ch['entityid']);
                     $this->ci->tracker->renameProviderResourcename($ent->getEntityId(), $ch['entityid']);
                     $ent->setEntityId(trim($ch['entityid']));
@@ -1112,7 +1114,7 @@ class Providerupdater
             $trackorigs = array();
             if (array_key_exists($fieldName, $ch) && is_array($ch[$fieldName])) {
                 foreach ($ch[$fieldName] as $key => $value) {
-                    if (!in_array($key, $this->allowedLangCodes)) {
+                    if (!in_array($key, $this->allowedLangCodes, true)) {
                         unset($ch[$fieldName]['' . $key . '']);
                         log_message('warning', __METHOD__ . ' lang code ' . $key . ' (' . $fieldsLongName[$fieldName] . ') not found in allowed langs');
                     }

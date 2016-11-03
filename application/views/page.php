@@ -294,7 +294,7 @@ if ($breadcrumbsEnabled === true) {
 </div>
 
 <?php
-echo '<script type="text/javascript" src="' . $base_url . 'js/f6-thirdpartylibs.min.09a4574f.js"></script>' . PHP_EOL;
+echo '<script type="text/javascript" src="' . $base_url . 'js/f6-thirdpartylibs.min.7b701bed.js"></script>' . PHP_EOL;
 
 if (!empty($load_matrix_js)) {
     echo '<script type="text/javascript">';
@@ -327,12 +327,17 @@ if (!$loggedin) {
     var Jagger = {
         base_url : '<?php echo $base_url;?>',
         csrfname : '<?php echo $this->security->get_csrf_token_name();?>',
-        csrfhash: '<?php echo $this->security->get_csrf_hash();?>'
+        csrfhash: '<?php echo $this->security->get_csrf_hash();?>',
+        lang: '<?php echo MY_Controller::getLang(); ?>',
+        dictionary: {}
     }
 </script>
+<div id="malert" data-reveal class="reveal small"></div>
+<div id="helpermodal" data-reveal class="reveal small"></div>
 <?php
 // load local final js
-echo '<script type="text/javascript" src="' . $base_url . 'js/local-f6.min.2b387b5d.js"></script>' . PHP_EOL;
+
+echo '<script type="text/javascript" src="' . $base_url . 'js/local-f6.min.34e69fa3.js"></script>' . PHP_EOL;
 
 // raw js from array
 if (!empty($rawJs) && is_array($rawJs)) {
@@ -348,7 +353,7 @@ if (!empty($rawJs) && is_array($rawJs)) {
 ?>
 
 
-<div id="malert" data-reveal class="reveal small"></div>
+
 
 <script>
     $(document).foundation();

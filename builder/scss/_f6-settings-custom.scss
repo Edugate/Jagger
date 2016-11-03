@@ -4,9 +4,7 @@ $topbar-input-width: 200px;
 $topbar-unstack-breakpoint: medium;
 $topbar-link-color: foreground($topbar-background);
 
-@if not variable_exists(footer-background) {
-  $footer-background: #014289;
-}
+$footer-background: #014289 !default;
 $footer-text: foreground($footer-background);
 
 $jagger-selected-bgcolor: #074e68;
@@ -14,27 +12,27 @@ $jagger-selected-color: #fff;
 
 @if variable-exists(j-side-icon-bg) {
   $final-side-icon-bg: $j-side-icon-bg;
-} @else {
-  $final-side-icon-bg-final: $primary-color;
-}
+} 
+
+$final-side-icon-bg-final: $primary-color !default;
 
 @if variable-exists(j-side-icon-font-color) {
   $final-side-icon-font-color: $j-side-icon-font-color;
-} @else {
-  $final-side-icon-font-color: $white;
-}
+} 
+  $final-side-icon-font-color: $white !default;
 
 @if variable-exists(jagger-selected-bgcolor) {
   $final-jagger-selected-bgcolor: $jagger-selected-bgcolor;
-} @else {
-  $final-jagger-selected-bgcolor: #5897fb;
-}
+} 
+
+$final-jagger-selected-bgcolor: #5897fb !default;
+
 
 @if variable-exists(jagger-selected-color) {
   $final-jagger-selected-color: $jagger-selected-color;
-} @else {
-  $final-jagger-selected-color: #fff;
-}
+} 
+  $final-jagger-selected-color: #fff !default;
+
 
 $facebook-color: #3b5998;
 $twitter-color: #55acee;
