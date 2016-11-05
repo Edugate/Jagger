@@ -809,6 +809,20 @@ class Formelement
 
             $result[] = '<div class="section">IDPSSODescriptor</div>';
 
+
+
+
+            $wantAuthnReqSigned = $ent->getWantAuthnRequestSigned();
+            if ($sessform) {
+                $wantAuthnReqSigned = false;
+                if (isset($ses['wantauthnreqsigned']) && $ses['wantauthnreqsigned'] === 'yes') {
+                    $wantAuthnReqSigned = true;
+                }
+            }
+            $result[] = '';
+            $result[] = '<div class="medium-3 columns medium-text-right"><label>WantAuthnRequestsSigned</label></div><div class="medium-7 columns end" >' . form_checkbox(array('name' => 'f[wantauthnreqsigned]', 'id' => 'f[wantauthnreqsigned]', 'value' => 'yes', 'checked' => $wantAuthnReqSigned)) . ' </div>';
+            $result[] = '';
+
             /**
              * generate SSO part
              */
@@ -1284,6 +1298,19 @@ class Formelement
             $result[] = '';
             $result[] = '<div class="medium-3 columns medium-text-right"><label>WantAssertionsSigned</label></div><div class="medium-7 columns end" >' . form_checkbox(array('name' => 'f[wantassertionssigned]', 'id' => 'f[wantassertionssigned]', 'value' => 'yes', 'checked' => $wantAssert)) . ' </div>';
             $result[] = '';
+
+
+            $authnReqSigned = $ent->getAuthnRequestSigned();
+            if ($sessform) {
+                $authnReqSigned = false;
+                if (isset($ses['authnreqsigned']) && $ses['authnreqsigned'] === 'yes') {
+                    $authnReqSigned = true;
+                }
+            }
+            $result[] = '';
+            $result[] = '<div class="medium-3 columns medium-text-right"><label>AuthnRequestsSigned</label></div><div class="medium-7 columns end" >' . form_checkbox(array('name' => 'f[authnreqsigned]', 'id' => 'f[authnreqsigned]', 'value' => 'yes', 'checked' => $authnReqSigned)) . ' </div>';
+            $result[] = '';
+
 
             /**
              * generate ACS part

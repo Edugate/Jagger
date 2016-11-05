@@ -102,7 +102,7 @@ class Providertoxml
 
     private function getRegistrar(\models\Provider $ent) {
         $registrar = $ent->getRegistrationAuthority();
-        if (empty($registrar) && $ent->getLocal() && $this->useGlobalRegistrar) {
+        if ($this->useGlobalRegistrar && empty($registrar) && $ent->getLocal()) {
             $registrar = $this->globalRegistrar;
         }
         return $registrar;
@@ -142,7 +142,7 @@ class Providertoxml
             }
         );
         $algsCount = $algMethods->count();
-        if (empty($registrar) && count($cocsByGroups['entcat']) == 0 && $algsCount == 0) {
+        if ($algsCount == 0 && empty($registrar) && count($cocsByGroups['entcat']) == 0 ) {
             return $xml;
         }
 
@@ -347,7 +347,7 @@ class Providertoxml
             $xml->writeAttribute('Location', $srv->getUrl());
             if ($this->srvMap['' . $srvType . '']['isorder']) {
                 $discorder = $srv->getOrder();
-                if (is_null($discorder) || in_array($discorder, $discrespindex)) {
+                if (null === $discorder || in_array($discorder, $discrespindex)) {
                     $discorder = max($discrespindex) + 20;
                     $discrespindex[] = $discorder;
                 } else {
@@ -414,12 +414,14 @@ class Providertoxml
          */
         $reqColl = $ent->getAttributesRequirement()->filter(
             function (models\AttributeRequirement $entry) {
-                return in_array($entry->getAttribute()->showInMetadata(), array(true));
+                return true === $entry->getAttribute()->showInMetadata();
+                //return in_array($entry->getAttribute()->showInMetadata(), array(true));
             }
         );
         $reqCollHidden = $ent->getAttributesRequirement()->filter(
             function (models\AttributeRequirement $entry) {
-                return in_array($entry->getAttribute()->showInMetadata(), array(false));
+                return false === $entry->getAttribute()->showInMetadata();
+                //return in_array($entry->getAttribute()->showInMetadata(), array(false));
             }
         );
         $finalReqAttrs = &$reqColl;
@@ -521,6 +523,11 @@ class Providertoxml
         $xml->startElementNs('md', 'IDPSSODescriptor', null);
         $xml->writeAttribute('protocolSupportEnumeration', $protocolEnum);
 
+        $wantAuthnReqSigned = $ent->getWantAuthnRequestSigned();
+        if($wantAuthnReqSigned === true){
+            $xml->writeAttribute('WantAuthnRequestsSigned', 'true');
+        }
+
         $extXML = new XMLWriter();
         $extXML->openMemory();
         $extXML->setIndent(true);
@@ -621,6 +628,7 @@ class Providertoxml
      */
     private function createSPSSODescriptor(\XMLWriter $xml, \models\Provider $ent, $options) {
         $wantAssertionSigned = $ent->getWantAssertionSigned();
+        $authnRequestSigned = $ent->getAuthnRequestSigned();
         $protocol = $ent->getProtocolSupport('spsso');
         $protocolEnum = implode(" ", $protocol);
         if (empty($protocolEnum)) {
@@ -653,6 +661,9 @@ class Providertoxml
         $xml->startElementNs('md', 'SPSSODescriptor', null);
         if ($wantAssertionSigned === true) {
             $xml->writeAttribute('WantAssertionsSigned', 'true');
+        }
+        if($authnRequestSigned === true){
+            $xml->writeAttribute('AuthnRequestsSigned', 'true');
         }
         $xml->writeAttribute('protocolSupportEnumeration', $protocolEnum);
 

@@ -100,6 +100,18 @@ class Provider
     protected $wantassertsigned;
 
     /**
+     * used for WantAuthnRequestsSigned in IDPSSODescriptor
+     * @Column(type="boolean", nullable=true)
+     */
+    protected $wantauthnreqsigned;
+
+    /**
+     * used for AuthnRequestsSigned in SPSSODescriptor
+     * @Column(type="boolean", nullable=true)
+     */
+    protected $authnreqsigned;
+
+    /**
      * @Column(type="text", nullable=true)
      */
     protected $scope;
@@ -494,16 +506,41 @@ class Provider
     }
 
 
-    public function setWantAssertionSigned($b) {
-        if ($b === true) {
-            $this->wantassertsigned = true;
-        } else {
-            $this->wantassertsigned = false;
+    /**
+     * @param null|boolean $b
+     * @return $this
+     */
+    public function setWantAssertionSigned($b = null) {
+        if ($b === true || $b === false || $b === null) {
+            $this->wantassertsigned = $b;
         }
 
         return $this;
     }
 
+    /**
+     * @param null|boolean $b
+     * @return $this
+     */
+    public function setWantAuthnRequestSigned($b = null) {
+        if ($b === true || $b === false || $b === null) {
+            $this->wantauthnreqsigned = $b;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param null|boolean $b
+     * @return $this
+     */
+    public function setAuthnRequestSigned($b = null) {
+        if ($b === true || $b === false || $b === null) {
+            $this->authnreqsigned = $b;
+        }
+
+        return $this;
+    }
 
     /**
      * type : idpsso, aa
@@ -577,11 +614,14 @@ class Provider
         return $this;
     }
 
+
     /**
-     * obsolete
+     * @deprecated
+     * @param null $nameid
+     * @return $this
      */
     public function setNameId($nameid = null) {
-        if (empty($nameid)) {
+        if (trim($nameid) === '') {
             $nameid = 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient';
         }
         if (empty($this->nameidformat)) {
@@ -711,8 +751,12 @@ class Provider
         return $this;
     }
 
+    /**
+     * @param null|array $urls
+     * @return $this
+     */
     public function setLocalHelpdeskUrl($urls = null) {
-        if (!empty($urls) && is_array($urls)) {
+        if (is_array($urls)) {
             foreach ($urls as $k => $v) {
                 if (empty($v)) {
                     unset($urls['' . $k . '']);
@@ -830,7 +874,7 @@ class Provider
         foreach ($descriptions as $k => $v) {
             $nelement = new ExtendMetadata();
             $nelement->setType($type);
-            $nelement->setNameSpace('mdui');
+            $nelement->setNamespace('mdui');
             $nelement->setElement($elementName);
             $nelement->setValue($v);
             $attr = array('xml:lang' => $k);
@@ -838,7 +882,7 @@ class Provider
             if ($parent === null) {
                 $parent = new ExtendMetadata();
                 $parent->setType($type);
-                $parent->setNameSpace('mdui');
+                $parent->setNamespace('mdui');
                 $parent->setElement('UIInfo');
                 $ex->add($parent);
                 $parent->setProvider($this);
@@ -981,6 +1025,10 @@ class Provider
         return $this;
     }
 
+    /**
+     * @param ServiceLocation $service
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
     public function setServiceLocation(ServiceLocation $service) {
         $this->getServiceLocations()->add($service);
         $service->setProvider($this);
@@ -1123,6 +1171,8 @@ class Provider
         }
         $this->setType($provider->getType());
         $this->setWantAssertionSigned($provider->getWantAssertionSigned());
+        $this->setAuthnRequestSigned($provider->getAuthnRequestSigned());
+        $this->setWantAuthnRequestSigned($provider->getWantAuthnRequestSigned());
         $this->setHelpdeskUrl($provider->getHelpdeskUrl());
         $this->setValidFrom($provider->getValidFrom());
         $this->setValidTo($provider->getValidTo());
@@ -1366,6 +1416,14 @@ class Provider
         return (bool)$this->wantassertsigned;
     }
 
+    public function getWantAuthnRequestSigned() {
+        return $this->wantauthnreqsigned;
+    }
+
+    public function getAuthnRequestSigned() {
+        return $this->authnreqsigned;
+    }
+
     /**
      * get collection of contacts which are used in metada
      */
@@ -1530,15 +1588,20 @@ class Provider
                 $z = array('idpsso' => $y, 'aa' => $y);
                 $this->scope = (serialize($z));
 
-                return $this;
             }
         }
+
+        return $this;
+
     }
 
     public function getAttributeReleasePolicies() {
         return $this->attributeReleaseIDP;
     }
 
+    /**
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
     public function getServiceLocations() {
         return $this->serviceLocations;
     }
@@ -1556,7 +1619,7 @@ class Provider
         foreach ($mem as $m) {
             $joinstate = $m->getJoinState();
             if ($joinstate != 2) {
-                $federations->add($m->getFederation());;
+                $federations->add($m->getFederation());
             }
         }
 
@@ -1571,7 +1634,7 @@ class Provider
         $federations = new \Doctrine\Common\Collections\ArrayCollection();
         foreach ($mem as $m) {
             if ($m->isFinalMembership()) {
-                $federations->add($m->getFederation());;
+                $federations->add($m->getFederation());
             }
         }
 
@@ -1686,7 +1749,7 @@ class Provider
     }
 
     public function getDisplayName($length = null) {
-        if (empty($length) || !is_integer($length) || strlen($this->displayname) <= $length) {
+        if (empty($length) || !is_int($length) || strlen($this->displayname) <= $length) {
             return $this->displayname;
         } else {
             return substr($this->displayname, 0, $length) . '...';
@@ -1940,7 +2003,7 @@ class Provider
     }
 
     public function getPublicVisible() {
-        return !($this->hidepublic);
+        return !$this->hidepublic;
     }
 
     public function getAvailable() {
@@ -2022,7 +2085,7 @@ class Provider
             'is_locked'    => $this->getLocked(),
             'is_static'    => $this->getStatic(),
             'name'         => $this->getName(),
-            'displayname'  => $this->getDisplayname(),
+            'displayname'  => $this->getDisplayName(),
             'nameid'       => array(),
             'protocol'     => array(),
             'scope'        => $this->getScope('idpsso'),
@@ -2086,14 +2149,14 @@ class Provider
         $etype = strtoupper($r['type']);
         $this->setName($r['name']);
         if (!empty($r['displayname'])) {
-            $this->setDisplayname($r['displayname']);
+            $this->setDisplayName($r['displayname']);
         } else {
-            $this->setDisplayname($r['name']);
+            $this->setDisplayName($r['name']);
         }
-        $this->setEntityid($r['entityid']);
+        $this->setEntityId($r['entityid']);
         if (is_array($r['nameid']) && count($r['nameid']) > 0) {
             foreach ($r['nameid'] as $k => $n) {
-                $this->setNameids($k, $n);
+                $this->setNameIds($k, $n);
             }
         }
 
@@ -2328,6 +2391,10 @@ class Provider
     }
 
     private function idpSSODescriptorFromArray($b) {
+        $this->setWantAuthnRequestSigned(false);
+        if (array_key_exists('wantauthnreqsigned', $b) && $b['wantauthnreqsigned'] === true) {
+            $this->setWantAuthnRequestSigned(true);
+        }
         if (array_key_exists('extensions', $b)) {
             $this->ssoDescriptorExtensionsFromArray($b['extensions'], 'idp');
         }
@@ -2391,6 +2458,10 @@ class Provider
         $this->setWantAssertionSigned(false);
         if (array_key_exists('wantassertsigned', $b) && $b['wantassertsigned'] === true) {
             $this->setWantAssertionSigned(true);
+        }
+        $this->setAuthnRequestSigned(false);
+        if (array_key_exists('authnreqsigned', $b) && $b['authnreqsigned'] === true) {
+            $this->setAuthnRequestSigned(true);
         }
         if (array_key_exists('nameid', $b) && is_array($b['nameid'])) {
             $this->setNameIds('spsso', $b['nameid']);

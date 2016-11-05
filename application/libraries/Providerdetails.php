@@ -726,6 +726,13 @@ class Providerdetails
 
         if ($idppart) {
             $d[++$i]['msection'] = 'IDPSSODescriptor';
+            $wantAuthnReqSigned = $ent->getWantAuthnRequestSigned();
+            $d[++$i]['name'] = 'WantAuthnRequestsSigned';
+            if ($wantAuthnReqSigned === true) {
+                $d[$i]['value'] = 'yes';
+            } else {
+                $d[$i]['value'] = 'no/not set';
+            }
 
             // protocols enumerations
             $d[++$i]['name'] = lang('rr_supportedprotocols');
@@ -806,6 +813,15 @@ class Providerdetails
             } else {
                 $d[$i]['value'] = 'no/not set';
             }
+
+            $authnReqAsigned = $ent->getAuthnRequestSigned();
+            $d[++$i]['name'] = 'AuthnRequestsSigned';
+            if ($authnReqAsigned === true) {
+                $d[$i]['value'] = 'yes';
+            } else {
+                $d[$i]['value'] = 'no/not set';
+            }
+
 
             $d[++$i]['name'] = lang('rr_supportedprotocols');
             $v = implode('<br />', $ent->getProtocolSupport('spsso'));

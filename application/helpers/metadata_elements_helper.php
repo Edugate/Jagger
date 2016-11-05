@@ -130,3 +130,14 @@ function h_metadataComment($comment)
 	$result = str_replace('--', '-' . chr(194) . chr(173) . '-', $comment);
 	return $result;
 }
+
+
+function boolToStr($b){
+    if($b === true){
+        return 'true';
+    }
+    if($b === false){
+        return 'false';
+    }
+
+}

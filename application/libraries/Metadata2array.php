@@ -343,6 +343,13 @@ class Metadata2array
     }
 
     private function idpSSODescriptorConvert(\DOMElement $node) {
+        $WantAuthnReqSigned = false;
+        $tmpWantAuthnReqSigned = $node->getAttribute('WantAuthnRequestsSigned');
+        if ($tmpWantAuthnReqSigned === 'true') {
+            $WantAuthnReqSigned = true;
+        }
+
+        $result['wantauthnreqsigned'] = $WantAuthnReqSigned;
         $result['protocols'] = array_filter(explode(' ', $node->getAttribute('protocolSupportEnumeration')), 'strlen');
         foreach ($node->childNodes as $child) {
             if ($child->localName === 'Extensions') {
@@ -390,11 +397,17 @@ class Metadata2array
         if ($tmpWantAssertSigned === 'true') {
             $WantAssertSigned = true;
         }
+        $authnReqSigned = false;
+        $tmpAuthnReqSigned = $node->getAttribute('AuthnRequestsSigned');
+        if($tmpAuthnReqSigned === 'true'){
+            $authnReqSigned = true;
+        }
         $profilesTmp = $node->getAttribute('protocolSupportEnumeration');
         $profiles = explode(' ', $profilesTmp);
         $result = array(
             'protocols' => $profiles,
             'wantassertsigned' => $WantAssertSigned,
+            'authnreqsigned' => $authnReqSigned,
             'servicelocations' => array('assertionconsumerservice' => array(), 'singlelogout' => array()),
             'extensions' => array(
                 'idpdisc' => array(),
