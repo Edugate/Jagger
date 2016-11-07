@@ -1060,9 +1060,10 @@ class Provider
     }
 
     public function setCoc(Coc $coc) {
-        $this->getCoc()->add($coc);
-        $coc->getProviders()->add($this);
-
+        if(!$this->getCoc()->contains($coc)) {
+            $this->getCoc()->add($coc);
+            $coc->getProviders()->add($this);
+        }
         return $this;
     }
 

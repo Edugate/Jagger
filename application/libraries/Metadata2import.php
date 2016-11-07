@@ -323,6 +323,11 @@ class Metadata2import
                     $this->em->persist($importedProvider);
                 } // END for new provider
                 else { // provider exist
+                    $origEntityId = $existingProvider->getEntityId();
+                    $importedEntityId = $importedProvider->getEntityId();
+                    if ($origEntityId !== $importedEntityId) {
+                        log_message('error', __METHOD__ . ' sync will probably breaks due to:  existing entityID ' . $origEntityId . ' doesnt exactly match imported entityid ' . $importedEntityId);
+                    }
                     $membersFromExtSrc[] = $existingProvider->getEntityId();
                     $isLocal = $existingProvider->getLocal();
                     $isLocked = $existingProvider->getLocked();
