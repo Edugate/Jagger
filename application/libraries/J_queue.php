@@ -54,6 +54,7 @@ class J_queue
     public function displayFormsButtons($qid, $onlycancel = false) {
         /* add approve form */
         $approveForm = '';
+        $rejectForm = '';
         $rejecttext = lang('rr_cancel');
         if (!$onlycancel) {
             $rejecttext = lang('rr_submitreject');
@@ -64,8 +65,9 @@ class J_queue
         /* add reject form */
         $rejectHiddenAttrs = array('qaction' => 'reject', 'qid' => $qid);
         $reject_attrid = array('id' => 'rejectqueue');
-        $rejectForm = form_open('reports/queueactions/reject', $reject_attrid, $rejectHiddenAttrs).
-        '<button type="submit" name="mysubmit" value="Reject request!" class="button resetbutton reseticon left alert">' . $rejecttext . '</button>' . form_close();
+        $rejectForm = form_open('reports/queueactions/reject', $reject_attrid, $rejectHiddenAttrs) .
+            '<button type="submit" name="mysubmit" value="Reject request!" class="button resetbutton reseticon left alert">' . $rejecttext . '</button>' . form_close();
+
         $result = '<div class="small-12  columns"><div class="small-6 column" >' . $rejectForm . '</div><div class="small-6 column">' . $approveForm . '</div></div>';
 
         return $result;
@@ -80,21 +82,21 @@ class J_queue
      */
     public function queueRegProviderButtons($qid, $onlycancel = false) {
         /* add approve form */
-        $select = '<div class="row"><div class="medium-6 column"><select  name="accesslevel" ><option value="none">'.lang('rrdontassign').'</option><option value="write">'.lang('rr_write').'</option><option value="manage">'.lang('rr_management').'</option></select></div><div class="medium-6 column"><label for="accesslevel">'.lang('lbl_setaccesslvl').' <span class="label">if not anonymous</span></label></div></div>';
+        $select = '<div class="row"><div class="medium-6 column"><select  name="accesslevel" ><option value="none">' . lang('rrdontassign') . '</option><option value="write">' . lang('rr_write') . '</option><option value="manage">' . lang('rr_management') . '</option></select></div><div class="medium-6 column"><label for="accesslevel">' . lang('lbl_setaccesslvl') . ' <span class="label">if not anonymous</span></label></div></div>';
         $approveForm = '';
         $rejecttext = lang('rr_cancel');
         if (!$onlycancel) {
             $rejecttext = lang('rr_submitreject');
             $approveForm = form_open('reports/awaiting/approve', array('id' => 'approvequeue'), array('qaction' => 'approve', 'qid' => $qid, 'setfederation' => 'yes')) .
                 '<div class="small-12 column"><button type="submit" name="mysubmit" value="Accept request!" class="button savebutton saveicon right">' . lang('rr_submitapprove') . '</button></div>' .
-                '<div>'.$select.'</div>'.
+                '<div>' . $select . '</div>' .
                 form_close();
         }
 
         /* add reject form */
         $rejectHiddenAttrs = array('qaction' => 'reject', 'qid' => $qid);
         $reject_attrid = array('id' => 'rejectqueue');
-        $rejectForm = form_open('reports/queueactions/reject', $reject_attrid, $rejectHiddenAttrs).
+        $rejectForm = form_open('reports/queueactions/reject', $reject_attrid, $rejectHiddenAttrs) .
             '<button type="submit" name="mysubmit" value="Reject request!" class="button resetbutton reseticon left alert">' . $rejecttext . '</button>' . form_close();
         $result = '<div class="small-12  columns"><div class="medium-6 column" >' . $rejectForm . '</div><div class="medium-6 column">' . $approveForm . '</div></div>';
 
@@ -214,7 +216,7 @@ class J_queue
             }
             if ($type === 'entcat') {
                 $result[] = array(
-                    'name' => lang('attrname'),
+                    'name'  => lang('attrname'),
                     'value' => html_escape($coc->getSubtype())
                 );
             }
@@ -354,6 +356,7 @@ class J_queue
 
         }
         $result[] = array('2cols' => $buttons);
+
         return $result;
     }
 
@@ -649,19 +652,21 @@ class J_queue
          */
         $provider = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $data['entityid']));
         $validators = $federation->getValidators();
-        $valMandatory = null;
-        $valOptional = null;
+        $valMandatory = '';
+        $valOptional = '';
         $attrs = array('id' => 'fvform', 'style' => 'display: inline', 'class' => '');
         foreach ($validators as $v) {
             if ($v->getEnabled()) {
                 $hidden = array('fedid' => $federation->getId(), 'provid' => $provider->getId(), 'fvid' => $v->getId());
-                $valOptional .= form_open(base_url() . 'federations/fvalidator/validate', $attrs, $hidden);
+
                 if ($v->getMandatory()) {
-                    $valMandatory .= '<button class="button" id="' . $v->getId() . '" title="' . $v->getDescription() . '" name="mandatory">' . $v->getName() . '</button> ';
+                    $valMandatory .= form_open(base_url() . 'federations/fvalidator/validate', $attrs, $hidden) .
+                        '<button class="button" id="' . $v->getId() . '" title="' . $v->getDescription() . '" name="mandatory">' . $v->getName() . '</button> ' . form_close();
                 } else {
-                    $valOptional .= '<button class="button" id="' . $v->getId() . '" title="' . $v->getDescription() . '">' . $v->getName() . '</button> ';
+                    $valOptional .= form_open(base_url() . 'federations/fvalidator/validate', $attrs, $hidden) .
+                        '<button class="button" id="' . $v->getId() . '" title="' . $v->getDescription() . '">' . $v->getName() . '</button> ' . form_close();
                 }
-                $valMandatory .= form_close();
+
             }
         }
         array_push($rows,
