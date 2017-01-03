@@ -32,15 +32,15 @@ if ($loggedin) {
         'name' => '<i class="fa fa-user"></i>',
         'sub' => array(
             array(
-                'name' => '<i class="fa fa-cog"></i> <span class="show-for-large"></span>',
+                'name' => '<i class="fa fa-cog"></i><span class="show-for-large">'.lang('rr_profile').'</span>',
                 'link' => '' . $base_url . 'manage/users/show/'.base64url_encode($user)
             ),
             array(
-                'name' => '<i class="fa fa-envelope"></i>',
+                'name' => '<i class="fa fa-envelope"></i><span class="show-for-large">'.lang('rrnotifications').'</span>',
                 'link' => '' . $base_url . 'notifications/subscriber/mysubscriptions/'.base64url_encode($user)
             ),
             array(
-                'name' => '<i class="fa fa-sign-out"></i>',
+                'name' => '<i class="fa fa-sign-out"></i><span class="show-for-large">'.lang('btnlogout').'</span>',
                 'link' => '' . $base_url . 'auth/logout',
                 'linkprop' => 'class="logoutbutton userlogout" jagger-data-logout="' . $shibLogoutUri . '"'
             ),

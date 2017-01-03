@@ -12,8 +12,8 @@ function generateTopBar($a) {
 
 
     $html[] = '<div class="row expanded" data-sticky-container>'
-     .
-     '<div id="topbar-menu" class="top-bar stacked-for-medium" data-sticky data-options="marginTop:0;">';
+        .
+        '<div id="topbar-menu" class="top-bar stacked-for-medium" data-sticky data-options="marginTop:0;">';
 
 
     if (isset($a['logo'])) {
@@ -49,6 +49,7 @@ function generateTopBar($a) {
     return implode('', $html);
 
 }
+
 function generateTopBarCopy($a) {
     $html[] = '<div class="row expanded" data-sticky-container>
     <div class="title-bar" data-responsive-toggle="topbar-menu" data-hide-for="medium">
@@ -92,7 +93,7 @@ function generateTopBarCopy($a) {
 
 }
 
-function generateTopBarElements($b, $position, $top = true) {
+function generateTopBarElements(array $b, $position, $top = true) {
     $r = '';
     if ($top === true) {
         $r .= '<ul class="vertical medium-horizontal dropdown menu align-' . $position . '" data-dropdown-menu >';
@@ -129,7 +130,7 @@ function jaggerDisplayDateTimeByOffset(\DateTime $dateTime, $timeOffset, $outFor
     return $result;
 }
 
-function revealBtnsRow($btns) {
+function revealBtnsRow(array $btns) {
     $r = '<div class="button-group text-right">';
     foreach ($btns as $btn) {
         $r .= $btn;
@@ -184,33 +185,24 @@ function jaggerTagsReplacer($str) {
 
 
 function confirmDialog($title, $msg, $yes, $no) {
-    $r = '<div id="sconfirm" class="reveal tiny" data-reveal><div class="title-header small-12 columns text-center">' . html_escape($title) . '</div>
-  <p class="message">' . html_escape($msg) . '</p>';
-
     $btns = array(
         '<a class="no button alert" data-close>' . html_escape($no) . '</a>',
         '<a class="yes button">' . html_escape($yes) . '</a>'
 
     );
 
-    $r .= '<div class="small-12 columns">';
-    $r .= revealBtnsRow($btns);
-
-    $r .= '</div>
-  </div>';
-
-    return $r;
+    return '<div id="sconfirm" class="reveal tiny" data-reveal><div class="title-header small-12 columns text-center">' . html_escape($title) .
+        '</div><p class="message">' . html_escape($msg) . '</p><div class="small-12 columns">' . revealBtnsRow($btns) . '</div></div>';
 }
 
 function resultDialog($title, $msg, $close) {
-    $r = '<div id="resultdialog" class="hidden"><div class="header"><span>' . html_escape($title) . '</span></div>
+   return '<div id="resultdialog" class="hidden"><div class="header"><span>' . html_escape($title) . '</span></div>
   <p class="message">' . html_escape($msg) . '</p>
   <div class="buttons">
   <div class="no simplemodal-close">' . html_escape($close) . '</div>
   </div>
   </div>';
 
-    return $r;
 }
 
 function recurseTree($var) {
@@ -227,21 +219,21 @@ function recurseTree($var) {
 }
 
 function generateSelectInputCheckboxFields($label1, $name1, $select1, $selected1, $label2, $name2, $value2, $label3, $name3, $value3, $ifset3, $classes = null) {
-    $r = '';
+    $result = '';
     if (!empty($label1)) {
-        $r .= '<div class="small-3 columns">';
-        $r .= '<label class="right inline" for="' . $name1 . '">' . $label1 . '</label></div>';
+        $result .= '<div class="small-3 columns">';
+        $result .= '<label class="right inline" for="' . $name1 . '">' . $label1 . '</label></div>';
 
     } else {
-        $r .= '<div class="small-3 columns">&nbsp;</div>';
+        $result .= '<div class="small-3 columns">&nbsp;</div>';
     }
-    $r .= '<div class="small-5 columns inline">';
-    $r .= form_dropdown($name1, $select1, $selected1);
-    $r .= '</div>';
+    $result .= '<div class="small-5 columns inline">';
+    $result .= form_dropdown($name1, $select1, $selected1);
+    $result .= '</div>';
 
-    $r .= '<div class="small-4 large-4 columns">'; // input+check
-    $r .= '<div class="small-6 columns">';
-    $r .= form_input(
+    $result .= '<div class="small-4 large-4 columns">'; // input+check
+    $result .= '<div class="small-6 columns">';
+    $result .= form_input(
         array(
             'name'       => $name2,
             'id'         => $name2,
@@ -251,40 +243,40 @@ function generateSelectInputCheckboxFields($label1, $name1, $select1, $selected1
             'value'      => $value2,
         )
     );
-    $r .= '</div>';
-    $r .= '<div class="small-6 columns">';
+    $result .= '</div>';
+    $result .= '<div class="small-6 columns">';
     if (!empty($label3)) {
-        $r .= '<label for="' . $name3 . '">' . $label3 . '</label>';
+        $result .= '<label for="' . $name3 . '">' . $label3 . '</label>';
     }
-    $r .= form_radio(array(
+    $result .= form_radio(array(
         'name'    => $name3,
         'id'      => $name3,
         'value'   => $value3,
         'class'   => 'acsdefault',
         'checked' => $ifset3,
     ));
-    $r .= '</div>';
+    $result .= '</div>';
 
 
-    $r .= '</div>'; // end input+check
-    return $r;
+    $result .= '</div>'; // end input+check
+    return $result;
 }
 
 function generateSelectInputFields($label1, $name1, $select1, $selected1, $label2, $name2, $value2, $classes = null) {
-    $r = '';
+    $result = '';
     if (!empty($label1)) {
-        $r .= '<div class="small-3 columns">';
-        $r .= '<label class="right inline" for="' . $name1 . '">' . $label1 . '</label></div>';
+        $result .= '<div class="small-3 columns">';
+        $result .= '<label class="right inline" for="' . $name1 . '">' . $label1 . '</label></div>';
 
     } else {
-        $r .= '<div class="small-3 columns">&nbsp;</div>';
+        $result .= '<div class="small-3 columns">&nbsp;</div>';
     }
-    $r .= '<div class="small-6 large-7 columns inline">';
-    $r .= form_dropdown($name1, $select1, $selected1);
-    $r .= '</div>';
+    $result .= '<div class="small-6 large-7 columns inline">';
+    $result .= form_dropdown($name1, $select1, $selected1);
+    $result .= '</div>';
 
-    $r .= '<div class="small-2 large-1 columns end">'; // input+check
-    $r .= form_input(
+    $result .= '<div class="small-2 large-1 columns end">'; // input+check
+    $result .= form_input(
         array(
             'name'       => $name2,
             'id'         => $name2,
@@ -295,9 +287,9 @@ function generateSelectInputFields($label1, $name1, $select1, $selected1, $label
         )
     );
 
-    $r .= '</div>';
+    $result .= '</div>';
 
-    return $r;
+    return $result;
 }
 
 
