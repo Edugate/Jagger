@@ -128,7 +128,7 @@ class Detail extends MY_Controller
             'value' => $this->show_element->generateModificationsList($ent, 10)
         );
 
-        if ((strcasecmp($ent->getType(), 'SP') !== 0)) {
+        if (strcasecmp($ent->getType(), 'SP') !== 0) {
             $tmpLogs = new models\Trackers;
             /**
              * @var $arpLogs models\Tracker[]
@@ -136,7 +136,7 @@ class Detail extends MY_Controller
             $arpLogs = $tmpLogs->getArpDownloaded($ent);
             $loggHtml = '<ul class="no-bullet">';
             foreach ($arpLogs as $l) {
-                $loggHtml .= '<li><b>' . jaggerDisplayDateTimeByOffset($l->getCreated(), jauth::$timeOffset) . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
+                $loggHtml .= '<li><b>' . jaggerDisplayDateTimeByOffset($l->getCreated(), jauth::$timeOffset) . '</b> - ' . $l->getIp() . ' <small><i>(' . html_escape($l->getAgent()) . ')</i></small></li>';
             }
             $loggHtml .= '</ul>';
             $rows[] = array('name' => '' . lang('rr_recentarpdownload') . '', 'value' => '' . $loggHtml . '');
@@ -184,7 +184,7 @@ class Detail extends MY_Controller
          */
 
 
-        if ((strcasecmp($ent->getType(), 'SP') !== 0)) {
+        if (strcasecmp($ent->getType(), 'SP') !== 0) {
             $tmpLogs = new models\Trackers;
             /**
              * @var $arpLogs models\Tracker[]
@@ -192,7 +192,7 @@ class Detail extends MY_Controller
             $arpLogs = $tmpLogs->getArpDownloaded($ent);
             $loggHtml = '<ul class="no-bullet">';
             foreach ($arpLogs as $l) {
-                $loggHtml .= '<li><b>' . jaggerDisplayDateTimeByOffset($l->getCreated(), jauth::$timeOffset) . '</b> - ' . $l->getIp() . ' <small><i>(' . $l->getAgent() . ')</i></small></li>';
+                $loggHtml .= '<li><b>' . jaggerDisplayDateTimeByOffset($l->getCreated(), jauth::$timeOffset) . '</b> - ' . $l->getIp() . ' <small><i>(' . html_escape($l->getAgent()) . ')</i></small></li>';
             }
             $loggHtml .= '</ul>';
             $rows[] = array('name' => '' . lang('rr_recentarpdownload') . '', 'value' => '' . $loggHtml . '');

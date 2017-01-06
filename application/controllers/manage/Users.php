@@ -85,7 +85,7 @@ class Users extends MY_Controller
 
             return $this->output->set_status_header(500)->set_output('');
         }
-        if (empty($user)) {
+        if (null === $user) {
             return $this->output->set_status_header(404)->set_output('User not found');
         }
         $result = json_encode($user->getRoleNames());
@@ -109,14 +109,12 @@ class Users extends MY_Controller
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => $username));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
-            $this->output->set_status_header(500)->set_output('Internal Server error')->_display();
-            exit;
+            return $this->output->set_status_header(500)->set_output('Internal Server error')->_display();
         }
-        if (empty($user)) {
-            $this->output->set_status_header(404)->set_output('User not found')->_display();
-            exit;
-        }
+        if (null === $user) {
+            return $this->output->set_status_header(404)->set_output('User not found')->_display();
 
+        }
         return $user;
     }
 
@@ -200,7 +198,7 @@ class Users extends MY_Controller
              * @var $member models\AclRole
              */
             $member = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => 'Member'));
-            if (!empty($member)) {
+            if (null === $member) {
                 $user->setRole($member);
             }
             $personalRole = new models\AclRole;
@@ -332,7 +330,7 @@ class Users extends MY_Controller
         foreach ($authnLogs as $ath) {
             $tab3[] = array(
                 'key' => jaggerDisplayDateTimeByOffset($ath->getCreated(),jauth::$timeOffset),
-                'val' => $ath->getDetail() . '<br /><small><i>' . $ath->getAgent() . '</i></small>'
+                'val' => $ath->getDetail() . '<br /><small><i>' . html_escape($ath->getAgent()) . '</i></small>'
             );
         }
         $data = array(
@@ -405,7 +403,7 @@ class Users extends MY_Controller
             }
             $last = $u->getLastlogin();
             $lastlogin = '';
-            if (!empty($last)) {
+            if ($last !== null) {
                 $lastlogin = jaggerDisplayDateTimeByOffset($last,jauth::$timeOffset);
             }
             $usersList[] = array('user' => anchor($showlink . '/' . $encodedUsername, html_escape($u->getUsername())), 'fullname' => html_escape($u->getFullname()), 'email' => safe_mailto($u->getEmail()), 'ip' => implode(', ', $u->getSystemRoleNames()), 'last' => $lastlogin, $editLink . ' ' . $action);
