@@ -171,7 +171,7 @@ class Tracker {
 
     public function getAgent()
     {
-        return $this->agent;
+        return htmlspecialchars($this->agent);
     }
 
     /**
