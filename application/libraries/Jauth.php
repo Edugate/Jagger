@@ -45,6 +45,7 @@ class Jauth
                 $user = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $usersession['username'] . ''));
             } catch (PDOException $e) {
                 log_message('error', $e);
+
                 return false;
             }
             if ($user === null) {
@@ -55,6 +56,8 @@ class Jauth
             $userprefs = $user->getUserpref();
             if (!empty($userprefs) && array_key_exists('board', $userprefs)) {
                 $this->ci->session->set_userdata(array('board' => $userprefs['board']));
+            } else {
+                $this->ci->session->set_userdata(array('board' => array()));
             }
 
             $user->setIP($ipAddr);
@@ -66,19 +69,19 @@ class Jauth
             }
             $trackDetails = 'Authn from ' . $ipAddr . ' ::  ' . $authntype . ' Authn and 2F';
             $this->ci->tracker->save_track('user', 'authn', $user->getUsername(), $trackDetails, false);
-            log_message('info',__METHOD__.': '.$user->getUsername().' '.$trackDetails);
+            log_message('info', __METHOD__ . ': ' . $user->getUsername() . ' ' . $trackDetails);
 
             try {
                 $this->em->flush();
-            }
-            catch(Exception $e){
-                log_message('error',__METHOD__. ': '.$e);
+            } catch (Exception $e) {
+                log_message('error', __METHOD__ . ': ' . $e);
             }
             $this->ci->session->set_userdata('logged', 1);
             $this->ci->session->unset_userdata('partiallogged');
 
             return true;
         }
+
         return false;
     }
 
@@ -91,16 +94,19 @@ class Jauth
 
         } catch (PDOException $e) {
             log_message('error', $e);
+
             return false;
         }
         if ($user === null) {
             $this->setError('login_unsuccessful');
+
             return false;
         }
 
         $isPassMatch = $user->isPasswordMatch($password);
         if ($isPassMatch !== true) {
             $this->setError('login_unsuccessful');
+
             return false;
         }
 
@@ -110,11 +116,11 @@ class Jauth
             Duo::signRequest($this->ci->config->item('duo-ikey'), $this->ci->config->item('duo-skey'), $this->ci->config->item('duo-akey'), $user->getUsername());
             $this->ci->session->set_userdata(
                 array('partiallogged' => 1,
-                    'logged' => 0,
-                    'username' => '' . $user->getUsername() . '',
-                    'user_id' => '' . $user->getId() . '',
-                    'secondfactor' => $secondfactor,
-                    'authntype' => 'local')
+                      'logged'        => 0,
+                      'username'      => '' . $user->getUsername() . '',
+                      'user_id'       => '' . $user->getId() . '',
+                      'secondfactor'  => $secondfactor,
+                      'authntype'     => 'local')
             );
         } else {
             $ip = $this->ci->input->ip_address();
@@ -132,29 +138,30 @@ class Jauth
             $userSessionData = $user->getBasic();
             try {
                 $this->em->flush();
-            }
-            catch (Exception $e){
-                log_message('error',__METHOD__.' '.$e);
+            } catch (Exception $e) {
+                log_message('error', __METHOD__ . ' ' . $e);
             }
             $this->ci->session->set_userdata(array(
-                'logged' => 1,
-                'username' => '' . $userSessionData['username'] . '',
-                'user_id' => '' . $userSessionData['user_id'] . '',
-                'showhelp' => '' . $userSessionData['showhelp'] . '',
+                'logged'    => 1,
+                'username'  => '' . $userSessionData['username'] . '',
+                'user_id'   => '' . $userSessionData['user_id'] . '',
+                'showhelp'  => '' . $userSessionData['showhelp'] . '',
                 'authntype' => 'local'
             ));
             $this->ci->session->sess_regenerate();
             $this->set_message('login_successful');
         }
+
         return true;
 
     }
 
     public function logout() {
-        
+
         $this->ci->session->sess_regenerate(true);
         $this->ci->session->sess_destroy();
         $this->set_message('logout_successful');
+
         return true;
     }
 
@@ -166,8 +173,10 @@ class Jauth
         $username = trim($this->ci->session->userdata('username'));
         if (!empty($loggedin) && !empty($username)) {
             log_message('debug', 'Session is active for: ' . $username . '');
+
             return true;
         }
+
         return false;
     }
 
@@ -190,6 +199,7 @@ class Jauth
         if ($username === '') {
             $username = null;
         }
+
         return $username;
     }
 
@@ -236,6 +246,7 @@ class Jauth
         if ($username === null) {
             self::$isAdmin = false;
             $this->ci->session->sess_destroy();
+
             return false;
         }
         /**
@@ -245,6 +256,7 @@ class Jauth
         if ($user === null) {
             log_message('error', 'isAdministrator: Browser client session from IP:' . $this->ci->input->ip_address() . ' references to nonexist user: ' . $username);
             $this->ci->session->sess_destroy();
+
             return false;
         }
         /**
@@ -253,16 +265,19 @@ class Jauth
         $adminRole = $this->em->getRepository('models\AclRole')->findOneBy(array('name' => 'Administrator', 'type' => 'system'));
         if ($adminRole === null) {
             log_message('error', 'isAdministrator: Administrator Role is missing in DB AclRoles tbl');
+
             return false;
         }
         $userRoles = $user->getRoles();
         if ($userRoles->contains($adminRole)) {
             log_message('debug', 'isAdministrator: user ' . $user->getUsername() . ' found in Administrator group');
             self::$isAdmin = true;
+
             return true;
         } else {
             log_message('debug', 'isAdministrator: user ' . $user->getUsername() . ' not found in Administrator group');
             self::$isAdmin = false;
+
             return false;
         }
 
@@ -333,6 +348,7 @@ class Jauth
             $this->em->persist($personRole);
         }
         $this->ci->tracker->save_track('user', 'create', $username, 'user autocreated in the system', false);
+
         return $user;
     }
 

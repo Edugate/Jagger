@@ -110,7 +110,7 @@ class Authenticate extends MY_Controller
                 if ($resp !== NULL) {
                     $this->session->set_userdata('logged', 1);
                     $finalize = $this->jauth->finalizepartiallogin();
-                    if ($finalize) {
+                    if ($finalize === true) {
                         $result = array('success' => true, 'result' => 'OK');
                     } else {
                         $result = array('success' => false, 'result' => 'unknown');

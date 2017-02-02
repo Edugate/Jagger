@@ -47,6 +47,7 @@ class Oidcauth extends MY_Controller
             $client->setStateSession();
             $client->addAuthzParams($provider['authzparams']);
             $authzRedirectUrl = $client->generateAuthzRequest();
+
             return $this->output->set_header('application/json')->set_status_header(200)->set_output(json_encode(array('redirect' => $authzRedirectUrl)));
         } else {
             return $this->output->set_status_header(403)->set_output('Missing');
@@ -60,10 +61,12 @@ class Oidcauth extends MY_Controller
             $this->checkGlobal();
         } catch (Exception $e) {
             $error_message = $e->getMessage();
+
             return $this->load->view(MY_Controller::$page, array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
         if ($this->jauth->isLoggedIn()) {
             $error_message = 'Already authenticated';
+
             return $this->load->view(MY_Controller::$page, array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
 
@@ -87,14 +90,16 @@ class Oidcauth extends MY_Controller
             $claims = $client->authenticate();
         } catch (Exception $e) {
             $error_message = $e->getMessage();
+
             return $this->load->view(MY_Controller::$page, array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
 
         if (!isset($claims['sub'])) {
             $error_message = 'Missing required claim "sub" from Authorization Server';
+
             return $this->load->view(MY_Controller::$page, array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
-        log_message('debug','CLAIMS: '.serialize($claims));
+        log_message('debug', 'CLAIMS: ' . serialize($claims));
         $username = (string)$claims['sub'] . '@' . $claims['iss'];
         $fname = null;
         $sname = null;
@@ -150,6 +155,8 @@ class Oidcauth extends MY_Controller
             $this->session->set_userdata($session_data);
             if (!empty($userprefs) && array_key_exists('board', $userprefs)) {
                 $this->session->set_userdata('board', $userprefs['board']);
+            } else {
+                $this->session->set_userdata('board', array());
             }
             if (!empty($timeoffset) && is_numeric($timeoffset)) {
 
@@ -187,25 +194,24 @@ class Oidcauth extends MY_Controller
                 $fedidentity = array('fedusername' => $username, 'fedfname' => $fname, 'fedsname' => $sname, 'fedemail' => $email);
                 $this->session->set_userdata(array('fedidentity' => $fedidentity));
                 $data['content_view'] = 'feduserregister_view';
+
                 return $this->load->view(MY_Controller::$page, $data);
             } else {
 
                 $attrs = array('username' => $username, 'mail' => $email, 'fname' => $fname, 'sname' => $sname);
 
-                try{
-                    $nuser = $this->jauth->registerUser($attrs,'oidc',null);
+                try {
+                    $nuser = $this->jauth->registerUser($attrs, 'oidc', null);
                     $this->em->persist($nuser);
-                }
-                catch(Exception $e){
-                    log_message('error',__METHOD__.' '.$e);
+                } catch (Exception $e) {
+                    log_message('error', __METHOD__ . ' ' . $e);
                     show_error(html_escape($e->getMessage()), 403);
                 }
-                try{
+                try {
                     $this->em->flush();
-                }
-                catch(Exception $e){
-                    log_message('error',__METHOD__.' '.$e);
-                    show_error('Internal server error',500);
+                } catch (Exception $e) {
+                    log_message('error', __METHOD__ . ' ' . $e);
+                    show_error('Internal server error', 500);
                 }
 
                 redirect(current_url(), 'location');
@@ -217,7 +223,6 @@ class Oidcauth extends MY_Controller
 
 
     }
-
 
 
     private function checkGlobal() {
