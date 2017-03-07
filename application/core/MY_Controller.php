@@ -74,7 +74,7 @@ class MY_Controller extends CI_Controller
         parent::__construct();
         $this->output->set_header('Pragma: no-cache');
         $this->output->set_header('X-Frame-Options: SAMEORIGIN');
-        $this->output->set_header('Strict-Transport-Security: max-age=3153600');
+        $this->output->set_header('Strict-Transport-Security: max-age=31536000');
         $this->em = $this->doctrine->em;
         $this->title = '';
         self::$langs = array(
