@@ -4668,6 +4668,9 @@ if ($('#providerslistresultv2').length) {
         },
         error: function (xhr, status, error) {
             spinImage.hide();
+            console.log(xhr);
+            console.log(status);
+            console.log(error);
             window.alert(error);
 
         }
