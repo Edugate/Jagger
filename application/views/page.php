@@ -202,7 +202,7 @@ if ($breadcrumbsEnabled === true) {
 
         <div id="wrapper" class="row column expanded">
             <?php
-            if ($isReadOnly === false) {
+            if ($isReadOnly === true) {
                 echo '<div data-alert class="alert-box alert">System is in ReadOnly mode</div>';
                 $this->session->set_userdata('readonly', null);
 
