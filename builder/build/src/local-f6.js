@@ -4506,7 +4506,6 @@ if ($('#providerslistresultv2').length) {
     $.ajax({
         type: "GET",
         url: url,
-        timeout: 19500,
         cache: true,
         dataType: "json",
         success: function (result) {
