@@ -1,5 +1,6 @@
 <?php
 $loggedin = $this->jauth->isLoggedIn();
+$isReadOnly = null;
 if (empty($sideicons)) {
     $sideicons = array();
 }
@@ -7,6 +8,7 @@ $isAdministrator = false;
 if ($loggedin) {
     $isAdministrator = (boolean)$this->jauth->isAdministrator();
     $args['user'] = $this->jauth->getLoggedinUsername();
+    $isReadOnly = $this->session->userdata('readonly');
 }
 $langs = MY_Controller::guiLangs();
 
@@ -67,7 +69,7 @@ $foundation = $base_url . 'foundation/';
 </noscript>
 <!--[if lt IE 10]>
 <div data-alert class="alert-box alert"><p>You are using an <strong>outdated</strong> browser. Please <a
-    href="http://whatbrowser.org/">upgrade your browser</a> to improve your experience.</p></div>
+        href="http://whatbrowser.org/">upgrade your browser</a> to improve your experience.</p></div>
 <![endif]-->
 
 <?php
@@ -160,8 +162,7 @@ if ($breadcrumbsEnabled === true) {
                     $rawAttrs = 'class="disabled" ';
                 }
                 echo '<li ' . $rawAttrs . '>' . $b['name'] . '</li>';
-            }
-            else {
+            } else {
                 echo '<li ' . $rawAttrs . '><a href="' . $b['url'] . '" class="' . $aClass . '">' . $b['name'] . '</a></li>';
             }
         }
@@ -201,6 +202,11 @@ if ($breadcrumbsEnabled === true) {
 
         <div id="wrapper" class="row column expanded">
             <?php
+            if ($isReadOnly === false) {
+                echo '<div data-alert class="alert-box alert">System is in ReadOnly mode</div>';
+                $this->session->set_userdata('readonly', null);
+
+            }
             $this->load->view($content_view);
             ?>
 
@@ -325,8 +331,8 @@ if (!$loggedin) {
 ?>
 <script>
     var Jagger = {
-        base_url : '<?php echo $base_url;?>',
-        csrfname : '<?php echo $this->security->get_csrf_token_name();?>',
+        base_url: '<?php echo $base_url;?>',
+        csrfname: '<?php echo $this->security->get_csrf_token_name();?>',
         csrfhash: '<?php echo $this->security->get_csrf_hash();?>',
         lang: '<?php echo MY_Controller::getLang(); ?>',
         dictionary: {}
@@ -353,14 +359,12 @@ if (!empty($rawJs) && is_array($rawJs)) {
 ?>
 
 
-
-
 <script>
     $(document).foundation();
     $('.title-bar').on('sticky.zf.stuckto:top', function () {
-   //     $(this).addClass('shrink');
+        //     $(this).addClass('shrink');
     }).on('sticky.zf.unstuckfrom:top', function () {
-    //    $(this).removeClass('shrink');
+        //    $(this).removeClass('shrink');
     })
 </script>
 

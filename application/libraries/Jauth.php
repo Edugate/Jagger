@@ -73,7 +73,9 @@ class Jauth
 
             try {
                 $this->em->flush();
+                $this->ci->session->set_userdata('readonly', false);
             } catch (Exception $e) {
+                $this->ci->session->set_userdata('readonly', true);
                 log_message('error', __METHOD__ . ': ' . $e);
             }
             $this->ci->session->set_userdata('logged', 1);
@@ -136,11 +138,6 @@ class Jauth
             $this->ci->tracker->save_track('user', 'authn', $user->getUsername(), $trackDetails, false);
 
             $userSessionData = $user->getBasic();
-            try {
-                $this->em->flush();
-            } catch (Exception $e) {
-                log_message('error', __METHOD__ . ' ' . $e);
-            }
             $this->ci->session->set_userdata(array(
                 'logged'    => 1,
                 'username'  => '' . $userSessionData['username'] . '',
@@ -148,6 +145,14 @@ class Jauth
                 'showhelp'  => '' . $userSessionData['showhelp'] . '',
                 'authntype' => 'local'
             ));
+            try {
+                $this->em->flush();
+                $this->ci->session->set_userdata('readonly', false);
+            } catch (Exception $e) {
+                log_message('error', __METHOD__ . ' ' . $e);
+                $this->ci->session->set_userdata('readonly', true);
+            }
+
             $this->ci->session->sess_regenerate();
             $this->set_message('login_successful');
         }
