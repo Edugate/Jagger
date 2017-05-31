@@ -1,11 +1,11 @@
 
-$topbar-title-spacing: 1rem;
+
 $topbar-input-width: 200px;
 $topbar-unstack-breakpoint: medium;
-$topbar-link-color: foreground($topbar-background);
+$topbar-link-color: $white;
 
 $footer-background: #014289 !default;
-$footer-text: foreground($footer-background);
+$footer-text: $white;
 
 $jagger-selected-bgcolor: #074e68;
 $jagger-selected-color: #fff;
@@ -42,9 +42,11 @@ $icon-size: 2rem;
 
 // TABS
 
-$tab-item-color: foreground($tab-background);
+// $tab-item-color: foreground($tab-background);
+$tab-item-color: white;
+
 $tab-item-color-hover: $black;
-$tab-background-active: lighten($black,20%);
+$tab-background-active: lighten($black,25%);
 
 $tab-background-second-level: lighten($black,10%);
 

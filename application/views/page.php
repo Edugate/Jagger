@@ -300,7 +300,7 @@ if ($breadcrumbsEnabled === true) {
 </div>
 
 <?php
-echo '<script type="text/javascript" src="' . $base_url . 'js/f6-thirdpartylibs.min.7b701bed.js"></script>' . PHP_EOL;
+echo '<script type="text/javascript" src="' . $base_url . 'js/f6-thirdpartylibs.min.4510195e.js"></script>' . PHP_EOL;
 
 if (!empty($load_matrix_js)) {
     echo '<script type="text/javascript">';
