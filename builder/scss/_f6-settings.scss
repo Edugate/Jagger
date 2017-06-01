@@ -473,7 +473,7 @@ $pagination-item-spacing: rem-calc(1);
 $pagination-radius: $global-radius;
 $pagination-item-background-hover: $light-gray;
 $pagination-item-background-current: $primary-color;
-$pagination-item-color-current: foreground($pagination-item-background-current);
+$pagination-item-color-current: color-pick-contrast($pagination-item-background-current, (white, black));
 $pagination-item-color-disabled: $medium-gray;
 $pagination-ellipsis-color: $black;
 $pagination-mobile-items: false;
@@ -561,7 +561,7 @@ $tab-background-active: red;
 $tab-background-second-level: lighten($black, 10%) !default;
 
 
-$tab-item-color-hover: foreground($tab-background, $white) !default;
+$tab-item-color-hover: color-pick-contrast($tab-background,(black,white)) !default;
 $tab-item-font-size: rem-calc(12);
 $tab-item-background-hover: $white !default;
 $tab-item-padding: 1.25rem 1.5rem;
@@ -616,3 +616,8 @@ $topbar-submenu-background: $topbar-background !default;
 $topbar-title-spacing: 0.5rem 1rem 0.5rem 0;
 $topbar-input-width: 200px;
 $topbar-unstack-breakpoint: medium;
+
+
+
+
+$additional-colors: (darken(white,1%),lighten(black,1%), red, blue, green);

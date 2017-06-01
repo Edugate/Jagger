@@ -132,12 +132,12 @@ body, html {
 
 .lbl-plocal-0 {
   background-color: get-color(warning);
-  color: foreground(get-color(warning));
+  color: color-pick-contrast(get-color(warning),$additional-colors);
 }
 
 .lbl-pvisible-0 {
   background-color: get-color(secondary);
-  color: foreground(get-color(secondary));
+  color: color-pick-contrast(get-color(secondary),$additional-colors);
 }
 
 .spinner {
@@ -407,7 +407,7 @@ body, html {
 
 .perm {
   background-color: get-color(success);
-  color: foreground(get-color(success));
+  color: color-pick-contrast(get-color(success),$additional-colors);
   text-transform: uppercase;
   font-weight: bold;
 }
@@ -415,22 +415,21 @@ body, html {
 .dis {
   background-color: get-color(secondary);
   text-transform: uppercase;
-
-  color: foreground(get-color(secondary));
+  color: color-pick-contrast(get-color(secondary),$additional-colors);
   font-weight: bold;
 }
 
 .spec {
   background-color: get-color(warning);
   text-transform: uppercase;
-  color: foreground(get-color(warning));
+  color: color-pick-contrast(get-color(warning),$additional-colors);
   font-weight: bold;
 }
 
 .den {
   background-color: get-color(alert);
   text-transform: uppercase;
-  color: foreground(get-color(alert));
+  color: color-pick-contrast(get-color(alert),$additional-colors);
   font-weight: bold;
 }
 
@@ -465,10 +464,10 @@ caption {
 #titlepage {
   @include callout();
   background-color: $tab-background;
-  color: foreground($tab-background);
+  color: color-pick-contrast($tab-background,$additional-colors);
   font-size: get_style($header-styles, 'h1');
   a {
-    color: foreground($tab-background);
+    color: color-pick-contrast($tab-background,$additional-colors);
   }
 
 }
@@ -476,7 +475,8 @@ caption {
 div.error {
   @include callout();
   background-color: get-color(alert);
-  color: foreground(get-color(alert));
+  color: color-pick-contrast(get-color(alert),$additional-colors);
+
 }
 
 .alert-box {
@@ -557,39 +557,43 @@ legend {
 .alert-box {
 
   background-color: get-color(primary);
-  color: foreground(get-color(primary));
+  //color: foreground(get-color(primary));
   font-size: 90%;
   padding: 0.4rem;
+  color: color-pick-contrast(get-color(primary),$additional-colors);
 }
 
 .alert-box.success {
   background-color: get-color(success);
-  color: foreground(get-color(success));
+
+  color: color-pick-contrast(get-color(success),$additional-colors);
 }
 
 .alert-box.warning {
   background-color: get-color(warning);
-  color: foreground(get-color(warning));
+  color: color-pick-contrast(get-color(warning),$additional-colors);
+
 }
 
 .alert-box.alert {
   background-color: get-color(alert);
-  color: foreground(get-color(alert));
+  color: color-pick-contrast(get-color(alert),$additional-colors);
 }
 
 .alert-box.secondary {
   background-color: get-color(secondary);
-  color: foreground(get-color(secondary));
+  color: color-pick-contrast(get-color(secondary),$additional-colors);
 }
 
 .alert-box.primary {
   background-color: get-color(primary);
-  color: foreground(get-color(primary));
+  color: color-pick-contrast(get-color(primary),$additional-colors);
+
 }
 
 .alert-box.info {
   background-color: get-color(primary);
-  color: foreground(get-color(primary));
+  color: color-pick-contrast(get-color(primary),$additional-colors);
 }
 
 #details th.header.headerSortDown:before {
