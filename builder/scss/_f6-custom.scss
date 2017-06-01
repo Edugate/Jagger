@@ -1,5 +1,5 @@
 
-body {
+body, html {
   height: 100%;
 
 }
@@ -60,6 +60,7 @@ body {
 .top-bar .dropdown.menu li {
   //float: left;
 }
+
 .top-bar-title {
   padding: 0rem 1rem 0rem 0rem;
 }
@@ -85,12 +86,10 @@ body {
 }
 
 #footer {
-  margin-top: 2em;
+  margin-bottom: 1px;
   min-height: 100px;
   background-color: $footer-background;
   color: $footer-text;
-  position: absolute;
-  bottom: 0;
   width: 100%;
   height: 6em;
 }
@@ -122,12 +121,12 @@ body {
 
 .lbl-disabled, .lbl-pactive-0, .lbl-alert {
   background-color: get-color(alert);
-  color: foreground(get-color(alert));
+  color: white;
 }
 
 .lbl-locked, .lbl-static, .lbl-plocked-1, .lbl-pstatic-1 {
   background-color: get-color(warning);
-  color: foreground(get-color(warning));
+  color: black;
 
 }
 
@@ -157,8 +156,8 @@ body {
 }
 
 #container {
-  min-height: 100%;
 
+  min-height: calc(100vh - 180px);
 }
 
 #wrapper {
@@ -599,4 +598,9 @@ legend {
 
 #details th.header.headerSortUp:before {
   content: "\25B4\00a0\00a0";
+}
+
+#providerslistresultv2 td {
+  max-width: 25rem;
+  overflow: auto;
 }
