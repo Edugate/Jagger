@@ -26,7 +26,7 @@ class Fedactions extends MY_Controller
         }
         $status = trim($this->input->post('status'));
         $fedname = trim($this->input->post('fedname'));
-        if (empty($status) || empty($fedname)) {
+        if ($status === '' || $fedname === '') {
             return $this->output->set_status_header(403)->set_output('Missing params in post');
         }
         /**
@@ -46,13 +46,17 @@ class Fedactions extends MY_Controller
             $federation->setAsDisactive();
             $this->em->persist($federation);
             $this->em->flush();
+
             return $this->output->set_status_header(200)->set_output('deactivated');
-        } elseif (!$currentStatus && strcmp($status, 'enablefed') == 0) {
+        }
+        if (!$currentStatus && strcmp($status, 'enablefed') == 0) {
             $federation->setAsActive();
             $this->em->persist($federation);
             $this->em->flush();
+
             return $this->output->set_status_header(200)->set_output('activated');
-        } elseif (!$currentStatus && strcmp($status, 'delfed') == 0) {
+        }
+        if (!$currentStatus && strcmp($status, 'delfed') == 0) {
             /**
              * @todo finish
              */
@@ -60,10 +64,12 @@ class Fedactions extends MY_Controller
             $q = $this->approval->removeFederation($federation);
             $this->em->persist($q);
             $this->em->flush();
+
             return $this->output->set_status_header(200)->set_output('todelete');
-        } else {
-            return $this->output->set_status_header(403)->set_output('incorrect params sent');
         }
+
+        return $this->output->set_status_header(403)->set_output('incorrect params sent');
+
 
     }
 
@@ -98,6 +104,7 @@ class Fedactions extends MY_Controller
         if (!$hasAddbulkAccess) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_noperm');
+
             return $this->load->view(MY_Controller::$page, $data);
         }
         $data['federation_name'] = $federation->getName();
@@ -114,21 +121,28 @@ class Fedactions extends MY_Controller
             $data['subtitlepage'] = lang('rr_addnewspsnoinv');
         }
         $data['memberstype'] = strtolower($type);
+        //$selectElements = array();
 
         foreach ($providers as $i) {
             if (!$federationMembers->contains($i)) {
+                /*
+                $selectElements[] = array(
+                    'name' => $i->getName() . ' [' . $i->getEntityId() . ']',
+                    'id' => $i->getId()
+                );*/
                 $checkbox = array(
-                    'id' => 'member[' . $i->getId() . ']',
-                    'name' => 'member[' . $i->getId() . ']',
+                    'id'    => 'member[' . $i->getId() . ']',
+                    'name'  => 'member[' . $i->getId() . ']',
                     'value' => 1,);
                 $formElements[] = array(
                     'name' => $i->getName() . ' (' . $i->getEntityId() . ')',
-                    'box' => form_checkbox($checkbox),
+                    'box'  => form_checkbox($checkbox),
                 );
             }
         }
 
         $data['content_view'] = 'federation/bulkadd_view';
+        //$data['select_elements'] = $selectElements;
         $data['form_elements'] = $formElements;
         $data['fed_encoded'] = $federationName;
         $data['message'] = $message;
@@ -159,6 +173,7 @@ class Fedactions extends MY_Controller
         $hasAddbulkAccess = $this->zacl->check_acl('f_' . $federation->getId(), 'addbulk', 'federation', '');
         if (!$hasAddbulkAccess) {
             $data = array('content_view' => 'nopermission', 'error' => lang('rr_noperm'));
+
             return $this->load->view(MY_Controller::$page, $data);
         }
         /**
@@ -183,7 +198,7 @@ class Fedactions extends MY_Controller
                     $newMembership->setProvider($nmember);
                     $newMembership->setFederation($federation);
                     if ($nmember->getLocal()) {
-                        $newMembership->setJoinState('1');
+                        $newMembership->setJoinstate('1');
                     }
                     $this->em->persist($newMembership);
                 } else {
@@ -193,15 +208,15 @@ class Fedactions extends MY_Controller
                      */
                     $m1 = $nmember->getMembership()->filter(
                         function (models\FederationMembers $entry) use ($doFilter) {
-                            return (in_array($entry->getFederation()->getId(), $doFilter));
+                            return in_array($entry->getFederation()->getId(), $doFilter);
                         }
                     );
                     if (!empty($m1)) {
                         foreach ($m1 as $v1) {
                             if ($nmember->getLocal()) {
-                                $v1->setJoinState('1');
+                                $v1->setJoinstate('1');
                             } else {
-                                $v1->setJoinState('0');
+                                $v1->setJoinstate('0');
                             }
                             $this->em->persist($v1);
                             $newMembersArray[] = $nmember->getEntityId();
