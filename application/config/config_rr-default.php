@@ -182,12 +182,50 @@ $config['translator_access']['it'] = null;
  * $config['datastorage_path'] = '/opt/rr3data/'
  */
 
+
+$config['mq'] = 'rabbitmq';
+
+
 /**
  * gearman
  */
 $config['gearman'] = FALSE;
 $config['gearmanconf']['jobserver'] = array(array('ip'=>'127.0.0.1','port'=>'4730'));
 $config['statistics'] = FALSE;
+
+
+
+/**
+ * rabbitmq
+ */
+
+$config['rabbitmq'] = array(
+	'client' => array(
+		'enabled' => true,
+		'pool'=>array(
+		   array(
+		    'host'=>'127.0.0.1',
+		    'port'=> 5672,
+		    'user'=>'guest',
+		    'password'=>'guest'
+		   )
+		)
+	),
+	'receiver' => array(
+	   'enabled' => true,
+		'pool'=>array(
+		   array(
+		    'host'=>'127.0.0.1',
+		    'port'=> 5672,
+		    'user'=>'guest',
+		    'password'=>'guest'
+		   )
+		)
+	)
+
+);
+
+
 
 /**
  * enable statistics collection gearman also has to be enabled

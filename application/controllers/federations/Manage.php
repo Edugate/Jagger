@@ -254,8 +254,8 @@ class Manage extends MY_Controller
             $result[] = array(lang('rr_fedmetaexportsingedlink') . ' <span class="label">' . $digestExport . '</span>', $metaExportLinkSigned . " " . anchor_popup($metaExportLinkSigned, '<i class="fa fa-arrow-right"></i>'));
         }
         if ($federation->getActive()) {
-            $gearmanenabled = $this->config->item('gearman');
-            if ($hasWriteAccess && !empty($gearmanenabled)) {
+            $isMQEnabled = $this->mq->isClientEnabled();
+            if ($hasWriteAccess && $isMQEnabled === true) {
                 $result[] = array('' . lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata')) . '', '<a href="' . base_url() . 'msigner/signer/federation/' . $federation->getId() . '" id="fedmetasigner"/><button type="button" class="button">' . lang('btn_signmetadata') . '</button></a>', '');
             }
         }
