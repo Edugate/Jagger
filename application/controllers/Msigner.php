@@ -17,7 +17,6 @@ class Msigner extends MY_Controller
 
     public function __construct() {
         parent::__construct();
-        $this->tmp_providers = new models\Providers;
     }
 
     private function genOptions($hash, $type, $oid) {
