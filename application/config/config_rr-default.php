@@ -200,29 +200,11 @@ $config['statistics'] = FALSE;
  */
 
 $config['rabbitmq'] = array(
-	'client' => array(
-		'enabled' => true,
-		'pool'=>array(
-		   array(
-		    'host'=>'127.0.0.1',
-		    'port'=> 5672,
-		    'user'=>'guest',
-		    'password'=>'guest'
-		   )
-		)
-	),
-	'receiver' => array(
-	   'enabled' => true,
-		'pool'=>array(
-		   array(
-		    'host'=>'127.0.0.1',
-		    'port'=> 5672,
-		    'user'=>'guest',
-		    'password'=>'guest'
-		   )
-		)
-	)
-
+    'enabled' => true,
+    'host'=>'127.0.0.1',
+    'port'=> 5672,
+    'user'=>'guest',
+    'password'=>'guest'
 );
 
 
