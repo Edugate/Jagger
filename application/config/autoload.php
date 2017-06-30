@@ -53,7 +53,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array('doctrine','rrpreference','jauth','tracker','email','j_cache','j_ncache','table','curl','emailsender','duo', 'mq');
+$autoload['libraries'] = array('doctrine','rrpreference','jauth','tracker','email','j_cache','j_ncache','table','curl','emailsender','duo');
 $autoload['drivers'] = array('session');
 
 
