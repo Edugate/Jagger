@@ -173,7 +173,8 @@ class Providerdetails
                 $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srvCircleMetalinkSigned . '&nbsp;</span>&nbsp; ' . anchor_popup($srvCircleMetalinkSigned, '<i class="fa fa-arrow-right"></i>');
             }
         }
-        if ($isLocal && $hasWriteAccess && !empty($gearman_enabled) && $circleEnabled) {
+        $isMQEnabled = $this->CI->mq->isClientEnabled();
+        if ($isLocal && $hasWriteAccess && $isMQEnabled && $circleEnabled) {
             $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
             $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner" class="button">' . lang('btn_signmetadata') . '</a>';
         }
