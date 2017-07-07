@@ -232,7 +232,7 @@ class Gearmanw
                 }
             }
         }
-        while ($gm->work()) ;
+        while ($gm->work());
     }
 
     public function worker() {
