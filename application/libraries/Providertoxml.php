@@ -415,13 +415,11 @@ class Providertoxml
         $reqColl = $ent->getAttributesRequirement()->filter(
             function (models\AttributeRequirement $entry) {
                 return true === $entry->getAttribute()->showInMetadata();
-                //return in_array($entry->getAttribute()->showInMetadata(), array(true));
             }
         );
         $reqCollHidden = $ent->getAttributesRequirement()->filter(
             function (models\AttributeRequirement $entry) {
                 return false === $entry->getAttribute()->showInMetadata();
-                //return in_array($entry->getAttribute()->showInMetadata(), array(false));
             }
         );
         $finalReqAttrs = &$reqColl;

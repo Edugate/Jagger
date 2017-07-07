@@ -11,14 +11,7 @@ echo form_open($action,$form_attrs,$hidden);
  * @todo replace check boxes with multiselect
  */
 
-//echo '<div>';
-//echo '<select class="select2" multiple="multiple">';
-//foreach ($select_elements as $k => $v){
-//    echo '<option value="'.$v[id].'">'.trim($v[name]).'</option>';
-//}
-//echo '</select>';
-//echo '</div>';
-/////////////////////
+
 
 $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
 $this->table->set_template($tmpl);

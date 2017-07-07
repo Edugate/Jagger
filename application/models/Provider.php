@@ -1270,23 +1270,7 @@ class Provider
             $this->setContact($cn2);
         }
 
-
-        /**
-         * if bug found then replace back with below commented code
-         */
         $this->overwriteExtendMetadata($provider);
-
-        /**
-         * next commented code is old version of about block
-         */
-        /**
-         * foreach ($this->getExtendMetadata() as $f) {
-         * $this->removeExtendWithChildren($f);
-         * }
-         * foreach ($provider->getExtendMetadata() as $gg) {
-         * $this->setExtendMetadata($gg);
-         * }
-         */
 
         return $this;
     }

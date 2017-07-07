@@ -125,11 +125,6 @@ class Fedactions extends MY_Controller
 
         foreach ($providers as $i) {
             if (!$federationMembers->contains($i)) {
-                /*
-                $selectElements[] = array(
-                    'name' => $i->getName() . ' [' . $i->getEntityId() . ']',
-                    'id' => $i->getId()
-                );*/
                 $checkbox = array(
                     'id'    => 'member[' . $i->getId() . ']',
                     'name'  => 'member[' . $i->getId() . ']',
@@ -142,7 +137,6 @@ class Fedactions extends MY_Controller
         }
 
         $data['content_view'] = 'federation/bulkadd_view';
-        //$data['select_elements'] = $selectElements;
         $data['form_elements'] = $formElements;
         $data['fed_encoded'] = $federationName;
         $data['message'] = $message;
