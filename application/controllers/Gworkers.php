@@ -20,12 +20,11 @@ class Gworkers extends MY_Controller
     }
 
     public function worker() {
-        if (is_cli()) {
-            $this->load->library('gearmanw');
-            $this->gearmanw->worker();
-        } else {
+        if (!is_cli()) {
             return $this->output->set_status_header(403)->set_output('Denied');
         }
+        $this->load->library('gearmanw');
+        $this->gearmanw->worker();
     }
 
     public function mailqueuesender() {
@@ -61,7 +60,7 @@ class Gworkers extends MY_Controller
                 foreach ($mails as $mailRow) {
                     $mailId = $mailRow->getId();
                     log_message('info', 'MAILQUEUE sending mail with id: ' . $mailId);
-                    if (in_array($mailId, $mailsSent)) {
+                    if (in_array($mailId, $mailsSent, true)) {
                         $mailRow->setMailSent();
                         $em->persist($mailRow);
                         continue;
@@ -103,6 +102,7 @@ class Gworkers extends MY_Controller
     public function jcronmonitor() {
         if (!is_cli()) {
             log_message('error', __METHOD__ . ' called not via cli');
+
             return $this->output->set_status_header(403)->set_output('Denied');
         }
 
@@ -113,7 +113,7 @@ class Gworkers extends MY_Controller
             sleep(15);
             try {
                 $cronEntries = $this->em->getRepository("models\Jcrontab")->findBy(array('isenabled' => true));
-                $currentTime = new \DateTime("now");
+                $currentTime = new \DateTime('now');
                 foreach ($cronEntries as $c) {
                     $cron = Cron\CronExpression::factory($c->getCronToStr());
                     if ($cron->isDue()) {
@@ -165,6 +165,7 @@ class Gworkers extends MY_Controller
             }
             $this->em->clear();
         }
+
         return $this->output->set_status_header(500)->set_output('unexpected exit');
     }
 

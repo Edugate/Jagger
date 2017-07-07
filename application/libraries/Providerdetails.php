@@ -503,7 +503,10 @@ class Providerdetails
          */
         $d = array();
         $i = 0;
-        $d[++$i]['name'] = lang('rr_status') . ' ' . showBubbleHelp('<ul class="no-bullet"><li><b>' . lang('lbl_enabled') . '</b>:' . lang('provinmeta') . '</li><li><b>' . lang('lbl_disabled') . '</b>:' . lang('provexclmeta') . ' </li><li><b>' . lang('rr_managedlocally') . '</b>: ' . lang('provmanlocal') . '</li><li><b>' . lang('rr_external') . '</b>: ' . lang('provexternal') . '</li></ul>') . '';
+        $d[++$i]['name'] = lang('rr_status') . ' ' . showBubbleHelp('' . lang('lbl_enabled') . ': '. lang('provinmeta') . '; ' .
+                lang('lbl_disabled') .': ' . lang('provexclmeta') . '; ' .
+                lang('rr_managedlocally') . ': ' .lang('provmanlocal') . '; ' .
+                lang('rr_external') . ': ' . lang('provexternal') . '') . '';
         $entStatus = $this->makeStatusLabels();
         $d[$i]['value'] = '<b>' . $entStatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');

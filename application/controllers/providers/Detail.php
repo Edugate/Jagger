@@ -279,7 +279,7 @@ class Detail extends MY_Controller
         if (count($members) === 0) {
             $result[] = array('entityid' => '' . lang('nomembers') . '', 'name' => '', 'url' => '');
         }
-        $preurl = base_url() . 'providers/detail/show/';
+        $preurl = base_url('providers/detail/show');
         foreach ($members as $m) {
             $feds = array();
             $name = $m->getNameToWebInLang($myLang);
@@ -290,7 +290,7 @@ class Detail extends MY_Controller
             foreach ($y as $yv) {
                 $feds[] = $yv->getName();
             }
-            $result[] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl . $m->getId(), 'feds' => $feds);
+            $result[] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl .'/'. $m->getId(), 'feds' => $feds);
         }
         $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
