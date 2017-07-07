@@ -146,7 +146,6 @@ class Providerdetails
         $srv_metalink = base_url('metadata/service/' . base64url_encode($ent->getEntityId()) . '/metadata.xml');
 
         $disable_extcirclemeta = $this->CI->config->item('disable_extcirclemeta');
-        $gearman_enabled = $this->CI->config->item('gearman');
 
         $i = 0;
         if (!(isset($feathide['metasonprov']) && $feathide['metasonprov'] === true)) {

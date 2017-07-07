@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {
 /**
  * @package   Jagger
  * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- * @copyright Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
+ * @copyright Copyright (c) 2017, HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
  */
@@ -27,18 +27,26 @@ class Gworkers extends MY_Controller
         $this->gearmanw->worker();
     }
 
-    public function mailqueuesender() {
-        if (!is_cli()) {
-            return $this->output->set_status_header(403)->set_output('Denied');
-        }
-        log_message('info', 'MAILQUEUE STARTED : daemon needs to be restarted after any changes in configs');
-        $this->load->library('doctrine');
-        $em = $this->doctrine->em;
+    /**
+     * @return array
+     */
+    private function getSendOptions(){
         $this->load->library('rrpreference');
         $sendOptions = array(
             'mailfrom'   => $this->config->item('mail_from'),
             'subjsuffix' => (string)$this->config->item('mail_subject_suffix')
         );
+        return $sendOptions;
+    }
+
+    public function mailqueuesender() {
+        if (!is_cli()) {
+            return $this->output->set_status_header(403)->set_output('Denied');
+        }
+        log_message('info', 'MAILQUEUE STARTED : daemon needs to be restarted after any changes in configs');
+        $em = $this->doctrine->em;
+
+        $sendOptions = $this->getSendOptions();
         /**
          * @var $mailsSent array
          */
