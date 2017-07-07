@@ -46,8 +46,6 @@ class Gworkers extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Denied');
         }
         log_message('info', 'MAILQUEUE STARTED : daemon needs to be restarted after any changes in configs');
-        $em = $this->doctrine->em;
-
         $sendOptions = $this->getSendOptions();
         /**
          * @var $mailsSent array
@@ -65,14 +63,14 @@ class Gworkers extends MY_Controller
                 /**
                  * @var models\MailQueue[] $mails
                  */
-                $mails = $em->getRepository("models\MailQueue")->findBy(array('deliverytype' => 'mail', 'frequence' => '1', 'issent' => false));
+                $mails = $this->em->getRepository("models\MailQueue")->findBy(array('deliverytype' => 'mail', 'frequence' => '1', 'issent' => false));
                 $mailFooter = $this->rrpreference->getTextValueByName('mailfooter');
                 foreach ($mails as $mailRow) {
                     $mailId = $mailRow->getId();
                     log_message('info', 'MAILQUEUE sending mail with id: ' . $mailId);
                     if (in_array($mailId, $mailsSent, true)) {
                         $mailRow->setMailSent();
-                        $em->persist($mailRow);
+                        $this->em->persist($mailRow);
                         continue;
                     }
                     $maildata = $mailRow->getMailToArray();
@@ -85,23 +83,23 @@ class Gworkers extends MY_Controller
                     if ($this->email->send()) {
                         $mailsSent[] = $mailRow->getId();
                         $mailRow->setMailSent();
-                        $em->persist($mailRow);
+                        $this->em->persist($mailRow);
                     } else {
                         log_message('error', 'MAILQUEUE couldnt sent mail to ' . $maildata['to'] . '    ::' . $this->email->print_debugger());
                     }
                 }
                 try {
-                    $em->flush();
+                    $this->em->flush();
                     $mailsSent = array();
                 } catch (Exception $e) {
                     log_message('eror', 'MAILQUEUE: could not update db about sent status');
                 }
-                $em->clear();
+                $this->em->clear();
             } catch (Exception $e) {
                 log_message('error', 'MAILQUEUE ::' . __METHOD__ . ' lost connection to database trying to reconnect');
-                $em->getConnection()->close();
+                $this->em->getConnection()->close();
                 sleep(10);
-                $em->getConnection()->connect();
+                $this->em->getConnection()->connect();
             }
 
         }
@@ -223,22 +221,14 @@ class Gworkers extends MY_Controller
             $jcommand = $jobTo['fname'];
             $jparams = $jobTo['fparams'];
             $jparams['cronid'] = $cronEntry->getId();
-
             $connection = new AMQPStreamConnection('' . $conf['host'], $conf['port'], '' . $conf['user'] . '', '' . $conf['password'] . '');
             $channel = $connection->channel();
-
-
             $channel->queue_declare($jcommand, false, true, false, false);
-
-
             $data = urlsafeB64Encode(json_encode($jparams));
-
             $msg = new AMQPMessage($data,
                 array('delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT)
             );
-            $z= $channel->basic_publish($msg, '', $jcommand);
-            log_message('debug','JAN : channel:: '.serialize($z));
-
+            $channel->basic_publish($msg, '', $jcommand);
             $channel->close();
             $connection->close();
         }
