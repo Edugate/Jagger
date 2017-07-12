@@ -183,36 +183,7 @@ class Fedactions extends MY_Controller
                 log_message('error', 'missed or wrong membertype while adding new members to federation');
                 show_error('Missed members type', 503);
             }
-            $newMembersArray = array();
-            foreach ($newMembersList as $nmember) {
-                if (!$existingMembers->contains($nmember)) {
-                    $newMembersArray[] = $nmember->getEntityId();
-                    $newMembership = new models\FederationMembers();
-                    $newMembership->setProvider($nmember);
-                    $newMembership->setFederation($federation);
-                    if ($nmember->getLocal()) {
-                        $newMembership->setJoinstate('1');
-                    }
-                    $this->em->persist($newMembership);
-                } else {
-                    $doFilter = array('' . $federation->getId() . '');
-                    /**
-                     * @var models\FederationMembers[] $m1
-                     */
-                    $m1 = $nmember->getMembership()->filter(
-                        function (models\FederationMembers $entry) use ($doFilter) {
-                            return in_array($entry->getFederation()->getId(), $doFilter);
-                        }
-                    );
-                    if (!empty($m1)) {
-                        foreach ($m1 as $v1) {
-                            $v1->setJoinstate(''.(int) $nmember->getLocal().'');
-                            $this->em->persist($v1);
-                            $newMembersArray[] = $nmember->getEntityId();
-                        }
-                    }
-                }
-            }
+            $newMembersArray = $this->addMembersToCollection($existingMembers, $newMembersList, $federation);
             if (count($newMembersArray) > 0) {
                 $subject = 'Members of Federations changed';
                 $body = 'Dear user' . PHP_EOL . 'Federation ' . $federation->getName() . ' has new members:' . PHP_EOL . implode(';' . PHP_EOL, $newMembersArray);
@@ -223,6 +194,39 @@ class Fedactions extends MY_Controller
             return $this->addbulk($encodedFedName, $memberstype, '<div data-alert class="alert-box success">' . lang('rr_fedmembersadded') . '</div>');
         }
         return $this->addbulk($encodedFedName, $memberstype, '<div data-alert class="alert-box alert">' . sprintf(lang('rr_nomemtype_selected'), $memberstype) . '</div>');
+    }
+    private function addMembersToCollection($existingMembers,$newMembersList, $federation ){
+        $newMembersArray = array();
+        foreach ($newMembersList as $nmember) {
+            if (!$existingMembers->contains($nmember)) {
+                $newMembersArray[] = $nmember->getEntityId();
+                $newMembership = new models\FederationMembers();
+                $newMembership->setProvider($nmember);
+                $newMembership->setFederation($federation);
+                if ($nmember->getLocal()) {
+                    $newMembership->setJoinstate('1');
+                }
+                $this->em->persist($newMembership);
+            } else {
+                $doFilter = array('' . $federation->getId() . '');
+                /**
+                 * @var models\FederationMembers[] $m1
+                 */
+                $m1 = $nmember->getMembership()->filter(
+                    function (models\FederationMembers $entry) use ($doFilter) {
+                        return in_array($entry->getFederation()->getId(), $doFilter);
+                    }
+                );
+                if (!empty($m1)) {
+                    foreach ($m1 as $v1) {
+                        $v1->setJoinstate(''.(int) $nmember->getLocal().'');
+                        $this->em->persist($v1);
+                        $newMembersArray[] = $nmember->getEntityId();
+                    }
+                }
+            }
+        }
+        return $newMembersArray;
     }
 
 }
