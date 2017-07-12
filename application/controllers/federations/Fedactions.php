@@ -153,7 +153,6 @@ class Fedactions extends MY_Controller
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
-        $message = null;
         $encodedFedName = $this->input->post('fed');
         $memberstype = $this->input->post('memberstype');
         /**
