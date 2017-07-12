@@ -54,7 +54,6 @@ class J_queue
     public function displayFormsButtons($qid, $onlycancel = false) {
         /* add approve form */
         $approveForm = '';
-        $rejectForm = '';
         $rejecttext = lang('rr_cancel');
         if (!$onlycancel) {
             $rejecttext = lang('rr_submitreject');
@@ -386,6 +385,7 @@ class J_queue
         return $fedrows;
     }
 
+
     public function displayRegisterProvider(models\Queue $queue) {
         $showXML = false;
 
@@ -422,19 +422,15 @@ class J_queue
                         $entarray = $this->ci->metadata2array->entityDOMToArray($l, true);
                     }
                     $objData = new models\Provider;
-                    $objData->setProviderFromArray(current($entarray), false);
+                    $objData->setProviderFromArray(current($entarray));
                     $objData->setReqAttrsFromArray(current($entarray), $this->attributesByName);
                     $metadataXML = $this->ci->providertoxml->entityConvertNewDocument($objData, array('attrs' => 1), true);
                     $showXML = true;
                 }
             }
         }
-        $counter = 0;
         $feds = $objData->getFederations();
         $fedIdsCollection = array();
-
-        $dataRows[$counter++]['header'] = lang('rr_details');
-        $dataRows[$counter]['name'] = lang('requestor');
         $creatorUN = 'anonymous';
         $creatorFN = 'Anonymous';
         $creator = $queue->getCreator();
@@ -442,10 +438,11 @@ class J_queue
             $creatorUN = $creator->getUsername();
             $creatorFN = $creator->getFullname();
         }
-        $dataRows[$counter++]['value'] = "$creatorFN ($creatorUN)";
-        $dataRows[$counter++] = array('name' => lang('rr_sourceip'), 'value' => $queue->getIP());
+        $dataRows[]['header'] = lang('rr_details');
+        $dataRows[] = array( 'name' => lang('requestor'),'value' =>  ''.$creatorFN ($creatorUN).'');
+        $dataRows[] = array('name' => lang('rr_sourceip'), 'value' => $queue->getIP());
+        $dataRows[]['header'] = lang('rr_fedstojoin');
 
-        $dataRows[$counter++]['header'] = lang('rr_fedstojoin');
         if ($feds->count() > 0) {
 
             foreach ($objData->getFederations() as $fed) {
@@ -453,23 +450,18 @@ class J_queue
                 if (!empty($realFed)) {
                     $fedIdsCollection[] = $realFed->getId();
                 }
-                $dataRows[$counter]['name'] = lang('rr_federation');
-                $dataRows[$counter]['value'] = $fed->getName();
-                $counter++;
+                $dataRows[] = array( 'name'=>''.lang('rr_federation').'','value' => ''.$fed->getName().'' );
             }
         } elseif (isset($data['federations'])) {
             foreach ($data['federations'] as $f) {
                 $p = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $f['sysname']));
                 if (!empty($p)) {
                     $fedIdsCollection[] = $p->getId();
-
-                    $dataRows[$counter]['name'] = lang('rr_federation');
-                    $dataRows[$counter]['value'] = $p->getName();
-                    $counter++;
+                    $dataRows[] = array('name'=>''.lang('rr_federation').'','value'=>''.$p->getName().'');
                 }
             }
         } else {
-            $dataRows[$counter++] = array('name' => '', 'value' => lang('noneatthemoment'));
+            $dataRows[] = array('name' => '', 'value' => lang('noneatthemoment'));
         }
 
         /**
@@ -496,60 +488,49 @@ class J_queue
                     $valOptional .= form_close();
                 }
             }
-            $dataRows[$counter++] = array('name' => lang('manValidator'), 'value' => $valMandatory);
-            $dataRows[$counter++] = array('name' => lang('optValidator'), 'value' => $valOptional);
+            $dataRows[] = array('name' => lang('manValidator'), 'value' => $valMandatory);
+            $dataRows[] = array('name' => lang('optValidator'), 'value' => $valOptional);
             $resultValidation = '<div id="fvresult" style="display:none;" data-alert class="alert-box info"><div><b>' . lang('fvalidcodereceived') . '</b>: <span id="fvreturncode"></span></div><div><p><b>' . lang('fvalidmsgsreceived') . '</b>:</p><div id="fvmessages"></div></div></div>';
             $resultValidation .= '<div id="fvalidesc"></div>';
-            $dataRows[$counter++] = array('2cols' => $resultValidation);
+            $dataRows[] = array('2cols' => $resultValidation);
         }
+        $dataRows[]['header'] = lang('rr_basicinformation');
+        $dataRows[] = array('name'=>''.lang('rr_homeorganisationname').'','value'=>''. $objData->getName().'');
+        $dataRows[] = array('name'=>'entityID','value'=>''.$objData->getEntityId().'');
 
-
-        $dataRows[$counter++]['header'] = lang('rr_basicinformation');
-        $dataRows[$counter]['name'] = lang('rr_homeorganisationname');
-        $dataRows[$counter++]['value'] = $objData->getName();
-
-        $dataRows[$counter]['name'] = 'entityID';
-
-        $dataRows[$counter++]['value'] = $objData->getEntityId();
         $type = $objData->getType();
         $nameids = '';
         if ($type === 'IDP') {
             $nameids = implode(', ', $objData->getNameIds('idpsso'));
-            $dataRows[$counter]['name'] = lang('type');
-            $dataRows[$counter++]['value'] = lang('identityprovider');
+            $dataRows[] = array('name'=>''.lang('type').'','value'=>''.lang('identityprovider').'');
+            $dataRows[] = array('name'=>''.lang('rr_scope') . ' <br /><small>IDPSSODescriptor</small>','value'=>''.implode(';', $objData->getScope('idpsso')).'');
 
-            $dataRows[$counter]['name'] = lang('rr_scope') . ' <br /><small>IDPSSODescriptor</small>';
-            $dataRows[$counter++]['value'] = implode(';', $objData->getScope('idpsso'));
         } elseif ($type === 'SP') {
             $nameids = implode(', ', $objData->getNameIds('spsso'));
-            $dataRows[$counter]['name'] = lang('type');
-            $dataRows[$counter++]['value'] = lang('serviceprovider');
+            $dataRows[] = array('name'=>''.lang('type').'','value'=>''. lang('serviceprovider').'');
         }
 
-        $dataRows[$counter]['name'] = lang('rr_helpdeskurl');
-        $dataRows[$counter++]['value'] = $objData->getHelpdeskUrl();
+        $dataRows[] =array( 'name'=>''.lang('rr_helpdeskurl').'','value'=>''.$objData->getHelpdeskUrl().'');
 
 
-        $dataRows[$counter++]['header'] = lang('rr_servicelocations');
+        $dataRows[]['header'] = lang('rr_servicelocations');
         $srvTypesWithIdx = array('IDPArtifactResolutionService', 'DiscoveryResponse', 'AssertionConsumerService', 'SPArtifactResolutionService');
         foreach ($objData->getServiceLocations() as $service) {
             $serviceType = $service->getType();
-            $dataRows[$counter]['name'] = $serviceType;
             $orderString = '';
             if (in_array($serviceType, $srvTypesWithIdx, true)) {
                 $orderString = 'index: ' . $service->getOrder();
             }
-            $dataRows[$counter]['value'] = '' . $service->getUrl() . '<br /><small>' . $service->getBindingName() . ' ' . $orderString . ' </small><br />';
-            $counter++;
+            $dataRows[] = array('name'=>''.$serviceType.'','value'=>'' . $service->getUrl() . '<br /><small>' . $service->getBindingName() . ' ' . $orderString . ' </small><br />');
         }
 
         array_push($dataRows, array('header' => lang('rr_supportednameids')), array('name' => lang('nameid'), 'value' => $nameids), array('header' => lang('rr_certificates')));
         foreach ($objData->getCertificates() as $cert) {
             $certdatacell = reformatPEM($cert->getCertdata());
-            array_push($dataRows, array('name' => lang('rr_certificateuse') . ' <span class="label info">' . html_escape($cert->getCertUseInStr()) . '</span>', 'value' => '<span class="span-10"><code>' . $certdatacell . '</code></span>'));
+            $dataRows[] = array('name' => lang('rr_certificateuse') . ' <span class="label info">' . html_escape($cert->getCertUseInStr()) . '</span>', 'value' => '<span class="span-10"><code>' . $certdatacell . '</code></span>');
         }
 
-        array_push($dataRows, array('header' => lang('rr_contacts')));
+        $dataRows[] = array('header' => lang('rr_contacts'));
 
         foreach ($objData->getContacts() as $contact) {
             $phone = $contact->getPhone();
@@ -557,15 +538,12 @@ class J_queue
             if (!empty($phone)) {
                 $phoneStr = 'Tel:' . $phone;
             }
-            array_push($dataRows, array('name' => '' . lang('rr_contact') . ' (' . $contact->getType() . ')', 'value' => '' . $contact->getFullName() . ' &lt;' . $contact->getEmail() . '&gt; ' . $phoneStr . ''));
+            $dataRows[] = array('name' => '' . lang('rr_contact') . ' (' . $contact->getType() . ')', 'value' => '' . $contact->getFullName() . ' &lt;' . $contact->getEmail() . '&gt; ' . $phoneStr . '');
         }
 
         if ($showXML === true) {
             $dataRows[]['header'] = 'Metadata view';
-            $params = array(
-                'enable_classes' => true,
-            );
-            array_push($dataRows, array('name' => 'XML', 'value' => '<pre><code class="xml">' . html_escape($metadataXML) . '</code></pre>'));
+            $dataRows[] = array('name' => 'XML', 'value' => '<pre><code class="xml">' . html_escape($metadataXML) . '</code></pre>');
 
         }
 
@@ -669,13 +647,11 @@ class J_queue
 
             }
         }
+        $data = $queue->getData();
         array_push($rows,
             array(lang('manValidator'), $valMandatory),
             array(lang('optValidator'), $valOptional),
-            array(lang('rr_federation'), $federation->getName() . ' ')
-        );
-        $data = $queue->getData();
-        array_push($rows,
+            array(lang('rr_federation'), $federation->getName() . ' '),
             array(lang('rr_provider'), $data['name']),
             array(lang('rr_entityid'), $data['entityid']),
             array('Provider status', '<div  data-jagger-getmoreajax= "' . base_url() . 'providers/detail/status/' . $data['id'] . '" data-jagger-response-msg="providerstatus"></div><div id="providerstatus" data-alert class="alert-box info">' . lang('rr_noentitywarnings') . '</div>'),
