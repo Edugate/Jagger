@@ -498,18 +498,7 @@ class Awaiting extends MY_Controller
         $queueObjType = $queueObj->getType();
         $recipient = $queueObj->getRecipient();
         $recipienttype = $queueObj->getRecipientType();
-        $allowedActionsAndTypes['Create']['User'] = array(
-            'access'      => $this->jqueueaccess->hasApproveAccess($queueObj),
-            'fnameAction' => 'createUserFromQueue',
-        );
-        $allowedActionsAndTypes['Create']['IDP'] = array(
-            'access' => $this->zacl->check_acl('idp', 'create', 'entity', ''),
-        );
-        $allowedActionsAndTypes['Create']['SP'] = array();
-        $allowedActionsAndTypes['Delete']['Federation'] = array();
-        $allowedActionsAndTypes['Create']['Federation'] = array();
-        $allowedActionsAndTypes['Join'] = array();
-        $allowedActionsAndTypes['apply'] = array();
+
 
         if (strcasecmp($queueAction, 'Create') == 0 && strcasecmp($queueObjType, 'User') == 0) {
             $approve_allowed = $this->jqueueaccess->hasApproveAccess($queueObj);
@@ -690,7 +679,6 @@ class Awaiting extends MY_Controller
                     $this->em->persist($membership);
                     $this->em->persist($provider);
                     $this->em->persist($federation);;
-                    $mail_recipients[] = $queueObj->getCreator()->getEmail();
                     $sbj = $provider->getName() . ' joins federation: "' . $federation->getName() . '"';
                     $body = $this->jauth->getLoggedinUsername() . " just approved request.\r\n";
                     $body .= 'Since now Provider: ' . $provider->getName() . ' becomes a member of ' . $federation->getName() . PHP_EOL;
