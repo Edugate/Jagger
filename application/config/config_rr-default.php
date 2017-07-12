@@ -249,3 +249,5 @@ $config['disable_extcirclemeta'] = TRUE;
 // set if you want to disable change entityid and/or scope for no Admins
 $config['entpartschangesdisallowed'] = array('entityid','scope');
 
+$config['featenable']['tasks'] = FALSE;
+

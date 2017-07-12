@@ -121,7 +121,6 @@ class Fedactions extends MY_Controller
             $data['subtitlepage'] = lang('rr_addnewspsnoinv');
         }
         $data['memberstype'] = strtolower($type);
-        //$selectElements = array();
 
         foreach ($providers as $i) {
             if (!$federationMembers->contains($i)) {
@@ -161,7 +160,7 @@ class Fedactions extends MY_Controller
          * @var $federation models\Federation
          */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($encodedFedName)));
-        if (empty($federation)) {
+        if (null === $federation) {
             show_error('federation not found', 404);
         }
         $hasAddbulkAccess = $this->zacl->check_acl('f_' . $federation->getId(), 'addbulk', 'federation', '');
@@ -207,11 +206,7 @@ class Fedactions extends MY_Controller
                     );
                     if (!empty($m1)) {
                         foreach ($m1 as $v1) {
-                            if ($nmember->getLocal()) {
-                                $v1->setJoinstate('1');
-                            } else {
-                                $v1->setJoinstate('0');
-                            }
+                            $v1->setJoinstate(''.(int) $nmember->getLocal().'');
                             $this->em->persist($v1);
                             $newMembersArray[] = $nmember->getEntityId();
                         }
@@ -225,12 +220,9 @@ class Fedactions extends MY_Controller
             }
             $this->em->flush();
             $this->j_ncache->cleanFederationMembers($federation->getId());
-            $message = '<div data-alert class="alert-box success">' . lang('rr_fedmembersadded') . '</div>';
-        } else {
-            $message = '<div data-alert class="alert-box alert">' . sprintf(lang('rr_nomemtype_selected'), $memberstype) . '</div>';
+            return $this->addbulk($encodedFedName, $memberstype, '<div data-alert class="alert-box success">' . lang('rr_fedmembersadded') . '</div>');
         }
-
-        return $this->addbulk($encodedFedName, $memberstype, $message);
+        return $this->addbulk($encodedFedName, $memberstype, '<div data-alert class="alert-box alert">' . sprintf(lang('rr_nomemtype_selected'), $memberstype) . '</div>');
     }
 
 }
