@@ -381,16 +381,14 @@ class Manage extends MY_Controller
 
 
         $data['result']['membership'][] = array('data' => array('data' => '', 'colspan' => 2));
+        $group1 = array();
         if ($access['hasAddbulkAccess']) {
-            $data['result']['membership'] = array(
-                array('data' => array('data' => lang('rr_membermanagement'), 'class' => 'highlight', 'colspan' => 2)),
-                array('IDPs', lang('rr_addnewidpsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/idp', '<i class="fa fa-arrow-right"></i>')),
-                array('SPs', lang('rr_addnewspsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/sp', '<i class="fa fa-arrow-right"></i>'))
-            );
+            $group1[] = '<a class="button" href="'.base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/idp'.'">'.lang('btnaddidps').'</a>';
+            $group1[] = '<a class="button" href="'.base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/sp">'.lang('btnaddsps').'</a>';
         }
         if ($access['hasWriteAccess']) {
-            $data['result']['membership'][] = array(lang('rr_fedinvitation'), lang('rr_fedinvidpsp') . anchor(base_url() . 'federations/manage/inviteprovider/' . $encodedFedName . '', '<i class="fa fa-arrow-right"></i>'));
-            $data['result']['membership'][] = array(lang('rr_fedrmmember'), lang('rr_fedrmidpsp') . anchor(base_url() . 'federations/manage/removeprovider/' . $encodedFedName . '', '<i class="fa fa-arrow-right"></i>'));
+            $group1[] = '<a class="button" href="'.base_url() . 'federations/manage/inviteprovider/' . $encodedFedName .'">'.lang('btninvite').'</a>';
+            $group1[] = '<a class="button alert" href="'.base_url() . 'federations/manage/removeprovider/' . $encodedFedName  .'">'.lang('rr_remove').'</a>';
         }
 
 
@@ -411,6 +409,9 @@ class Manage extends MY_Controller
             $data['result']['management'][] = array('data' => array('data' => '<div class="alert-box warning"><small>' . lang('rr_noperm_accessmngt') . '</small></div>', 'colspan' => 2));
         }
 
+        if(count($group1) > 0){
+            $data['result']['membership'][] = array(''.lang('rr_membermanagement').'',''. revealBtnsRow($group1).'');
+        }
 
         $metadataTab = $this->showMetadataTab($federation, $access['hasWriteAccess']);
         if (!isset($data['result']['metadata'])) {
