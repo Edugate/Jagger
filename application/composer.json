@@ -11,5 +11,8 @@
         "gree/jose": "dev-master",
         "spomky-labs/jose": "^6.1",
 	"php-amqplib/php-amqplib": "2.6.*"
+    },
+    "require-dev": {
+        "phpmd/phpmd": "^2.6"
     }
 }
