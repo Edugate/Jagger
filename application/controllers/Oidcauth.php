@@ -43,7 +43,7 @@ class Oidcauth extends MY_Controller
         $openProvider = $this->input->post('op', true);
         if (strlen($openProvider) && array_key_exists($openProvider, $this->oidcOps)) {
             $provider = $this->oidcOps[$openProvider];
-            $client = new Jagger\oidc2\Client($provider['openid_configuration']);
+            $client = new Jagger\oidc\Client($provider['openid_configuration']);
             $client->addScope($provider['scopes']);
             $client->setProviderURL($openProvider);
             $client->setClientID($provider['client_id']);
