@@ -343,7 +343,7 @@ if (!$loggedin) {
 <?php
 // load local final js
 
-echo '<script type="text/javascript" src="' . $base_url . 'js/local-f6.min.9bc2631d.js"></script>' . PHP_EOL;
+echo '<script type="text/javascript" src="' . $base_url . 'js/local-f6.min.068423f7.js"></script>' . PHP_EOL;
 
 // raw js from array
 if (!empty($rawJs) && is_array($rawJs)) {
