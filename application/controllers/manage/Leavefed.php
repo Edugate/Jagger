@@ -40,6 +40,7 @@ class Leavefed extends MY_Controller
     private function submitValidate() {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('fedid', lang('rr_federation'), 'trim|required|numeric');
+        $this->form_validation->set_rules('message','Message','trim|required');
 
         return $this->form_validation->run();
     }
@@ -107,6 +108,7 @@ class Leavefed extends MY_Controller
 
 
         $fedid = $this->input->post('fedid');
+        $message = $this->input->post('message');
         /**
          * @var $federation models\Federation
          */
@@ -143,6 +145,7 @@ class Leavefed extends MY_Controller
                 $this->em->remove($membership);
 
             }
+            $this->tracker->save_track(strtolower($provider->getType()), 'request', $provider->getEntityId(), 'left federation: ' . $federation->getName() . '. Message attached: ' . html_escape($message) . '', false);
             try {
                 $this->em->flush();
                 $data['success_message'] = lang('rr_youleftfed') . ': ' . $federation->getName() . '<br />' . $rm_arp_msg;

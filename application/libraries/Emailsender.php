@@ -52,9 +52,9 @@ class Emailsender
          */
         $subscribers = $this->em->getRepository("models\NotificationList")->findBy(
             array(
-                'type' => $fnlNotiftypes,
-                'is_enabled' => true,
-                'is_approved' => true,
+                'type'             => $fnlNotiftypes,
+                'is_enabled'       => true,
+                'is_approved'      => true,
                 'notificationtype' => 'mail'
             )
         );
@@ -68,7 +68,7 @@ class Emailsender
                 $alreadyMailTo[] = $s->getRcpt();
                 continue;
             }
-            if ($type === 'joinfedreq') {
+            if ($type === 'joinfedreq' || $type === 'leftfed') {
                 if (empty($obj)) {
                     continue;
                 }
@@ -203,17 +203,19 @@ class Emailsender
                 $this->em->flush();
             } catch (Exception $e) {
                 log_message('error', 'EMAIL ' . __METHOD__ . ' ' . $e);
+
                 return false;
             }
         }
+
         return true;
     }
 
     public static function mailTemplatesGroups() {
         $result = array(
-            'fedregresquest' => array('federation registration request', 'desclang' => 'templfedregreq', 'args' => array('fedname', 'srcip', 'requsername', 'reqemail', 'token', 'qurl', 'datetimeutc')),
-            'spregresquest' => array('sp registration request', 'desclang' => 'templspregreq', 'args' => array('token', 'srcip', 'entorgname', 'entityid', 'reqemail', 'requsername', 'reqfullname', 'datetimeutc', 'qurl')),
-            'idpregresquest' => array('idp registration request', 'desclang' => 'templidpregreq', 'args' => array('token', 'srcip', 'entorgname', 'entityid', 'reqemail', 'requsername', 'reqfullname', 'datetimeutc', 'qurl')),
+            'fedregresquest'  => array('federation registration request', 'desclang' => 'templfedregreq', 'args' => array('fedname', 'srcip', 'requsername', 'reqemail', 'token', 'qurl', 'datetimeutc')),
+            'spregresquest'   => array('sp registration request', 'desclang' => 'templspregreq', 'args' => array('token', 'srcip', 'entorgname', 'entityid', 'reqemail', 'requsername', 'reqfullname', 'datetimeutc', 'qurl')),
+            'idpregresquest'  => array('idp registration request', 'desclang' => 'templidpregreq', 'args' => array('token', 'srcip', 'entorgname', 'entityid', 'reqemail', 'requsername', 'reqfullname', 'datetimeutc', 'qurl')),
             'userregresquest' => array('user registration request', 'desclang' => 'templuserregreq', 'args' => array('token', 'srcip', 'reqemail', 'requsername', 'reqfullname', 'qurl', 'datetimeutc')),
         );
 
@@ -331,12 +333,12 @@ class Emailsender
 
     public function providerRegRequest($type, $args) {
         $params = array(
-            'requestermail' => '',
+            'requestermail'     => '',
             'requestersourceip' => '',
-            'serviceentityid' => '',
-            'servicename' => '',
-            'orgname' => '',
-            'token' => '',
+            'serviceentityid'   => '',
+            'servicename'       => '',
+            'orgname'           => '',
+            'token'             => '',
         );
 
         $merged = array_merge($params, $args);
@@ -421,7 +423,7 @@ class Emailsender
 
         return array(
             'subject' => $sbj,
-            'body' => $body,
+            'body'    => $body,
         );
 
     }

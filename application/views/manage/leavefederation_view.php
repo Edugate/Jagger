@@ -16,14 +16,14 @@ if (!empty($showform)) {
      '<div class="small-12 columns"><div class="small-3 columns"><label for="fedid" class="right inline">' . lang('rr_selectfedtoleave') . '</label></div>'.
      '<div class="small-9 medium-7 columns end">' . form_dropdown('fedid', $feds_dropdown, set_value('fedid')) . '</div></div>';
 
-    /*echo '<div class="small-12 column">'.
+    echo '<div class="small-12 column">'.
      '<div class="small-3 columns">'.
      '<label for="message" class="right inline">' . lang('rr_message') . '</label>'.
      '</div>'.
      '<div class="small-9 medium-7 columns end">'.
      form_textarea(array('name'=>'message')).
      '</div>'.
-     '</div>';*/
+     '</div>';
     echo '<div class="small-12 center columns">';
     if (strcmp($providertype, 'IDP') != 0) {
         echo '<div data-alert class="alert-box warning">' . lang('rr_alertrmspecpoliciecsp') . '</div>';
