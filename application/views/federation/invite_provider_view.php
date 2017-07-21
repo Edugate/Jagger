@@ -23,7 +23,7 @@ if (!empty($providers)) {
     echo form_fieldset_close();
     $buttons = array(
         '<a href="'.$fedurl.'" class="button alert">'.lang('rr_cancel').'</a>',
-        '<button type="submit" name="submit" value="Invitation" class="button savebutton saveicon">'.lang('sendinvbtn').'</button>',
+        '<button type="submit" name="submit" value="Invitation" class="button savebutton saveicon">'.lang('rr_submit').'</button>',
     );
     echo '<div class="small-12 columns">';
     echo revealBtnsRow($buttons);
