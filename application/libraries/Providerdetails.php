@@ -142,12 +142,13 @@ class Providerdetails
         $sppart = $this->sppart;
         $feathide = (array)$this->CI->config->item('feathide');
         $featdisable = (array)$this->CI->config->item('featdisable');
+        $manageMembershipButtons = array();
 
         $srv_metalink = base_url('metadata/service/' . base64url_encode($ent->getEntityId()) . '/metadata.xml');
 
         $disable_extcirclemeta = $this->CI->config->item('disable_extcirclemeta');
 
-        $i = 0;
+        $i = 1;
         if (!(isset($feathide['metasonprov']) && $feathide['metasonprov'] === true)) {
             $d[++$i]['header'] = lang('rr_metadata');
             $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
@@ -281,6 +282,7 @@ class Providerdetails
             $no_feds = $membership->count();
             if ($no_feds > 0 && $hasWriteAccess) {
                 if (!$isLocked) {
+                    $manageMembershipButtons[] = '<a href="' . base_url('manage/leavefed/leavefederation/' . $ent->getId() . '').'" class="button alert">' . lang('rr_leave') . '</a>';
                     $manage_membership .= '<div><a href="' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '" class="button small alert">' . lang('rr_federationleave') . '</a></div>';
                     $this->entmenu[11] = array('name' => lang('rr_federationleave'), 'link' => '' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '', 'class' => '');
                 } else {
@@ -289,6 +291,7 @@ class Providerdetails
             }
             if ($hasWriteAccess && (count($membershipNotLeft) < count($all_federations))) {
                 if (!$isLocked) {
+                    $manageMembershipButtons[] = '<a href="' . base_url('manage/joinfed/joinfederation/' . $ent->getId() . '').'" class="button">' . lang('rr_join') . '</a>';
                     $manage_membership .= '<div><a href="' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '" class="button small">' . lang('rr_federationjoin') . '</a></div>';
                     $this->entmenu[10] = array('name' => lang('rr_federationjoin'), 'link' => '' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '', 'class' => '');
                 } else {
@@ -303,6 +306,9 @@ class Providerdetails
 
             $d[++$i]['2cols'] = '<div id="membership"></div>';
         }
+
+        $d[0]['2cols'] = revealBtnsRow($manageMembershipButtons);
+        ksort($d);
         return $d;
     }
 

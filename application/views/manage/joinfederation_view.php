@@ -29,8 +29,9 @@ echo '<div class="buttons"><button type="submit" id="fvalidate" name="fvalidate"
 <?php
 if(!empty($showform))
 {
+    $btns[] = '<a class="button alert" href="' . base_url('providers/detail/show/' . $providerid . '') . '">' . lang('rr_cancel') . '</a>';
+    $btns[] = '<button type="submit" name="modify" value="submit" class="button">' . lang('rr_apply') . '</button>';
     echo '<div class="small-12 column">';
-    $buttons = '<button type="submit" name="modify" value="submit" class="button">' . lang('rr_apply') . '</button>';
     $form = form_open(null, array('id' => 'joinfed'));
     $form .= '<div class="small-12 columns"><div class="small-3 columns">';
     $form .= '<label for="fedid" class="right inline">' . lang('rr_selectfedtojoin') . '</label></div>';
@@ -39,7 +40,7 @@ if(!empty($showform))
     $form .= '<div class="small-3 columns"><label for="formmessage" class="inline right">' . lang('rr_message') . '</label></div>';
     $form .= '<div class="small-6 large-7 columns end">' . form_textarea('formmessage', set_value('formmessage')) . '</div>';
     $form .= '</div>';
-    $form .= '<div class="buttons small-12 medium-10 large-10 column end text-right  ">'.$buttons.'</div>';
+    $form .= '<div class="buttons small-12 medium-10 large-10 column end text-right  ">'.revealBtnsRow($btns).'</div>';
     $form .= form_close();
     echo $form;
     echo '</div>';
