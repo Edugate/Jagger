@@ -283,7 +283,6 @@ class Providerdetails
             if ($no_feds > 0 && $hasWriteAccess) {
                 if (!$isLocked) {
                     $manageMembershipButtons[] = '<a href="' . base_url('manage/leavefed/leavefederation/' . $ent->getId() . '').'" class="button alert">' . lang('rr_leave') . '</a>';
-                    $manage_membership .= '<div><a href="' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '" class="button small alert">' . lang('rr_federationleave') . '</a></div>';
                     $this->entmenu[11] = array('name' => lang('rr_federationleave'), 'link' => '' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '', 'class' => '');
                 } else {
                     $manage_membership .= '<b>' . lang('rr_federationleave') . '</b> ' . $lockicon . ' <br />';
@@ -292,7 +291,6 @@ class Providerdetails
             if ($hasWriteAccess && (count($membershipNotLeft) < count($all_federations))) {
                 if (!$isLocked) {
                     $manageMembershipButtons[] = '<a href="' . base_url('manage/joinfed/joinfederation/' . $ent->getId() . '').'" class="button">' . lang('rr_join') . '</a>';
-                    $manage_membership .= '<div><a href="' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '" class="button small">' . lang('rr_federationjoin') . '</a></div>';
                     $this->entmenu[10] = array('name' => lang('rr_federationjoin'), 'link' => '' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '', 'class' => '');
                 } else {
                     $manage_membership .= '<b>' . lang('rr_federationjoin') . '</b> ' . $lockicon . '<br />';
