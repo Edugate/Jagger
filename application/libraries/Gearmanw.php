@@ -3,6 +3,8 @@ if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+
 /**
  * @package   Jagger
  * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
@@ -20,7 +22,8 @@ class Gearmanw
         $this->ci->load->helper('file');
     }
 
-    static public function fn_externalstatcollection(\GearmanJob $job) {
+    private static function fn_externalstatcollectionGearman(\GearmanJob $job) {
+
         $ci = &get_instance();
         log_message('info', 'GEARMAN ::' . __METHOD__ . ' received job');
         $em = $ci->doctrine->em;
@@ -40,11 +43,11 @@ class Gearmanw
         sleep(1);
         $storage = $ci->config->item('datastorage_path');
         $img_mimes = array(
-            'image/jpeg' => 'jpg',
+            'image/jpeg'  => 'jpg',
             'image/pjpeg' => 'jpg',
-            'image/png' => 'png',
+            'image/png'   => 'png',
             'image/x-png' => 'png',
-            'image/gif' => 'gif',
+            'image/gif'   => 'gif',
         );
 
         if (empty($storage)) {
@@ -203,7 +206,39 @@ class Gearmanw
         return true;
     }
 
-    private function registerCollectorWorkers() {
+    private static function fn_externalstatcollectionRabbit($job) {
+    }
+
+    static public function fn_externalstatcollection($job) {
+
+        if ($job instanceof \GearmanJob) {
+            self::fn_externalstatcollectionGearman($job);
+        } else {
+            self::fn_externalstatcollectionRabbit($job);
+        }
+
+    }
+
+    /**
+     * @todo finish rabbit
+     */
+    private function registerRabbitCollectorWorkers() {
+        $config = $this->ci->config->item('rabbitmq');
+        $connection = new AMQPStreamConnection($config['host'], $config['port'], $config['user'], $config['password']);
+        $channel = $connection->channel();
+        //$channel->queue_declare('hello', false, false, false, false);
+
+        $callback = function ($msq) {
+            self::fn_externalstatcollectionRabbit($msq);
+        };
+        $channel->basic_consume('externalstatcollection', '', false, true, false, false, $callback);
+        while (count($channel->callbacks)) {
+            $channel->wait();
+        }
+
+    }
+
+    private function registerGearmanCollectorWorkers() {
         $gearmanConfig = $this->ci->config->item('gearmanconf');
         if (empty($gearmanConfig) || !isset($gearmanConfig['jobserver'])) {
             log_message('error', 'config[gearmanconf][jobserver] not found in config_rr file');
@@ -215,15 +250,15 @@ class Gearmanw
             $gm->addServer('' . $j['ip'], $j['port']);
         }
         $gm->addFunction('externalstatcollection', 'Gearmanw::fn_externalstatcollection');
-        $predifend = $this->ci->config->item('predefinedstats');
-        if (!empty($predifend) && is_array($predifend)) {
+        $predefined = $this->ci->config->item('predefinedstats');
+        if (!empty($predefined) && is_array($predefined)) {
             echo "predefined exists\n";
             echo APPPATH . "libraries/third_party/Gstatcollectors.php\n";
 
             if (file_exists(APPPATH . "libraries/third_party/Gstatcollectors.php")) {
                 echo "lib Gstatcollectors exists\n";
                 $this->ci->load->library('third_party/Gstatcollectors.php');
-                foreach ($predifend as $key => $value) {
+                foreach ($predefined as $key => $value) {
                     $w = $value['worker'];
                     echo "www " . $w . "\n";
                     if (!empty($w)) {
@@ -232,7 +267,16 @@ class Gearmanw
                 }
             }
         }
-        while ($gm->work());
+        while ($gm->work()) ;
+    }
+
+    private function registerCollectorWorkers() {
+        $mq = $this->ci->config->item('mq');
+        if ($mq !== 'rabbitmq') {
+            $this->registerGearmanCollectorWorkers();
+        } else {
+            $this->registerRabbitCollectorWorkers();
+        }
     }
 
     public function worker() {

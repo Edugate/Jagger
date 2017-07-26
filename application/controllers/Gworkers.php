@@ -25,11 +25,15 @@ class Gworkers extends MY_Controller
      */
     public function worker() {
         if (is_cli()) {
+
             $this->load->library('gearmanw');
+
             $this->gearmanw->worker();
 
         }
-        return $this->output->set_status_header(403)->set_output('Denied');
+        else {
+            return $this->output->set_status_header(403)->set_output('Denied');
+        }
     }
 
     /**
@@ -218,7 +222,7 @@ class Gworkers extends MY_Controller
     }
 
     private function jcronRunRabbit(\models\Jcrontab $cronEntry) {
-        $resolvedT = $this->resolveTemplate($cronEntry);
+        $resolvedT = (array) $this->resolveTemplate($cronEntry);
         $conf = $this->config->item('rabbitmq');
         if (!isset($conf['enabled'])) {
             log_message('error', __METHOD__ . ' missing config for rabbitmq');
