@@ -20,12 +20,16 @@ class Gworkers extends MY_Controller
         $this->load->library('gworkertemplates');
     }
 
+    /**
+     * @return CI_Output
+     */
     public function worker() {
-        if (!is_cli()) {
-            return $this->output->set_status_header(403)->set_output('Denied');
+        if (is_cli()) {
+            $this->load->library('gearmanw');
+            $this->gearmanw->worker();
+
         }
-        $this->load->library('gearmanw');
-        $this->gearmanw->worker();
+        return $this->output->set_status_header(403)->set_output('Denied');
     }
 
     /**
@@ -92,11 +96,11 @@ class Gworkers extends MY_Controller
                     $this->em->flush();
                     $mailsSent = array();
                 } catch (Exception $e) {
-                    log_message('eror', 'MAILQUEUE: could not update db about sent status');
+                    log_message('error', 'MAILQUEUE: could not update db about sent status: '.$e);
                 }
                 $this->em->clear();
             } catch (Exception $e) {
-                log_message('error', 'MAILQUEUE ::' . __METHOD__ . ' lost connection to database trying to reconnect');
+                log_message('error', 'MAILQUEUE ::' . __METHOD__ . ' lost connection to database trying to reconnect: '.$e);
                 $this->em->getConnection()->close();
                 sleep(10);
                 $this->em->getConnection()->connect();
@@ -144,7 +148,7 @@ class Gworkers extends MY_Controller
                 $this->em->flush();
 
             } catch (Exception $e) {
-                log_message('error', 'JCRONMONITOR :: Probably lost connection to database trying to reconnect');
+                log_message('error', 'JCRONMONITOR :: Probably lost connection to database trying to reconnect: '.$e );
                 $this->em->getConnection()->close();
                 $this->em->getConnection()->connect();
             }
@@ -161,6 +165,9 @@ class Gworkers extends MY_Controller
         return $this->output->set_status_header(500)->set_output('unexpected exit');
     }
 
+    private function runViaRabbitmq($runJobs){
+
+    }
     private function runViaGearman($runJobs) {
         $gearmanConf = $this->config->item('gearmanconf');
         $gclient = new GearmanClient();
@@ -281,29 +288,27 @@ class Gworkers extends MY_Controller
         return $result;
     }
 
+
+    /**
+     * @param \models\Jcrontab $cronEntry
+     * @return array|null
+     */
     private function jcronRun(\models\Jcrontab $cronEntry) {
         $mqueue = $this->config->item('mq');
-        if (!$mqueue !== 'rabbitmq') {
-            $mqueue === 'gearman';
+        if ($mqueue !== 'rabbitmq') {
+            $result = (array) $this->jcronRunGearman($cronEntry);
+        }
+        else {
+            $result = (array) $this->jcronRunRabbit($cronEntry);
         }
 
-
-        $result = array();
-        if ($mqueue === 'gearman') {
-            $result = $this->jcronRunGearman($cronEntry);
-        } else {
-            $result = $this->jcronRunRabbit($cronEntry);
-        }
         if (count($result) > 0) {
             $cronEntry->setLastRun();
             $this->em->persist($cronEntry);
 
             return $result;
         }
-
-        return false;
-
-
+        return null;
     }
 
 
