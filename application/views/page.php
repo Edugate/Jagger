@@ -300,7 +300,7 @@ if ($breadcrumbsEnabled === true) {
 </div>
 
 <?php
-echo '<script type="text/javascript" src="' . $base_url . 'js/f6-thirdpartylibs.min.4510195e.js"></script>' . PHP_EOL;
+echo '<script type="text/javascript" src="' . $base_url . 'js/f6-thirdpartylibs.min.efae0a01.js"></script>' . PHP_EOL;
 
 if (!empty($load_matrix_js)) {
     echo '<script type="text/javascript">';
@@ -343,7 +343,7 @@ if (!$loggedin) {
 <?php
 // load local final js
 
-echo '<script type="text/javascript" src="' . $base_url . 'js/local-f6.min.068423f7.js"></script>' . PHP_EOL;
+echo '<script type="text/javascript" src="' . $base_url . 'js/local-f6.min.9a8119a0.js"></script>' . PHP_EOL;
 
 // raw js from array
 if (!empty($rawJs) && is_array($rawJs)) {

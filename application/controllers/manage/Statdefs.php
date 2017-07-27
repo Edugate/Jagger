@@ -38,12 +38,9 @@ class Statdefs extends MY_Controller
      * @return bool
      */
     private function isStats() {
-        $isgearman = $this->config->item('gearman');
-        $isstatistics = $this->config->item('statistics');
-        if ($isgearman === true && $isstatistics === true) {
-            return true;
-        }
-        return false;
+        $mqueue = $this->mq->isClientEnabled();
+        $isstatistics = (bool) $this->config->item('statistics');
+        return ($mqueue && $isstatistics);
     }
 
 
@@ -71,6 +68,10 @@ class Statdefs extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Access denied');
         }
         $params = $statDefinition->toParamArray();
+
+        /**
+         * gearman client call
+         */
         $gmclient = new GearmanClient();
         $jobservers = array();
         $gearmanConfig = $this->config->item('gearmanconf');
@@ -90,7 +91,8 @@ class Statdefs extends MY_Controller
             if (($stat['0'] === true) && ($stat['1'] === false)) {
                 return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => lang('rr_jobinqueue'))));
 
-            } elseif ($stat[0] === $stat[1] && $stat[1] === true) {
+            }
+            if ($stat[1] === true && $stat[0] === $stat[1]) {
                 $percent = $stat[2] / $stat[3] * 100;
                 return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => lang('rr_jobdonein') . ' ' . $percent . ' %')));
             }
@@ -104,6 +106,8 @@ class Statdefs extends MY_Controller
             $jobHandle = $gmclient->doBackground('' . $workername . '', serialize($params));
             $_SESSION['jobs']['stadef']['' . $defid . ''] = $jobHandle;
         }
+
+
         return $this->output->set_content_type('application/json')->set_output(json_encode(array('status' => lang('taskssent') . ' ')));
     }
 
@@ -316,8 +320,9 @@ class Statdefs extends MY_Controller
         );
 
         $generalInfo = $this->stadefGeneralInfo($statDefinition);
-        array_push($data2, array_values($generalInfo));
-
+        foreach ($generalInfo as $v){
+            $data2[] = $v;
+        }
         /**
          * @var $statfiles models\ProviderStatsCollection[]
          */
@@ -627,7 +632,7 @@ class Statdefs extends MY_Controller
             $msg = 'not found';
         } else {
             $def = $this->em->getRepository("models\ProviderStatsDef")->findOneBy(array('id' => $defid));
-            if (empty($def)) {
+            if (null === $def) {
                 $statusCode = 404;
                 $msg = 'not found';
             }

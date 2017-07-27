@@ -3704,8 +3704,15 @@ $(function () {
                     $.each(data, function (i, v) {
 
                         i = new Image();
+
                         i.src = v.url;
-                        $('#statisticdiag').append('<div style="text-align:center; font-weight: bold; width: 90%;">' + v.title + '</div>').append('<div style="font-weight: bolder; width: 90%; text-align: right;">' + v.subtitle + '</div>').append(i);
+                        i.onload = function(){
+                            $('#statisticdiag').append('<div style="text-align:center; font-weight: bold; width: 90%;">' + v.title + '</div>').append('<div style="font-weight: bolder; width: 90%; text-align: right;">' + v.subtitle + '</div>').append(i);
+                        };
+                        i.onerror = function(){
+                            $('#statisticdiag').append('<div style="text-align:center; font-weight: bold; width: 90%;">' + v.title + '</div>').append('<div style="font-weight: bolder; width: 90%; text-align: right;">' + v.subtitle + '</div>').append('<div data-alert class="alert-box alert">Could not load the image (not found or no access)</div>');
+                        }
+
 
                     });
                 }
