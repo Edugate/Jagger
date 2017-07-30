@@ -15,7 +15,6 @@ echo form_open($action,$form_attrs,$hidden);
 
 $tmpl = array('table_open' => '<table  id="details" class="tablesorter">');
 $this->table->set_template($tmpl);
-$this->table->set_caption(lang('listavailableprov'));
 $this->table->set_heading(lang('rr_tbltitle_name'),'#');
 $fed_link = anchor(base_url().'federations/manage/show/'.$fed_encoded,$federation_name);
 $mtype = "";
@@ -31,9 +30,11 @@ if($message)
 {
 	echo $message;
 }
+echo '<fieldset><legend>'.$ptitle.'</legend>';
 echo $this->table->generate($form_elements);
-echo '<div class="buttons small-12 columns text-center">';
-echo '<button type="reset" name="reset" value="reset" class="button resetbutton reseticon alert">'.lang('rr_reset').'</button> ';
+echo '</fieldset>';
+echo '<div class="button-group text-right small-12 columns tgext-center">';
+echo '<a class="button  alert" href="'.base_url('federations/manage/show/'.$fed_encoded).'">'.lang('rr_cancel').'</a> ';
 echo '<button type="submit" name="ass" value="add selected new members" class="button savebutton saveicon"><span class="save">'.lang('rr_add').'</button>';
 echo "</div>";
 echo form_close();

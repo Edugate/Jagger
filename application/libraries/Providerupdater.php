@@ -203,7 +203,7 @@ class Providerupdater
             'DiscoveryResponse'            => array()
         );
         $acsdefaultset = false;
-        $c = 20;
+        $idxOrder = 20;
         foreach ($services as $srv) {
             $srvType = $srv->getType();
             $inputSrv = &$cData['srv']['' . $srvType . '']['' . $srv->getId() . ''];
@@ -239,7 +239,7 @@ class Providerupdater
             if (in_array($srvType, array('IDPArtifactResolutionService', 'SPArtifactResolutionService', 'DiscoveryResponse'), true)) {
                 if (in_array($inputBind, $validationBinds['' . $srvType . ''])) {
                     if (in_array($inputOrder, $servicesIndexes['' . $srvType . '']) || null === $inputOrder) {
-                        $inputOrder = $c++;
+                        $inputOrder = $idxOrder++;
                     }
                     $srv->setUrl($inputUrl);
                     $srv->setBindingName($inputBind);
@@ -278,7 +278,7 @@ class Providerupdater
 
                 if (in_array($inputBind, $validationBinds['' . $srvType . ''])) {
                     if (in_array($inputOrder, $servicesIndexes['' . $srvType . '']) || $inputOrder === null) {
-                        $inputOrder = $c++;
+                        $inputOrder = $idxOrder++;
                     }
                     $srv->setUrl($inputUrl);
                     $srv->setBindingName($inputBind);
@@ -321,7 +321,7 @@ class Providerupdater
                         if (array_key_exists('order', $v1) && is_numeric($v1['order']) && !in_array($v1['order'], $servicesIndexes['' . $srvType . ''])) {
                             $newservice->setOrder($v1['order']);
                         } else {
-                            $newservice->setOrder($c++);
+                            $newservice->setOrder($idxOrder++);
                         }
                         $newservice->setBindingName($v1['bind']);
                         $newservice->setUrl($v1['url']);
@@ -354,7 +354,7 @@ class Providerupdater
                         if (array_key_exists('order', $v1) && is_numeric($v1['order']) && !in_array($v1['order'], $servicesIndexes['' . $srvType . ''])) {
                             $newservice->setOrder($v1['order']);
                         } else {
-                            $newservice->setOrder($c++);
+                            $newservice->setOrder($idxOrder++);
                         }
                         if (array_key_exists('default', $v1) && strcmp($v1['default'], '1') == 0 && $acsdefaultset !== true) {
                             $newservice->setDefault(true);
@@ -1111,7 +1111,7 @@ class Providerupdater
         foreach ($fields as $fieldName) {
             $trackorigs = array();
             if (array_key_exists($fieldName, $ch) && is_array($ch[$fieldName])) {
-                foreach ($ch[$fieldName] as $key => $value) {
+                foreach (array_keys($ch[$fieldName]) as $key) {
                     if (!in_array($key, $this->allowedLangCodes, true)) {
                         unset($ch[$fieldName]['' . $key . '']);
                         log_message('warning', __METHOD__ . ' lang code ' . $key . ' (' . $fieldsLongName[$fieldName] . ') not found in allowed langs');
@@ -1130,9 +1130,7 @@ class Providerupdater
                     $isDiff = true;
                 } else {
                     $diff1 = array_diff_assoc($ch[$fieldName], $trackorigs);
-                    if (count($diff1) > 0) {
-                        $isDiff = true;
-                    }
+                    $isDiff = (count($diff1) > 0);
                 }
                 if ($isDiff) {
                     $trackAfter = array();

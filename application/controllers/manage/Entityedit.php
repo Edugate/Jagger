@@ -32,7 +32,8 @@ class Entityedit extends MY_Controller
     protected $allowedDigestMethods;
     protected $allowedSignMethods;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->load->library(array('curl', 'formelement', 'form_validation', 'approval', 'providertoxml', 'j_ncache'));
         $this->tmpProviders = new models\Providers;
@@ -47,13 +48,14 @@ class Entityedit extends MY_Controller
         $this->allowedSignMethods = j_SignatureAlgorithms();
     }
 
-    private function externalValidation($metaid, models\FederationValidator $fedValidator) {
-        $metadataUrl = base_url() . '/metadata/preregister/' . $metaid . '';
-        $method = $fedValidator->getMethod();
+    private function externalValidation($metaid, models\FederationValidator $fedValidator)
+    {
+        $metadataUrl = base_url('/metadata/preregister/' . $metaid . '');
+        $method = strtolower($fedValidator->getMethod());
         $remoteUrl = $fedValidator->getUrl();
         $entityParam = $fedValidator->getEntityParam();
         $optArgs = $fedValidator->getOptargs();
-        if (strcmp($method, 'GET') == 0) {
+        if ($method === 'get') {
             $separator = $fedValidator->getSeparator();
             $optArgsStr = '';
             foreach ($optArgs as $k => $v) {
@@ -193,7 +195,8 @@ class Entityedit extends MY_Controller
 
     }
 
-    private function submitValidate($id) {
+    private function submitValidate($id)
+    {
         $register = false;
         if (strcmp($id, 'idp') == 0 || strcmp($id, 'sp') == 0 || strcmp($id, 'both') == 0) {
             $register = true;
@@ -361,9 +364,9 @@ class Entityedit extends MY_Controller
             $grantEncrMethsList = implode(",", $grantEncrMeths);
             $certsCounter = array('idpsso' => 0, 'spsso' => 0, 'aa' => 0);
             $certGroups = array(
-                'spsso'  => 'SPSSODescriptor',
+                'spsso' => 'SPSSODescriptor',
                 'idpsso' => 'IDPSSODescriptor',
-                'aa'     => 'AttributeAuthorityDescriptor'
+                'aa' => 'AttributeAuthorityDescriptor'
             );
             if (array_key_exists('crt', $y['f'])) {
                 foreach ($certGroups as $key => $val) {
@@ -377,7 +380,7 @@ class Entityedit extends MY_Controller
                             $this->form_validation->set_rules('f[crt][' . $key . '][' . $k . '][usage]', '' . lang('rr_certificateuse') . '', 'htmlspecialchars|trim|required');
                             $this->form_validation->set_rules('f[crt][' . $key . '][' . $k . '][encmethods][]', 'Certificate EncryptionMethod', 'trim|in_list[' . $grantEncrMethsList . ']');
 
-                            $certsCounter[''.$key.''] = $certsCounter[''.$key.''] + 1;
+                            $certsCounter['' . $key . ''] = $certsCounter['' . $key . ''] + 1;
 
                         }
                     }
@@ -576,7 +579,7 @@ class Entityedit extends MY_Controller
                     $this->tmpError = 'duplicate binding protocols for SP SLO found in sent form';
                     $optValidationsPassed = false;
                 }
-                if($certsCounter['idpsso'] === 0){
+                if ($certsCounter['idpsso'] === 0) {
                     $this->tmpError = 'At least on certificate must be set for IDPSSODescriptor';
                     $optValidationsPassed = false;
                 }
@@ -591,7 +594,8 @@ class Entityedit extends MY_Controller
         return ($result && $optValidationsPassed);
     }
 
-    private function saveToDraft($id, $data) {
+    private function saveToDraft($id, $data)
+    {
         $attrs1 = array('lname', 'ldisplayname', 'lhelpdesk', 'coc');
         foreach ($attrs1 as $a1) {
             if (isset($data['' . $a1 . ''])) {
@@ -682,18 +686,21 @@ class Entityedit extends MY_Controller
         $this->session->set_userdata($n, $data);
     }
 
-    private function getFromDraft($id) {
+    private function getFromDraft($id)
+    {
         $n = 'entform' . $id;
 
         return $this->session->userdata($n);
     }
 
-    private function discardDraft($id) {
+    private function discardDraft($id)
+    {
         $n = 'entform' . $id;
         $this->session->unset_userdata($n);
     }
 
-    private function checkPermissions($id) {
+    private function checkPermissions($id)
+    {
         $has_write_access = $this->zacl->check_acl($id, 'write', 'entity');
 
         if (!$has_write_access) {
@@ -705,7 +712,11 @@ class Entityedit extends MY_Controller
         return true;
     }
 
-    private function notifyOnChange(\models\Provider $ent) {
+    /**
+     * @param \models\Provider $ent
+     */
+    private function notifyOnChange(\models\Provider $ent)
+    {
 
         $tracker = null;
         $unitInsertCollection = $this->em->getUnitOfWork()->getScheduledEntityInsertions();
@@ -714,16 +725,18 @@ class Entityedit extends MY_Controller
 
                 if ($objToInsert->getResourceType() === 'ent' && $objToInsert->getSubType() === 'modification') {
                     $tracker = $objToInsert;
+
                     break;
                 }
             }
         }
-        if (!empty($tracker)) {
+        if (null !== $tracker) {
             $this->emailsender->providerIsModified($ent, $tracker);
         }
     }
 
-    public function show($id) {
+    public function show($id)
+    {
         if (!ctype_digit($id)) {
             show_404();
         }
@@ -851,18 +864,20 @@ class Entityedit extends MY_Controller
     /**
      * @return bool
      */
-    private function isFromSimpleRegistration() {
+    private function isFromSimpleRegistration()
+    {
         $fromSimpleMode = $this->input->post('advanced');
 
         return (!empty($fromSimpleMode) && strcmp($fromSimpleMode, 'advanced') == 0);
 
     }
 
-    public function register($t = null) {
+    public function register($t = null)
+    {
         MY_Controller::$menuactive = 'reg';
 
         $data = array(
-            'registerForm'    => true,
+            'registerForm' => true,
             'error_messages2' => &$this->tmpError
         );
         $data['jsAddittionalFiles'][] = 'https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places';
@@ -907,9 +922,9 @@ class Entityedit extends MY_Controller
             $data['loggeduser'] = array(
                 'username' => '' . $currentusername . '',
                 'fullname' => '' . $u->getFullname() . '',
-                'fname'    => '' . $u->getGivenname() . '',
-                'lname'    => '' . $u->getSurname() . '',
-                'email'    => '' . $u->getEmail() . '',
+                'fname' => '' . $u->getGivenname() . '',
+                'lname' => '' . $u->getSurname() . '',
+                'email' => '' . $u->getEmail() . '',
             );
         }
 
@@ -1101,7 +1116,7 @@ class Entityedit extends MY_Controller
                         $xmlOut = $this->providertoxml->entityConvertNewDocument($ent, $options);
                         $tmpid = mt_rand(10, 1000);
                         log_message('debug', 'JAGGER RAND: ' . $tmpid);
-                        if(empty($xmlOut)){
+                        if (empty($xmlOut)) {
 
                             show_error('Some validations broke - couldn generate metadata for entity based on provided information');
                         }
@@ -1145,11 +1160,11 @@ class Entityedit extends MY_Controller
                             $q->setToken();
                             $sourceIP = $this->input->ip_address();
                             $messageTemplateParams = array(
-                                'requestermail'     => $contactMail,
-                                'token'             => $q->getToken(),
+                                'requestermail' => $contactMail,
+                                'token' => $q->getToken(),
                                 'requestersourceip' => $sourceIP,
-                                'orgname'           => $ent->getName(),
-                                'serviceentityid'   => $ent->getEntityId(),
+                                'orgname' => $ent->getName(),
+                                'serviceentityid' => $ent->getEntityId(),
                             );
                             if (!empty($u)) {
 
@@ -1162,15 +1177,15 @@ class Entityedit extends MY_Controller
                             $nowUtc = new \DateTime('now', new \DateTimeZone('UTC'));
 
                             $messageTemplateArgs = array(
-                                'token'       => $q->getToken(),
-                                'srcip'       => $sourceIP,
-                                'entorgname'  => $ent->getName(),
-                                'entityid'    => $ent->getEntityId(),
-                                'reqemail'    => $contactMail,
+                                'token' => $q->getToken(),
+                                'srcip' => $sourceIP,
+                                'entorgname' => $ent->getName(),
+                                'entityid' => $ent->getEntityId(),
+                                'reqemail' => $contactMail,
                                 'requsername' => '' . $requsername . '',
                                 'reqfullname' => $reqfullname,
                                 'datetimeutc' => '' . $nowUtc->format('Y-m-d h:i:s') . ' UTC',
-                                'qurl'        => '' . base_url() . 'reports/awaiting/detail/' . $q->getToken() . '');
+                                'qurl' => '' . base_url() . 'reports/awaiting/detail/' . $q->getToken() . '');
 
 
                             $messageTemplate = $this->emailsender->generateLocalizedMail($mailTemplateGroup, $messageTemplateArgs);
@@ -1215,7 +1230,8 @@ class Entityedit extends MY_Controller
         $this->load->view(MY_Controller::$page, $data);
     }
 
-    private function genTabs(\models\Provider $ent, $entsession, $register = false) {
+    private function genTabs(\models\Provider $ent, $entsession, $register = false)
+    {
         $tabs = array(
             array('id' => 'organization', 'value' => '' . lang('taborganization') . '', 'form' => $this->providerformelements->generateGeneral()),
             array('id' => 'contacts', 'value' => '' . lang('tabcnts') . '', 'form' => $this->formelement->NgenerateContactsForm($ent, $entsession)),
@@ -1245,7 +1261,8 @@ class Entityedit extends MY_Controller
         return $tabs;
     }
 
-    public function registersuccess() {
+    public function registersuccess()
+    {
 
         $data['content_view'] = 'register_success';
         $this->load->view(MY_Controller::$page, $data);

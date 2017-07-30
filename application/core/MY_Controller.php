@@ -70,7 +70,8 @@ class MY_Controller extends CI_Controller
     protected $authenticated;
     protected $inqueue;
 
-    public function __construct() {
+    public function __construct()
+    {
 
         parent::__construct();
         $this->output->set_header('Pragma: no-cache');
@@ -91,17 +92,15 @@ class MY_Controller extends CI_Controller
             'sr' => array('path' => 'sr', 'val' => 'srpski')
         );
         $altPage = $this->config->item('landpage');
-        if($altPage !== null){
+        if ($altPage !== null) {
             self::$page = $altPage;
         }
         /**
          * @var null|array $additionalLangs
          */
-        $additionalLangs = $this->config->item('guilangs');
-        if (is_array($additionalLangs)) {
-            foreach ($additionalLangs as $k => $v) {
-                self::$langs['' . $k . ''] = $v;
-            }
+        $additionalLangs = (array)$this->config->item('guilangs');
+        foreach ($additionalLangs as $k => $v) {
+            self::$langs['' . $k . ''] = $v;
         }
 
 
@@ -151,32 +150,35 @@ class MY_Controller extends CI_Controller
     /**
      * @return string
      */
-    public static function getLang() {
+    public static function getLang()
+    {
         return self::$currLang;
     }
 
     /***
      * @return array
      */
-    public static function guiLangs() {
+    public static function guiLangs()
+    {
         return self::$langs;
     }
 
 
-    public static function extPlugsAutoLoader($className) {
-        $path = APPPATH . 'extplugins/';
+    public static function extPlugsAutoLoader($className)
+    {
         $className = ltrim($className, '\\');
         $fileName = '';
-        $namespace = '';
         if ($lastNsPos = strrpos($className, '\\')) {
             $namespace = substr($className, 0, $lastNsPos);
             $className = substr($className, $lastNsPos + 1);
             $fileName = APPPATH . 'extplugins/' . str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
         }
         $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
-        if (is_file($fileName)) {
-            require $fileName;
+        if (file_exists($fileName)) {
+            require_once $fileName;
+            return true;
         }
+        return false;
     }
 
 }

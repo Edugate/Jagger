@@ -13,6 +13,7 @@ if (!defined('BASEPATH')) {
 class Dashboard extends MY_Controller
 {
 
+    public $title;
     public function __construct() {
         parent::__construct();
         $this->title = lang('dashboard');
