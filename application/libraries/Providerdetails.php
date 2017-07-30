@@ -428,9 +428,6 @@ class Providerdetails
 
         $isStatic = $ent->getStatic();
 
-        $params = array(
-            'enable_classes' => true,
-        );
         $sppart = $this->sppart;
         $idppart = $this->idppart;
         $type = strtolower($ent->getType());

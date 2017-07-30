@@ -1124,7 +1124,6 @@ class Providerupdater
                 } elseif ($fieldName === 'lhelpdesk') {
                     $trackorigs = $ent->getHelpdeskUrlLocalized();
                 }
-                $isDiff = false;
                 $diff1 = array_diff_assoc($trackorigs, $ch[$fieldName]);
                 if (count($diff1) > 0) {
                     $isDiff = true;
