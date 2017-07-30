@@ -47,6 +47,7 @@ class Metadata2import
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->library('metadata2array');
         $this->ci->load->library('tracker');
+        $this->ci->load->library('emailsender');
         $this->metadata = null;
         $this->full = false;
         $this->copyFedAttrReq = false;
@@ -75,40 +76,6 @@ class Metadata2import
         );
     }
 
-    /**
-     * @param $report
-     * @return bool
-     */
-    private function genReport($report) {
-        if (!is_array($report)) {
-            return false;
-        }
-        $this->ci->load->library('emailsender');
-        $body = 'Report' . PHP_EOL;
-        foreach ($report['body'] as $bb) {
-            $body .= $bb . PHP_EOL;
-        }
-        $structureChanged = false;
-        $sections = array(
-            'new'      => 'List new providers registered during sync',
-            'joinfed'  => 'List existing providers added to federation during sync',
-            'del'      => 'List providers removed from the system during sync',
-            'leavefed' => 'List providers removed from federation during sync');
-        foreach ($sections as $section => $sectionTitle) {
-            if (count($report['provider']['' . $section . '']) > 0) {
-                $structureChanged = true;
-                $body .= PHP_EOL . ':: ' . $sectionTitle . ' ::' . PHP_EOL;
-                foreach ($report['provider']['' . $section . ''] as $a) {
-                    $body .= $a . PHP_EOL;
-                }
-            }
-        }
-        if ($structureChanged) {
-            $this->ci->emailsender->addToMailQueue(array('gfedmemberschanged'), null, 'Federation sync/import report', $body, array(), false);
-        }
-
-        return true;
-    }
 
     private function getAttributesByNames() {
         if (!is_array($this->attrsDefinitions)) {
@@ -411,8 +378,8 @@ class Metadata2import
                     }
                 }
             }
+            $this->ci->emailsender->syncMetaReport($report);
             try {
-                $this->genReport($report);
                 $this->em->flush();
             } catch (Exception $e) {
                 log_message('error', __METHOD__ . ' ' . $e);

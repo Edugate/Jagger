@@ -428,4 +428,38 @@ class Emailsender
 
     }
 
+    /**
+     * @param $report
+     * @return bool
+     */
+    public function syncMetaReport($report){
+        if (!is_array($report)) {
+            return false;
+        }
+        $body = 'Report' . PHP_EOL;
+        foreach ($report['body'] as $bb) {
+            $body .= $bb . PHP_EOL;
+        }
+        $structureChanged = false;
+        $sections = array(
+            'new'      => 'List new providers registered during sync',
+            'joinfed'  => 'List existing providers added to federation during sync',
+            'del'      => 'List providers removed from the system during sync',
+            'leavefed' => 'List providers removed from federation during sync');
+        foreach ($sections as $section => $sectionTitle) {
+            if (isset($report['provider']['' . $section . '']) && count($report['provider']['' . $section . '']) > 0) {
+                $structureChanged = true;
+                $body .= PHP_EOL . ':: ' . $sectionTitle . ' ::' . PHP_EOL;
+                foreach ($report['provider']['' . $section . ''] as $a) {
+                    $body .= $a . PHP_EOL;
+                }
+            }
+        }
+        if ($structureChanged) {
+            $this->addToMailQueue(array('gfedmemberschanged'), null, 'Federation sync/import report', $body, array(), false);
+        }
+
+        return true;
+    }
+
 }
