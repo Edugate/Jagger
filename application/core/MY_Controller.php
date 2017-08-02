@@ -54,6 +54,7 @@ if (!defined('BASEPATH')) {
  * @property CI_Cache $cache
  * @property Providertoxml $providertoxml
  * @property Mq $mq
+ * @property Gworkertemplates $gworkertemplates
  */
 class MY_Controller extends CI_Controller
 {

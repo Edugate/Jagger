@@ -2,8 +2,10 @@
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
+
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
+
 /**
  * @package   Jagger
  * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
@@ -15,41 +17,41 @@ class Gworkers extends MY_Controller
 {
 
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->load->library('gworkertemplates');
+        $this->load->library('gearmanw');
     }
 
+
     /**
-     * @return CI_Output
+     * @throws Exception
      */
-    public function worker() {
-        if (is_cli()) {
-
-            $this->load->library('gearmanw');
-
-            $this->gearmanw->worker();
-
+    public function worker()
+    {
+        if (!is_cli()) {
+            show_error('Access denied', 403);
         }
-        else {
-            return $this->output->set_status_header(403)->set_output('Denied');
-        }
+        $this->gearmanw->worker();
     }
 
     /**
      * @return array
      */
-    private function getSendOptions() {
+    private function getSendOptions()
+    {
         $this->load->library('rrpreference');
         $sendOptions = array(
-            'mailfrom'   => $this->config->item('mail_from'),
+            'mailfrom' => $this->config->item('mail_from'),
             'subjsuffix' => (string)$this->config->item('mail_subject_suffix')
         );
 
         return $sendOptions;
     }
 
-    public function mailqueuesender() {
+    public function mailqueuesender()
+    {
         if (!is_cli()) {
             return $this->output->set_status_header(403)->set_output('Denied');
         }
@@ -100,11 +102,11 @@ class Gworkers extends MY_Controller
                     $this->em->flush();
                     $mailsSent = array();
                 } catch (Exception $e) {
-                    log_message('error', 'MAILQUEUE: could not update db about sent status: '.$e);
+                    log_message('error', 'MAILQUEUE: could not update db about sent status: ' . $e);
                 }
                 $this->em->clear();
             } catch (Exception $e) {
-                log_message('error', 'MAILQUEUE ::' . __METHOD__ . ' lost connection to database trying to reconnect: '.$e);
+                log_message('error', 'MAILQUEUE ::' . __METHOD__ . ' lost connection to database trying to reconnect: ' . $e);
                 $this->em->getConnection()->close();
                 sleep(10);
                 $this->em->getConnection()->connect();
@@ -115,7 +117,8 @@ class Gworkers extends MY_Controller
         return $this->output->set_status_header(500)->set_output('unexpected exit');
     }
 
-    public function jcronmonitor() {
+    public function jcronmonitor()
+    {
         if (!is_cli()) {
             log_message('error', __METHOD__ . ' called not via cli');
             return $this->output->set_status_header(403)->set_output('Denied');
@@ -125,13 +128,14 @@ class Gworkers extends MY_Controller
         if ($mqueue !== 'rabbitmq') {
             $mqueue = 'gearman';
         }
-        log_message('info', 'JCRONMONITOR : '.$mqueue.' mechanism loaded');
-
-        $runJobs = array();
+        log_message('info', 'JCRONMONITOR : ' . $mqueue . ' mechanism loaded');
         while (true) {
             sleep(15);
             try {
                 log_message('debug', 'JCRONMONITOR : checking for new tasks');
+                /**
+                 * @var $cronEntries models\Jcrontab[]
+                 */
                 $cronEntries = $this->em->getRepository("models\Jcrontab")->findBy(array('isenabled' => true));
                 $currentTime = new \DateTime('now');
                 foreach ($cronEntries as $c) {
@@ -140,64 +144,22 @@ class Gworkers extends MY_Controller
 
                         $didRunInRange = $c->isLastRunMatchRange($currentTime, 60);
                         if (!$didRunInRange) {
-                            $r = $this->jcronRun($c);
-                            if (!empty($r)) {
-                                foreach ($r as $rv) {
-                                    $runJobs[] = $rv;
-                                }
-                            }
+                            $this->jcronRun($c);
                         }
                     }
                 }
                 $this->em->flush();
 
             } catch (Exception $e) {
-                log_message('error', 'JCRONMONITOR :: Probably lost connection to database trying to reconnect: '.$e );
+                log_message('error', 'JCRONMONITOR :: Probably lost connection to database trying to reconnect: ' . $e);
                 $this->em->getConnection()->close();
                 $this->em->getConnection()->connect();
             }
 
-            if (count($runJobs) > 0) {
-                log_message('debug', ' JCRONMONITOR :: found new tasks to run');
-                if ($mqueue === 'gearman') {
-                    $this->runViaGearman($runJobs);
-                }
-            }
             $this->em->clear();
         }
 
         return $this->output->set_status_header(500)->set_output('unexpected exit');
-    }
-
-    private function runViaRabbitmq($runJobs){
-
-    }
-    private function runViaGearman($runJobs) {
-        $gearmanConf = $this->config->item('gearmanconf');
-        $gclient = new GearmanClient();
-        foreach ($gearmanConf['jobserver'] as $gs) {
-            try {
-                $gclient->addServer('' . $gs['ip'] . '', $gs['port']);
-            } catch (Exception $e) {
-                echo 'Exception : ' . $e . PHP_EOL;
-            }
-        }
-
-        foreach ($runJobs as $k => $j) {
-            $jstatus = $gclient->jobStatus($j);
-            if (array_key_exists('0', $jstatus) && empty($jstatus[0])) {
-                log_message('info', 'JCRONMONITOR :: ' . $j . ' not known (already finished or removed from jobserver)');
-                unset($runJobs[$k]);
-                continue;
-            }
-            if (array_key_exists('1', $jstatus) && !empty($jstatus[1])) {
-                log_message('info', 'JCRONMONITOR :: ' . $j . ' is still running on jobserver');
-                continue;
-            }
-            if (array_key_exists('1', $jstatus) && empty($jstatus[1])) {
-                log_message('info', 'JCRONMONITOR :: ' . $j . ' is on jobserver but it is waiting for worker');
-            }
-        }
     }
 
 
@@ -205,7 +167,8 @@ class Gworkers extends MY_Controller
      * @param \models\Jcrontab $cronEntry
      * @return array|null
      */
-    private function resolveTemplate(\models\Jcrontab $cronEntry) {
+    private function resolveTemplate(\models\Jcrontab $cronEntry)
+    {
         $isTemplate = $cronEntry->getTemplate();
         if ($isTemplate) {
             $resolvedT = $this->gworkertemplates->resolveTemplate($cronEntry->getJcommand(), $cronEntry->getJparams());
@@ -221,17 +184,18 @@ class Gworkers extends MY_Controller
         return $resolvedT;
     }
 
-    private function jcronRunRabbit(\models\Jcrontab $cronEntry) {
-        $resolvedT = (array) $this->resolveTemplate($cronEntry);
-	$vhost = '/';
+    private function jcronRunRabbit(\models\Jcrontab $cronEntry)
+    {
+        $resolvedT = (array)$this->resolveTemplate($cronEntry);
+        $vhost = '/';
         $conf = $this->config->item('rabbitmq');
         if (!isset($conf['enabled'])) {
             log_message('error', __METHOD__ . ' missing config for rabbitmq');
             throw new Exception('Rabbit not enabled');
-	}
-	if(isset($conf['vhost'])){
-	    $vhost = $conf['vhost'];
-	}
+        }
+        if (isset($conf['vhost'])) {
+            $vhost = $conf['vhost'];
+        }
         foreach ($resolvedT as $jobTo) {
             $jcommand = $jobTo['fname'];
             $jparams = $jobTo['fparams'];
@@ -257,7 +221,8 @@ class Gworkers extends MY_Controller
      * @param \models\Jcrontab $cronEntry
      * @return array|null
      */
-    private function jcronRunGearman(\models\Jcrontab $cronEntry) {
+    private function jcronRunGearman(\models\Jcrontab $cronEntry)
+    {
 
         $resolvedT = $this->resolveTemplate($cronEntry);
         $gearmanConf = $this->config->item('gearmanconf');
@@ -301,13 +266,13 @@ class Gworkers extends MY_Controller
      * @param \models\Jcrontab $cronEntry
      * @return array|null
      */
-    private function jcronRun(\models\Jcrontab $cronEntry) {
+    private function jcronRun(\models\Jcrontab $cronEntry)
+    {
         $mqueue = $this->config->item('mq');
         if ($mqueue !== 'rabbitmq') {
-            $result = (array) $this->jcronRunGearman($cronEntry);
-        }
-        else {
-            $result = (array) $this->jcronRunRabbit($cronEntry);
+            $result = (array)$this->jcronRunGearman($cronEntry);
+        } else {
+            $result = (array)$this->jcronRunRabbit($cronEntry);
         }
 
         if (count($result) > 0) {
