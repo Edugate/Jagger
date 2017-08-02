@@ -223,16 +223,20 @@ class Gworkers extends MY_Controller
 
     private function jcronRunRabbit(\models\Jcrontab $cronEntry) {
         $resolvedT = (array) $this->resolveTemplate($cronEntry);
+	$vhost = '/';
         $conf = $this->config->item('rabbitmq');
         if (!isset($conf['enabled'])) {
             log_message('error', __METHOD__ . ' missing config for rabbitmq');
             throw new Exception('Rabbit not enabled');
-        }
+	}
+	if(isset($conf['vhost'])){
+	    $vhost = $conf['vhost'];
+	}
         foreach ($resolvedT as $jobTo) {
             $jcommand = $jobTo['fname'];
             $jparams = $jobTo['fparams'];
             $jparams['cronid'] = $cronEntry->getId();
-            $connection = new AMQPStreamConnection('' . $conf['host'], $conf['port'], '' . $conf['user'] . '', '' . $conf['password'] . '');
+            $connection = new AMQPStreamConnection('' . $conf['host'], $conf['port'], '' . $conf['user'] . '', '' . $conf['password'] . '', $vhost);
             $channel = $connection->channel();
             $channel->queue_declare($jcommand, false, true, false, false);
             $data = urlsafeB64Encode(json_encode($jparams));

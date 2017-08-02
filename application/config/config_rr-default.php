@@ -201,6 +201,7 @@ $config['statistics'] = FALSE;
 
 $config['rabbitmq'] = array(
     'enabled' => true,
+    'vhost' => '/',
     'host'=>'127.0.0.1',
     'port'=> 5672,
     'user'=>'guest',

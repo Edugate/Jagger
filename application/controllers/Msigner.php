@@ -121,8 +121,12 @@ class Msigner extends MY_Controller
             log_message('error', __METHOD__ . ' missing config for rabbitmq');
             throw new Exception('Rabbit not enabled');
         }
+	$vhost = '/';
+	if(isset($conf['vhost'])){
+	    $vhost = $conf['vhost'];
+	}
 
-        $connection = new AMQPStreamConnection('' . $conf['host'], $conf['port'], '' . $conf['user'] . '', '' . $conf['password'] . '');
+        $connection = new AMQPStreamConnection('' . $conf['host'], $conf['port'], '' . $conf['user'] . '', '' . $conf['password'] . '', $vhost);
         $channel = $connection->channel();
 
         $channel->queue_declare('metadatasigner', false, true, false, false);

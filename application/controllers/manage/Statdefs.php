@@ -53,12 +53,17 @@ class Statdefs extends MY_Controller
             log_message('error', __METHOD__ . ' missing config for rabbitmq');
             throw new Exception('Rabbit not enabled');
         }
-        $connection = new AMQPStreamConnection('' . $conf['host'], $conf['port'], '' . $conf['user'] . '', '' . $conf['password'] . '');
+        $vhost = '/';
+        if(isset($conf['vhost'])){
+            $vhost = $conf['vhost'];
+        }
+        $connection = new AMQPStreamConnection('' . $conf['host'], $conf['port'], '' . $conf['user'] . '', '' . $conf['password'] . '', $vhost );
         $channel = $connection->channel();
         if ($params['type'] === 'ext') {
             $channel->queue_declare('externalstatcollection', false, true, false, false);
             $msq = new AMQPMessage(serialize($params));
             $channel->basic_publish($msq, '', 'externalstatcollection');
+
         } elseif (($params['type'] === 'sys') && !empty($params['sysdef']) && array_key_exists($params['sysdef'], $this->ispreworkers) && array_key_exists('worker', $this->ispreworkers['' . $params['sysdef'] . '']) && !empty($this->ispreworkers['' . $params['sysdef'] . '']['worker'])) {
             $workername = $this->ispreworkers['' . $params['sysdef'] . '']['worker'];
             $channel->queue_declare($workername, false, true, false, false);
@@ -150,7 +155,7 @@ class Statdefs extends MY_Controller
             } catch (Exception $e) {
                 log_message('error', $e);
 
-                return $this->output->set_status_header(500)->set_output('Cannot trigger mqueue run');
+                return $this->output->set_status_header(500)->set_output('Cannot trigger gearman run');
             }
         }
         try {
