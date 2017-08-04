@@ -1,21 +1,23 @@
 {
   "name": "jagger",
   "dependencies": {
-    "foundation": "zurb/bower-foundation",
     "foundation-sites": "zurb/foundation-sites",
-    "jquery": "~2.2.0",
+    "jquery": "*",
     "motion-ui": "~1.2.2",
     "jquery-ui": "1.11.4",
     "jquery-searcher": "0.3.0",
     "Chart.js": "1.0.2",
-    "select2": "4.0.1",
+    "select2": "4.0.3",
     "datatables": "1.10.13",
     "datatables-plugins": "1.10.13",
     "underscore": "1.8.3",
-    "font-awesome": "*"
+    "font-awesome": "*",
+    "jquery.cookie": "~1.4.1",
+    "jquery-placeholder": "~2.3.1",
+    "modernizr": "~3.5.0"
   },
   "devDependencies": {
-    "foundation-font-awesome-buttons": "~3.2.1",
+    "foundation-font-awesome-buttons": "~3.3.1",
     "highlight": "~9.4.0"
   }
 }

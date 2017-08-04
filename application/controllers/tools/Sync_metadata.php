@@ -197,7 +197,7 @@ class Sync_metadata extends CI_Controller
             'attrreqinherit' => true,
         );
         $time_start = microtime(true);
-        $this->metadata2import->import($metadataBody, $typeOfEntities, $full, $defaults, null);
+        $this->metadata2import->import($metadataBody, $typeOfEntities, $full, $defaults);
         $this->j_ncache->cleanProvidersList(array('idp','sp'));
         $this->j_ncache->cleanFederationMembers($fed->getId());
         $time_end = microtime(true);

@@ -17,6 +17,7 @@ $fa-font-path: 'fontawesome/fonts';
 // @import 'ffab';
 //@include ffab-everything;
 
+
 @include foundation-global-styles;
 @include foundation-grid;
 // @include foundation-flex-grid;
@@ -36,7 +37,9 @@ $fa-font-path: 'fontawesome/fonts';
 @include foundation-drilldown-menu;
 @include foundation-dropdown;
 @include foundation-dropdown-menu;
-@include foundation-flex-video;
+@include foundation-responsive-embed;
+
+//@include foundation-flex-video;
 @include foundation-label;
 @include foundation-media-object;
 @include foundation-off-canvas;
@@ -61,6 +64,7 @@ $fa-font-path: 'fontawesome/fonts';
 
 @include motion-ui-transitions;
 @include motion-ui-animations;
+
 
 
 @import "select2";

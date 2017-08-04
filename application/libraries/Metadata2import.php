@@ -13,13 +13,11 @@ class Metadata2import
 {
 
     private $metadataInArray;
-    private $metadata;
     private $full;
     /**
      * @var array $defaults
      */
     private $defaults;
-    private $other;
     protected $ci;
     /**
      * @var bool $copyFedAttrReq
@@ -29,7 +27,7 @@ class Metadata2import
      * @var Doctrine\ORM\EntityManager $em
      */
     protected $em;
-    protected $attrsDefinitions;
+    private $attrsDefinitions;
     /**
      * @var models\Coc[] $regpollistconverted
      */
@@ -47,7 +45,7 @@ class Metadata2import
         $this->em = $this->ci->doctrine->em;
         $this->ci->load->library('metadata2array');
         $this->ci->load->library('tracker');
-        $this->metadata = null;
+        $this->ci->load->library('emailsender');
         $this->full = false;
         $this->copyFedAttrReq = false;
         $this->coclistconverted = array();
@@ -56,7 +54,6 @@ class Metadata2import
         $this->regpollistconverted = array();
         $this->regpollistarray = array();
         $this->setDefaults();
-        $this->other = null;
     }
 
 
@@ -75,40 +72,6 @@ class Metadata2import
         );
     }
 
-    /**
-     * @param $report
-     * @return bool
-     */
-    private function genReport($report) {
-        if (!is_array($report)) {
-            return false;
-        }
-        $this->ci->load->library('emailsender');
-        $body = 'Report' . PHP_EOL;
-        foreach ($report['body'] as $bb) {
-            $body .= $bb . PHP_EOL;
-        }
-        $structureChanged = false;
-        $sections = array(
-            'new'      => 'List new providers registered during sync',
-            'joinfed'  => 'List existing providers added to federation during sync',
-            'del'      => 'List providers removed from the system during sync',
-            'leavefed' => 'List providers removed from federation during sync');
-        foreach ($sections as $section => $sectionTitle) {
-            if (count($report['provider']['' . $section . '']) > 0) {
-                $structureChanged = true;
-                $body .= PHP_EOL . ':: ' . $sectionTitle . ' ::' . PHP_EOL;
-                foreach ($report['provider']['' . $section . ''] as $a) {
-                    $body .= $a . PHP_EOL;
-                }
-            }
-        }
-        if ($structureChanged) {
-            $this->ci->emailsender->addToMailQueue(array('gfedmemberschanged'), null, 'Federation sync/import report', $body, array(), false);
-        }
-
-        return true;
-    }
 
     private function getAttributesByNames() {
         if (!is_array($this->attrsDefinitions)) {
@@ -164,11 +127,9 @@ class Metadata2import
 
     }
 
-    public function import($metadata, $type, $full, array $defaults, $other = null) {
+    public function import($metadata, $type, $full, array $defaults) {
         $tmpProviders = new models\Providers;
-        $this->metadata = &$metadata;
         $this->full = $full;
-        $this->other = $other;
         $this->defaults = array_merge($this->defaults, $defaults);
         if (empty($this->full) && empty($this->defaults['static'])) {
             return false;
@@ -282,7 +243,7 @@ class Metadata2import
                     $importedProvider->setActive($active);
                     // entityCategory begin
                     foreach ($ent['coc'] as $attrname => $v) {
-                        if (isset($this->ncoclistarray['' . $attrname . ''])) {
+                        if (isset($this->ncoclistarray[ $attrname ])) {
                             foreach ($v as $kv => $pv) {
                                 $y = array_search($v, $this->ncoclistarray['' . $attrname . '']);
                                 if ($y !== null && $y !== false) {
@@ -349,7 +310,7 @@ class Metadata2import
                     }
 
 
-                    if ((($isLocal && !$isLocked) || !($isLocal)) && !array_key_exists($existingProvider->getEntityId(), $membershipByEnt)) {
+                    if ((($isLocal && !$isLocked) || !$isLocal) && !array_key_exists($existingProvider->getEntityId(), $membershipByEnt)) {
                         $newMembership = new models\FederationMembers;
                         $newMembership->createMembership($existingProvider, $federation, '3');
                         $this->em->persist($newMembership);
@@ -411,8 +372,8 @@ class Metadata2import
                     }
                 }
             }
+            $this->ci->emailsender->syncMetaReport($report);
             try {
-                $this->genReport($report);
                 $this->em->flush();
             } catch (Exception $e) {
                 log_message('error', __METHOD__ . ' ' . $e);
@@ -444,7 +405,7 @@ class Metadata2import
                     $importedProvider->setActive($active);
                     // coc begin
                     foreach ($ent['coc'] as $attrname => $v) {
-                        if (isset($this->ncoclistarray['' . $attrname . ''])) {
+                        if (isset($this->ncoclistarray[ $attrname ])) {
                             foreach ($v as $item) {
                                 $y = array_search($item, $this->ncoclistarray['' . $attrname . '']);
                                 if ($y !== false) {
@@ -663,7 +624,7 @@ class Metadata2import
         $currentCocsByType = $this->getCurrCocsByType($provider);
         foreach ($currentCocsByType['entcat'] as $c) {
             $cSubtype = $c->getSubtype();
-            if (isset($ent['coc']['' . $cSubtype . ''])) {
+            if (isset($ent['coc'][$cSubtype])) {
                 $y = array_search($c->getUrl(), $ent['coc']['' . $cSubtype . '']);
                 if ($y !== null && $y !== false) {
                     unset($ent['coc']['' . $cSubtype . '']['' . $y . '']);
@@ -676,7 +637,7 @@ class Metadata2import
             $provider->removeCoc($c);
         }
         foreach ($ent['coc'] as $attrname => $v) {
-            if (isset($this->ncoclistarray['' . $attrname . ''])) {
+            if (isset($this->ncoclistarray[$attrname ])) {
                 foreach ($v as $k => $p) {
                     $y = array_search($p, $this->ncoclistarray['' . $attrname . '']);
                     if ($y !== null && $y !== false) {

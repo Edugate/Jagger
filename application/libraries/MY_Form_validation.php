@@ -720,11 +720,11 @@ class MY_form_validation extends CI_form_validation
         }
         preg_match('/^(?:([^:]*)\:)?\/\/(.+)$/', $str, $matches);
         if (!isset($matches[1])) {
-            $this->set_message('valid_url', "missing protocol  \"%s\" ");
+            $this->set_message('valid_url_ssl', "missing protocol  \"%s\" ");
             return false;
         }
-        if (!in_array($matches[1], array('https'), true)) {
-            $this->set_message('valid_url', "Only https protocol is allowed  \"%s\" ");
+        if (strtolower($matches[1]) !== 'https') {
+            $this->set_message('valid_url_ssl', "Only https protocol is allowed  \"%s\" ");
             return false;
         }
         return true;

@@ -95,11 +95,12 @@ class Disco extends MY_Controller
                 $icounter++;
             }
             $this->j_ncache->saveFullDisco($output);
-             $result = $output;
+            $result = $output;
 
         } else {
             $result = $cachedDisco;
         }
+
         return $result;
 
 
@@ -120,19 +121,18 @@ class Disco extends MY_Controller
 
         try {
             $result = $this->getFullDiscoData();
-            $result = json_encode($result);
-            $callback = $this->input->get('callback');
-            if ($callback !== null  && $this->isCallbackValid($callback)) {
-                return $this->output->set_content_type('application/javascript')->set_output('' . $callback . '(' . $result . ')');
-
-            } else {
-                return $this->output->set_content_type('application/json')->set_output($result);
-            }
         } catch (Exception $e) {
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
+        $result = json_encode($result);
+        $callback = $this->input->get('callback');
+        if ($callback !== null && $this->isCallbackValid($callback)) {
+            return $this->output->set_content_type('application/javascript')->set_output('' . $callback . '(' . $result . ')');
 
+        }
+
+        return $this->output->set_content_type('application/json')->set_output($result);
     }
 
     /**
@@ -143,7 +143,7 @@ class Disco extends MY_Controller
     public function circle($entityId, $filename = null) {
 
         if ($filename !== 'metadata.json') {
-             return $this->output->set_status_header(403)->set_output('Request not allowed');
+            return $this->output->set_status_header(403)->set_output('Request not allowed');
         }
         if (!$this->isFeatureEnabled()) {
             return $this->output->set_status_header(404)->set_output('The feature not enabled');
@@ -155,9 +155,7 @@ class Disco extends MY_Controller
         $ent = $this->em->getRepository('models\Provider')->findOneBy(array('entityid' => $decodedEntityId, 'type' => array('SP', 'BOTH')));
         if ($ent === null) {
             log_message('warning', 'Failed generating json  for provided entity:' . $decodedEntityId);
-
             return $this->output->set_status_header(404)->set_output('Unknown serivce provider');
-
         }
 
         $result = $this->j_ncache->getCircleDisco($ent->getId());
@@ -194,12 +192,11 @@ class Disco extends MY_Controller
             $this->j_ncache->saveCircleDisco($ent->getId(), $result);
         }
         $callback = $this->input->get('callback');
-        if ($callback !== null  && $this->isCallbackValid($callback)) {
+        if ($callback !== null && $this->isCallbackValid($callback)) {
             return $this->output->set_content_type('application/javascript')->set_output('' . $callback . '(' . $result . ')');
 
-        } else {
-            return $this->output->set_content_type('application/json')->set_output($result);
         }
+        return $this->output->set_content_type('application/json')->set_output($result);
     }
 
 
@@ -223,9 +220,10 @@ class Disco extends MY_Controller
         if ($callback !== null && $this->isCallbackValid($callback)) {
             return $this->output->set_content_type('application/javascript')->set_output('' . $callback . '(' . $output . ')');
 
-        } else {
-            return $this->output->set_content_type('application/json')->set_output($output);
         }
+
+        return $this->output->set_content_type('application/json')->set_output($output);
+
     }
 
     /**

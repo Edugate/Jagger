@@ -18,12 +18,13 @@
     white-space: nowrap;
   }
 }
-
-&[dir="rtl"] {
-  .select2-selection--single {
-    .select2-selection__rendered {
-      padding-right: rem-calc(8px);
-      padding-left: rem-calc(20px);
+.select2 {
+  &[dir="rtl"] {
+    .select2-selection--single {
+      .select2-selection__rendered {
+        padding-right: rem-calc(8px);
+        padding-left: rem-calc(20px);
+      }
     }
   }
 }
@@ -264,37 +265,16 @@
     }
   }
 }
+.select2 {
+  &[dir="rtl"] {
+    .select2-selection--single {
+      .select2-selection__clear {
+        float: left;
+      }
 
-&[dir="rtl"] {
-  .select2-selection--single {
-    .select2-selection__clear {
-      float: left;
-    }
-
-    .select2-selection__arrow {
-      left: rem-calc(1px);
-      right: auto;
-    }
-  }
-}
-
-&.select2-container--disabled {
-  .select2-selection--single {
-    background-color: #eee;
-    cursor: default;
-
-    .select2-selection__clear {
-      display: none;
-    }
-  }
-}
-
-&.select2-container--open {
-  .select2-selection--single {
-    .select2-selection__arrow {
-      b {
-        border-color: transparent transparent #888 transparent;
-        border-width: rem-calc(0px) rem-calc(4px) rem-calc(5px) rem-calc(4px);
+      .select2-selection__arrow {
+        left: rem-calc(1px);
+        right: auto;
       }
     }
   }
@@ -361,41 +341,6 @@
   }
 }
 
-&[dir="rtl"] {
-  .select2-selection--multiple {
-    .select2-selection__choice, .select2-selection__placeholder {
-      float: right;
-    }
-
-    .select2-selection__choice {
-      margin-left: rem-calc(5px);
-      margin-right: auto;
-    }
-
-    .select2-selection__choice__remove {
-      margin-left: rem-calc(2px);
-      margin-right: auto;
-    }
-  }
-}
-
-&.select2-container--focus {
-  .select2-selection--multiple {
-    border: solid black rem-calc(1px);
-    outline: 0;
-  }
-}
-
-&.select2-container--disabled {
-  .select2-selection--multiple {
-    background-color: #eee;
-    cursor: default;
-  }
-
-  .select2-selection__choice__remove {
-    display: none;
-  }
-}
 
 // layout
 

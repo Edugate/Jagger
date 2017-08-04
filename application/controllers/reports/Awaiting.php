@@ -39,7 +39,7 @@ class Awaiting extends MY_Controller
         $this->load->library(array('zacl', 'j_queue'));
         $result['data'] = $this->getQueueList();
 
-        return $this->output->set_content_type('application/json')->set_status_header(200)->set_output(json_encode($result));
+        return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 
     }
 
@@ -301,7 +301,7 @@ class Awaiting extends MY_Controller
         }
     }
 
-    private function createProvider(\models\Queue $q, $accessLevel = null) {
+    private function createProvider(\models\Queue $queueObj, $accessLevel = null) {
         /**
          * @var $attrs models\Attribute[]
          */
@@ -309,17 +309,17 @@ class Awaiting extends MY_Controller
         foreach ($attrs as $a) {
             $attributesByName['' . $a->getOid() . ''] = $a;
         }
-        $d = $q->getData();
-        if (!isset($d['metadata'])) {
+        $queueData = $queueObj->getData();
+        if (!isset($queueData['metadata'])) {
             $entity = new models\Provider;
-            $entity->importFromArray($d);
+            $entity->importFromArray($queueData);
         } else {
             $this->load->library(array('xmlvalidator', 'metadata2array'));
             libxml_use_internal_errors(true);
             $metadataDOM = new \DOMDocument();
             $metadataDOM->strictErrorChecking = false;
             $metadataDOM->WarningChecking = false;
-            $metadataDOM->loadXML(base64_decode($d['metadata']));
+            $metadataDOM->loadXML(base64_decode($queueData['metadata']));
             $isValid = $this->xmlvalidator->validateMetadata($metadataDOM, false, false);
             if (!$isValid) {
                 $this->error_message = 'Invalid metadata';
@@ -345,15 +345,15 @@ class Awaiting extends MY_Controller
             $entity->setReqAttrsFromArray(current($entarray), $attributesByName);
             $entity->setActive(true);
             $entity->setStatic(false);
-            if (isset($d['federations'])) {
+            if (isset($queueData['federations'])) {
                 $fe = $entity->getFederations();
                 if ($fe->count() == 0) {
-                    foreach ($d['federations'] as $g) {
+                    foreach ($queueData['federations'] as $g) {
                         /**
                          * @var $gg models\Federation
                          */
                         $gg = $this->em->getRepository("models\Federation")->findOneBy(array('sysname' => $g['sysname']));
-                        if (!empty($gg)) {
+                        if ($gg !== null) {
                             if ($gg->isJoinAllowedForNew()) {
                                 $membership = new models\FederationMembers;
                                 $membership->setJoinState('1');
@@ -398,15 +398,15 @@ class Awaiting extends MY_Controller
         $rEntityID = $entity->getEntityId();
         $rUsername = null;
 
-        $creator = $q->getCreator();
-        $this->em->remove($q);
+        $creator = $queueObj->getCreator();
+        $this->em->remove($queueObj);
         $requester_recipient = null;
         if (!empty($creator) && ($creator instanceOf models\User)) {
             $requester_recipient = $creator->getEmail();
             $rUsername = $creator->getUsername();
         }
         if (empty($requester_recipient)) {
-            $requester_recipient = $q->getEmail();
+            $requester_recipient = $queueObj->getEmail();
         }
         $sbj = 'Identity/Service Provider has been approved';
         $body = 'Dear user,' . PHP_EOL . 'Registration request: ' . $entity->getName() . ' (' . $entity->getEntityId() . ')' . PHP_EOL;
@@ -498,18 +498,7 @@ class Awaiting extends MY_Controller
         $queueObjType = $queueObj->getType();
         $recipient = $queueObj->getRecipient();
         $recipienttype = $queueObj->getRecipientType();
-        $allowedActionsAndTypes['Create']['User'] = array(
-            'access'      => $this->jqueueaccess->hasApproveAccess($queueObj),
-            'fnameAction' => 'createUserFromQueue',
-        );
-        $allowedActionsAndTypes['Create']['IDP'] = array(
-            'access' => $this->zacl->check_acl('idp', 'create', 'entity', ''),
-        );
-        $allowedActionsAndTypes['Create']['SP'] = array();
-        $allowedActionsAndTypes['Delete']['Federation'] = array();
-        $allowedActionsAndTypes['Create']['Federation'] = array();
-        $allowedActionsAndTypes['Join'] = array();
-        $allowedActionsAndTypes['apply'] = array();
+
 
         if (strcasecmp($queueAction, 'Create') == 0 && strcasecmp($queueObjType, 'User') == 0) {
             $approve_allowed = $this->jqueueaccess->hasApproveAccess($queueObj);
@@ -690,7 +679,6 @@ class Awaiting extends MY_Controller
                     $this->em->persist($membership);
                     $this->em->persist($provider);
                     $this->em->persist($federation);;
-                    $mail_recipients[] = $queueObj->getCreator()->getEmail();
                     $sbj = $provider->getName() . ' joins federation: "' . $federation->getName() . '"';
                     $body = $this->jauth->getLoggedinUsername() . " just approved request.\r\n";
                     $body .= 'Since now Provider: ' . $provider->getName() . ' becomes a member of ' . $federation->getName() . PHP_EOL;

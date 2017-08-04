@@ -12,7 +12,7 @@
     "grunt-contrib-uglify": "1.0.1",
     "grunt-contrib-watch": "1.0.0",
     "grunt-filerev": "^2.3.1",
-    "grunt-sass": "1.1.0",
+    "grunt-sass": "*",
     "grunt-svgmin": "3.2.0",
     "grunt-usemin": "^3.0.0",
     "grunt-wiredep": "3.0.1",
@@ -27,12 +27,17 @@
     "gulp-merge": "^0.1.1",
     "gulp-order": "^1.1.1",
     "gulp-rename": "^1.2.2",
-    "gulp-sass": "^2.2.0",
+    "gulp-sass": "*",
     "gulp-sourcemap": "^1.0.1",
     "gulp-sync": "^0.1.4",
     "gulp-uglify": "^1.5.3",
-    "node-sass": "^3.4.2",
+    "node-sass": "*",
     "gulp-load-plugins": "^1.1.0",
     "gulp-autoprefixer": "^3.1.0"
+  },
+  "dependencies": {
+    "grunt-sass": "^1.2.1",
+    "gulp-sass": "^3.1.0",
+    "node-sass": "^4.5.3"
   }
 }

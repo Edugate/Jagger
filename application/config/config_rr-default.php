@@ -182,12 +182,33 @@ $config['translator_access']['it'] = null;
  * $config['datastorage_path'] = '/opt/rr3data/'
  */
 
+
+$config['mq'] = 'rabbitmq';
+
+
 /**
  * gearman
  */
 $config['gearman'] = FALSE;
 $config['gearmanconf']['jobserver'] = array(array('ip'=>'127.0.0.1','port'=>'4730'));
 $config['statistics'] = FALSE;
+
+
+
+/**
+ * rabbitmq
+ */
+
+$config['rabbitmq'] = array(
+    'enabled' => true,
+    'vhost' => '/',
+    'host'=>'127.0.0.1',
+    'port'=> 5672,
+    'user'=>'guest',
+    'password'=>'guest'
+);
+
+
 
 /**
  * enable statistics collection gearman also has to be enabled
@@ -228,4 +249,6 @@ $config['disable_extcirclemeta'] = TRUE;
 
 // set if you want to disable change entityid and/or scope for no Admins
 $config['entpartschangesdisallowed'] = array('entityid','scope');
+
+$config['featenable']['tasks'] = FALSE;
 

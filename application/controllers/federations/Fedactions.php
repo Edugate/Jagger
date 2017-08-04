@@ -26,7 +26,7 @@ class Fedactions extends MY_Controller
         }
         $status = trim($this->input->post('status'));
         $fedname = trim($this->input->post('fedname'));
-        if (empty($status) || empty($fedname)) {
+        if ($status === '' || $fedname === '') {
             return $this->output->set_status_header(403)->set_output('Missing params in post');
         }
         /**
@@ -46,13 +46,17 @@ class Fedactions extends MY_Controller
             $federation->setAsDisactive();
             $this->em->persist($federation);
             $this->em->flush();
+
             return $this->output->set_status_header(200)->set_output('deactivated');
-        } elseif (!$currentStatus && strcmp($status, 'enablefed') == 0) {
+        }
+        if (!$currentStatus && strcmp($status, 'enablefed') == 0) {
             $federation->setAsActive();
             $this->em->persist($federation);
             $this->em->flush();
+
             return $this->output->set_status_header(200)->set_output('activated');
-        } elseif (!$currentStatus && strcmp($status, 'delfed') == 0) {
+        }
+        if (!$currentStatus && strcmp($status, 'delfed') == 0) {
             /**
              * @todo finish
              */
@@ -60,10 +64,12 @@ class Fedactions extends MY_Controller
             $q = $this->approval->removeFederation($federation);
             $this->em->persist($q);
             $this->em->flush();
+
             return $this->output->set_status_header(200)->set_output('todelete');
-        } else {
-            return $this->output->set_status_header(403)->set_output('incorrect params sent');
         }
+
+        return $this->output->set_status_header(403)->set_output('incorrect params sent');
+
 
     }
 
@@ -98,6 +104,7 @@ class Fedactions extends MY_Controller
         if (!$hasAddbulkAccess) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('rr_noperm');
+
             return $this->load->view(MY_Controller::$page, $data);
         }
         $data['federation_name'] = $federation->getName();
@@ -118,12 +125,12 @@ class Fedactions extends MY_Controller
         foreach ($providers as $i) {
             if (!$federationMembers->contains($i)) {
                 $checkbox = array(
-                    'id' => 'member[' . $i->getId() . ']',
-                    'name' => 'member[' . $i->getId() . ']',
+                    'id'    => 'member[' . $i->getId() . ']',
+                    'name'  => 'member[' . $i->getId() . ']',
                     'value' => 1,);
                 $formElements[] = array(
                     'name' => $i->getName() . ' (' . $i->getEntityId() . ')',
-                    'box' => form_checkbox($checkbox),
+                    'box'  => form_checkbox($checkbox),
                 );
             }
         }
@@ -146,19 +153,19 @@ class Fedactions extends MY_Controller
             redirect('auth/login', 'location');
         }
         $this->load->library('zacl');
-        $message = null;
         $encodedFedName = $this->input->post('fed');
         $memberstype = $this->input->post('memberstype');
         /**
          * @var $federation models\Federation
          */
         $federation = $this->em->getRepository("models\Federation")->findOneBy(array('name' => base64url_decode($encodedFedName)));
-        if (empty($federation)) {
+        if (null === $federation) {
             show_error('federation not found', 404);
         }
         $hasAddbulkAccess = $this->zacl->check_acl('f_' . $federation->getId(), 'addbulk', 'federation', '');
         if (!$hasAddbulkAccess) {
             $data = array('content_view' => 'nopermission', 'error' => lang('rr_noperm'));
+
             return $this->load->view(MY_Controller::$page, $data);
         }
         /**
@@ -175,40 +182,7 @@ class Fedactions extends MY_Controller
                 log_message('error', 'missed or wrong membertype while adding new members to federation');
                 show_error('Missed members type', 503);
             }
-            $newMembersArray = array();
-            foreach ($newMembersList as $nmember) {
-                if (!$existingMembers->contains($nmember)) {
-                    $newMembersArray[] = $nmember->getEntityId();
-                    $newMembership = new models\FederationMembers();
-                    $newMembership->setProvider($nmember);
-                    $newMembership->setFederation($federation);
-                    if ($nmember->getLocal()) {
-                        $newMembership->setJoinState('1');
-                    }
-                    $this->em->persist($newMembership);
-                } else {
-                    $doFilter = array('' . $federation->getId() . '');
-                    /**
-                     * @var models\FederationMembers[] $m1
-                     */
-                    $m1 = $nmember->getMembership()->filter(
-                        function (models\FederationMembers $entry) use ($doFilter) {
-                            return (in_array($entry->getFederation()->getId(), $doFilter));
-                        }
-                    );
-                    if (!empty($m1)) {
-                        foreach ($m1 as $v1) {
-                            if ($nmember->getLocal()) {
-                                $v1->setJoinState('1');
-                            } else {
-                                $v1->setJoinState('0');
-                            }
-                            $this->em->persist($v1);
-                            $newMembersArray[] = $nmember->getEntityId();
-                        }
-                    }
-                }
-            }
+            $newMembersArray = $this->addMembersToCollection($existingMembers, $newMembersList, $federation);
             if (count($newMembersArray) > 0) {
                 $subject = 'Members of Federations changed';
                 $body = 'Dear user' . PHP_EOL . 'Federation ' . $federation->getName() . ' has new members:' . PHP_EOL . implode(';' . PHP_EOL, $newMembersArray);
@@ -216,12 +190,42 @@ class Fedactions extends MY_Controller
             }
             $this->em->flush();
             $this->j_ncache->cleanFederationMembers($federation->getId());
-            $message = '<div data-alert class="alert-box success">' . lang('rr_fedmembersadded') . '</div>';
-        } else {
-            $message = '<div data-alert class="alert-box alert">' . sprintf(lang('rr_nomemtype_selected'), $memberstype) . '</div>';
+            return $this->addbulk($encodedFedName, $memberstype, '<div data-alert class="alert-box success">' . lang('rr_fedmembersadded') . '</div>');
         }
-
-        return $this->addbulk($encodedFedName, $memberstype, $message);
+        return $this->addbulk($encodedFedName, $memberstype, '<div data-alert class="alert-box alert">' . sprintf(lang('rr_nomemtype_selected'), $memberstype) . '</div>');
+    }
+    private function addMembersToCollection($existingMembers,$newMembersList, $federation ){
+        $newMembersArray = array();
+        foreach ($newMembersList as $nmember) {
+            if (!$existingMembers->contains($nmember)) {
+                $newMembersArray[] = $nmember->getEntityId();
+                $newMembership = new models\FederationMembers();
+                $newMembership->setProvider($nmember);
+                $newMembership->setFederation($federation);
+                if ($nmember->getLocal()) {
+                    $newMembership->setJoinstate('1');
+                }
+                $this->em->persist($newMembership);
+            } else {
+                $doFilter = array('' . $federation->getId() . '');
+                /**
+                 * @var models\FederationMembers[] $m1
+                 */
+                $m1 = $nmember->getMembership()->filter(
+                    function (models\FederationMembers $entry) use ($doFilter) {
+                        return in_array($entry->getFederation()->getId(), $doFilter);
+                    }
+                );
+                if (!empty($m1)) {
+                    foreach ($m1 as $v1) {
+                        $v1->setJoinstate(''.(int) $nmember->getLocal().'');
+                        $this->em->persist($v1);
+                        $newMembersArray[] = $nmember->getEntityId();
+                    }
+                }
+            }
+        }
+        return $newMembersArray;
     }
 
 }

@@ -1,5 +1,5 @@
 
-body {
+body, html {
   height: 100%;
 
 }
@@ -61,6 +61,10 @@ body {
   //float: left;
 }
 
+.top-bar-title {
+  padding: 0rem 1rem 0rem 0rem;
+}
+
 @media screen and (max-width: 39.9375em) {
 
 }
@@ -82,10 +86,12 @@ body {
 }
 
 #footer {
-  margin-top: 2em;
+  margin-bottom: 1px;
   min-height: 100px;
   background-color: $footer-background;
   color: $footer-text;
+  width: 100%;
+  height: 6em;
 }
 
 /* Medium-Up Navigation */
@@ -93,6 +99,7 @@ body {
 @media only screen and (min-width: 40rem) {
   .logo-wrapper {
     position: relative;
+    display: inline-block;
     img {
       max-width: 8rem;
       max-height: 3rem;
@@ -113,24 +120,24 @@ body {
 }
 
 .lbl-disabled, .lbl-pactive-0, .lbl-alert {
-  background-color: map-get($foundation-palette, alert);
-  color: foreground(map-get($foundation-palette, alert));
+  background-color: get-color(alert);
+  color: white;
 }
 
 .lbl-locked, .lbl-static, .lbl-plocked-1, .lbl-pstatic-1 {
-  background-color: map-get($foundation-palette, warning);
-  color: foreground(map-get($foundation-palette, warning));
+  background-color: get-color(warning);
+  color: black;
 
 }
 
 .lbl-plocal-0 {
-  background-color: map-get($foundation-palette, warning);
-  color: foreground(map-get($foundation-palette, warning));
+  background-color: get-color(warning);
+  color: color-pick-contrast(get-color(warning),$additional-colors);
 }
 
 .lbl-pvisible-0 {
-  background-color: map-get($foundation-palette, secondary);
-  color: foreground(map-get($foundation-palette, secondary));
+  background-color: get-color(secondary);
+  color: color-pick-contrast(get-color(secondary),$additional-colors);
 }
 
 .spinner {
@@ -149,8 +156,8 @@ body {
 }
 
 #container {
-  min-height: 100%;
 
+  min-height: calc(100vh - 180px);
 }
 
 #wrapper {
@@ -399,31 +406,30 @@ body {
 }
 
 .perm {
-  background-color: map_get($foundation-palette, success);
-  color: foreground(map_get($foundation-palette, success));
+  background-color: get-color(success);
+  color: color-pick-contrast(get-color(success),$additional-colors);
   text-transform: uppercase;
   font-weight: bold;
 }
 
 .dis {
-  background-color: map_get($foundation-palette, secondary);
+  background-color: get-color(secondary);
   text-transform: uppercase;
-
-  color: foreground(map_get($foundation-palette, secondary));
+  color: color-pick-contrast(get-color(secondary),$additional-colors);
   font-weight: bold;
 }
 
 .spec {
-  background-color: map_get($foundation-palette, warning);
+  background-color: get-color(warning);
   text-transform: uppercase;
-  color: foreground(map_get($foundation-palette, warning));
+  color: color-pick-contrast(get-color(warning),$additional-colors);
   font-weight: bold;
 }
 
 .den {
-  background-color: map_get($foundation-palette, alert);
+  background-color: get-color(alert);
   text-transform: uppercase;
-  color: foreground(map_get($foundation-palette, alert));
+  color: color-pick-contrast(get-color(alert),$additional-colors);
   font-weight: bold;
 }
 
@@ -458,18 +464,19 @@ caption {
 #titlepage {
   @include callout();
   background-color: $tab-background;
-  color: foreground($tab-background);
-  font-size: map_get($header-sizes, 'h1');
+  color: color-pick-contrast($tab-background,$additional-colors);
+  font-size: get_style($header-styles, 'h1');
   a {
-    color: foreground($tab-background);
+    color: color-pick-contrast($tab-background,$additional-colors);
   }
 
 }
 
 div.error {
   @include callout();
-  background-color: map-get($foundation-palette, alert);
-  color: foreground(map-get($foundation-palette, alert));
+  background-color: get-color(alert);
+  color: color-pick-contrast(get-color(alert),$additional-colors);
+
 }
 
 .alert-box {
@@ -486,7 +493,7 @@ div.error {
 }
 
 td.highlight {
-  background-color: lighten(map_get($foundation-palette, 'secondary'), 30%);
+  background-color: lighten(get-color(secondary), 30%);
 }
 
 //.alert-box.warning:before {
@@ -510,7 +517,7 @@ code {
 }
 
 .fa.alert {
-  color: map_get($foundation-palette, 'alert');
+  color: get-color(alert);
 }
 
 ul {
@@ -549,40 +556,44 @@ legend {
 
 .alert-box {
 
-  background-color: map_get($foundation-palette, primary);
-  color: foreground(map-get($foundation-palette, primary));
+  background-color: get-color(primary);
+  //color: foreground(get-color(primary));
   font-size: 90%;
   padding: 0.4rem;
+  color: color-pick-contrast(get-color(primary),$additional-colors);
 }
 
 .alert-box.success {
-  background-color: map_get($foundation-palette, success);
-  color: foreground(map-get($foundation-palette, success));
+  background-color: get-color(success);
+
+  color: color-pick-contrast(get-color(success),$additional-colors);
 }
 
 .alert-box.warning {
-  background-color: map_get($foundation-palette, warning);
-  color: foreground(map-get($foundation-palette, warning));
+  background-color: get-color(warning);
+  color: color-pick-contrast(get-color(warning),$additional-colors);
+
 }
 
 .alert-box.alert {
-  background-color: map_get($foundation-palette, alert);
-  color: foreground(map-get($foundation-palette, alert));
+  background-color: get-color(alert);
+  color: color-pick-contrast(get-color(alert),$additional-colors);
 }
 
 .alert-box.secondary {
-  background-color: map_get($foundation-palette, secondary);
-  color: foreground(map-get($foundation-palette, secondary));
+  background-color: get-color(secondary);
+  color: color-pick-contrast(get-color(secondary),$additional-colors);
 }
 
 .alert-box.primary {
-  background-color: map_get($foundation-palette, primary);
-  color: foreground(map-get($foundation-palette, primary));
+  background-color: get-color(primary);
+  color: color-pick-contrast(get-color(primary),$additional-colors);
+
 }
 
 .alert-box.info {
-  background-color: map_get($foundation-palette, primary);
-  color: foreground(map-get($foundation-palette, primary));
+  background-color: get-color(primary);
+  color: color-pick-contrast(get-color(primary),$additional-colors);
 }
 
 #details th.header.headerSortDown:before {
@@ -591,4 +602,9 @@ legend {
 
 #details th.header.headerSortUp:before {
   content: "\25B4\00a0\00a0";
+}
+
+#providerslistresultv2 td {
+  max-width: 25rem;
+  overflow: auto;
 }

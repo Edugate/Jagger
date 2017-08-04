@@ -18,7 +18,8 @@ class Manage extends MY_Controller
 
     private $tmpProviders;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->load->helper(array('cert', 'form'));
         $this->session->set_userdata(array('currentMenu' => 'federation'));
@@ -27,7 +28,8 @@ class Manage extends MY_Controller
         $this->load->library('j_ncache');
     }
 
-    private function getFedcatsToArray() {
+    private function getFedcatsToArray()
+    {
         $result = array();
         /**
          * @var $federationCategories models\FederationCategory[]
@@ -44,7 +46,8 @@ class Manage extends MY_Controller
         return $result;
     }
 
-    public function index() {
+    public function index()
+    {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
@@ -62,7 +65,8 @@ class Manage extends MY_Controller
         $this->load->view(MY_Controller::$page, $data);
     }
 
-    private function getMembers(models\Federation $federation, $lang) {
+    private function getMembers(models\Federation $federation, $lang)
+    {
         $cachedResult = $this->j_ncache->getFederationMembers($federation->getId(), $lang);
         if (!empty($cachedResult)) {
             log_message('debug', __METHOD__ . ' retrieved fedmembers (lang:' . $lang . ') from cache');
@@ -111,7 +115,8 @@ class Manage extends MY_Controller
         return $membersInArray;
     }
 
-    public function showmembers($fedid) {
+    public function showmembers($fedid)
+    {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Access denied');
         }
@@ -129,7 +134,8 @@ class Manage extends MY_Controller
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
-    public function fedmemberscount($fedid) {
+    public function fedmemberscount($fedid)
+    {
         if (!$this->input->is_ajax_request() || !ctype_digit($fedid)) {
             return $this->output->set_status_header(403)->set_output('Request not allowed');
         }
@@ -146,7 +152,8 @@ class Manage extends MY_Controller
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
 
-    public function showcontactlist($encodedFedName, $type = null) {
+    public function showcontactlist($encodedFedName, $type = null)
+    {
         if (!$this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Access denied');
         }
@@ -198,7 +205,8 @@ class Manage extends MY_Controller
         force_download('federationcontactlist.txt', $result, 'text/plain');
     }
 
-    private function showMetadataTab(models\Federation $federation, $hasWriteAccess) {
+    private function showMetadataTab(models\Federation $federation, $hasWriteAccess)
+    {
         $result = array();
         $altMetaUrlEnabled = $federation->getAltMetaUrlEnabled();
 
@@ -254,8 +262,8 @@ class Manage extends MY_Controller
             $result[] = array(lang('rr_fedmetaexportsingedlink') . ' <span class="label">' . $digestExport . '</span>', $metaExportLinkSigned . " " . anchor_popup($metaExportLinkSigned, '<i class="fa fa-arrow-right"></i>'));
         }
         if ($federation->getActive()) {
-            $gearmanenabled = $this->config->item('gearman');
-            if ($hasWriteAccess && !empty($gearmanenabled)) {
+            $isMQEnabled = $this->mq->isClientEnabled();
+            if ($hasWriteAccess && $isMQEnabled === true) {
                 $result[] = array('' . lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata')) . '', '<a href="' . base_url() . 'msigner/signer/federation/' . $federation->getId() . '" id="fedmetasigner"/><button type="button" class="button">' . lang('btn_signmetadata') . '</button></a>', '');
             }
         }
@@ -264,7 +272,8 @@ class Manage extends MY_Controller
     }
 
 
-    public function show($encodedFedName) {
+    public function show($encodedFedName)
+    {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
@@ -381,16 +390,17 @@ class Manage extends MY_Controller
 
 
         $data['result']['membership'][] = array('data' => array('data' => '', 'colspan' => 2));
+        $group1 = array();
         if ($access['hasAddbulkAccess']) {
-            $data['result']['membership'] = array(
-                array('data' => array('data' => lang('rr_membermanagement'), 'class' => 'highlight', 'colspan' => 2)),
-                array('IDPs', lang('rr_addnewidpsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/idp', '<i class="fa fa-arrow-right"></i>')),
-                array('SPs', lang('rr_addnewspsnoinv') . anchor(base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/sp', '<i class="fa fa-arrow-right"></i>'))
-            );
+            $group1[] = '<button class="button" type="button" data-toggle="addbulkchoice">' . lang('rr_add') . '</button>' .
+                '<div class="dropdown-pane" data-position="bottom" data-alignment="center" id="addbulkchoice" data-dropdown data-auto-focus="true">' .
+                '<div class="expanded button-group"><a class="button secondary" href="' . base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/idp' . '">' . lang('btnaddidps') . '</a>'.
+                '<a class="button secondary" href="' . base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/sp">' . lang('btnaddsps') . '</a></div>'.
+                '</div>';
         }
         if ($access['hasWriteAccess']) {
-            $data['result']['membership'][] = array(lang('rr_fedinvitation'), lang('rr_fedinvidpsp') . anchor(base_url() . 'federations/manage/inviteprovider/' . $encodedFedName . '', '<i class="fa fa-arrow-right"></i>'));
-            $data['result']['membership'][] = array(lang('rr_fedrmmember'), lang('rr_fedrmidpsp') . anchor(base_url() . 'federations/manage/removeprovider/' . $encodedFedName . '', '<i class="fa fa-arrow-right"></i>'));
+            $group1[] = '<a class="button" href="' . base_url() . 'federations/manage/inviteprovider/' . $encodedFedName . '">' . lang('btninvite') . '</a>';
+            $group1[] = '<a class="button alert" href="' . base_url() . 'federations/manage/removeprovider/' . $encodedFedName . '">' . lang('rr_remove') . '</a>';
         }
 
 
@@ -411,6 +421,9 @@ class Manage extends MY_Controller
             $data['result']['management'][] = array('data' => array('data' => '<div class="alert-box warning"><small>' . lang('rr_noperm_accessmngt') . '</small></div>', 'colspan' => 2));
         }
 
+        if (count($group1) > 0) {
+            $data['result']['membership'][] = array('' . lang('rr_membermanagement') . '', '' . revealBtnsRow($group1) . '');
+        }
 
         $metadataTab = $this->showMetadataTab($federation, $access['hasWriteAccess']);
         if (!isset($data['result']['metadata'])) {
@@ -430,7 +443,8 @@ class Manage extends MY_Controller
         $this->load->view(MY_Controller::$page, $data);
     }
 
-    private function inviteSubmitValidate() {
+    private function inviteSubmitValidate()
+    {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('provider', lang('rr_provider'), 'required|numeric|xss_clean');
         $this->form_validation->set_rules('message', lang('rr_message'), 'required|xss_clean');
@@ -438,7 +452,8 @@ class Manage extends MY_Controller
         return $this->form_validation->run();
     }
 
-    private function removeSubmitValidate() {
+    private function removeSubmitValidate()
+    {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('provider', lang('rr_provider'), 'required|numeric|xss_clean');
         $this->form_validation->set_rules('message', lang('rr_message'), 'required|xss_clean');
@@ -446,7 +461,8 @@ class Manage extends MY_Controller
         return $this->form_validation->run();
     }
 
-    public function inviteprovider($encodedFedName) {
+    public function inviteprovider($encodedFedName)
+    {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
@@ -525,7 +541,8 @@ class Manage extends MY_Controller
         $this->load->view(MY_Controller::$page, $data);
     }
 
-    public function removeprovider($encodedFedName) {
+    public function removeprovider($encodedFedName)
+    {
         if (!$this->jauth->isLoggedIn()) {
             redirect('auth/login', 'location');
         }
@@ -650,7 +667,8 @@ class Manage extends MY_Controller
      * @param \models\Federation $federation
      * @return array
      */
-    private function genEntitiesDescriptorId(\models\Federation $federation) {
+    private function genEntitiesDescriptorId(\models\Federation $federation)
+    {
         $entitiesDescriptorId = $federation->getDescriptorId();
         if (!empty($entitiesDescriptorId)) {
             return array('EntitiesDescriptor ID', html_escape($entitiesDescriptorId));
@@ -667,7 +685,8 @@ class Manage extends MY_Controller
         return array(lang('rr_fed_descid'), html_escape($entitiesDescriptorId) . ' <span class="label">' . lang('rr_entdesciddyn') . '</span>');
     }
 
-    private function genValidators(\models\Federation $federation, $hasWriteAccess = false) {
+    private function genValidators(\models\Federation $federation, $hasWriteAccess = false)
+    {
 
         $fvalidators = $federation->getValidators();
         if ($fvalidators->count() === 0) {
@@ -680,7 +699,7 @@ class Manage extends MY_Controller
 
         $fvdata = '<ul class="accordion" data-accordion data-allow-all-closed="true">';
         foreach ($fvalidators as $f) {
-            $fvdata .= ' <li class="accordion-item" data-accordion-item>'.
+            $fvdata .= ' <li class="accordion-item" data-accordion-item>' .
                 '<a href="#" class="accordion-title">' . $f->getName() . '</a>' .
                 '<div class="accordion-content" data-tab-content>';
             $editbtn = '<a href="' . base_url() . 'manage/fvalidatoredit/vedit/' . $federation->getId() . '/' . $f->getId() . '" class="right button">' . lang('rr_edit') . '</a>';

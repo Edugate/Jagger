@@ -128,7 +128,9 @@ class Auth extends MY_Controller
         try {
             $this->em->flush();
             $this->session->sess_destroy();
-            $this->session->sess_regenerate(true);
+            if(PHP_SESSION_ACTIVE) {
+                $this->session->sess_regenerate(true);
+            }
         } catch (Exception $e) {
             return $this->output->set_status_header(500)->set_output('Unknown error occured');
         }

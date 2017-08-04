@@ -142,13 +142,13 @@ class Providerdetails
         $sppart = $this->sppart;
         $feathide = (array)$this->CI->config->item('feathide');
         $featdisable = (array)$this->CI->config->item('featdisable');
+        $manageMembershipButtons = array();
 
         $srv_metalink = base_url('metadata/service/' . base64url_encode($ent->getEntityId()) . '/metadata.xml');
 
         $disable_extcirclemeta = $this->CI->config->item('disable_extcirclemeta');
-        $gearman_enabled = $this->CI->config->item('gearman');
 
-        $i = 0;
+        $i = 1;
         if (!(isset($feathide['metasonprov']) && $feathide['metasonprov'] === true)) {
             $d[++$i]['header'] = lang('rr_metadata');
             $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
@@ -173,7 +173,8 @@ class Providerdetails
                 $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srvCircleMetalinkSigned . '&nbsp;</span>&nbsp; ' . anchor_popup($srvCircleMetalinkSigned, '<i class="fa fa-arrow-right"></i>');
             }
         }
-        if ($isLocal && $hasWriteAccess && !empty($gearman_enabled) && $circleEnabled) {
+        $isMQEnabled = $this->CI->mq->isClientEnabled();
+        if ($isLocal && $hasWriteAccess && $isMQEnabled && $circleEnabled) {
             $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
             $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner" class="button">' . lang('btn_signmetadata') . '</a>';
         }
@@ -281,7 +282,7 @@ class Providerdetails
             $no_feds = $membership->count();
             if ($no_feds > 0 && $hasWriteAccess) {
                 if (!$isLocked) {
-                    $manage_membership .= '<div><a href="' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '" class="button small alert">' . lang('rr_federationleave') . '</a></div>';
+                    $manageMembershipButtons[] = '<a href="' . base_url('manage/leavefed/leavefederation/' . $ent->getId() . '').'" class="button alert">' . lang('rr_leave') . '</a>';
                     $this->entmenu[11] = array('name' => lang('rr_federationleave'), 'link' => '' . base_url() . 'manage/leavefed/leavefederation/' . $ent->getId() . '', 'class' => '');
                 } else {
                     $manage_membership .= '<b>' . lang('rr_federationleave') . '</b> ' . $lockicon . ' <br />';
@@ -289,7 +290,7 @@ class Providerdetails
             }
             if ($hasWriteAccess && (count($membershipNotLeft) < count($all_federations))) {
                 if (!$isLocked) {
-                    $manage_membership .= '<div><a href="' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '" class="button small">' . lang('rr_federationjoin') . '</a></div>';
+                    $manageMembershipButtons[] = '<a href="' . base_url('manage/joinfed/joinfederation/' . $ent->getId() . '').'" class="button">' . lang('rr_join') . '</a>';
                     $this->entmenu[10] = array('name' => lang('rr_federationjoin'), 'link' => '' . base_url() . 'manage/joinfed/joinfederation/' . $ent->getId() . '', 'class' => '');
                 } else {
                     $manage_membership .= '<b>' . lang('rr_federationjoin') . '</b> ' . $lockicon . '<br />';
@@ -303,6 +304,9 @@ class Providerdetails
 
             $d[++$i]['2cols'] = '<div id="membership"></div>';
         }
+
+        $d[0]['2cols'] = revealBtnsRow($manageMembershipButtons);
+        ksort($d);
         return $d;
     }
 
@@ -424,9 +428,6 @@ class Providerdetails
 
         $isStatic = $ent->getStatic();
 
-        $params = array(
-            'enable_classes' => true,
-        );
         $sppart = $this->sppart;
         $idppart = $this->idppart;
         $type = strtolower($ent->getType());
@@ -502,7 +503,10 @@ class Providerdetails
          */
         $d = array();
         $i = 0;
-        $d[++$i]['name'] = lang('rr_status') . ' ' . showBubbleHelp('<ul class="no-bullet"><li><b>' . lang('lbl_enabled') . '</b>:' . lang('provinmeta') . '</li><li><b>' . lang('lbl_disabled') . '</b>:' . lang('provexclmeta') . ' </li><li><b>' . lang('rr_managedlocally') . '</b>: ' . lang('provmanlocal') . '</li><li><b>' . lang('rr_external') . '</b>: ' . lang('provexternal') . '</li></ul>') . '';
+        $d[++$i]['name'] = lang('rr_status') . ' ' . showBubbleHelp('' . lang('lbl_enabled') . ': '. lang('provinmeta') . '; ' .
+                lang('lbl_disabled') .': ' . lang('provexclmeta') . '; ' .
+                lang('rr_managedlocally') . ': ' .lang('provmanlocal') . '; ' .
+                lang('rr_external') . ': ' . lang('provexternal') . '') . '';
         $entStatus = $this->makeStatusLabels();
         $d[$i]['value'] = '<b>' . $entStatus . '</b>';
         $d[++$i]['name'] = lang('rr_lastmodification');

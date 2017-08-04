@@ -1,6 +1,7 @@
 <?php
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 /**
  * @package     Jagger
@@ -33,11 +34,7 @@ class Gworkertemplates
         }
     }
 
-    /**
-     * @param $templateName
-     * @param array $params
-     * @return array|null
-     */
+
     public function resolveTemplate($templateName, array $params) {
 
         if (strcasecmp($templateName, 'metadatasigner') == 0) {
@@ -46,6 +43,7 @@ class Gworkertemplates
         if (strcasecmp($templateName, 'statcollector') == 0) {
             return $this->statcollector($params);
         }
+
         return null;
 
     }
@@ -150,7 +148,7 @@ class Gworkertemplates
 
     }
 
-    private function metadataSignerBulk(array $params){
+    private function metadataSignerBulk(array $params) {
         $result = array();
         if (array_key_exists('name', $params) && !empty($params['name'])) {
             if ($params['name'] === 'all') {
@@ -180,8 +178,10 @@ class Gworkertemplates
                 }
             }
         }
+
         return $result;
     }
+
     /**
      * @param array $params
      * @return array
@@ -193,7 +193,7 @@ class Gworkertemplates
             return $result;
         }
 
-        if ($params['type'] === 'federation' && array_key_exists('sysname', $params) && !empty($params['sysname'])) {
+        if (array_key_exists('sysname', $params) && $params['type'] === 'federation' && !empty($params['sysname'])) {
             /**
              * @var models\Federation $fed
              */
@@ -206,7 +206,7 @@ class Gworkertemplates
                 $result[] = $rv;
             }
 
-        } elseif ($params['type'] === 'provider' && array_key_exists('entityid', $params) && !empty($params['entityid'])) {
+        } elseif (array_key_exists('entityid', $params) && $params['type'] === 'provider' && !empty($params['entityid'])) {
             /**
              * @var models\Provider $provider
              */

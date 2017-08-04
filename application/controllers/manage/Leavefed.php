@@ -22,29 +22,30 @@ class Leavefed extends MY_Controller
 {
 
 
-    public function __construct()
-    {
+    private $current_site;
+
+    public function __construct() {
         parent::__construct();
         $loggedin = $this->jauth->isLoggedIn();
         $this->current_site = current_url();
         if (!$loggedin) {
             $this->session->set_flashdata('target', $this->current_site);
             redirect('auth/login', 'location');
-        } else {
-            $this->load->library('zacl');
-
         }
+        $this->load->library('zacl');
+
+
     }
 
-    private function submitValidate()
-    {
+    private function submitValidate() {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('fedid', lang('rr_federation'), 'trim|required|numeric');
+        $this->form_validation->set_rules('message','Message','trim|required');
+
         return $this->form_validation->run();
     }
 
-    public function leavefederation($providerid = null)
-    {
+    public function leavefederation($providerid = null) {
         if (!ctype_digit($providerid)) {
             show_error('Incorrect provider id provided', 404);
         }
@@ -55,8 +56,8 @@ class Leavefed extends MY_Controller
         if ($provider === null) {
             show_error('Provider not found', 404);
         }
-        $has_write_access = $this->zacl->check_acl($provider->getId(), 'write', strtolower($provider->getType()), '');
-        if (!$has_write_access) {
+        $hasWriteAccess = $this->zacl->check_acl($provider->getId(), 'write', strtolower($provider->getType()), '');
+        if (!$hasWriteAccess) {
             show_error('No access', 403);
         }
         if ($provider->getLocked()) {
@@ -64,7 +65,7 @@ class Leavefed extends MY_Controller
         }
         $this->load->helper('form');
         $federations = $provider->getFederations();
-        $feds_dropdown = array('none'=>lang('selectfed'));
+        $feds_dropdown = array('none' => lang('selectfed'));
         foreach ($federations as $f) {
             $feds_dropdown[$f->getId()] = $f->getName();
         }
@@ -79,74 +80,21 @@ class Leavefed extends MY_Controller
         }
 
         $data = array(
-            'breadcrumbs' => array(
+            'breadcrumbs'  => array(
                 $plist,
                 array('url' => base_url('providers/detail/show/' . $provider->getId() . ''), 'name' => '' . html_escape($providerNameInLang) . ''),
                 array('url' => '#', 'name' => lang('leavefederation'), 'type' => 'current'),
             ),
-            'name' => $providerNameInLang,
-            'titlepage' => anchor(base_url() . 'providers/detail/show/' . $provider->getId() . '', $providerNameInLang),
+            'name'         => $providerNameInLang,
+            'titlepage'    => anchor(base_url() . 'providers/detail/show/' . $provider->getId() . '', $providerNameInLang),
             'subtitlepage' => lang('leavefederation'),
-            'providertype'=>$enttype,
+            'providertype' => $enttype,
+            'providerid' => $providerid
 
         );
 
-        if ($this->submitValidate() === true) {
-            $fedid = $this->input->post('fedid');
-            /**
-             * @var $federation models\Federation
-             */
-            $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
-            if ($federation === null) {
-                show_error('Federation you want  to leave doesnt exist', 404);
-            }
-            /**
-             * @var $membership models\FederationMembers
-             */
-            $membership = $this->em->getRepository("models\FederationMembers")->findOneBy(array('provider' => $provider->getId(), 'federation' => $federation->getId()));
-            if ($membership !== null) {
-                $p_tmp = new models\AttributeReleasePolicies;
-                $arp_fed = $p_tmp->getFedPolicyAttributesByFed($provider, $federation);
-                $rm_arp_msg = '';
-                if (!empty($arp_fed) && is_array($arp_fed) && count($arp_fed) > 0) {
-                    foreach ($arp_fed as $r) {
-                        $this->em->remove($r);
-                    }
-                    $rm_arp_msg = "Also existing attribute release policy for this federation has been removed<br/>";
-                    $rm_arp_msg .= "It means when in the future you join this federation you will need to set attribute release policy for it again<br />";
-                }
-                $spec_arps_to_remove = $p_tmp->getSpecCustomArpsToRemove($provider);
-                if (!empty($spec_arps_to_remove) && is_array($spec_arps_to_remove) && count($spec_arps_to_remove) > 0) {
-                    foreach ($spec_arps_to_remove as $rp) {
-                        $this->em->remove($rp);
-                    }
-                }
 
-                if ($provider->getLocal()) {
-                    $membership->setJoinState('2');
-                    $this->em->persist($membership);
-                } else {
-                    $this->em->remove($membership);
-
-                }
-                try {
-                    $this->em->flush();
-                    $data['success_message'] = lang('rr_youleftfed') . ': ' . $federation->getName() . '<br />' . $rm_arp_msg;
-                } catch (Exception $e) {
-                    log_message('error', __METHOD__ . ' ' . $e);
-                    $data['error_message'] = 'Unknown error occured';
-                }
-                $data['content_view'] = 'manage/leavefederation_view';
-                return $this->load->view(MY_Controller::$page, $data);
-
-            } else {
-                $data['error_message'] = lang('rr_youleftfed');
-                $data['content_view'] = 'manage/leavefederation_view';
-                return $this->load->view(MY_Controller::$page, $data);
-
-
-            }
-        } else {
+        if ($this->submitValidate() !== true) {
             if (count($feds_dropdown) > 1) {
                 $data['feds_dropdown'] = $feds_dropdown;
                 $data['showform'] = true;
@@ -154,9 +102,67 @@ class Leavefed extends MY_Controller
                 $data['error_message'] = lang('cantleavefednonefound');
             }
             $data['content_view'] = 'manage/leavefederation_view';
-            $this->load->view(MY_Controller::$page, $data);
+
+            return $this->load->view(MY_Controller::$page, $data);
+        }
+
+
+        $fedid = $this->input->post('fedid');
+        $message = $this->input->post('message');
+        /**
+         * @var $federation models\Federation
+         */
+        $federation = $this->em->getRepository("models\Federation")->findOneBy(array('id' => $fedid));
+        if ($federation === null) {
+            show_error('Federation you want  to leave doesnt exist', 404);
+        }
+        /**
+         * @var $membership models\FederationMembers
+         */
+        $membership = $this->em->getRepository("models\FederationMembers")->findOneBy(array('provider' => $provider->getId(), 'federation' => $federation->getId()));
+        if ($membership !== null) {
+            $p_tmp = new models\AttributeReleasePolicies;
+            $arp_fed = $p_tmp->getFedPolicyAttributesByFed($provider, $federation);
+            $rm_arp_msg = '';
+            if (is_array($arp_fed) && count($arp_fed) > 0) {
+                foreach ($arp_fed as $r) {
+                    $this->em->remove($r);
+                }
+                $rm_arp_msg = 'Also existing attribute release policy for this federation has been removed<br/>' .
+                    'It means when in the future you join this federation you will need to set attribute release policy for it again<br />';
+            }
+            $spec_arps_to_remove = $p_tmp->getSpecCustomArpsToRemove($provider);
+            if (!empty($spec_arps_to_remove) && is_array($spec_arps_to_remove) && count($spec_arps_to_remove) > 0) {
+                foreach ($spec_arps_to_remove as $rp) {
+                    $this->em->remove($rp);
+                }
+            }
+
+            if ($provider->getLocal()) {
+                $membership->setJoinState('2');
+                $this->em->persist($membership);
+            } else {
+                $this->em->remove($membership);
+
+            }
+            $this->tracker->save_track(strtolower($provider->getType()), 'request', $provider->getEntityId(), 'left federation: ' . $federation->getName() . '. Message attached: ' . html_escape($message) . '', false);
+            try {
+                $this->em->flush();
+                $data['success_message'] = lang('rr_youleftfed') . ': ' . $federation->getName() . '<br />' . $rm_arp_msg;
+            } catch (Exception $e) {
+                log_message('error', __METHOD__ . ' ' . $e);
+                $data['error_message'] = 'Unknown error occured';
+            }
+            $data['content_view'] = 'manage/leavefederation_view';
+
+            return $this->load->view(MY_Controller::$page, $data);
 
         }
+        $data['error_message'] = lang('rr_youleftfed');
+        $data['content_view'] = 'manage/leavefederation_view';
+        return $this->load->view(MY_Controller::$page, $data);
+
     }
+
 
 }

@@ -42,7 +42,7 @@ gulp.task('concatf6', function () {
         .pipe(addsrc.append('src/js/jquery.tablesorter.js'))
         .pipe(addsrc.append('bower_components/motion-ui/motion-ui.js')) // foundation6
         .pipe(addsrc.append('bower_components/what-input/what-input.js')) // foundation6
-        .pipe(addsrc.append('bower_components/foundation-sites/dist/foundation.js')) // foundation6
+        .pipe(addsrc.append('bower_components/foundation-sites/dist/js/foundation.js')) // foundation6
         .pipe(addsrc.append('bower_components/Chart.js/Chart.js'))
         .pipe(addsrc.append('bower_components/select2/dist/js/select2.js'))
         .pipe(addsrc.append('src/js/dataTables/datatables.js'))
@@ -96,7 +96,6 @@ gulp.task('copy', function () {
         'tmpdist/*',
         'bower_components/jquery.cookie/jquery.cookie.js',
         'bower_components/jquery-placeholder/jquery.placeholder.js',
-        'bower_components/modernizr/modernizr.js',
         'src/js/local-f6.js'
     ])
         .pipe(copy('build/src/', {prefix: 2}));
@@ -104,7 +103,7 @@ gulp.task('copy', function () {
 });
 
 gulp.task('uglify', function () {
-    return gulp.src(['build/src/jquery.cookie.js', 'build/src/jquery.placeholder.js', 'build/src/modernizr.js', 'build/src/local-f6.js'])
+    return gulp.src(['build/src/jquery.cookie.js', 'build/src/jquery.placeholder.js',  'build/src/local-f6.js'])
         .pipe(uglify())
         .pipe(rename({suffix: '.min'}))
         .pipe(gulp.dest('build/minified/'));

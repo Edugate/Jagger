@@ -13,6 +13,7 @@ if (!defined('BASEPATH')) {
 class Premoval extends MY_Controller
 {
 
+    public $title;
     public function __construct()
     {
         parent::__construct();

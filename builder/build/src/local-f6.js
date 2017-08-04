@@ -520,12 +520,18 @@ var GINIT = {
                         var preurl = data.definitions.preurl;
                         var out = [], o = -1;
                         var nr, oddeven;
-                        out[++o] = '<table><tbody>';
+                        /// accordion
+                        out[++o] = '<ul class="accordion" data-allow-all-closed="true" data-multi-expand="true" data-accordion>';
+
                         for (var i = 0, total = entgroups.length; i < total; i++) {
                             entgroupkey = entgroups[i];
 
                             if (data[entgroupkey]) {
-                                out[++o] = '<tr><td colspan="2" class="highlight">' + data.definitions[entgroupkey] + '</td></tr>';
+                                out[++o] = '<li class="accordion-item " data-accordion-item>';
+
+                                out[++o] = '<a href="#" class="accordion-title">'+data.definitions[entgroupkey]+'</a>';
+                                out[++o]= '<div class="accordion-content" data-tab-content>'
+                                out[++o] = '<table><tbody>';
                                 out[++o] = '<tr><td colspan="2"><div class="zebramembers">';
                                 nr = 0;
                                 countGroups[entgroupkey] = data[entgroupkey].length;
@@ -556,14 +562,18 @@ var GINIT = {
 
                                 });
                                 out[++o] = '</div></td></tr>';
+                                out[++o] = '</tbody></table>';
 
+                                out[++o] = '</div>';
+                                out[++o] = '</li>';
 
                             }
 
                         }
-                        out[++o] = '</tbody></table>';
+
+                        out[++o] = '</ul>';
                         if (!membership2.hasClass('fake')) {
-                            $(membership2).html(out.join(''));
+                            $(membership2).html(out.join('')).foundation();
                         }
 
                         var data2 = [
@@ -3694,8 +3704,15 @@ $(function () {
                     $.each(data, function (i, v) {
 
                         i = new Image();
+
                         i.src = v.url;
-                        $('#statisticdiag').append('<div style="text-align:center; font-weight: bold; width: 90%;">' + v.title + '</div>').append('<div style="font-weight: bolder; width: 90%; text-align: right;">' + v.subtitle + '</div>').append(i);
+                        i.onload = function(){
+                            $('#statisticdiag').append('<div style="text-align:center; font-weight: bold; width: 90%;">' + v.title + '</div>').append('<div style="font-weight: bolder; width: 90%; text-align: right;">' + v.subtitle + '</div>').append(i);
+                        };
+                        i.onerror = function(){
+                            $('#statisticdiag').append('<div style="text-align:center; font-weight: bold; width: 90%;">' + v.title + '</div>').append('<div style="font-weight: bolder; width: 90%; text-align: right;">' + v.subtitle + '</div>').append('<div data-alert class="alert-box alert">Could not load the image (not found or no access)</div>');
+                        }
+
 
                     });
                 }

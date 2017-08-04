@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {
 /**
  * @package   Jagger
  * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- * @copyright 2015 HEAnet Limited (http://www.heanet.ie)
+ * @copyright 2017 HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  * @link      https://github.com/Edugate/Jagger
  */
@@ -20,6 +20,10 @@ class Oidcauth extends MY_Controller
         $this->oidcEnabled = $this->config->item('oidc_enabled');
         $this->oidcOps = $this->config->item('oidc_ops');
     }
+
+    /**
+     * testing against different jwt library
+     */
 
     public function authn() {
 
@@ -35,6 +39,7 @@ class Oidcauth extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Method not allowed');
         }
 
+
         $openProvider = $this->input->post('op', true);
         if (strlen($openProvider) && array_key_exists($openProvider, $this->oidcOps)) {
             $provider = $this->oidcOps[$openProvider];
@@ -49,12 +54,11 @@ class Oidcauth extends MY_Controller
             $authzRedirectUrl = $client->generateAuthzRequest();
 
             return $this->output->set_header('application/json')->set_status_header(200)->set_output(json_encode(array('redirect' => $authzRedirectUrl)));
-        } else {
-            return $this->output->set_status_header(403)->set_output('Missing');
         }
-
+            return $this->output->set_status_header(403)->set_output('Missing');
 
     }
+
 
     public function callback() {
         try {
@@ -99,22 +103,62 @@ class Oidcauth extends MY_Controller
 
             return $this->load->view(MY_Controller::$page, array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
-        log_message('debug', 'CLAIMS: ' . serialize($claims));
-        $username = (string)$claims['sub'] . '@' . $claims['iss'];
+        $mapUsername =null;
+
+        if(isset($provider['mapping_claims']['username'])){
+            $mapUsername = $provider['mapping_claims']['username'];
+        }
+
+        $mapEmail = null;
+        $mapGivenname= null;
+        $mapSurname = null;
+
+
+
+
         $fname = null;
         $sname = null;
         $email = null;
-        if (isset($provider['mapping_claims']['fname']) && isset($claims[$provider['mapping_claims']['fname']])) {
-            $fname = $claims[$provider['mapping_claims']['fname']];
+
+
+
+        if (isset($provider['mapping_claims']['fname'])) {
+            $mapGivenname =$provider['mapping_claims']['fname'];
         }
-        if (isset($provider['mapping_claims']['sname']) && isset($claims[$provider['mapping_claims']['sname']])) {
-            $sname = $claims[$provider['mapping_claims']['sname']];
+        if (isset($provider['mapping_claims']['sname'])) {
+            $mapSurname =  $provider['mapping_claims']['sname'];
+
         }
 
-        if (isset($provider['mapping_claims']['email']) && isset($claims[$provider['mapping_claims']['email']])) {
-            $email = $claims[$provider['mapping_claims']['email']];
+        if (isset($provider['mapping_claims']['email'])) {
+            $mapEmail = $provider['mapping_claims']['email'];
+
         }
 
+
+        $userinfo = $client->requestUserinfo();
+
+        $username = null;
+        if($mapUsername === null){
+            $username  = (string)$claims['sub'] . '@' . $claims['iss'];
+        }elseif ($userinfo->$mapUsername){
+            $username = $userinfo->$mapUsername;
+        }
+
+        if(isset($userinfo->$mapEmail)){
+            $email = $userinfo->$mapEmail;
+        }
+        if(isset($userinfo->$mapGivenname)){
+            $fname = $userinfo->$mapGivenname;
+        }
+
+        if(isset($userinfo->$mapSurname)){
+            $sname = $userinfo->$mapSurname;
+        }
+
+        if(trim($username) === ''){
+            show_error('missing information from OP', 403);
+        }
 
         /**
          * @var models\User $user

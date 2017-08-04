@@ -14,17 +14,14 @@ class Detail extends MY_Controller
 {
     protected $tmpAttributes;
     public static $alerts;
-    public $isGearman;
+    public $isMqueue;
 
     public function __construct() {
         parent::__construct();
         $this->tmpAttributes = new models\Attributes;
         $this->tmpAttributes->getAttributes();
         self::$alerts = array();
-        $this->isGearman = $this->config->item('gearman');
-        if ($this->isGearman !== true) {
-            $this->isGearman = false;
-        }
+        $this->isMqueue = $this->mq->isClientEnabled();
     }
 
     public function refreshentity($providerID) {
@@ -111,8 +108,8 @@ class Detail extends MY_Controller
             return $this->load->view('providers/showlogs_view', array('d' => array()));
         }
 
-        $isstats = $this->config->item('statistics');
-        if ($this->isGearman && $isstats === true) {
+        $isstats = (bool) $this->config->item('statistics');
+        if ($this->isMqueue && $isstats === true) {
             $rows[] = array('name' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', lang('statsmngmt')) . '',
                             'value' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<i class="fa fa-bar-chart"></i>') . '');
         }
@@ -164,7 +161,7 @@ class Detail extends MY_Controller
         }
 
         $isstats = $this->config->item('statistics');
-        if ($this->isGearman && $isstats === true) {
+        if ($this->isMqueue && $isstats === true) {
             $rows[] = array('name' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', lang('statsmngmt')) . '',
                 'value' => '' . anchor(base_url() . 'manage/statdefs/show/' . $ent->getId() . '', '<i class="fa fa-bar-chart"></i>') . '');
         }
@@ -279,7 +276,7 @@ class Detail extends MY_Controller
         if (count($members) === 0) {
             $result[] = array('entityid' => '' . lang('nomembers') . '', 'name' => '', 'url' => '');
         }
-        $preurl = base_url() . 'providers/detail/show/';
+        $preurl = base_url('providers/detail/show');
         foreach ($members as $m) {
             $feds = array();
             $name = $m->getNameToWebInLang($myLang);
@@ -290,7 +287,7 @@ class Detail extends MY_Controller
             foreach ($y as $yv) {
                 $feds[] = $yv->getName();
             }
-            $result[] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl . $m->getId(), 'feds' => $feds);
+            $result[] = array('entityid' => $m->getEntityId(), 'name' => $name, 'url' => $preurl .'/'. $m->getId(), 'feds' => $feds);
         }
         $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }

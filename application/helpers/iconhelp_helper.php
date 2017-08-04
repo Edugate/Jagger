@@ -29,7 +29,7 @@ function showHelp($string)
 function showBubbleHelp($string)
 {
     
-    $h = '<span data-tooltip class="has-tip" data-options="show_on:large" title="'.htmlspecialchars($string).'"><i class="fa fa-info" ></i></span>';
+    $h = '<span data-tooltip class="has-tip" data-options="show_on:large" title="'.html_escape($string).'"><i class="fa fa-info" ></i></span>';
     return $h;
 
 }

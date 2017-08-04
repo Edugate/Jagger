@@ -23,8 +23,8 @@ if(!empty($providers))
         echo $errors_v;
         echo "</div>";
     }
-    echo form_fieldset(lang('rmprovfromfed').': '.$fedname);
 
+    echo '<fieldset class="fieldset"><legend>'.lang('rmprovfromfed').': '.$fedname.'</legend>';
 
     echo '<div class="small-12 column">';
 
@@ -47,12 +47,12 @@ if(!empty($providers))
     echo '<div class="medium-9 column">';
     echo form_textarea('message');
 echo '</div>';
-    echo '</div>';
-    echo form_fieldset_close();
+    echo '</div></fieldset>';
+
 
     $btns = array(
         '<a href="'.base_url('federations/manage/show/'.$encodedfedname.'').'" class="button alert">'.lang('rr_cancel').'</a>',
-        '<button type="submit" name="submit" value="Remove" class="resetbutton deleteicon">'.lang('rr_fedrmmember').'</button>'
+        '<button type="submit" name="submit" value="Remove" class="button">'.lang('rr_submit').'</button>'
 
     );
 ?>
