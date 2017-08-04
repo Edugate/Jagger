@@ -8,8 +8,6 @@
         "mtdowling/cron-expression": "1.1.*",
         "phpseclib/phpseclib": "2.0.*",
         "lcobucci/jwt": "3.2.*",
-        "gree/jose": "dev-master",
-        "spomky-labs/jose": "^6.1",
 	"php-amqplib/php-amqplib": "2.6.*"
     },
     "require-dev": {

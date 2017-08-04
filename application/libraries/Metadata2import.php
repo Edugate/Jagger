@@ -13,13 +13,11 @@ class Metadata2import
 {
 
     private $metadataInArray;
-    private $metadata;
     private $full;
     /**
      * @var array $defaults
      */
     private $defaults;
-    private $other;
     protected $ci;
     /**
      * @var bool $copyFedAttrReq
@@ -29,7 +27,7 @@ class Metadata2import
      * @var Doctrine\ORM\EntityManager $em
      */
     protected $em;
-    protected $attrsDefinitions;
+    private $attrsDefinitions;
     /**
      * @var models\Coc[] $regpollistconverted
      */
@@ -48,7 +46,6 @@ class Metadata2import
         $this->ci->load->library('metadata2array');
         $this->ci->load->library('tracker');
         $this->ci->load->library('emailsender');
-        $this->metadata = null;
         $this->full = false;
         $this->copyFedAttrReq = false;
         $this->coclistconverted = array();
@@ -57,7 +54,6 @@ class Metadata2import
         $this->regpollistconverted = array();
         $this->regpollistarray = array();
         $this->setDefaults();
-        $this->other = null;
     }
 
 
@@ -131,11 +127,9 @@ class Metadata2import
 
     }
 
-    public function import($metadata, $type, $full, array $defaults, $other = null) {
+    public function import($metadata, $type, $full, array $defaults) {
         $tmpProviders = new models\Providers;
-        $this->metadata = &$metadata;
         $this->full = $full;
-        $this->other = $other;
         $this->defaults = array_merge($this->defaults, $defaults);
         if (empty($this->full) && empty($this->defaults['static'])) {
             return false;
