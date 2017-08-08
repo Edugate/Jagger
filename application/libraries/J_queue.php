@@ -439,7 +439,7 @@ class J_queue
             $creatorFN = $creator->getFullname();
         }
         $dataRows[]['header'] = lang('rr_details');
-        $dataRows[] = array( 'name' => lang('requestor'),'value' =>  ''.$creatorFN ($creatorUN).'');
+        $dataRows[] = array( 'name' => lang('requestor'),'value' =>  ''.$creatorFN .'('.$creatorUN.')');
         $dataRows[] = array('name' => lang('rr_sourceip'), 'value' => $queue->getIP());
         $dataRows[]['header'] = lang('rr_fedstojoin');
 
