@@ -2395,12 +2395,13 @@ $(document).ready(function () {
         var fedid;
         attrpolstabVar.on('change.zf.tabs', function (event, tab) {
 
+
             var progressbarHTML = '<div class="progress"><span class="meter" style="width: 10%"></span></div>';
             var progressbar = $($.parseHTML(progressbarHTML));
             var meter = progressbar.find('span.meter').first();
-            var addbtn = $('#addattrsupport').clone(true);
-            var addentcatbtn = $('#addentcatattr').clone(true);
-            var addspecbtn = $('#addespecattr').clone(true);
+            var addbtn = $('#addattrsupport').clone(true).removeClass('hidden');
+            var addentcatbtn = $('#addentcatattr').clone(true).removeClass('hidden');
+            var addspecbtn = $('#addespecattr').clone(true).removeClass('hidden');
             console.log(event, tab);
             var link = $(tab).attr('data-reveal-ajax-tab');
             if (link === undefined) {
@@ -2421,6 +2422,7 @@ $(document).ready(function () {
                     meter.css('width', '100%');
                     var idf, supplbl, nrcols, policy, datajaggersupm, support = [];
                     if (data.type === 'supported') {
+                       // addbtn.removeClass('hidden');
                         $.each(data.data.support, function (k, v) {
                             support.push(v);
                         });
