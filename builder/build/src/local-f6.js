@@ -1388,12 +1388,14 @@ var GINIT = {
 
         $(document).on('click', '.fmembers', 'a', function () {
 
+
             var link = $(this), url = link.attr("href");
+            var iconlink = link.find('i').first();
             var row = link.parent().parent();
             if ($(row).hasClass('opened') === true) {
                 $(row).next().remove();
                 $(row).removeClass('opened').removeClass('highlight');
-
+                link.removeClass('is-active');
             }
             else {
                 var value = $('<ul/>');
@@ -1403,6 +1405,7 @@ var GINIT = {
                     timeout: 9500,
                     cache: true,
                     success: function (data) {
+                        link.addClass('is-active');
                         spinImage.hide();
                         var stitle;
                         var nlist;

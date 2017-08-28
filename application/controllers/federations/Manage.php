@@ -421,8 +421,9 @@ class Manage extends MY_Controller
             $data['result']['management'][] = array('data' => array('data' => '<div class="alert-box warning"><small>' . lang('rr_noperm_accessmngt') . '</small></div>', 'colspan' => 2));
         }
 
+        $data['membershipBtnsRow'] = '';
         if (count($group1) > 0) {
-            $data['result']['membership'][] = array('' . lang('rr_membermanagement') . '', '' . revealBtnsRow($group1) . '');
+            $data['membershipBtnsRow'] = '<div class="row column"><div class="small-12 medium-6 column">'.lang('rr_membermanagement').'</div><div class="small-12 medium-6 column text-right">'.revealBtnsRow($group1).'</div></div>';
         }
 
         $metadataTab = $this->showMetadataTab($federation, $access['hasWriteAccess']);
@@ -433,8 +434,10 @@ class Manage extends MY_Controller
 
 
         if (!empty($data['federation_is_active'])) {
-            $data['result']['membership'][] = array('data' => array('data' => '<div id="membership2" data-jagger-link="' . base_url() . 'federations/manage/showmembers/' . $federation->getId() . '"><div data-alert class="alert-box info center">Loading....<a href="#" class="close">&times;</a>
-</div></div>', 'colspan' => 2));
+            $data['result']['membership'][] = array();
+
+            $data['membershipTab'] = '<div class="row column" id="membership2" data-jagger-link="' . base_url() . 'federations/manage/showmembers/' . $federation->getId() . '"><div data-alert class="alert-box info center">Loading....<a href="#" class="close">&times;</a>
+</div></div>';
         }
 
         $data['result']['fvalidators'] = array_merge($data['result']['fvalidators'], $this->genValidators($federation, $canEdit));

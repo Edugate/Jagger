@@ -52,10 +52,17 @@ unset($result['general']);
 foreach ($result as $k => $v) {
 
     echo '<div id="' . $k . '" class="tabs-panel">';
-    $this->table->set_template($tmpl);
-    $this->table->auto_heading = false;
-    echo $this->table->generate($v);
-    $this->table->clear();
+    if($k === 'membership'){
+        echo $membershipBtnsRow;
+        if(!empty($membershipTab)){
+            echo $membershipTab;
+        }
+    }else {
+        $this->table->set_template($tmpl);
+        $this->table->auto_heading = false;
+        echo $this->table->generate($v);
+        $this->table->clear();
+    }
     echo '</div>';
 
 }

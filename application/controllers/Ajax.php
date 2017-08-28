@@ -191,8 +191,7 @@ class Ajax extends MY_Controller
         }
 
         $result = array();
-        $imgtoggle = '<img class="toggle" src="' . base_url() . 'images/icons/control-270.png" />';
-        $imgtoggle = '<i class="fa fa-caret-square-o-down toggle"></i>';
+        $imgtoggle = '<i class="fa accordion-title no-border"></i>';
         foreach ($federations as $v) {
             $lbs = array(
                 'pub' => makeLabel('notpublic', '', lang('rr_fed_notpublic')),
@@ -206,7 +205,7 @@ class Ajax extends MY_Controller
                 $lbs['act'] = makeLabel('active', '', lang('rr_fed_active')) . ' ';
             }
          
-            $members = ' <a href="' . base_url() . 'federations/manage/showmembers/' . $v->getId() . '" class="fmembers" id="' . $v->getId() . '">' . $imgtoggle . '</a>';
+            $members = ' <a href="' . base_url('federations/manage/showmembers/' . $v->getId() . '').'" class="fmembers" id="' . $v->getId() . '">' . $imgtoggle . '</a>';
             $result[] = array(
                 'name' => anchor(base_url('federations/manage/show/' . base64url_encode($v->getName() . '')), $v->getName()),
                 'urn' => $v->getUrn(),
