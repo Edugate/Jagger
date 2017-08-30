@@ -528,14 +528,14 @@ var GINIT = {
                             entgroupkey = entgroups[i];
 
                             if (data[entgroupkey]) {
+                                countGroups[entgroupkey] = data[entgroupkey].length;
                                 out[++o] = '<li class="accordion-item " data-accordion-item>';
-
-                                out[++o] = '<a href="#" class="accordion-title">'+data.definitions[entgroupkey]+'</a>';
+                                out[++o] = '<a href="#" class="accordion-title">'+data.definitions[entgroupkey]+' ('+countGroups[entgroupkey]+')</a> ';
                                 out[++o] = '<div class="accordion-content" data-tab-content>'
                                 out[++o] = '<table><tbody>';
                                 out[++o] = '<tr><td colspan="2"><div class="zebramembers">';
                                 nr = 0;
-                                countGroups[entgroupkey] = data[entgroupkey].length;
+
                                 var entstate;
                                 $.each(data[entgroupkey], function (i, v) {
                                     entstate = '';
