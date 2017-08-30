@@ -45,6 +45,9 @@ class Oidcauth extends MY_Controller
             $provider = $this->oidcOps[$openProvider];
             $client = new Jagger\oidc\Client($provider['openid_configuration']);
             $client->addScope($provider['scopes']);
+            if(array_key_exists('claims',$provider)) {
+                $client->setClaimRequest($provider['claims']);
+            }
             $client->setProviderURL($openProvider);
             $client->setClientID($provider['client_id']);
             $client->setClientSecret($provider['client_secret']);
@@ -134,10 +137,7 @@ class Oidcauth extends MY_Controller
             $mapEmail = $provider['mapping_claims']['email'];
 
         }
-
-
         $userinfo = $client->requestUserinfo();
-
         $username = null;
         if($mapUsername === null){
             $username  = (string)$claims['sub'] . '@' . $claims['iss'];
