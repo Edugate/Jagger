@@ -392,15 +392,15 @@ class Manage extends MY_Controller
         $data['result']['membership'][] = array('data' => array('data' => '', 'colspan' => 2));
         $group1 = array();
         if ($access['hasAddbulkAccess']) {
-            $group1[] = '<button class="button" type="button" data-toggle="addbulkchoice">' . lang('rr_add') . '</button>' .
+            $group1[] = '<button class="button" type="button" data-toggle="addbulkchoice">' . lang('rr_add') . ' ...</button>' .
                 '<div class="dropdown-pane" data-position="bottom" data-alignment="center" id="addbulkchoice" data-dropdown data-auto-focus="true">' .
                 '<div class="expanded button-group"><a class="button secondary" href="' . base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/idp' . '">' . lang('btnaddidps') . '</a>'.
                 '<a class="button secondary" href="' . base_url() . 'federations/fedactions/addbulk/' . $encodedFedName . '/sp">' . lang('btnaddsps') . '</a></div>'.
                 '</div>';
         }
         if ($access['hasWriteAccess']) {
-            $group1[] = '<a class="button" href="' . base_url() . 'federations/manage/inviteprovider/' . $encodedFedName . '">' . lang('btninvite') . '</a>';
-            $group1[] = '<a class="button alert" href="' . base_url() . 'federations/manage/removeprovider/' . $encodedFedName . '">' . lang('rr_remove') . '</a>';
+            $group1[] = '<a class="button" href="' . base_url() . 'federations/manage/inviteprovider/' . $encodedFedName . '">' . lang('btninvite') . ' ...</a>';
+            $group1[] = '<a class="button" href="' . base_url() . 'federations/manage/removeprovider/' . $encodedFedName . '">' . lang('rr_remove') . ' ...</a>';
         }
 
 

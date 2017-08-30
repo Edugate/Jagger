@@ -521,7 +521,7 @@ var GINIT = {
                         var out = [], o = -1;
                         var nr, oddeven;
                         /// accordion
-                        out[++o] = '<h5 class="subheader">List of currently registered entities</h5>';
+                        out[++o] = '<h7 class="subheader">List of currently registered entities</h7>';
                         out[++o] = '<ul class="accordion" data-allow-all-closed="true" data-multi-expand="true" data-accordion>';
 
                         for (var i = 0, total = entgroups.length; i < total; i++) {
