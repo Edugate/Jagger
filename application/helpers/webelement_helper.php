@@ -130,11 +130,13 @@ function jaggerDisplayDateTimeByOffset(\DateTime $dateTime, $timeOffset, $outFor
     return $result;
 }
 
-function revealBtnsRow(array $btns) {
+function revealBtnsRow(array $btns, $expanded = false) {
     $r = '<div class="button-group text-right">';
-    foreach ($btns as $btn) {
-        $r .= $btn;
+    if($expanded){
+        $r = '<div class="button-group expanded text-right">';
     }
+    $r .= implode('',$btns);
+
     $r .= '</div>';
 
     return $r;

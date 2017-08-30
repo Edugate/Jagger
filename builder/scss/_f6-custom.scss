@@ -34,14 +34,14 @@ body, html {
 .title-bar {
   width: 100%;
   z-index: 10;
-  min-height: 3.5em;
+//  min-height: 3.5em;
 }
 
 .top-bar {
   width: 100%;
   z-index: 10;
   transition: height 0.05s ease;
-  min-height: 3.5em;
+//  min-height: 3.5em;
 }
 
 .top-bar .top-bar-right, .top-bar .top-bar-left {

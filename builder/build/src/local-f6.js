@@ -521,6 +521,7 @@ var GINIT = {
                         var out = [], o = -1;
                         var nr, oddeven;
                         /// accordion
+                        out[++o] = '<h5 class="subheader">List of currently registered entities</h5>';
                         out[++o] = '<ul class="accordion" data-allow-all-closed="true" data-multi-expand="true" data-accordion>';
 
                         for (var i = 0, total = entgroups.length; i < total; i++) {
@@ -530,7 +531,7 @@ var GINIT = {
                                 out[++o] = '<li class="accordion-item " data-accordion-item>';
 
                                 out[++o] = '<a href="#" class="accordion-title">'+data.definitions[entgroupkey]+'</a>';
-                                out[++o]= '<div class="accordion-content" data-tab-content>'
+                                out[++o] = '<div class="accordion-content" data-tab-content>'
                                 out[++o] = '<table><tbody>';
                                 out[++o] = '<tr><td colspan="2"><div class="zebramembers">';
                                 nr = 0;

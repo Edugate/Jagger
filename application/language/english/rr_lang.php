@@ -137,7 +137,7 @@ $lang['regpol_language'] =            'Language';
 $lang['regpolrmstr']  =             'You are going to delete Registration Policy';
 $lang['ecrmstr']  =             'You are going to delete Entity Category';
 $lang['countentconnected']   = 'Number entities connected';
-
+$lang['listregentities']     = 'List of currently registered entities';
 $lang['rr_lang'] =                  'Language';
 $lang['digestmethodsign']          = 'Digest method for signing metadata';
 $lang['digestmethodexportsign']          = 'Digest method for signing exported metadata';

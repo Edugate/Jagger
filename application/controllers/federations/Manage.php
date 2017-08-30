@@ -423,7 +423,7 @@ class Manage extends MY_Controller
 
         $data['membershipBtnsRow'] = '';
         if (count($group1) > 0) {
-            $data['membershipBtnsRow'] = '<div class="row column"><div class="small-12 medium-6 column">'.lang('rr_membermanagement').'</div><div class="small-12 medium-6 column text-right">'.revealBtnsRow($group1).'</div></div>';
+            $data['membershipBtnsRow'] = '<div class="row column"><div class="small-12 medium-6 column">'.lang('rr_membermanagement').'</div><div class="small-12 medium-6 column text-right">'.revealBtnsRow($group1,true).'</div></div>';
         }
 
         $metadataTab = $this->showMetadataTab($federation, $access['hasWriteAccess']);
