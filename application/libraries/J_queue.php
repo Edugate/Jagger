@@ -239,13 +239,13 @@ class J_queue
         $objdata = $queue->getData();
         $result = array(
             array('header' => lang('request')),
-            array('name' => lang('rr_sourceip'), 'value' => $queue->getIP()),
             array('name' => lang('type'), 'value' => lang('req_userregistration')),
             array('name' => lang('rr_regdate'), 'value' => $queue->getCreatedAt()),
-            array('name' => lang('rr_username'), 'value' => $queue->getName()),
-            array('name' => lang('rr_uemail'), 'value' => $objdata['email']),
             array('name' => lang('rr_fname'), 'value' => $objdata['fname']),
-            array('name' => lang('rr_lname'), 'value' => $objdata['sname'])
+            array('name' => lang('rr_lname'), 'value' => $objdata['sname']),
+            array('name' => lang('rr_uemail'), 'value' => $objdata['email']),
+            array('name' => lang('rr_username'), 'value' => $queue->getName()),
+            array('name' => lang('rr_sourceip'), 'value' => $queue->getIP()),
         );
         $creator = $queue->getCreator();
         if ($creator) {
