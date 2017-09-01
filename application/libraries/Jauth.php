@@ -52,6 +52,7 @@ class Jauth
 
                 return false;
             }
+            $email = $user->getEmail();
             $ipAddr = $this->ci->input->ip_address();
             $userprefs = $user->getUserpref();
             if (!empty($userprefs) && array_key_exists('board', $userprefs)) {
@@ -79,6 +80,7 @@ class Jauth
                 log_message('error', __METHOD__ . ': ' . $e);
             }
             $this->ci->session->set_userdata('logged', 1);
+            $this->ci->session->set_userdata('email', $email);
             $this->ci->session->unset_userdata('partiallogged');
 
             return true;
@@ -121,6 +123,7 @@ class Jauth
                       'logged'        => 0,
                       'username'      => '' . $user->getUsername() . '',
                       'user_id'       => '' . $user->getId() . '',
+                      'email'         => '' . $user->getEmail() . '',
                       'secondfactor'  => $secondfactor,
                       'authntype'     => 'local')
             );
@@ -142,6 +145,7 @@ class Jauth
                 'logged'    => 1,
                 'username'  => '' . $userSessionData['username'] . '',
                 'user_id'   => '' . $userSessionData['user_id'] . '',
+                'email'     => '' . $user->getEmail() . '',
                 'showhelp'  => '' . $userSessionData['showhelp'] . '',
                 'authntype' => 'local'
             ));
