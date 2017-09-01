@@ -64,9 +64,7 @@ class Auth extends MY_Controller
                 $newUserData['email'] = trim($fedidentity['fedemail']);
             }
             if (empty($newUserData['username']) || empty($newUserData['email'])) {
-                $this->session->sess_destroy();
                 $this->session->sess_regenerate(true);
-
                 return $this->output->set_status_header(403)->set_output('missing some attrs like username or/and email');
             }
             if (array_key_exists('fedfname', $fedidentity)) {
@@ -81,9 +79,7 @@ class Auth extends MY_Controller
          */
         $checkuser = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $newUserData['username'] . ''));
         if ($checkuser !== null) {
-            $this->session->sess_destroy();
             $this->session->sess_regenerate(true);
-
             return $this->output->set_status_header(403)->set_output('' . lang('err_userexist') . '');
         }
         /**
@@ -127,7 +123,6 @@ class Auth extends MY_Controller
          */
         try {
             $this->em->flush();
-            $this->session->sess_destroy();
             if(PHP_SESSION_ACTIVE) {
                 $this->session->sess_regenerate(true);
             }
