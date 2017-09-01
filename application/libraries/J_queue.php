@@ -239,13 +239,13 @@ class J_queue
         $objdata = $queue->getData();
         $result = array(
             array('header' => lang('request')),
-            array('name' => lang('rr_sourceip'), 'value' => $queue->getIP()),
             array('name' => lang('type'), 'value' => lang('req_userregistration')),
             array('name' => lang('rr_regdate'), 'value' => $queue->getCreatedAt()),
-            array('name' => lang('rr_username'), 'value' => $queue->getName()),
-            array('name' => lang('rr_uemail'), 'value' => $objdata['email']),
             array('name' => lang('rr_fname'), 'value' => $objdata['fname']),
-            array('name' => lang('rr_lname'), 'value' => $objdata['sname'])
+            array('name' => lang('rr_lname'), 'value' => $objdata['sname']),
+            array('name' => lang('rr_uemail'), 'value' => $objdata['email']),
+            array('name' => lang('rr_username'), 'value' => $queue->getName()),
+            array('name' => lang('rr_sourceip'), 'value' => $queue->getIP()),
         );
         $creator = $queue->getCreator();
         if ($creator) {
@@ -512,6 +512,18 @@ class J_queue
 
         $dataRows[] =array( 'name'=>''.lang('rr_helpdeskurl').'','value'=>''.$objData->getHelpdeskUrl().'');
 
+        $dataRows[] = array('header' => lang('rr_contacts'));
+
+        foreach ($objData->getContacts() as $contact) {
+            $phone = $contact->getPhone();
+            $phoneStr = '';
+            if (!empty($phone)) {
+                $phoneStr = 'Tel:' . $phone;
+            }
+            $dataRows[] = array('name' => '' . lang('rr_contact') . ' (' . $contact->getType() . ')', 'value' => '' . $contact->getFullName() . ' &lt;' . $contact->getEmail() . '&gt; ' . $phoneStr . '');
+        }
+
+
 
         $dataRows[]['header'] = lang('rr_servicelocations');
         $srvTypesWithIdx = array('IDPArtifactResolutionService', 'DiscoveryResponse', 'AssertionConsumerService', 'SPArtifactResolutionService');
@@ -528,17 +540,6 @@ class J_queue
         foreach ($objData->getCertificates() as $cert) {
             $certdatacell = reformatPEM($cert->getCertdata());
             $dataRows[] = array('name' => lang('rr_certificateuse') . ' <span class="label info">' . html_escape($cert->getCertUseInStr()) . '</span>', 'value' => '<span class="span-10"><code>' . $certdatacell . '</code></span>');
-        }
-
-        $dataRows[] = array('header' => lang('rr_contacts'));
-
-        foreach ($objData->getContacts() as $contact) {
-            $phone = $contact->getPhone();
-            $phoneStr = '';
-            if (!empty($phone)) {
-                $phoneStr = 'Tel:' . $phone;
-            }
-            $dataRows[] = array('name' => '' . lang('rr_contact') . ' (' . $contact->getType() . ')', 'value' => '' . $contact->getFullName() . ' &lt;' . $contact->getEmail() . '&gt; ' . $phoneStr . '');
         }
 
         if ($showXML === true) {
