@@ -38,6 +38,7 @@ class Detail extends MY_Controller
             $providerID = trim($providerID);
             $this->j_ncache->cleanMcirclceMeta($providerID);
             $this->j_ncache->cleanProviderArp($providerID);
+            $this->j_ncache->cleanPolicyDefs($providerID);
             $this->j_cache->library('arp_generator', 'arpToArrayByInherit', array($providerID), -1);
             return $this->output->set_status_header(200)->set_output('OK');
         }

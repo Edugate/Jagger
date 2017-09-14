@@ -65,14 +65,19 @@ class Arp extends MY_Controller
             return $this->output->set_content_type('text/html')->set_status_header(500)->set_output('Internal server error');
         }
         if($version === 3){
-            $xml = $this->arpgen->genXMLv3($ent);
+            $rxmldata =$this->arpgen->genXMLv3($ent);
+
         }
         else {
-            $xml = $this->arpgen->genXML($ent);
+            $rxmldata = $this->arpgen->genXML($ent);
+
         }
+        $xml = $rxmldata['xml'];
+        $dataCreated = $rxmldata['created'];
         $result = $xml->outputMemory();
-        $lastUpdated = time();
-        return $this->output->set_content_type('text/xml')->set_header('Last-Modified: '.gmdate('D, d M Y H:i:s', $lastUpdated).' GMT')->set_output($result);
+        $jate = new DateTime();
+        $jate->setTimestamp($dataCreated);
+        return $this->output->set_content_type('text/xml')->set_header('Last-Modified: '.$jate->format('D, d M Y H:i:s').' GMT')->set_output($result);
 
     }
 
@@ -133,6 +138,8 @@ class Arp extends MY_Controller
             $data['out'] = $arpcached;
         }
         if (!empty($data['out'])) {
+            $lastUpdated = time();
+            $this->output->set_header('Last-Modified: '.gmdate('D, d M Y H:i:s', $lastUpdated).' GMT');
             $this->load->view('metadata_view', $data);
             log_message('info', __METHOD__ . ' ARP for ' . $entityid . ' :: Downloaded......');
             $this->trackRequest($entityid);

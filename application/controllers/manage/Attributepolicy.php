@@ -131,6 +131,7 @@ class Attributepolicy extends MY_Controller
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
+
         $policiesDefs = $this->arpgen->genPolicyDefs($ent);
 
         $result = array(
@@ -152,7 +153,7 @@ class Attributepolicy extends MY_Controller
         );
 
         if (array_key_exists('spPolicies', $policiesDefs)) {
-            foreach (array_keys($policiesDefs['spPolicies']) as $ol) {
+            foreach (array_keys($policiesDefs['data']['spPolicies']) as $ol) {
                 if (!array_key_exists($ol, $result['data']['global'])) {
                     $result['data']['global'][$ol] = 0;
                 }
@@ -210,7 +211,9 @@ class Attributepolicy extends MY_Controller
         }
 
         $result['type'] = 'sp';
-        $result['data'] = $this->arpgen->genPolicyDefs($ent);
+        $policyDefs =  $this->arpgen->genPolicyDefs($ent);
+
+        $result['data'] = $policyDefs['data'];
 
         $addReqSPs = array();
         foreach ($result['data']['sps'] as $ksp => $vsp) {

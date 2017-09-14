@@ -40,6 +40,7 @@ class J_ncache
                 $this->ci->cache->delete($cachePrefix . $v);
             }
         }
+
         return true;
     }
 
@@ -54,6 +55,7 @@ class J_ncache
         foreach ($langs as $v) {
             $this->ci->cache->delete($cachePrefix . $v);
         }
+
         return true;
     }
 
@@ -64,6 +66,7 @@ class J_ncache
      */
     public function getFederationMembers($fedId, $lang) {
         $cachedid = 'fedmbrs_' . $fedId . '_' . $lang;
+
         return $this->ci->cache->get($cachedid);
     }
 
@@ -76,6 +79,14 @@ class J_ncache
     public function saveFederationMembers($fedId, $lang, $data) {
         $cachedid = 'fedmbrs_' . $fedId . '_' . $lang;
         $this->ci->cache->save($cachedid, $data, 720);
+
+        return true;
+    }
+
+    public function savePolicyDefs($providerid, $data) {
+        $cacheid = 'poldef_' . $providerid;
+        $this->ci->cache->save($cacheid, $data, 720);
+
         return true;
     }
 
@@ -85,6 +96,13 @@ class J_ncache
      */
     public function getPreregisterMetadata($tmpid) {
         $cacheid = 'preregmeta_' . $tmpid;
+
+        return $this->ci->cache->get($cacheid);
+    }
+
+    public function getPolicyDefs($providerid) {
+        $cacheid = 'poldef_' . $providerid;
+
         return $this->ci->cache->get($cacheid);
     }
 
@@ -95,6 +113,14 @@ class J_ncache
     public function cleanPreregisterMetadata($tmpid) {
         $cacheid = 'preregmeta_' . $tmpid;
         $this->ci->cache->delete($cacheid);
+
+        return true;
+    }
+
+    public function cleanPolicyDefs($providerid) {
+        $cacheid = 'poldef_' . $providerid;
+        $this->ci->cache->delete($cacheid);
+
         return true;
     }
 
@@ -106,6 +132,7 @@ class J_ncache
     public function savePreregisterMetadata($tmpid, $data) {
         $cacheid = 'preregmeta_' . $tmpid;
         $this->ci->cache->save($cacheid, $data, 720);
+
         return true;
 
     }
@@ -119,6 +146,7 @@ class J_ncache
             return null;
         }
         $cacheid = 'userq_' . $userid;
+
         return $this->ci->cache->get($cacheid);
     }
 
@@ -130,6 +158,7 @@ class J_ncache
     public function saveUserQList($userid, $data) {
         $cacheid = 'userq_' . $userid;
         $this->ci->cache->save($cacheid, $data, 15);
+
         return true;
     }
 
@@ -141,6 +170,7 @@ class J_ncache
     public function cleanProviderArp($providerId) {
         $cacheid = 'arp_' . $providerId;
         $this->ci->cache->delete($cacheid);
+
         return true;
     }
 
@@ -150,6 +180,7 @@ class J_ncache
      */
     public function getMcircleMeta($providerId) {
         $cacheid = 'mcircle_' . $providerId;
+
         return $this->ci->cache->get($cacheid);
     }
 
@@ -159,6 +190,7 @@ class J_ncache
      */
     public function cleanMcirclceMeta($providerId) {
         $this->ci->cache->delete('mcricle_' . $providerId . '');
+
         return true;
     }
 
@@ -170,6 +202,7 @@ class J_ncache
     public function saveMcircleMeta($providerId, $data) {
         $cacheid = 'mcircle_' . $providerId;
         $this->ci->cache->save($cacheid, $data, 600);
+
         return true;
     }
 
@@ -179,6 +212,7 @@ class J_ncache
      */
     public function cleanEntityStatus($providerId) {
         $this->ci->cache->delete('mstatus_' . $providerId . '');
+
         return true;
     }
 
@@ -187,6 +221,7 @@ class J_ncache
      */
     public function getEntityCategoriesDefs() {
         $cacheid = 'entcatsdefs';
+
         return $this->ci->cache->get($cacheid);
     }
 
@@ -197,6 +232,7 @@ class J_ncache
     public function saveEntityCategoriesDefs($data) {
         $cacheid = 'entcatsdefs';
         $this->ci->cache->save($cacheid, $data, 600);
+
         return true;
     }
 
@@ -206,6 +242,7 @@ class J_ncache
      */
     public function getCircleDisco($providerId) {
         $cacheid = 'disco_' . $providerId;
+
         return $this->ci->cache->get($cacheid);
     }
 
@@ -218,6 +255,7 @@ class J_ncache
     public function saveCircleDisco($providerId, $data) {
         $cacheid = 'disco_' . $providerId;
         $this->ci->cache->save($cacheid, $data, 3600);
+
         return true;
     }
 
@@ -226,6 +264,7 @@ class J_ncache
      */
     public function getFullDisco() {
         $cacheid = 'discof';
+
         return $this->ci->cache->get($cacheid);
     }
 
@@ -236,6 +275,7 @@ class J_ncache
     public function saveFullDisco($data) {
         $cacheid = 'discof';
         $this->ci->cache->save($cacheid, $data, 12000);
+
         return true;
     }
 

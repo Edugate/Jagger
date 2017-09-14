@@ -93,6 +93,7 @@ class Arpgen
         if (!array_key_exists($idpID, self::$supportedAttrs)) {
             self::$supportedAttrs[$idpID] = array();
         }
+
         return self::$supportedAttrs[$idpID];
     }
 
@@ -103,7 +104,7 @@ class Arpgen
          */
         $policies = $this->em->getRepository('models\AttributeReleasePolicy')->findBy(
             array(
-                'idp' => $idp,
+                'idp'  => $idp,
                 //    'attribute' => $this->getSupportAttributes($idp),
                 'type' => array('fed', 'sp', 'entcat', 'customsp')
             )
@@ -122,6 +123,7 @@ class Arpgen
 
             $result[$entryType][$entry->getAttribute()->getId()][$entry->getRequester()] = $valuePolicy;
         }
+
         return $result;
     }
 
@@ -135,6 +137,7 @@ class Arpgen
                 }
             }
         }
+
         return $result;
     }
 
@@ -152,6 +155,7 @@ class Arpgen
                 $result[$k]['req'][$req->getAttribute()->getId()] = $req->getStatusToInt();
             }
         }
+
         return $result;
     }
 
@@ -172,6 +176,7 @@ class Arpgen
                 $result[$v] = 0;
             }
         }
+
         return $result;
     }
 
@@ -195,6 +200,7 @@ class Arpgen
         foreach ($presum as $k4 => $v4) {
             $final[$k4] = max($v4);
         }
+
         return $final;
 
     }
@@ -209,11 +215,11 @@ class Arpgen
                 $result[] = $mm->getId();
             }
         }
+
         return $result;
     }
 
     public function genPolicyDefs(\models\Provider $idp) {
-
         $globalPolicy = $this->genGlobal($idp);
         $policies = $this->getPoliciec($idp);
         $supportedAttrs = $this->getSupportAttributes($idp);
@@ -224,19 +230,19 @@ class Arpgen
         $members = $this->getMembers($idp, $idp->getExcarps());
 
         $result = array(
-            'definitions' => array(
+            'definitions'       => array(
                 'attrs' => $this->attrDefsSmplArray,
-                'ec' => $this->entityCategories,
+                'ec'    => $this->entityCategories,
             ),
-            'memberof' => $this->getActiveFederations($idp),
-            'supported' => $supportedAttrs,
-            'global' => $globalPolicy,
-            'ecPolicies' => $policies['entcat'],
-            'fedPolicies' => $policies['fed'],
+            'memberof'          => $this->getActiveFederations($idp),
+            'supported'         => $supportedAttrs,
+            'global'            => $globalPolicy,
+            'ecPolicies'        => $policies['entcat'],
+            'fedPolicies'       => $policies['fed'],
             'fedPoliciesPerFed' => array(),
-            'reqAttrByFeds' => $this->attrRequiredByFeds,
-            'spPolicies' => $policies['sp'],
-            'sps' => array()
+            'reqAttrByFeds'     => $this->attrRequiredByFeds,
+            'spPolicies'        => $policies['sp'],
+            'sps'               => array()
         );
 
 
@@ -308,7 +314,8 @@ class Arpgen
                 $result['sps'][$spid]['final'] = array_intersect_key($result['sps'][$spid]['final'], $spdet['req']);
             }
         }
-        return $result;
+
+        return array('created' => time(), 'data' => $result);
 
 
     }
@@ -316,19 +323,26 @@ class Arpgen
     private function getMembers(\models\Provider $idp, array $exclude) {
         $tempProviders = new models\Providers;
         $members = $tempProviders->getSPsForArpIncEntCats($idp, $exclude);
+
         return $members;
     }
 
     public function genXML(\models\Provider $idp) {
         $entcatRuleTxt = 'saml:AttributeRequesterEntityAttributeExactMatch';
-
-        $policy = $this->genPolicyDefs($idp);
+        $policyDefs = $this->CI->j_ncache->getPolicyDefs($idp->getId());
+        if (empty($policyDefs)) {
+            $policyDefs = $this->genPolicyDefs($idp);
+            $this->CI->j_ncache->savePolicyDefs($idp->getId(), $policyDefs);
+        }
+        $policy = $policyDefs['data'];
+        $jate = new DateTime();
+        $jate->setTimestamp($policyDefs['created']);
 
         $xml = $this->createXMLHead();
 
         $comment = PHP_EOL . '
 			Experimental verion Attribute Release Policy for ' . $idp->getEntityId() . PHP_EOL . '
-                        generated on ' . date('D M j G:i:s T Y') . PHP_EOL . '
+                        generated on ' .  $jate->format('D M j G:i:s T Y') . PHP_EOL . '
                         compatible with shibboleth idp version: 2.x
 			' . PHP_EOL;
 
@@ -344,9 +358,9 @@ class Arpgen
         $xml->text('urn:mace:shibboleth:2.0:afp classpath:/schema/shibboleth-2.0-afp.xsd urn:mace:shibboleth:2.0:afp:mf:basic classpath:/schema/shibboleth-2.0-afp-mf-basic.xsd urn:mace:shibboleth:2.0:afp:mf:saml classpath:/schema/shibboleth-2.0-afp-mf-saml.xsd');
         $xml->endAttribute();
         foreach (array(
-                     'xmlns' => 'urn:mace:shibboleth:2.0:afp',
+                     'xmlns'       => 'urn:mace:shibboleth:2.0:afp',
                      'xmlns:basic' => 'urn:mace:shibboleth:2.0:afp:mf:basic',
-                     'xmlns:saml' => 'urn:mace:shibboleth:2.0:afp:mf:saml'
+                     'xmlns:saml'  => 'urn:mace:shibboleth:2.0:afp:mf:saml'
                  ) as $k => $v) {
             $xml->startAttribute('' . $k . '');
             $xml->text('' . $v . '');
@@ -543,7 +557,9 @@ class Arpgen
 //////
         $xml->endElement();
         $xml->endDocument();
-        return $xml;
+
+        return array('xml'=>$xml,'created'=>$policyDefs['created']);
+
     }
 
     /**
@@ -558,6 +574,7 @@ class Arpgen
             $xml->text($v);
             $xml->endAttribute();
         }
+
         return $xml;
     }
 
@@ -566,15 +583,23 @@ class Arpgen
 
         //ver 3.x
 
+        $this->CI->load->library('j_ncache');
         $entcatRuleTxt = 'EntityAttributeExactMatch';
 
-        $policy = $this->genPolicyDefs($idp);
+
+        $policyDefs = $this->CI->j_ncache->getPolicyDefs($idp->getId());
+        if (empty($policyDefs)) {
+            $policyDefs = $this->genPolicyDefs($idp);
+            $this->CI->j_ncache->savePolicyDefs($idp->getId(), $policyDefs);
+        }
+        $policy = $policyDefs['data'];
 
         $xml = $this->createXMLHead();
-
+        $jate = new DateTime();
+        $jate->setTimestamp($policyDefs['created']);
         $comment = PHP_EOL . '
 			Experimental verion Attribute Release Policy for ' . $idp->getEntityId() . PHP_EOL . '
-                        generated on ' . date('D M j G:i:s T Y') . PHP_EOL . '
+                        generated omn ' . $jate->format('D M j G:i:s T Y') . PHP_EOL . '
                         compatible with shibboleth idp ff version: 3.x
 			' . PHP_EOL;
 
@@ -582,12 +607,12 @@ class Arpgen
         $xml->startElement('AttributeFilterPolicyGroup');
 
         $attrsE = array(
-            'id' => 'policy',
-            'xmlns' => 'urn:mace:shibboleth:2.0:afp',
-            'xmlns:basic' => 'urn:mace:shibboleth:2.0:afp:mf:basic',
-            'xmlns:afp' => 'urn:mace:shibboleth:2.0:afp',
-            'xmlns:saml' => 'urn:mace:shibboleth:2.0:afp:mf:saml',
-            'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+            'id'                 => 'policy',
+            'xmlns'              => 'urn:mace:shibboleth:2.0:afp',
+            'xmlns:basic'        => 'urn:mace:shibboleth:2.0:afp:mf:basic',
+            'xmlns:afp'          => 'urn:mace:shibboleth:2.0:afp',
+            'xmlns:saml'         => 'urn:mace:shibboleth:2.0:afp:mf:saml',
+            'xmlns:xsi'          => 'http://www.w3.org/2001/XMLSchema-instance',
             'xsi:schemaLocation' => 'urn:mace:shibboleth:2.0:afp http://shibboleth.net/schema/idp/shibboleth-afp.xsd'
         );
         $xml = $this->setElementAttrs($xml, $attrsE);
@@ -736,8 +761,8 @@ class Arpgen
                                 foreach ($values as $singleValue) {
                                     $xml->startElement('Rule');
                                     $xml = $this->setElementAttrs($xml, array(
-                                        'xsi:type' => 'Value',
-                                        'value' => $singleValue,
+                                        'xsi:type'   => 'Value',
+                                        'value'      => $singleValue,
                                         'ignoreCase' => 'true'
                                     ));
                                     $xml->endElement();
@@ -781,7 +806,9 @@ class Arpgen
 //////
         $xml->endElement();
         $xml->endDocument();
-        return $xml;
+
+        return array('xml'=>$xml,'created'=>$policyDefs['created']);
+
     }
 
     /**
@@ -793,6 +820,7 @@ class Arpgen
         $xml->setIndent(true);
         $xml->setIndentString(' ');
         $xml->startDocument('1.0', 'UTF-8');
+
         return $xml;
     }
 
