@@ -335,7 +335,7 @@ class Arpgen
             $this->CI->j_ncache->savePolicyDefs($idp->getId(), $policyDefs);
         }
         $policy = $policyDefs['data'];
-        $jate = new DateTime();
+        $jate = new \DateTime('now', new \DateTimeZone('UTC'));
         $jate->setTimestamp($policyDefs['created']);
 
         $xml = $this->createXMLHead();
@@ -595,7 +595,7 @@ class Arpgen
         $policy = $policyDefs['data'];
 
         $xml = $this->createXMLHead();
-        $jate = new DateTime();
+        $jate = new \DateTime('now', new \DateTimeZone('UTC'));
         $jate->setTimestamp($policyDefs['created']);
         $comment = PHP_EOL . '
 			Experimental verion Attribute Release Policy for ' . $idp->getEntityId() . PHP_EOL . '
