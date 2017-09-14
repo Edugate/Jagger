@@ -41,7 +41,7 @@ echo '<div id="prdetails" class="alert-box warning hidden" ></div>';
 
 
             <ul class="tabs" data-tabs id="providerdetail-tabs">
-                <li class="pseudo-tabs-title"><a href="#"  data-toggle="offCanvas"><i class="fa fa-cog "></i></a></li>
+                <li class="pseudo-tabs-title"><a href="#"  data-toggle="offCanvas"><i class="fa fa-edit fa-lg"></i></a></li>
                 <?php
                 $activetab = 'general';
                 $tset = false;
