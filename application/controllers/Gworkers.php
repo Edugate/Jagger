@@ -42,11 +42,17 @@ class Gworkers extends MY_Controller
     private function getSendOptions()
     {
         $this->load->library('rrpreference');
+        $replyTo = trim($this->config->item('reply_to'));
+        if(FILTER_VALIDATE_EMAIL)
         $sendOptions = array(
             'mailfrom' => $this->config->item('mail_from'),
-            'subjsuffix' => (string)$this->config->item('mail_subject_suffix')
+            'subjsuffix' => (string)$this->config->item('mail_subject_suffix'),
+            'replyto' => null
         );
 
+        if(filter_var($replyTo, FILTER_VALIDATE_EMAIL)){
+            $sendOptions['replyto'] = $replyTo;
+        }
         return $sendOptions;
     }
 
@@ -86,6 +92,9 @@ class Gworkers extends MY_Controller
                     $maildata = $mailRow->getMailToArray();
                     $this->email->clear();
                     $this->email->from($sendOptions['mailfrom']);
+                    if($sendOptions['replyto'] !== null){
+                        $this->email->reply_to($sendOptions['replyto']);
+                    }
                     $this->email->to($maildata['to']);
                     $this->email->subject($maildata['subject'] . ' ' . $sendOptions['subjsuffix']);
                     $this->email->message($maildata['data'] . PHP_EOL . '' . $mailFooter . PHP_EOL);
