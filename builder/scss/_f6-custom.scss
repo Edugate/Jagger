@@ -29,6 +29,9 @@ body, html {
   li.active a:hover {
     background-color: lighten($topbar-background, 5%);
   }
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
 }
 
 .title-bar {
@@ -47,6 +50,14 @@ body, html {
 .top-bar .top-bar-right, .top-bar .top-bar-left {
   transition: padding-top .25s ease;
 
+}
+.title-bar-left.double-length {
+//	align-content: center;
+   order: 1;
+   flex: 2 0px; 
+}
+.top-bar-right {
+   order: 2
 }
 
 .top-bar.shrink {
