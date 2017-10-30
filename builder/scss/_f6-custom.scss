@@ -4,6 +4,11 @@ body, html {
 
 }
 
+header {
+
+line-height: 1;
+}
+
 .no-js {
   @include breakpoint(small only) {
     .top-bar {
@@ -73,7 +78,7 @@ body, html {
 }
 
 .top-bar-title {
-  padding: 0rem 1rem 0rem 0rem;
+  padding: 0rem 0rem 0rem 0rem;
 }
 
 @media screen and (max-width: 39.9375em) {
