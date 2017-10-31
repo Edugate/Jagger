@@ -22,7 +22,7 @@ function generateTopBar($a) {
             '<span class="top-bar-title logo" ><a href = "' . $a['logo']['link'] . '" class="sitelogo" ><img src = "' . $a['logo']['img'] . '" alt = "Logo" /></a ></span >' .
             '</div ></div>';
     }
-    $html[] = '<div class="title-bar-left">';
+    $html[] = '<div class="title-bar-left double-length">';
     if (isset($a['left'])) {
         $r = generateTopBarElements($a['left'], 'left');
         array_push($html, $r);

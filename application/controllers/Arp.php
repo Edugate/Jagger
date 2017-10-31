@@ -77,6 +77,7 @@ class Arp extends MY_Controller
         $result = $xml->outputMemory();
         $jate = new DateTime();
         $jate->setTimestamp($dataCreated);
+        $this->trackRequest($ent->getEntityId());
         return $this->output->set_content_type('text/xml')->set_header('Last-Modified: '.$jate->format('D, d M Y H:i:s').' GMT')->set_output($result);
 
     }

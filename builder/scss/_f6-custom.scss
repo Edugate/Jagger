@@ -4,6 +4,11 @@ body, html {
 
 }
 
+header {
+
+line-height: 1;
+}
+
 .no-js {
   @include breakpoint(small only) {
     .top-bar {
@@ -29,6 +34,9 @@ body, html {
   li.active a:hover {
     background-color: lighten($topbar-background, 5%);
   }
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
 }
 
 .title-bar {
@@ -48,6 +56,14 @@ body, html {
   transition: padding-top .25s ease;
 
 }
+.title-bar-left.double-length {
+//	align-content: center;
+   order: 1;
+   flex: 2 0px; 
+}
+.top-bar-right {
+   order: 2
+}
 
 .top-bar.shrink {
   height: 2em;
@@ -62,7 +78,7 @@ body, html {
 }
 
 .top-bar-title {
-  padding: 0rem 1rem 0rem 0rem;
+  padding: 0rem 0rem 0rem 0rem;
 }
 
 @media screen and (max-width: 39.9375em) {
