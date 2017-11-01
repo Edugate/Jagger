@@ -44,12 +44,16 @@ class Gworkertemplates
             return $this->statcollector($params);
         }
 
+        if(strcasecmp($templateName, 'syncentity') == 0){
+            return $this->entitySync($params);
+        }
+
         return null;
 
     }
 
 
-    private function resolveProvider(\models\Provider $provider) {
+    private function resolveProvider(\models\Provider $provider, $funcname = null) {
         $digest1 = $provider->getDigest();
         if (empty($digest1)) {
             $digest1 = $this->digestmethod;
@@ -58,7 +62,7 @@ class Gworkertemplates
         $sourceurl = base_url() . 'metadata/circle/' . $encodedentity . '/metadata.xml';
         $options = array('src' => '' . $sourceurl . '', 'type' => 'provider', 'encname' => '' . $encodedentity . '', 'digest' => '' . $digest1 . '');
         $result = array(
-            'fname'   => 'metadatasigner',
+            'fname'   => $funcname,
             'fparams' => $options
         );
 
@@ -101,6 +105,28 @@ class Gworkertemplates
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $params
+     * @return null|array
+     */
+    private function entitySync(array $params){
+        $result = array();
+        if(isset($params['entityid'])){
+            /**
+             * @var $ent models\Provider
+             */
+            $ent = $this->em->getRepository('models\Provider')->findOneBy(array('entityid'=>$params['entityid'],));
+            if($ent !== null){
+                $result[] = array(
+                    'fname'  => 'syncentity',
+                    'fparams' => $params
+                );
+                return $result;
+            }
+        }
+        return null;
     }
 
     private function statcollector(array $params) {
@@ -161,7 +187,7 @@ class Gworkertemplates
                 }
                 $providers = $this->em->getRepository("models\Provider")->findBy(array('is_local' => true));
                 foreach ($providers as $provider) {
-                    $result[] = $this->resolveProvider($provider);
+                    $result[] = $this->resolveProvider($provider,'metadatasigner');
                 }
             } elseif ($params['name'] === 'federations') {
                 $federations = $this->em->getRepository("models\Federation")->findAll();
@@ -174,7 +200,7 @@ class Gworkertemplates
             } elseif ($params['name'] === 'providers') {
                 $providers = $this->em->getRepository("models\Provider")->findBy(array('is_local' => true));
                 foreach ($providers as $provider) {
-                    $result[] = $this->resolveProvider($provider);
+                    $result[] = $this->resolveProvider($provider,'metadatasigner');
                 }
             }
         }
@@ -214,7 +240,7 @@ class Gworkertemplates
             if ($provider === null) {
                 return null;
             }
-            $result[] = $this->resolveProvider($provider);
+            $result[] = $this->resolveProvider($provider, 'metadatasigner');
         } elseif ($params['type'] === 'bulk') {
 
             $result = $this->metadataSignerBulk($params);
