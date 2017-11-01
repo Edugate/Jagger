@@ -36,7 +36,7 @@ class Taskscheduler extends MY_Controller
         $this->form_validation->set_rules('cron[dom]', lang('crondom'), 'trim|required|valid_crondom');
         $this->form_validation->set_rules('cron[month]', lang('cronmonth'), 'trim|required|valid_cronmonth');
         $this->form_validation->set_rules('cron[dow]', lang('crondow'), 'trim|required|valid_crondow');
-        $this->form_validation->set_rules('comment', lang('rr_description'), 'trim|required|alpha_numeric_spaces');
+        $this->form_validation->set_rules('comment', lang('rr_description'), 'trim|required');
         $this->form_validation->set_rules('istemplate', lang('tasktemplate'), 'trim');
         $this->form_validation->set_rules('fnname', 'Fn name', 'trim|required|alpha_dash');
 
