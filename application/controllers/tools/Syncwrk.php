@@ -104,6 +104,9 @@ class Syncwrk extends MY_Controller
                     $k->setCertType('x509');
                     $k->setAsIDPSSO();
                     $k->setProvider($ent);
+                    if(isset($z['encmethods']) && is_array($z['encmethods'])){
+                        $k->setEncryptMethods($z['encmethods']);
+                    }
                     $ent->setCertificate($k);
                     $this->em->persist($k);
                 }
@@ -123,6 +126,9 @@ class Syncwrk extends MY_Controller
                     $k->setCertdata($z['x509data']['x509certificate']);
                     $k->setCertType('x509');
                     $k->setType('aa');
+                    if(isset($z['encmethods']) && is_array($z['encmethods'])){
+                        $k->setEncryptMethods($z['encmethods']);
+                    }
                     $k->setProvider($ent);
                     $ent->setCertificate($k);
                     $this->em->persist($k);
@@ -148,6 +154,9 @@ class Syncwrk extends MY_Controller
                     $k->setCertdata($z['x509data']['x509certificate']);
                     $k->setCertType('x509');
                     $k->setAsSPSSO();
+                    if(isset($z['encmethods']) && is_array($z['encmethods'])){
+                        $k->setEncryptMethods($z['encmethods']);
+                    }
                     $k->setProvider($ent);
                     $ent->setCertificate($k);
                     $this->em->persist($k);
