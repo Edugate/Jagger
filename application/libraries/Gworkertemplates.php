@@ -110,11 +110,23 @@ class Gworkertemplates
     /**
      * @param array $params
      * @return null|array
-     * @todo finish
      */
     private function entitySync(array $params){
+        $result = array();
+        if(isset($params['entityid'])){
+            /**
+             * @var $ent models\Provider
+             */
+            $ent = $this->em->getRepository('models\Provider')->findOneBy(array('entityid'=>$params['entityid'],));
+            if($ent !== null){
+                $result[] = array(
+                    'fname'  => 'syncentity',
+                    'fparams' => $params
+                );
+                return $result;
+            }
+        }
         return null;
-
     }
 
     private function statcollector(array $params) {
