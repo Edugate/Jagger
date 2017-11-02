@@ -224,12 +224,12 @@ class Taskscheduler extends MY_Controller
             $isTemplate = $t->getTemplate();
             $isTemplateHtml = '';
             if ($isTemplate) {
-                $isTemplateHtml = '<span class="label">' . lang('lbl_template') . '</span>';
+                $isTemplateHtml = '<span class="label" title="'.lang('lbl_template').'">T</span>';
             }
             if ($isEnabled) {
-                $isEnabledHtml = '<span class="label">' . lang('rr_enabled') . '</span>';
+                $isEnabledHtml = '<i class="fa fa-check-circle" aria-hidden="true" title="' . lang('rr_enabled') . '"></i>';
             } else {
-                $isEnabledHtml = '<span class="label alert">' . lang('rr_disabled') . '</span>';
+                $isEnabledHtml = '<i class="alert fa fa-minus-circle" aria-hidden="true" title="' . lang('rr_disabled') . '"></i>';
             }
             $lastRun = $t->getLastRun();
             $lastRunHtml = 'never';
@@ -245,7 +245,7 @@ class Taskscheduler extends MY_Controller
             $rows[] = array(
                 html_escape($t->getCronToStr()),
                 html_escape($t->getJcomment()),
-                html_escape($t->getJcommand()) . ' ' . $isTemplateHtml,
+                $isTemplateHtml.' '.html_escape($t->getJcommand())  ,
                 $paramsToHtml,
                 $isDue,
                 $lastRunHtml,
