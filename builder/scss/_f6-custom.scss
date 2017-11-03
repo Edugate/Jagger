@@ -634,3 +634,11 @@ legend {
  max-width: 400px;
 
 }
+.button.active {
+
+   border-width: 1px;
+   border-color: gray;
+   box-shadow: 0 0 0.01em 0 #000
+     		, 0 0 0.05em 0.01em #333
+		  	;
+}
