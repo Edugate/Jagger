@@ -394,11 +394,13 @@ class Providertoxml
                 $xml->endElement(); //X509Data
             }
             $xml->endElement(); // KeyInfo
-            $encMethods = $cert->getEncryptMethods();
-            foreach ($encMethods as $enc) {
-                $xml->startElementNs('md', 'EncryptionMethod', null);
-                $xml->writeAttribute('Algorithm', $enc);
-                $xml->endElement();
+            if($certUse !== 'signing') {
+                $encMethods = $cert->getEncryptMethods();
+                foreach ($encMethods as $enc) {
+                    $xml->startElementNs('md', 'EncryptionMethod', null);
+                    $xml->writeAttribute('Algorithm', $enc);
+                    $xml->endElement();
+                }
             }
 
             $xml->endElement(); //KeyDescriptor

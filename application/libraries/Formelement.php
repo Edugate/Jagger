@@ -500,6 +500,7 @@ class Formelement
             $certEncMethods = $sessionCert['encmethods'];
         }
         $row .= '<div class="small-12 columns"><div class="small-3 columns"><label for="' . $name . '[' . $crtid . '][encmethods][]" class="right inline">EncryptionMethod</label></div><div class="small-9 column">';
+        $row .= '<div class="secondary alert-box" alert-data>Note: If certificate will be set for "signing" then all Encryption Methods will removed on update</div>';
         foreach ($tmplEncryptionMethods as $tmplEnc) {
             $ischeck = '';
             if (in_array($tmplEnc, $certEncMethods)) {
