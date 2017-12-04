@@ -426,11 +426,14 @@ class Providerupdater
                 $v->setCertdata($curCrt['certdata']);
             }
             if (array_key_exists('encmethods', $curCrt)) {
+
                 if (is_array($curCrt['encmethods'])) {
                     $v->setEncryptMethods(array_filter($curCrt['encmethods']));
                 } else {
                     $v->setEncryptMethods(null);
                 }
+            }else{
+                $v->setEncryptMethods(null);
             }
             if ($tdata === false && $tkeyname === false) {
                 $ent->removeCertificate($v);
