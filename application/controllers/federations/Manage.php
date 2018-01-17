@@ -379,7 +379,7 @@ class Manage extends MY_Controller
             array(lang('rr_fed_desc'), html_escape($federation->getDescription())),
             array(lang('rr_fed_tou'), html_escape($federation->getTou())),
             array(lang('rr_downcontactsintxt'), $contactLists['idp'] . '<br />' . $contactLists['sp'] . '<br />' . $contactLists['all']),
-            array(lang('rr_timeline'), '<a href="' . base_url('reports/timelines/showregistered/' . $federation->getId() . '') . '" class="button secondary">Diagram</a>')
+            array(lang('rr_timeline'), '<a href="' . base_url('reports/timelines/showregistered/' . $federation->getId() . '') . '" class="button secondary no-margin">Diagram</a>')
         );
 
         $data['result']['attrs'][] = array('data' => array('data' => $editAttributesLink . '', 'class' => 'text-right', 'colspan' => 2));

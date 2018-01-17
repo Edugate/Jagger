@@ -642,6 +642,9 @@ legend {
      		, 0 0 0.05em 0.01em #333
 		  	;
 }
+.button.no-margin {
+  margin: 0 0 0 0 !important;
+}
 #membership2 {
   .subheader {
     margin-left: 0.5rem;
