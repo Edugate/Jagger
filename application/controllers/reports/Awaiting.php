@@ -450,10 +450,7 @@ class Awaiting extends MY_Controller
                 log_message('error',$e);
             }
 
-            /**
-             * @todo need to fix - when approving person is not Administrator but Federation admin (approval right)  - acls cannot be set
-             */
-
+        
             if ($accessLevel === 'write') {
                 $this->zacl->addAccessToUserByFedadmin($federationID,$rEntity->getId(), 'write', $rUsername, 'entity', null);
                 $this->zacl->addAccessToUserByFedadmin($federationID,$rEntity->getId(), 'read', $rUsername, 'entity', null);
