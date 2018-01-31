@@ -368,17 +368,19 @@ class Awaiting extends MY_Controller
             }
         }
         $entityExists = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entity->getEntityId()));
-        if (!empty($entityExists)) {
+        if ($entityExists !== null) {
             $this->error_message = "Provider " . $entity->getName() . " (" . $entity->getEntityId() . ") already exists";
-
             return false;
         }
+
         $entity->setAsLocal();
         $fed = $entity->getFederations()->get(0);
+        $federationID = null;
         if (!empty($fed)) {
             $fed2 = $this->em->getRepository("models\Federation")->findOneBy(array('name' => $fed->getName()));
             $entity->removeFederation($fed);
             $this->j_ncache->cleanFederationMembers($fed->getId());
+            $federationID = $fed->getId();
         }
         foreach ($entity->getCertificates() as $o) {
             $o->setCertdata(reformatPEM($o->getCertdata()));
@@ -391,6 +393,7 @@ class Awaiting extends MY_Controller
             $membership->setFederation($fed2);
             $this->em->persist($membership);
         }
+
         $dateNow = new \DateTime("now");
         $entity->setRegistrationDate($dateNow);
         $this->em->persist($entity);
@@ -400,6 +403,7 @@ class Awaiting extends MY_Controller
 
         $creator = $queueObj->getCreator();
         $this->em->remove($queueObj);
+
         $requester_recipient = null;
         if (!empty($creator) && ($creator instanceOf models\User)) {
             $requester_recipient = $creator->getEmail();
@@ -438,19 +442,25 @@ class Awaiting extends MY_Controller
          */
         $rEntity = $this->em->getRepository('models\Provider')->findOneBy(array('entityid' => $rEntityID));
         if ($rEntity !== null && $rUsername !== null && $accessLevel !== null) {
-            $this->zacl->initiateAcls();
+
+            try {
+                $this->zacl->initiateAcls();
+            }
+            catch(Exception $e){
+                log_message('error',$e);
+            }
 
             /**
              * @todo need to fix - when approving person is not Administrator but Federation admin (approval right)  - acls cannot be set
              */
 
             if ($accessLevel === 'write') {
-                $this->zacl->add_access_toUser($rEntity->getId(), 'write', $rUsername, 'entity', null);
-                $this->zacl->add_access_toUser($rEntity->getId(), 'read', $rUsername, 'entity', null);
+                $this->zacl->addAccessToUserByFedadmin($federationID,$rEntity->getId(), 'write', $rUsername, 'entity', null);
+                $this->zacl->addAccessToUserByFedadmin($federationID,$rEntity->getId(), 'read', $rUsername, 'entity', null);
             } elseif ($accessLevel === 'manage') {
-                $this->zacl->add_access_toUser($rEntity->getId(), 'manage', $rUsername, 'entity', null);
-                $this->zacl->add_access_toUser($rEntity->getId(), 'write', $rUsername, 'entity', null);
-                $this->zacl->add_access_toUser($rEntity->getId(), 'read', $rUsername, 'entity', null);
+                $this->zacl->addAccessToUserByFedadmin($federationID,$rEntity->getId(), 'manage', $rUsername, 'entity', null);
+                $this->zacl->addAccessToUserByFedadmin($federationID,$rEntity->getId(), 'write', $rUsername, 'entity', null);
+                $this->zacl->addAccessToUserByFedadmin($federationID,$rEntity->getId(), 'read', $rUsername, 'entity', null);
             }
             $this->em->flush();
         }
@@ -533,7 +543,10 @@ class Awaiting extends MY_Controller
 
                 return;
             }
-        } elseif ($queueAction === 'Create' && in_array($queueObjType, array('IDP', 'SP', 'BOTH'), true)) {
+        }
+
+
+        if ($queueAction === 'Create' && in_array($queueObjType, array('IDP', 'SP', 'BOTH'), true)) {
             $approve_allowed = $this->zacl->check_acl(strtolower($queueObjType), 'create', 'entity', '') || $this->jqueueaccess->hasApproveByFedadmin($queueObj);
             if ($approve_allowed) {
                 $storedEntity = $this->createProvider($queueObj, $qaccessLevel);
@@ -561,7 +574,10 @@ class Awaiting extends MY_Controller
                 return $this->load->view(MY_Controller::$page, $data);
             }
 
-        } elseif (strcasecmp($queueAction, 'Delete') == 0 && strcasecmp($queueObj->getType(), 'Federation') == 0) {
+        }
+
+
+        if (strcasecmp($queueAction, 'Delete') == 0 && strcasecmp($queueObj->getType(), 'Federation') == 0) {
             if (!$isAdministrator) {
                 $data['error_message'] = lang('rerror_noperm_approve');
                 $data['content_view'] = 'error_message';
@@ -583,7 +599,10 @@ class Awaiting extends MY_Controller
 
             return $this->load->view(MY_Controller::$page, $data);
 
-        } elseif (strcasecmp($queueAction, 'Create') == 0 && strcasecmp($queueObj->getType(), 'Federation') == 0) {
+        }
+
+
+        if (strcasecmp($queueAction, 'Create') == 0 && strcasecmp($queueObj->getType(), 'Federation') == 0) {
             $approve_allowed = $this->zacl->check_acl('federation', 'create', 'default', '');
             if ($approve_allowed) {
                 $fed = new models\Federation;
@@ -627,16 +646,15 @@ class Awaiting extends MY_Controller
                     $this->em->persist($acl_res);
                     try {
                         $this->em->flush();
-
-                        $message = lang('rr_federation') . ' ' . $fedname . ' ID:' . $fed->getId() . ' ' . lang('hasbeenadded');
-
-                        log_message('debug', "Federation " . $fedname . "witch ID:" . $fed->getId() . " has been added");
-
-                        return $this->load->view(MY_Controller::$page, array('content_view' => 'reports/awaiting_approved_view', 'success_message' => $message));
                     } catch (Exception $e) {
                         log_message('error', __METHOD__ . ' ' . $e);
                         show_error('Internal server error', 500);
                     }
+                    $message = lang('rr_federation') . ' ' . $fedname . ' ID:' . $fed->getId() . ' ' . lang('hasbeenadded');
+
+                    log_message('debug', "Federation " . $fedname . "witch ID:" . $fed->getId() . " has been added");
+
+                    return $this->load->view(MY_Controller::$page, array('content_view' => 'reports/awaiting_approved_view', 'success_message' => $message));
                 }
 
                 return;
@@ -646,10 +664,12 @@ class Awaiting extends MY_Controller
 
                 return $this->load->view(MY_Controller::$page, $data);
             }
-        } /**
+        }
+
+        /**
          *          JOIN - accept request (by provider) sent by federation to provider
          */
-        elseif (strcasecmp($queueAction, 'Join') == 0) {
+        if (strcasecmp($queueAction, 'Join') == 0) {
             $type = $queueObj->getType();
             if (!empty($recipienttype) && !empty($recipient) && strcasecmp($recipienttype, 'provider') == 0) {
                 $providers_tmp = new models\Providers;

@@ -32,7 +32,7 @@ class Zacl
     }
 
 
-    public function initiateAcls(){
+    public function initiateAcls() {
         $this->acl = new Zend\Permissions\Acl\Acl();
         $this->acl->addRole(new Zend\Permissions\Acl\Role\GenericRole('default_role'));
         /**
@@ -234,29 +234,9 @@ class Zacl
         return $is_allowed;
     }
 
-    public function add_access_toUser($resource, $action, $user, $group, $resource_type = null) {
-        $roleExists = $this->acl->hasRole('selected_user');
-        if ($roleExists) {
-            $this->acl->removeRole('selected_user');
-        }
-        if (!$user instanceof models\User) {
-            $s_user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user));
-            log_message('debug', 's_user not instance of  models\User search by username=' . $user);
-        } else {
-            $s_user = $user;
-        }
-        $manageAccess = $this->acl->isAllowed('current_user', $resource, 'manage');
-        if (!$manageAccess) {
-            log_message('debug', 'user has no rights to mamage permission');
-
-            return false;
-        } else {
-
-            log_message('debug', 'user can manage permissions');
-        }
+    private function processAddAccessToUser($resource, $action, $s_user, $group, $resource_type = null) {
 
         $alreadyHasAccess = $this->check_user_acl($resource, $action, $s_user, $group);
-
         $resourceExist = false;
         $aclRoleExist = false;
         if (!$alreadyHasAccess) {
@@ -345,6 +325,60 @@ class Zacl
         }
     }
 
+    public function addAccessToUserByFedadmin($federationID = null, $resource, $action, $user, $group, $resource_type = null) {
+        $roleExists = $this->acl->hasRole('selected_user');
+        if ($roleExists) {
+            $this->acl->removeRole('selected_user');
+        }
+        if (!$user instanceof models\User) {
+            $s_user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user));
+            log_message('debug', 's_user not instance of  models\User search by username=' . $user);
+        } else {
+            $s_user = $user;
+        }
+        if ($federationID !== null) {
+            $hasAccess = $this->check_acl('f_' . $federationID, 'approve', 'federation', '');
+        } else {
+            $hasAccess = $this->acl->isAllowed('current_user', $resource, 'manage');
+        }
+        if (!$hasAccess) {
+            log_message('debug', 'user has no rights to mamage permission');
+
+            return false;
+        } else {
+
+            log_message('debug', 'user can manage permissions');
+        }
+        $result = $this->processAddAccessToUser($resource, $action, $s_user, $group, null);
+
+        return $result;
+    }
+
+    public function add_access_toUser($resource, $action, $user, $group, $resource_type = null) {
+        $roleExists = $this->acl->hasRole('selected_user');
+        if ($roleExists) {
+            $this->acl->removeRole('selected_user');
+        }
+        if (!$user instanceof models\User) {
+            $s_user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user));
+            log_message('debug', 's_user not instance of  models\User search by username=' . $user);
+        } else {
+            $s_user = $user;
+        }
+        $manageAccess = $this->acl->isAllowed('current_user', $resource, 'manage');
+        if (!$manageAccess) {
+            log_message('debug', 'user has no rights to mamage permission');
+
+            return false;
+        } else {
+
+            log_message('debug', 'user can manage permissions');
+        }
+        $result = $this->processAddAccessToUser($resource, $action, $s_user, $group, null);
+
+        return $result;
+    }
+
     public function deny_access_fromUser($resource, $action, $user, $group, $resource_type = null) {
         if (!$user instanceof models\User) {
             $s_user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user));
@@ -361,6 +395,7 @@ class Zacl
         $alreadyHasAccess = $this->check_user_acl($resource, $action, $s_user, $group);
         if (!$alreadyHasAccess) {
             log_message('debug', 'user already has no access to resource, we dont have to deny it');
+
             return true;
         }
 
@@ -388,7 +423,7 @@ class Zacl
             $tmp_role = $this->em->getRepository("models\AclRole")->findOneBy(array('name' => $s_user->getUsername(), 'type' => 'user'));
             if (!empty($tmp_role)) {
                 log_message('error', 'acl role: ' . $tmp_role->getName() . ' with type \'user\' exists but not linked1 to the user');
-                throw new \Exception('ACL Role name already exists but it so not linked to to user '.$s_user->getUsername());
+                throw new \Exception('ACL Role name already exists but it so not linked to to user ' . $s_user->getUsername());
             } else {
                 log_message('debug', 'no acl_role creating new one...');
                 $aclRole = new models\AclRole;
@@ -396,12 +431,11 @@ class Zacl
                 $aclRole->setType('user');
                 $aclRole->setDescription('individual role for user ' . $s_user->getUsername());
                 $s_user->setRole($aclRole);
-                $this->acl->addRole($s_user->getUsername(),'default_role');
+                $this->acl->addRole($s_user->getUsername(), 'default_role');
             }
         } else {
             $aclRole = $personalRole;
         }
-
 
 
         /* resource and group */
