@@ -25,6 +25,7 @@ function getBindSingleLogout() {
         'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
         'urn:oasis:names:tc:SAML:2.0:bindings:SOAP',
         'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact',
+        'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign'
     );
     return $y;
 }
