@@ -55,6 +55,7 @@ if (!defined('BASEPATH')) {
  * @property Providertoxml $providertoxml
  * @property Mq $mq
  * @property Gworkertemplates $gworkertemplates
+ * @property Metadata2import $metadata2import
  */
 class MY_Controller extends CI_Controller
 {

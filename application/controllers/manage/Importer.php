@@ -22,12 +22,11 @@ class Importer extends MY_Controller
 {
     protected $otherErrors = array();
     protected $access = false;
-    protected $xmlbody;
+    private $xmlbody;
     protected $curlMaxsize, $curlTimeout;
     protected $xmlDOM;
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $this->curlMaxsize = $this->config->item('curl_metadata_maxsize');
         if ($this->curlMaxsize === null) {
@@ -51,26 +50,24 @@ class Importer extends MY_Controller
     /**
      * display form
      */
-    public function index()
-    {
+    public function index() {
         if ($this->access !== true) {
             $data['content_view'] = 'nopermission';
             $data['error'] = lang('error403');
         } else {
             $data = array(
-                'titlepage' => lang('titleimportmeta'),
+                'titlepage'    => lang('titleimportmeta'),
                 'content_view' => 'manage/import_metadata_form',
-                'other_error' => $this->otherErrors,
+                'other_error'  => $this->otherErrors,
                 'global_erros' => $this->globalerrors,
-                'federations' => $this->formelement->getFederation(),
-                'types' => array('' => lang('rr_pleaseselect'), 'idp' => lang('identityproviders'), 'sp' => lang('serviceproviders'), 'all' => lang('allentities')),
+                'federations'  => $this->formelement->getFederation(),
+                'types'        => array('' => lang('rr_pleaseselect'), 'idp' => lang('identityproviders'), 'sp' => lang('serviceproviders'), 'all' => lang('allentities')),
             );
         }
         $this->load->view(MY_Controller::$page, $data);
     }
 
-    public function submit()
-    {
+    public function submit() {
         $this->globalerrors = array();
         $this->otherErrors = array();
         if ($this->access !== true) {
@@ -84,46 +81,38 @@ class Importer extends MY_Controller
         }
 
         $arg = array(
-            'metadataurl' => $this->input->post('metadataurl'),
-            'certurl' => $this->input->post('certurl'),
-            'cert' => getPEM($this->input->post('cert')),
-            'validate' => $this->input->post('validate'),
-            'sslcheck' => $this->input->post('sslcheck'),
-            'type' => $this->input->post('type'),
-            'extorint' => $this->input->post('extorint'),
-            'active' => $this->input->post('active'),
-            'static' => $this->input->post('static'),
-            'overwrite' => $this->input->post('overwrite'),
-            'federation' => $this->input->post('federation'),
+            'metadataurl'     => $this->input->post('metadataurl'),
+            'certurl'         => $this->input->post('certurl'),
+            'cert'            => getPEM($this->input->post('cert')),
+            'validate'        => $this->input->post('validate'),
+            'sslcheck'        => $this->input->post('sslcheck'),
+            'type'            => $this->input->post('type'),
+            'extorint'        => $this->input->post('extorint'),
+            'active'          => $this->input->post('active'),
+            'static'          => $this->input->post('static'),
+            'overwrite'       => $this->input->post('overwrite'),
+            'federation'      => $this->input->post('federation'),
             'fullinformation' => $this->input->post('fullinformation')
         );
 
-
-        $sslvalidate = true;
-        if ($arg['sslcheck'] === 'ignore') {
-            $sslvalidate = false;
-        }
-
-        if ($arg['validate'] === 'accept') {
-            $mvalidate = true;
+        $sslvalidate = !($arg['sslcheck'] === 'ignore');
+        $mvalidate = $arg['validate'] === 'accept';
+        $mcerturl = null;
+        $mcert = null;
+        if ($mvalidate) {
             if (!empty($arg['cert'])) {
-                $mcerturl = false;
                 $mcert = $arg['cert'];
             } elseif (!empty($arg['certurl'])) {
                 $mcerturl = $arg['certurl'];
-                $mcert = false;
             } else {
                 $this->otherErrors[] = lang('certsignerurlbodymissing');
                 return $this->index();
             }
-        } else {
-            $mvalidate = false;
-            $mcerturl = false;
-            $mcert = false;
         }
 
-        if ($this->_metadatasigner_validate($arg['metadataurl'], $sslvalidate, $mvalidate, $mcerturl, $mcert) !== TRUE) {
-            log_message('error','ffff');
+        if ($this->_metadatasigner_validate($arg['metadataurl'], $sslvalidate, $mvalidate, $mcerturl, $mcert) !== true) {
+            log_message('error', 'ffff');
+
             return $this->index();
         }
 
@@ -139,6 +128,7 @@ class Importer extends MY_Controller
         $fed = $tmp->getOneByName($arg['federation']);
         if ($fed === null) {
             $this->otherErrors[] = 'No permission to add entities to selected federation';
+
             return $this->index();
         }
 
@@ -147,37 +137,25 @@ class Importer extends MY_Controller
          * replace below if calling function
          * check if metadata_body if xml and valid against schema
          */
-        $local = false;
-        $active = false;
-        $static = false;
-        $overwrite = false;
-        $full = false;
-        if ($arg['extorint'] === 'int') {
-            $local = true;
-        }
-        if ($arg['active'] === 'yes') {
-            $active = true;
-        }
-        if ($arg['static'] === 'yes') {
-            $static = true;
-        }
-        if ($arg['overwrite'] === 'yes') {
-            $overwrite = true;
-        }
-        if ($arg['fullinformation'] === 'yes') {
-            $full = true;
-        }
+
+        $local = $arg['extorint'] === 'int';
+        $active = $arg['active'] === 'yes';
+        $static = $arg['static'] === 'yes';
+        $overwrite = $arg['overwrite'] === 'yes';
+        $full = $arg['fullinformation'] === 'yes';
+
         if (!($arg['type'] === 'idp' || $arg['type'] === 'sp' || $arg['type'] === 'all')) {
             log_message('error', 'Cannot import metadata because type of entities is not set correctly');
+
             return $this->index();
         }
         $defaults = array(
             'overwritelocal' => $overwrite,
-            'active' => $active,
-            'static' => $static,
-            'local' => $local,
-            'localimport' => true,
-            'federationid' => $fed->getId(),
+            'active'         => $active,
+            'static'         => $static,
+            'local'          => $local,
+            'localimport'    => true,
+            'federationid'   => $fed->getId(),
         );
         foreach ($defaults as $key => $value) {
             if (!is_array($value)) {
@@ -197,17 +175,18 @@ class Importer extends MY_Controller
                 $data['success_details'] = $this->globalnotices['metadataimportmessage'];
             }
             $data['content_view'] = 'manage/import_metadata_success_view';
+
             return $this->load->view(MY_Controller::$page, $data);
-        } else {
-            return $this->index();
         }
+
+        return $this->index();
+
     }
 
     /**
      * @todo more validation rules
      */
-    private function _submit_validate()
-    {
+    private function _submit_validate() {
         $this->form_validation->set_rules('metadataurl', 'Metadata URL', 'trim|required|valid_url');
         $this->form_validation->set_rules('sslcheck', 'SSL check', 'trim');
         $this->form_validation->set_rules('validate', 'verify', 'trim');
@@ -220,27 +199,27 @@ class Importer extends MY_Controller
         $this->form_validation->set_rules('active', 'Decide if enabled by default', 'trim|required');
         $this->form_validation->set_rules('overwrite', 'Decide if enabled by default', 'trim|required');
         $this->form_validation->set_rules('fullinformation', 'Populate full information', 'trim|required');
+
         return $this->form_validation->run();
     }
 
     /**
      * @todo finish this function  if validate is set then check certbody or cerurl, certbody has higher priority
      */
-    private function _metadatasigner_validate($metadataurl, $sslvalidate = FALSE, $signed = FALSE, $certurl = FALSE, $certbody = FALSE)
-    {
+    private function _metadatasigner_validate($metadataurl, $sslvalidate = false, $signed = false, $certurl = null, $certbody = null) {
         $maxsize = $this->curlMaxsize;
-        log_message('debug',__METHOD__.' curl maxsise set : '.$maxsize);
+        log_message('debug', __METHOD__ . ' curl maxsise set : ' . $maxsize);
         $sslverifyhost = 0;
         if ($sslvalidate) {
             $sslverifyhost = 2;
         }
         $curloptions = array(
-            CURLOPT_SSL_VERIFYPEER => $sslvalidate,
-            CURLOPT_SSL_VERIFYHOST => $sslverifyhost,
-            CURLOPT_TIMEOUT => $this->curlTimeout,
-            CURLOPT_BUFFERSIZE => 8192,
-            CURLOPT_NOPROGRESS => FALSE,
-            CURLOPT_USERAGENT => 'Jagger Agent',
+            CURLOPT_SSL_VERIFYPEER   => $sslvalidate,
+            CURLOPT_SSL_VERIFYHOST   => $sslverifyhost,
+            CURLOPT_TIMEOUT          => $this->curlTimeout,
+            CURLOPT_BUFFERSIZE       => 8192,
+            CURLOPT_NOPROGRESS       => false,
+            CURLOPT_USERAGENT        => 'Jagger Agent',
             CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) use ($maxsize) {
                 return ($Downloaded > ($maxsize * 1024)) ? 1 : 0;
             }
@@ -248,47 +227,52 @@ class Importer extends MY_Controller
         $this->xmlbody = $this->curl->simple_get('' . $metadataurl . '', array(), $curloptions);
         if (empty($this->xmlbody)) {
             $this->otherErrors[] = html_escape($this->curl->error_string);
+
             return false;
         }
         libxml_use_internal_errors(true);
         $this->xmlDOM = new \DOMDocument();
-        $this->xmlDOM->strictErrorChecking = FALSE;
-        $this->xmlDOM->WarningChecking = FALSE;
+        $this->xmlDOM->strictErrorChecking = false;
+        $this->xmlDOM->WarningChecking = false;
         $this->xmlDOM->loadXML($this->xmlbody);
         log_message('debug', __METHOD__ . ' metadata xml loaded into DOMDocument - elements: ' . $this->xmlDOM->childNodes->length);
-        $valid_metadata = FALSE;
-        if ($signed === FALSE) {
-            $valid_metadata = $this->xmlvalidator->validateMetadata($this->xmlDOM, FALSE, FALSE);
+        $valid_metadata = false;
+        if ($signed === false) {
+            $valid_metadata = $this->xmlvalidator->validateMetadata($this->xmlDOM, false, false);
+
             return $valid_metadata;
         }
 
-        if (!empty($certbody)) {
+        if ($certbody !== null) {
             if (validateX509($certbody)) {
-                $valid_metadata = $this->xmlvalidator->validateMetadata($this->xmlDOM, TRUE, $certbody);
+                $valid_metadata = $this->xmlvalidator->validateMetadata($this->xmlDOM, true, $certbody);
             } else {
                 $this->otherErrors[] = lang('einvalidcertsignerdata');
-                return FALSE;
+
+                return false;
             }
-        } elseif (!empty($certurl)) {
+        } elseif ($certurl !== null) {
             $certdata = $this->curl->simple_get('' . $certurl . '', array(), array(
-                CURLOPT_SSL_VERIFYPEER => $sslvalidate,
-                CURLOPT_SSL_VERIFYHOST => $sslverifyhost,
-                CURLOPT_TIMEOUT => $this->curlTimeout,
-                CURLOPT_BUFFERSIZE => 8192,
-                CURLOPT_NOPROGRESS => FALSE,
-                CURLOPT_USERAGENT => 'Jagger Agent',
+                CURLOPT_SSL_VERIFYPEER   => $sslvalidate,
+                CURLOPT_SSL_VERIFYHOST   => $sslverifyhost,
+                CURLOPT_TIMEOUT          => $this->curlTimeout,
+                CURLOPT_BUFFERSIZE       => 8192,
+                CURLOPT_NOPROGRESS       => false,
+                CURLOPT_USERAGENT        => 'Jagger Agent',
                 CURLOPT_PROGRESSFUNCTION => function ($DownloadSize, $Downloaded, $UploadSize, $Uploaded) {
                     return ($Downloaded > (1000 * 1024)) ? 1 : 0;
                 }
             ));
 
             if (!empty($certdata) && validateX509($certdata)) {
-                $valid_metadata = $this->xmlvalidator->validateMetadata($this->xmlDOM, TRUE, $certdata);
+                $valid_metadata = $this->xmlvalidator->validateMetadata($this->xmlDOM, true, $certdata);
             } else {
                 $this->otherErrors[] = lang('einvalidcertsignerurl');
-                return FALSE;
+
+                return false;
             }
         }
+
         return $valid_metadata;
     }
 
