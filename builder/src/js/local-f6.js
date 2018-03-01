@@ -4069,14 +4069,22 @@ $(document).ready(function () {
             var optselected = op.find("option:selected");
             valueselected = optselected.val();
         }
+        var splittedvalue = valueselected.split('|');
+        var expectedArg1 = ['localidp','extidp', 'localsp', 'extsp'];
+        var expectedArg2 = ['expired','missingencryption', 'missingsigning'];
         var urlParam = '';
-        if (valueselected === 'localidp' || valueselected === 'extidp' || valueselected === 'localsp' || valueselected === 'extsp') {
-            urlParam = '/' + valueselected;
+
+        if(splittedvalue[0] !== undefined && splittedvalue[1] !== undefined && expectedArg1.indexOf(splittedvalue[0]) >= 0 && expectedArg2.indexOf(splittedvalue[1] >= 0)){
+            urlParam = '/'+splittedvalue[0]+'/'+splittedvalue[1];
+        }
+        else {
+            alert('incorrect post');
+            return false;
         }
         $.ajax({
             cache: false,
             type: "GET",
-            url: baseurl + 'smanage/reports/expiredcerts' + urlParam,
+            url: baseurl + 'smanage/reports/certificates' + urlParam,
             dataType: "json",
             success: function (result) {
                 var data = result.data;

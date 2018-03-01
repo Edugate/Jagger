@@ -51,7 +51,28 @@
             <tbody>
             <tr>
                 <td>Certificates checks</td>
-                <td><div><select><optgroup label="Local"><option value="localidp">IdP (local)</option><option value="localsp">SP (local)</option></optgroup><optgroup label="External"><option value="extidp">IdP (external)</option><option value="extsp">SP (external)</option></optgroup></select><button id="vcerts" class="button" value=""><?php echo lang('rr_runprocess'); ?></button></div></td>
+                <td><div>
+                        <select>
+                            <optgroup label="Expired certificates">
+                                <option value="localidp|expired">IdP (local)</option>
+                                <option value="localsp|expired">SP (local)</option>
+                                <option value="extidp|expired">IdP (external)</option>
+                                <option value="extsp|expired">SP (external)</option>
+                            </optgroup>
+                            <optgroup label="Missing signing certificates">
+                                <option value="localidp|missingsigning">IdP (local)</option>
+                                <option value="localsp|missingsigning">SP (local)</option>
+                                <option value="extidp|missingsigning">IdP (external)</option>
+                                <option value="extsp|missingsigning">SP (external)</option>
+                            </optgroup>
+                            <optgroup label="Missing encryption certificates">
+                                <option value="localidp|missingencryption">IdP (local)</option>
+                                <option value="localsp|missingencryption">SP (local)</option>
+                                <option value="extidp|missingencryption">IdP (external)</option>
+                                <option value="extsp|missingencryption">SP (external)</option>
+                            </optgroup>
+                        </select>
+                        <button id="vcerts" class="button" value=""><?php echo lang('rr_runprocess'); ?></button></div></td>
             </tr>
             <tr id="rvcerts" class="hidden">
                 <td colspan="2"></td>

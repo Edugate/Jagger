@@ -2,6 +2,7 @@
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
+
 use Doctrine\ORM\Tools\SchemaValidator;
 use Doctrine\ORM\Version;
 
@@ -15,12 +16,14 @@ use Doctrine\ORM\Version;
 class Reports extends MY_Controller
 {
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         MY_Controller::$menuactive = 'admins';
     }
 
-    public function index() {
+    public function index()
+    {
         $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
             redirect('auth/login', 'location');
@@ -42,7 +45,8 @@ class Reports extends MY_Controller
         $this->load->view(MY_Controller::$page, $data);
     }
 
-    public function expiredcerts($param = null) {
+    public function certificates($enttype = null, $checktype = null)
+    {
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
@@ -56,36 +60,103 @@ class Reports extends MY_Controller
          * @var \models\Provider[] $providers
          */
         $tmpProviders = new models\Providers();
-        if ($param === 'localidp') {
+
+        /**
+         * @var \models\Provider $provider
+         */
+        if ($enttype === 'localidp') {
             $providers = $tmpProviders->getLocalProvidersPartialWithCerts('IDP');
-        } elseif ($param === 'localsp') {
+        } elseif ($enttype === 'localsp') {
             $providers = $tmpProviders->getLocalProvidersPartialWithCerts('SP');
-        } elseif ($param === 'extsp') {
+        } elseif ($enttype === 'extsp') {
             $providers = $tmpProviders->getExtProvidersPartialWithCerts('SP');
-        } elseif ($param === 'extidp') {
+        } elseif ($enttype === 'extidp') {
             $providers = $tmpProviders->getExtProvidersPartialWithCerts('IDP');
         } else {
             return $this->output->set_status_header(401)->set_output('The type of entities has not been specified');
         }
         $this->load->library('jalert');
         $result = array();
-        foreach ($providers as $provider) {
-            $alert = $this->jalert->genCertsAlerts($provider);
-            if (count($alert) > 0) {
-                $result[] = array(
-                    'id' => $provider->getId(),
-                    'entityid' => html_escape($provider->getEntityId()),
-                    'islocal' => $provider->getLocal(),
-                    'alerts' => $alert
-                );
-            }
+        if ($checktype === 'expired') {
+            foreach ($providers as $provider) {
+                $alert = $this->jalert->genCertsAlerts($provider);
+                if (count($alert) > 0) {
+                    $result[] = array(
+                        'id' => $provider->getId(),
+                        'entityid' => html_escape($provider->getEntityId()),
+                        'islocal' => $provider->getLocal(),
+                        'alerts' => $alert
+                    );
+                }
 
+            }
+        } else if ($checktype === 'missingencryption') {
+
+            foreach ($providers as $provider){
+                $certCounter = 0;
+                $crts = $provider->getCertificates();
+                if($crts->count() == 0 ){
+                    $result[] = array(
+                        'id' => $provider->getId(),
+                        'entityid' =>  html_escape($provider->getEntityId()),
+                        'islocal' => $provider->getLocal()
+                    );
+                    continue;
+                }
+                foreach ($crts as $crt){
+                    $use = $crt->getCertUse();
+                    if($use !== 'signing'){
+                        $certCounter++;
+                    }
+                }
+
+                if($certCounter == 0 ) {
+                    $result[] = array(
+                        'id' => $provider->getId(),
+                        'entityid' =>  html_escape($provider->getEntityId()),
+                        'islocal' => $provider->getLocal()
+                    );
+                }
+            }
+        }
+        else if ($checktype === 'missingsigning') {
+
+            foreach ($providers as $provider){
+                $certCounter = 0;
+                $crts = $provider->getCertificates();
+                if($crts->count() == 0 ){
+                    $result[] = array(
+                        'id' => $provider->getId(),
+                        'entityid' =>  html_escape($provider->getEntityId()),
+                        'islocal' => $provider->getLocal()
+                    );
+                    continue;
+                }
+                foreach ($crts as $crt){
+                    $use = $crt->getCertUse();
+                    if($use !== 'encryption'){
+                        $certCounter++;
+                    }
+                }
+
+                if($certCounter == 0 ) {
+                    $result[] = array(
+                        'id' => $provider->getId(),
+                        'entityid' =>  html_escape($provider->getEntityId()),
+                        'islocal' => $provider->getLocal()
+                    );
+                }
+            }
+        }
+        else {
+            return $this->output->set_status_header(401)->set_output('Incorrect request');
         }
         return $this->output->set_content_type('application/json')->set_output(json_encode(array('definitions' => array('baseurl' => base_url()), 'data' => $result)));
 
     }
 
-    public function vormversion() {
+    public function vormversion()
+    {
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
@@ -127,7 +198,8 @@ class Reports extends MY_Controller
     }
 
 
-    public function vschema() {
+    public function vschema()
+    {
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
@@ -156,7 +228,8 @@ class Reports extends MY_Controller
     }
 
 
-    public function vschemadb() {
+    public function vschemadb()
+    {
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
@@ -178,7 +251,8 @@ class Reports extends MY_Controller
     }
 
 
-    public function vmigrate() {
+    public function vmigrate()
+    {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn() || !$this->jauth->isAdministrator()) {
             return $this->output->set_status_header(403)->set_output('Unauthorized request');
         }
