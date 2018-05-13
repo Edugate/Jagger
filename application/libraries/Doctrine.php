@@ -117,8 +117,10 @@ class Doctrine
                     PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => $dbconfig['encrypt']['ssl_verify']
                 );
             }
-            $charset = $dbconfig['char_set'] ?: 'latin1';
-            $connectionOptions['driverOptions']['' . PDO::MYSQL_ATTR_INIT_COMMAND . ''] = 'SET NAMES ' . $charset . '';
+            if(array_key_exists('char_set',$dbconfig)){
+                $connectionOptions['driverOptions']['' . PDO::MYSQL_ATTR_INIT_COMMAND . ''] = 'SET NAMES ' . $dbconfig['char_set'] . '';
+            }
+
 
         }
 
