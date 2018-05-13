@@ -12,7 +12,7 @@ define('DEBUGGING', false);
  * @package   Jagger
  * @author    Middleware Team HEAnet
  * @author    Janusz Ulanowski <janusz.ulanowski@heanet.ie>
- * @copyright 2016, HEAnet Limited (http://www.heanet.ie)
+ * @copyright 2018, HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
  */
@@ -21,7 +21,8 @@ class Doctrine
 
     public $em = null;
 
-    public function __construct() {
+    public function __construct()
+    {
         // load database configuration and custom config from CodeIgniter
         require APPPATH . 'config/database.php';
 
@@ -62,20 +63,20 @@ class Doctrine
             $config->setSQLLogger($logger);
         }
 
-        /**
-         * keep compatibility with old configs
-         */
-        if (!isset($db['default']) || !is_array($db['default'])) {
-            log_message('error', __METHOD__ . ' ::: database.php conf file is misconfigured. missing array : $db[\'default\']');
-            throw new \Exception('system misconfigured');
-        }
-        $connectionOptions = self::getDBDriver($db['default']);
-        
+
+        $connectionOptions = self::getDBDriver($db);
+
         // Create EntityManager
         $this->em = EntityManager::create($connectionOptions, $config);
     }
 
-    private static function getDBDriver($dbconfig) {
+    private static function getDBDriver($db)
+    {
+        if (!isset($db['default']) || !is_array($db['default'])) {
+            log_message('error', __METHOD__ . ' ::: database.php conf file is misconfigured. missing array : $db[\'default\']');
+            throw new \Exception('system misconfigured');
+        }
+        $dbconfig = $db['default'];
         if (!isset($dbconfig['dbdriver'])) {
             log_message('error', __METHOD__ . ' ::: database.php conf file is misconfigured. missing : $db[\'default\'][\'dbdriver\']');
             throw new \Exception('system misconfigured');
@@ -97,14 +98,29 @@ class Doctrine
 
         // Database connection information
         $connectionOptions = array(
-            'driver'   => $dbriver,
-            'user'     => $dbconfig['username'],
+            'driver' => $dbriver,
+            'user' => $dbconfig['username'],
             'password' => $dbconfig['password'],
-            'host'     => $dbconfig['hostname'],
-            'dbname'   => $dbconfig['database']
+            'host' => $dbconfig['hostname'],
+            'dbname' => $dbconfig['database']
         );
         if (isset($dbconfig['port'])) {
             $connectionOptions['port'] = $dbconfig['port'];
+        }
+        if ($dbriver === 'pdo_mysql') {
+
+            if (array_key_exists('ssl',$dbconfig) && ($dbconfig['ssl'] === true  || $dbconfig['ssl'] === 'true' ) && isset($dbconfig['encrypt'])) {
+                $connectionOptions['driverOptions'] = array(
+                    PDO::MYSQL_ATTR_SSL_CA => $dbconfig['encrypt']['ssl_ca'],
+                    PDO::MYSQL_ATTR_SSL_KEY => $dbconfig['encrypt']['ssl_key'],
+                    PDO::MYSQL_ATTR_SSL_CERT => $dbconfig['encrypt']['ssl_cert'],
+                    PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => $dbconfig['encrypt']['ssl_verify']
+                );
+            }
+            if(array_key_exists('char_set',$dbconfig)){
+                $connectionOptions['driverOptions']['' . PDO::MYSQL_ATTR_INIT_COMMAND . ''] = 'SET NAMES ' . $dbconfig['char_set'] . '';
+            }
+
 
         }
 

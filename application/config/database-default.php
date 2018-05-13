@@ -64,6 +64,16 @@ $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
 
+/**
+ * for mysql ssl connection
+ */
+/*
+ *
+$db['default']['ssl'] = true;
+$db['default']['encrypt']['ssl_ca'] = "ca location";
+$db['default']['encrypt']['ssl_key'] = "key path";
+$db['default']['encrypt']['ssl_cert'] = "cet path";
+$db['default']['encrypt']['ssl_verify'] = false;*/
 
 /* End of file database.php */
 /* Location: ./application/config/database.php */
