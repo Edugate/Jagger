@@ -109,12 +109,12 @@ class Doctrine
         }
         if ($dbriver === 'pdo_mysql') {
 
-            if (array_key_exists('ssl', $dbconfig) && ($dbconfig['ssl'] === true || strtolower($dbconfig['ssl']) === 'true')) {
+            if (isset($dbconfig['encrypt'])) {
                 $connectionOptions['driverOptions'] = array(
-                    PDO::MYSQL_ATTR_SSL_CA => $dbconfig['ssl_ca'],
-                    PDO::MYSQL_ATTR_SSL_KEY => $dbconfig['ssl_key'],
-                    PDO::MYSQL_ATTR_SSL_CERT => $dbconfig['ssl_cert'],
-                    PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => $dbconfig['ssl_verify']
+                    PDO::MYSQL_ATTR_SSL_CA => $dbconfig['encrypt']['ssl_ca'],
+                    PDO::MYSQL_ATTR_SSL_KEY => $dbconfig['encrypt']['ssl_key'],
+                    PDO::MYSQL_ATTR_SSL_CERT => $dbconfig['encrypt']['ssl_cert'],
+                    PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => $dbconfig['encrypt']['ssl_verify']
                 );
             }
             $charset = $dbconfig['char_set'] ?: 'latin1';
