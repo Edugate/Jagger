@@ -109,7 +109,7 @@ class Doctrine
         }
         if ($dbriver === 'pdo_mysql') {
 
-            if (isset($dbconfig['encrypt'])) {
+            if (array_key_exists('ssl',$dbconfig) && ($dbconfig['ssl'] === true  || $dbconfig['ssl'] === 'true' ) && isset($dbconfig['encrypt'])) {
                 $connectionOptions['driverOptions'] = array(
                     PDO::MYSQL_ATTR_SSL_CA => $dbconfig['encrypt']['ssl_ca'],
                     PDO::MYSQL_ATTR_SSL_KEY => $dbconfig['encrypt']['ssl_key'],

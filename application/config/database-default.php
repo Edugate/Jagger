@@ -68,6 +68,8 @@ $db['default']['stricton'] = FALSE;
  * for mysql ssl connection
  */
 /*
+ *
+$db['default']['ssl'] = true;
 $db['default']['encrypt']['ssl_ca'] = "ca location";
 $db['default']['encrypt']['ssl_key'] = "key path";
 $db['default']['encrypt']['ssl_cert'] = "cet path";
