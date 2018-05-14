@@ -17,14 +17,6 @@ install(){
      echo "done"
    fi
   
-  XMLSECLIB="xmlseclibs"
-   if [ ! -d "${LIBRARYPATH}/${XMLSECLIB}" ]
-   then
-     wget http://xmlseclibs.googlecode.com/files/xmlseclibs-1.3.0.tar.gz -O ${TMPDIR}/xmlseclibs-1.3.0.tar.gz
-     tar zxf  ${TMPDIR}/xmlseclibs-1.3.0.tar.gz -C ${TMPDIR}/
-     mkdir "${LIBRARYPATH}/${XMLSECLIB}"
-     cp ${TMPDIR}/${XMLSECLIB}/xmlseclibs.php ${LIBRARYPATH}/${XMLSECLIB}/
-   fi
 
   
 }
