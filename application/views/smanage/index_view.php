@@ -1,6 +1,7 @@
 <ul class="tabs" data-tabs id="tablist">
     <li class="tabs-title is-active"><a href="#panel2-1" aria-selected="true">System</a></li>
     <li class="tabs-title"><a href="#panel2-2">Providers</a></li>
+    <li class="tabs-title"><a href="#panel2-3">Mass mail</a></li>
 </ul>
 
 <div class="tabs-content" data-tabs-content="tablist">
@@ -51,7 +52,8 @@
             <tbody>
             <tr>
                 <td>Certificates checks</td>
-                <td><div>
+                <td>
+                    <div>
                         <select>
                             <optgroup label="Expired certificates">
                                 <option value="localidp|expired">IdP (local)</option>
@@ -72,12 +74,35 @@
                                 <option value="extsp|missingencryption">SP (external)</option>
                             </optgroup>
                         </select>
-                        <button id="vcerts" class="button" value=""><?php echo lang('rr_runprocess'); ?></button></div></td>
+                        <button id="vcerts" class="button" value=""><?php echo lang('rr_runprocess'); ?></button>
+                    </div>
+                </td>
             </tr>
             <tr id="rvcerts" class="hidden">
                 <td colspan="2"></td>
             </tr>
             </tbody>
         </table>
+    </section>
+    <section class="tabs-panel" id="panel2-3">
+        <div class="row">
+        <?php
+        echo form_open(base_url('smanage/reports/massmail'), array('id' => 'massmailform'));
+        ?>
+        <div id="massmailerror" class="alert-box alert hidden row"></div>
+        <div class="column small-12">
+            <label for="subject">Subject<input name="subject" type="text"></label>
+        </div>
+        <div class="column small-12">
+            <label for="mailbody">Text<textarea name="mailbody" rows="22"></textarea></label>
+        </div>
+        <div class="column small-12 text-center">
+            <button id="massmailsubmit" class="button" value="">Send</button>
+        </div>
+
+        <?php
+        echo form_close();
+        ?>
+        </div>
     </section>
 </div>

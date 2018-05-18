@@ -16,14 +16,12 @@ use Doctrine\ORM\Version;
 class Reports extends MY_Controller
 {
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         MY_Controller::$menuactive = 'admins';
     }
 
-    public function index()
-    {
+    public function index() {
         $loggedin = $this->jauth->isLoggedIn();
         if (!$loggedin) {
             redirect('auth/login', 'location');
@@ -45,8 +43,63 @@ class Reports extends MY_Controller
         $this->load->view(MY_Controller::$page, $data);
     }
 
-    public function certificates($enttype = null, $checktype = null)
-    {
+    private function massmailValidate() {
+
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('subject', 'subject', 'trim|required|min_length[5]');
+        $this->form_validation->set_rules('mailbody', 'mail body', 'trim|required|min_length[5]');
+
+        return $this->form_validation->run();
+
+    }
+
+    public function massmail() {
+        if (!$this->input->is_ajax_request()) {
+            return $this->output->set_status_header(401)->set_output('Bad request');
+        }
+        if (!$this->jauth->isLoggedIn()) {
+            return $this->output->set_status_header(401)->set_output('Session Lost');
+        }
+        if (!$this->jauth->isAdministrator()) {
+            return $this->output->set_status_header(401)->set_output('You need to have Administrator rights');
+        }
+        if ($this->massmailValidate() !== true) {
+
+            return $this->output->set_status_header(401)->set_output(validation_errors());
+
+        }
+        $subject = $this->input->post('subject');
+        $mailbody = $this->input->post('mailbody');
+        /**
+         * @var \models\User[] $users
+         */
+        $users = $this->em->getRepository('models\User')->findAll();
+        $emailList = array();
+        foreach ($users as $user) {
+            $emailList[] = strtolower($user->getEmail());
+        }
+        $emailList = array_unique($emailList);
+        foreach ($emailList as $mailto) {
+            $m = new models\MailQueue();
+            $m->setSubject($subject);
+            $m->setBody($mailbody);
+            $m->setDeliveryType('mail');
+            $m->setRcptto($mailto);
+            $this->em->persist($m);
+        }
+        try {
+            $this->em->flush();
+
+            return $this->output->set_output('Mail has be sent to the mailqueue');
+        } catch (Exception $e) {
+            log_message('error',__METHOD____.' '.$e);
+            return $this->output->set_status_header(500)->set_output('Something went wrong... check logs');
+
+        }
+
+    }
+
+    public function certificates($enttype = null, $checktype = null) {
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
@@ -82,81 +135,79 @@ class Reports extends MY_Controller
                 $alert = $this->jalert->genCertsAlerts($provider);
                 if (count($alert) > 0) {
                     $result[] = array(
-                        'id' => $provider->getId(),
+                        'id'       => $provider->getId(),
                         'entityid' => html_escape($provider->getEntityId()),
-                        'islocal' => $provider->getLocal(),
-                        'alerts' => $alert
+                        'islocal'  => $provider->getLocal(),
+                        'alerts'   => $alert
                     );
                 }
 
             }
         } else if ($checktype === 'missingencryption') {
 
-            foreach ($providers as $provider){
+            foreach ($providers as $provider) {
                 $certCounter = 0;
                 $crts = $provider->getCertificates();
-                if($crts->count() == 0 ){
+                if ($crts->count() == 0) {
                     $result[] = array(
-                        'id' => $provider->getId(),
-                        'entityid' =>  html_escape($provider->getEntityId()),
-                        'islocal' => $provider->getLocal()
+                        'id'       => $provider->getId(),
+                        'entityid' => html_escape($provider->getEntityId()),
+                        'islocal'  => $provider->getLocal()
                     );
                     continue;
                 }
-                foreach ($crts as $crt){
+                foreach ($crts as $crt) {
                     $use = $crt->getCertUse();
-                    if($use !== 'signing'){
+                    if ($use !== 'signing') {
                         $certCounter++;
                     }
                 }
 
-                if($certCounter == 0 ) {
+                if ($certCounter == 0) {
                     $result[] = array(
-                        'id' => $provider->getId(),
-                        'entityid' =>  html_escape($provider->getEntityId()),
-                        'islocal' => $provider->getLocal()
+                        'id'       => $provider->getId(),
+                        'entityid' => html_escape($provider->getEntityId()),
+                        'islocal'  => $provider->getLocal()
                     );
                 }
             }
-        }
-        else if ($checktype === 'missingsigning') {
+        } else if ($checktype === 'missingsigning') {
 
-            foreach ($providers as $provider){
+            foreach ($providers as $provider) {
                 $certCounter = 0;
                 $crts = $provider->getCertificates();
-                if($crts->count() == 0 ){
+                if ($crts->count() == 0) {
                     $result[] = array(
-                        'id' => $provider->getId(),
-                        'entityid' =>  html_escape($provider->getEntityId()),
-                        'islocal' => $provider->getLocal()
+                        'id'       => $provider->getId(),
+                        'entityid' => html_escape($provider->getEntityId()),
+                        'islocal'  => $provider->getLocal()
                     );
                     continue;
                 }
-                foreach ($crts as $crt){
+                foreach ($crts as $crt) {
                     $use = $crt->getCertUse();
-                    if($use !== 'encryption'){
+                    if ($use !== 'encryption') {
                         $certCounter++;
                     }
                 }
 
-                if($certCounter == 0 ) {
+                if ($certCounter == 0) {
                     $result[] = array(
-                        'id' => $provider->getId(),
-                        'entityid' =>  html_escape($provider->getEntityId()),
-                        'islocal' => $provider->getLocal()
+                        'id'       => $provider->getId(),
+                        'entityid' => html_escape($provider->getEntityId()),
+                        'islocal'  => $provider->getLocal()
                     );
                 }
             }
-        }
-        else {
+        } else {
             return $this->output->set_status_header(401)->set_output('Incorrect request');
         }
+
         return $this->output->set_content_type('application/json')->set_output(json_encode(array('definitions' => array('baseurl' => base_url()), 'data' => $result)));
 
     }
 
-    public function vormversion()
-    {
+    public function vormversion() {
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
@@ -198,8 +249,7 @@ class Reports extends MY_Controller
     }
 
 
-    public function vschema()
-    {
+    public function vschema() {
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
@@ -228,8 +278,7 @@ class Reports extends MY_Controller
     }
 
 
-    public function vschemadb()
-    {
+    public function vschemadb() {
         if (!$this->input->is_ajax_request()) {
             return $this->output->set_status_header(401)->set_output('Bad request');
         }
@@ -247,12 +296,12 @@ class Reports extends MY_Controller
         } else {
             $output = '<div class="warning alert-box" data-alert>' . lang('rerror_dbinsync') . '</div>';
         }
+
         return $this->output->set_status_header(200)->set_output($output);
     }
 
 
-    public function vmigrate()
-    {
+    public function vmigrate() {
         if (!$this->input->is_ajax_request() || !$this->jauth->isLoggedIn() || !$this->jauth->isAdministrator()) {
             return $this->output->set_status_header(403)->set_output('Unauthorized request');
         }

@@ -118,7 +118,8 @@ function nl2br(str, is_xhtml) {
 
 function revealAlert(str, btnval) {
     'use strict';
-    var button = '<div class="row text-right"><button class="button" data-close>' + btnval + '</button></div>', modal = $('#malert');
+    var button = '<div class="row text-right"><button class="button" data-close>' + btnval + '</button></div>',
+        modal = $('#malert');
     modal.empty().append('<div class="row text-center"><p><h4>' + str + '</h4></p></div>').append(button).foundation('open');
 }
 
@@ -281,12 +282,14 @@ var genRandomStr = function (counter) {
     }
     return randStr;
 };
+
 function go_to_private_page() {
     window.location.reload();
 }
 
 
 var map, mapSearchInput;
+
 function mapInitialize() {
 
     window.console.log('map init');
@@ -530,7 +533,7 @@ var GINIT = {
                             if (data[entgroupkey]) {
                                 countGroups[entgroupkey] = data[entgroupkey].length;
                                 out[++o] = '<li class="accordion-item " data-accordion-item>';
-                                out[++o] = '<a href="#" class="accordion-title">'+data.definitions[entgroupkey]+' ('+countGroups[entgroupkey]+')</a> ';
+                                out[++o] = '<a href="#" class="accordion-title">' + data.definitions[entgroupkey] + ' (' + countGroups[entgroupkey] + ')</a> ';
                                 out[++o] = '<div class="accordion-content" data-tab-content>'
                                 out[++o] = '<table><tbody>';
                                 out[++o] = '<tr><td colspan="2"><div class="zebramembers">';
@@ -600,7 +603,7 @@ var GINIT = {
 
 
                         var ctx = document.getElementById("fedpiechart").getContext("2d");
-                        if (ctx && (countGroups.idp > 0 || countGroups.sp > 0 || countGroups.both > 0 )) {
+                        if (ctx && (countGroups.idp > 0 || countGroups.sp > 0 || countGroups.both > 0)) {
                             var myPieChart = new Chart(ctx).Pie(data2, {
                                 responsive: true,
                                 legendTemplate: "<div class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><div><span style=\"background-color:<%=segments[i].fillColor%>\">&nbsp;<%=segments[i].value %>&nbsp;</span> <%if(segments[i].label){%><%=segments[i].label%><%}%></div><%}%></div>"
@@ -2426,7 +2429,7 @@ $(document).ready(function () {
                     meter.css('width', '100%');
                     var idf, supplbl, nrcols, policy, datajaggersupm, support = [];
                     if (data.type === 'supported') {
-                       // addbtn.removeClass('hidden');
+                        // addbtn.removeClass('hidden');
                         $.each(data.data.support, function (k, v) {
                             support.push(v);
                         });
@@ -3712,10 +3715,10 @@ $(function () {
                         i = new Image();
 
                         i.src = v.url;
-                        i.onload = function(){
+                        i.onload = function () {
                             $('#statisticdiag').append('<div style="text-align:center; font-weight: bold; width: 90%;">' + v.title + '</div>').append('<div style="font-weight: bolder; width: 90%; text-align: right;">' + v.subtitle + '</div>').append(i);
                         };
-                        i.onerror = function(){
+                        i.onerror = function () {
                             $('#statisticdiag').append('<div style="text-align:center; font-weight: bold; width: 90%;">' + v.title + '</div>').append('<div style="font-weight: bolder; width: 90%; text-align: right;">' + v.subtitle + '</div>').append('<div data-alert class="alert-box alert">Could not load the image (not found or no access)</div>');
                         }
 
@@ -4070,12 +4073,12 @@ $(document).ready(function () {
             valueselected = optselected.val();
         }
         var splittedvalue = valueselected.split('|');
-        var expectedArg1 = ['localidp','extidp', 'localsp', 'extsp'];
-        var expectedArg2 = ['expired','missingencryption', 'missingsigning'];
+        var expectedArg1 = ['localidp', 'extidp', 'localsp', 'extsp'];
+        var expectedArg2 = ['expired', 'missingencryption', 'missingsigning'];
         var urlParam = '';
 
-        if(splittedvalue[0] !== undefined && splittedvalue[1] !== undefined && expectedArg1.indexOf(splittedvalue[0]) >= 0 && expectedArg2.indexOf(splittedvalue[1] >= 0)){
-            urlParam = '/'+splittedvalue[0]+'/'+splittedvalue[1];
+        if (splittedvalue[0] !== undefined && splittedvalue[1] !== undefined && expectedArg1.indexOf(splittedvalue[0]) >= 0 && expectedArg2.indexOf(splittedvalue[1] >= 0)) {
+            urlParam = '/' + splittedvalue[0] + '/' + splittedvalue[1];
         }
         else {
             alert('incorrect post');
@@ -5214,21 +5217,21 @@ var genModalForm = function (params, size) {
         canceltext = params.canceltext;
     }
     var el = [];
-    el.push('<div class="reveal '+size+'" data-reveal>');
+    el.push('<div class="reveal ' + size + '" data-reveal>');
     el.push('<div class="small-12 column response alert-box alert hidden" alert-data></div>');
-    el.push('<form method="' + method + '" action="' + Jagger.base_url + params.actionuri + '" class="'+params.formclass+'">');
+    el.push('<form method="' + method + '" action="' + Jagger.base_url + params.actionuri + '" class="' + params.formclass + '">');
     el.push('<input type="hidden" name="' + Jagger.csrfname + '" value="' + Jagger.csrfhash + '">');
-    if(params.confirmationtext){
-        el.push('<div class="small-12 column"><h5>'+params.confirmationtext+'</h5></div>');
+    if (params.confirmationtext) {
+        el.push('<div class="small-12 column"><h5>' + params.confirmationtext + '</h5></div>');
     }
-    if(params.forminputs){
+    if (params.forminputs) {
         var item;
         var formInputsLength = params.forminputs.length;
-        for(var i = 0 ; i < formInputsLength ; i++){
+        for (var i = 0; i < formInputsLength; i++) {
             item = params.forminputs[i];
             console.log(item);
-            if(item.element === 'input'){
-                if(item.type === 'hidden'){
+            if (item.element === 'input') {
+                if (item.type === 'hidden') {
                     el.push('<input type="hidden" name="' + item.name + '" value="' + item.value + '">');
                 }
             }
@@ -5240,7 +5243,7 @@ var genModalForm = function (params, size) {
     return $('' + el.join('') + '').foundation();
 };
 
-$(document).on('submit','.delattrform', function(){
+$(document).on('submit', '.delattrform', function () {
     var mythis = $(this);
     var myform = mythis.closest('form');
     var attrid = myform.find("[name='attrid']").val()
@@ -5251,17 +5254,17 @@ $(document).on('submit','.delattrform', function(){
         method: myform.attr('method'),
         data: myform.serialize(),
         fataType: "json",
-        beforeSend: function(){
+        beforeSend: function () {
             response.empty().hide();
         },
-        success: function(e){
-            var mycell = $("[data-jagger-attrid='"+attrid+"']");
-            if(mycell !== 'undefined'){
+        success: function (e) {
+            var mycell = $("[data-jagger-attrid='" + attrid + "']");
+            if (mycell !== 'undefined') {
                 mycell.closest('tr').remove();
             }
             mymodal.foundation('close');
         },
-        error: function(xhr, status, error){
+        error: function (xhr, status, error) {
             console.log(xhr);
             response.html(xhr.responseText).show();
         }
@@ -5278,7 +5281,7 @@ $(".delattribute").click(function (e) {
         method: "POST",
         formclass: "delattrform",
         actionuri: "attributes/attributes/remove",
-        confirmationtext: "Are you sure you want to remove attribute:  "+attrname+"?",
+        confirmationtext: "Are you sure you want to remove attribute:  " + attrname + "?",
         submittext: "remove",
         canceltext: "cancel",
         forminputs: [
@@ -5297,10 +5300,42 @@ $(".delattribute").click(function (e) {
         ]
     };
     //   Jagger.confirmFormModal(Jagger.helperModal);
-    Jagger.confirmFormModal(genModalForm(params,'tiny'));
+    Jagger.confirmFormModal(genModalForm(params, 'tiny'));
 });
 
+$("#massmailform").on("submit", function (e) {
+    e.preventDefault();
+    var myform = $(this).closest('form');
+    var alertbox = $("#massmailerror");
+    alertbox.hide().empty();
+    console.log(alertbox);
 
+    $.ajax({
+        url: myform.attr('action'),
+        method: myform.attr('method'),
+        data: myform.serialize(),
+        beforeSend: function () {
+            alertbox.hide().empty();
+        },
+        success: function (z) {
+            alertbox.hide();
+            myform.trigger("reset")
+            if(z){
+                alert(z);
+            }else{
+                alert("mail sent");
+            }
+
+        },
+        error: function (xhr, status, error) {
+            alertbox.html(xhr.responseText).show();
+
+        }
+
+    });
+
+
+});
 $(".attrinfo").click(function (e) {
     var thisElement = $(this);
     var thisI = thisElement.find('i').first();
