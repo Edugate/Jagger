@@ -2,6 +2,7 @@
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
+
 /**
  * @package   Jagger
  * @author    Middleware Team HEAnet
@@ -9,7 +10,6 @@ if (!defined('BASEPATH')) {
  * @copyright Copyright (c) 2012, HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
-
 class Accessmanage extends MY_Controller
 {
 
@@ -194,11 +194,15 @@ class Accessmanage extends MY_Controller
 
         $result = array('definitions' => array('admin' => $this->jauth->isAdministrator(), 'actions' => $resourceData['actions'], 'dictionary' => array('allow' => 'allow', 'deny' => 'deny', 'hasaccess' => lang('rr_hasaccess'), 'hasnoaccess' => lang('rr_hasnoaccess'), 'username' => lang('rr_username'))));
 
+
+        $isAdmin = $this->jauth->isAdministrator();
+
         /**
          * @var models\User[] $users
          * @var models\AclRole $adminRole
          */
         $users = $this->em->getRepository('models\User')->findAll();
+
 
         foreach ($users as $user) {
             $result['data'][$user->getUsername()] = array('isadmin' => false, 'fullname' => $user->getFullname(), 'email' => $user->getEmail());
@@ -214,10 +218,19 @@ class Accessmanage extends MY_Controller
             if (array_key_exists($adminUsername, $result['data'])) {
                 $result['data']['' . $adminUsername . '']['isadmin'] = true;
             }
-
         }
         $result['data']['' . $this->jauth->getLoggedinUsername() . '']['isyou'] = true;
-
+        if(!$isAdmin){
+            foreach ($result['data'] as $key => $entry){
+                $perms = $entry['perms'];
+                if((isset($perms['write']) && $perms['write'] === true) ||(isset($perms['manage']) && $perms['manage'] === true)){
+                  continue;
+                }
+                else {
+                    unset($result['data'][$key]);
+                }
+            }
+        }
 
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
 

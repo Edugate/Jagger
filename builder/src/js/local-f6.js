@@ -5303,6 +5303,53 @@ $(".delattribute").click(function (e) {
     Jagger.confirmFormModal(genModalForm(params, 'tiny'));
 });
 
+
+$("#inviteuserform").on("submit", function(e){
+    e.preventDefault();
+    var myform = $(this).closest('form');
+    var responsemsg = $("#invusrresp");
+    $.ajax({
+        url: myform.attr('action'),
+        method: myform.attr('method'),
+        data: myform.serialize(),
+        beforeSend: function () {
+          responsemsg.empty().hide();
+        },
+        success: function(z){
+            responsemsg.removeClass('alert').addClass('success').html('Success').show();
+        },
+        error: function(xhr, status, error){
+
+            responsemsg.removeClass('success').addClass('alert').html(xhr.responseText).show();
+        }
+    });
+});
+
+$("#invverify").on("submit", function(e){
+    e.preventDefault();
+    var myform = $(this).closest('form');
+
+    var invverifyerror = $("#invverifyerror");
+    $.ajax({
+        url: myform.attr('action'),
+        method: myform.attr('method'),
+        data: myform.serialize(),
+        beforeSend: function () {
+            invverifyerror.hide().empty();
+        },
+        success: function (z) {
+            invverifyerror.hide();
+            if(z){
+                alert(z);
+            }else{
+                alert("success");
+            }
+        },
+        error: function (xhr, status, error) {
+            invverifyerror.html(xhr.responseText).show();
+        }
+    });
+});
 $("#massmailform").on("submit", function (e) {
     e.preventDefault();
     var myform = $(this).closest('form');

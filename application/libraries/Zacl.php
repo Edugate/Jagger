@@ -354,6 +354,22 @@ class Zacl
         return $result;
     }
 
+    public function addAccessToUserByInvitation($resource, $action, $user, $group, $resource_type = null){
+        $roleExists = $this->acl->hasRole('selected_user');
+        if ($roleExists) {
+            $this->acl->removeRole('selected_user');
+        }
+        if (!$user instanceof models\User) {
+            $s_user = $this->em->getRepository("models\User")->findOneBy(array('username' => $user));
+            log_message('debug', 's_user not instance of  models\User search by username=' . $user);
+        } else {
+            $s_user = $user;
+        }
+        $result = $this->processAddAccessToUser($resource, $action, $s_user, $group, null);
+
+        return $result;
+    }
+
     public function add_access_toUser($resource, $action, $user, $group, $resource_type = null) {
         $roleExists = $this->acl->hasRole('selected_user');
         if ($roleExists) {
@@ -367,12 +383,12 @@ class Zacl
         }
         $manageAccess = $this->acl->isAllowed('current_user', $resource, 'manage');
         if (!$manageAccess) {
-            log_message('debug', 'user has no rights to mamage permission');
+            log_message('debug', 'ZACL: user has no rights to mamage permission');
 
             return false;
         } else {
 
-            log_message('debug', 'user can manage permissions');
+            log_message('debug', 'ZACL: user can manage permissions');
         }
         $result = $this->processAddAccessToUser($resource, $action, $s_user, $group, null);
 
