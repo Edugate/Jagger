@@ -95,28 +95,45 @@ class Invitation
     protected $actionvalue;
 
 
-    public function __construct() {
+    public function __construct()
+    {
         log_message('debug', 'Invitation model initiated');
+        $this->isValid = false;
+        $this->validto = null;
     }
 
-    public function getTargetType() {
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    public function getValidationKey(){
+        return $this->validationkey;
+    }
+
+    public function getTargetType()
+    {
         return $this->targettype;
     }
 
-    public function getTargetId() {
+    public function getTargetId()
+    {
         return $this->targetid;
     }
 
-    public function getActionType() {
+    public function getActionType()
+    {
         return $this->actiontype;
     }
 
-    public function getActionValue() {
+    public function getActionValue()
+    {
         return $this->actionvalue;
     }
 
 
-    public function isInvitationValid($token, $validationKey) {
+    public function isInvitationValid($token, $validationKey)
+    {
         $tokenKeyMatch = ($token === $this->token && $validationKey === $this->validationkey);
         $isValid = $this->isValid;
         $isTimeValid = (time() < (int)$this->validto);
@@ -124,7 +141,8 @@ class Invitation
         return ($tokenKeyMatch && $isValid && $isTimeValid);
     }
 
-    private function makeToken() {
+    private function makeToken()
+    {
         $length = 31;
 
         $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
@@ -137,75 +155,90 @@ class Invitation
         return $string;
     }
 
-    public function setToken() {
+    public function setToken()
+    {
         $token = $this->makeToken();
         $this->token = $token;
 
         return $this;
     }
 
-    public function setValidationKey() {
+    public function setValidationKey()
+    {
         $validkey = $this->makeToken();
         $this->validationkey = $validkey;
 
         return $this;
     }
 
-    public function setTargetId($target) {
+    public function setTargetId($target)
+    {
         $this->targetid = $target;
 
         return $this;
     }
 
-    public function setTargetType($type) {
+    public function setTargetType($type)
+    {
         $this->targettype = $type;
 
         return $this;
     }
 
-    public function setActionValue($action) {
+    public function setActionValue($action)
+    {
         $this->actionvalue = $action;
 
         return $this;
     }
 
-    public function setActionType($type) {
+    public function setActionType($type)
+    {
         $this->actiontype = $type;
 
         return $this;
 
     }
 
-    public function setValidTo($epoch){
+    public function setValidTo($epoch)
+    {
         $this->validto = $epoch;
         return $this;
     }
-    public function setValid(){
+    public function setInvalid(){
+        $this->isValid = false;
+        return $this;
+    }
+
+    public function setValid()
+    {
         $this->isValid = true;
         return $this;
     }
 
-    public function setMailFrom($mail){
+    public function setMailFrom($mail)
+    {
         $this->mailfrom = $mail;
         return $this;
     }
 
-    public function setMailTo($mail){
+    public function setMailTo($mail)
+    {
         $this->mailto = $mail;
         return $this;
-    }
-
-
-    public function getToken() {
-        return $this->token;
     }
 
 
     /**
      * @PrePersist
      */
-    public function doStuffOnPrePersist() {
+    public function doStuffOnPrePersist()
+    {
         $this->createdAt = date('Y-m-d H:m:s');
+        if ($this->validto === null) {
+            $oneDay = time() + (24 * 60 * 60);
+            $this->validto = $oneDay;
+        }
     }
 
 

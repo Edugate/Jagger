@@ -181,8 +181,6 @@ class Jauth
         $loggedin = trim($this->ci->session->userdata('logged'));
         $username = trim($this->ci->session->userdata('username'));
         if (!empty($loggedin) && !empty($username)) {
-            log_message('debug', 'Session is active for: ' . $username . '');
-
             return true;
         }
 

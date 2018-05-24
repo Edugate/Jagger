@@ -13,7 +13,7 @@ class Migration_attrsupdate extends CI_Migration {
             $name = $attr->getName();
             if($name === 'transientId' || $name === 'persistentId'){
                 $attr->setShowInmetadata(false);
-                $this->em->persist($attr);
+                $this->em->persist  ($attr);
             }
         }
 

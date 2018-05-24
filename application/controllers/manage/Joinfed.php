@@ -153,7 +153,7 @@ class Joinfed extends MY_Controller
                     $this->emailsender->addToMailQueue(array('joinfedreq', 'gjoinfedreq'), $federation, $mail_sbj, $mail_body, array(), FALSE);
                     try {
                         $this->em->flush();
-                        log_message('info', 'JAGGER: ' . __METHOD__ . ' ' . $this->session->userdata('username') . ': request to join federation: entityID: ' . $ent->getEntityId() . ', fed: ' . $federation->getName());
+                        log_message('info', 'JAGGER: ' . __METHOD__ . ' ' . $this->session->userdata('user_id') . ': request to join federation: entityID: ' . $ent->getEntityId() . ', fed: ' . $federation->getName());
                     } catch (Exception $e) {
                         log_message('error', 'JAGGER: ' . $e);
                         show_error('Internal server error', 500);
