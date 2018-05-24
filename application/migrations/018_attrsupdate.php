@@ -10,7 +10,7 @@ class Migration_attrsupdate extends CI_Migration {
         */
         $attrtmp = $this->em->getRepository("models\Attribute")->findAll();
         foreach ($attrtmp as $attr){
-            $name = $attrtmp->getName();
+            $name = $attr->getName();
             if($name === 'transientId' || $name === 'persistentId'){
                 $attr->setShowInmetadata(false);
                 $this->em->persis($attr);

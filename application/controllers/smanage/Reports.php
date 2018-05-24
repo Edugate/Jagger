@@ -221,7 +221,7 @@ class Reports extends MY_Controller
         $doctrineCurrentVer = Doctrine\ORM\Version::VERSION;
         $doctrineReqVer = '2.4.8';
         $doctrineCompared = Doctrine\ORM\Version::compare($doctrineReqVer);
-        $phpMinVersion = version_compare(PHP_VERSION, '5.5.0', '>=');
+        $phpMinVersion = version_compare(PHP_VERSION, '5.6.0', '>=');
 
         if ($doctrineCompared > 0 && $phpMinVersion) {
             echo '<div class="warning alert-box" data-alert>' . lang('rr_doctrinever') . ': ' . $doctrineCurrentVer . '</div>';

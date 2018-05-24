@@ -4,4 +4,3 @@ $config['jcache_dir'] = APPPATH.'cache/';
 
 $config['jcache_default_expires'] = 0;
 
-?>

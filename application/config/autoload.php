@@ -1,4 +1,4 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 /*
 | -------------------------------------------------------------------
 | AUTO-LOADER
@@ -53,7 +53,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array('doctrine','rrpreference','jauth','tracker','email','j_cache','j_ncache','table','curl','emailsender','duo','mq');
+$autoload['libraries'] = array('doctrine', 'rrpreference', 'jauth', 'tracker', 'email', 'j_cache', 'j_ncache', 'table', 'curl', 'emailsender', 'duo', 'mq');
 $autoload['drivers'] = array('session');
 
 
@@ -66,7 +66,7 @@ $autoload['drivers'] = array('session');
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('url','form','encoder','cert','random_generator','iconhelp','metadata_elements','language','memory','protocols','webelement','shortcodes');
+$autoload['helper'] = array('url', 'form', 'encoder', 'cert', 'random_generator', 'iconhelp', 'metadata_elements', 'language', 'memory', 'protocols', 'webelement', 'shortcodes');
 
 
 /*
@@ -82,8 +82,12 @@ $autoload['helper'] = array('url','form','encoder','cert','random_generator','ic
 |
 */
 
-$autoload['config'] = array('config_rr','jcache','email');
-
+$autoload['config'] = array('config_rr', 'jcache', 'email');
+$jagger_docker = getenv('JAGGER_DOCKER');
+if ($jagger_docker === '1') {
+    $autoload['config'][] = 'config_rr_override';
+    $autoload['config'][] = 'dockerized';
+}
 
 /*
 | -------------------------------------------------------------------
@@ -99,6 +103,7 @@ $autoload['config'] = array('config_rr','jcache','email');
 */
 
 $autoload['language'] = array();
+
 
 
 /*
