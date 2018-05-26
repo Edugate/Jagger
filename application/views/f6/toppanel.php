@@ -3,10 +3,20 @@
 $myLang = MY_Controller::getLang();
 $activemenu = MY_Controller::$menuactive;
 $siteLogo = $this->config->item('site_logo');
-if (empty($siteLogo)) {
-    $siteLogo = 'logo-default.png';
+$siteLogoURL = $this->config->item('site_logo_url');
+if($siteLogoURL !== null){
+    $logoSrc = $siteLogoURL;
 }
-$logoSrc = $base_url . 'images/' . $siteLogo;
+else {
+
+    if (empty($siteLogo)) {
+        $siteLogo = 'logo-default.png';
+    }
+    $logoSrc = $base_url . 'images/' . $siteLogo;
+
+}
+
+
 $homeUrl = $base_url;
 if ($loggedin) {
     $homeUrl = $base_url . 'home';
