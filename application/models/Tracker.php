@@ -186,7 +186,7 @@ class Tracker {
         }
         if (isset($_SERVER['HTTP_USER_AGENT']))
         {
-            $this->agent = $_SERVER['HTTP_USER_AGENT'];
+            $this->agent = substr($_SERVER['HTTP_USER_AGENT'],0,127);
         }
     }
 
