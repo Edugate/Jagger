@@ -20,9 +20,9 @@ if(!empty($rows) && is_array($rows))
     }
     echo form_fieldset_close();
     $btns = array(
-        '<button type="reset" name="reset" value="reset" class="resetbutton reseticon alert">
+        '<button type="reset" name="reset" value="reset" class="button alert">
                   '.lang('rr_reset').'</button>',
-        '<button type="submit" name="modify" value="submit" class="savebutton saveicon">
+        '<button type="submit" name="modify" value="submit" class="button">
                   '.lang('rr_save').'</button>'
     );
     echo '<div class="small-12 columns">';
