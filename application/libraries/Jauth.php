@@ -277,12 +277,12 @@ class Jauth
         }
         $userRoles = $user->getRoles();
         if ($userRoles->contains($adminRole)) {
-            log_message('debug', 'isAdministrator: user ' . $user->getUsername() . ' found in Administrator group');
+            log_message('debug', 'isAdministrator: user (id) ' . $user->getId() . ' found in Administrator group');
             self::$isAdmin = true;
 
             return true;
         } else {
-            log_message('debug', 'isAdministrator: user ' . $user->getUsername() . ' not found in Administrator group');
+            log_message('debug', 'isAdministrator: user (id) ' . $user->getId() . ' not found in Administrator group');
             self::$isAdmin = false;
 
             return false;
