@@ -178,9 +178,9 @@ class Metadata extends MY_Controller
          */
         $members = $tmpm->getActiveFederationmembersForExport($federation, null);
         $validfor = new \DateTime('now', new \DateTimezone('UTC'));
+        $creationInstant = $validfor->format('Y-m-d\TH:i:s\Z');
         $validfor->modify('+' . $this->config->item('metadata_validuntil_days') . ' day');
         $validuntil = $validfor->format('Y-m-d\TH:i:s\Z');
-        $creationInstant = $validfor->format('Y-m-d\TH:i:s\Z');
         $entitiesDescriptorId = $federation->getDescriptorId();
         if (empty($entitiesDescriptorId)) {
             $idprefix = $this->config->item('fedexportmetadataidprefix');
