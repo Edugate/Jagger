@@ -48,7 +48,7 @@ class Contact
     /**
      * @Column(type="boolean", nullable=false)
      */
-    protected $issirfty;
+    protected $issirtfi
 
     /**
      * @Column(type="string", length=24, nullable=true)
@@ -64,7 +64,7 @@ class Contact
 
 
     public function __construct() {
-        $this->issirfty = false;
+        $this->issirtfi = false;
     }
 
     // Begin generic set/get methods
@@ -113,8 +113,8 @@ class Contact
      * @param $arg
      * @return $this
      */
-    public function setSirfti($arg) {
-        $this->issirfty = $arg;
+    public function setSirtfi($arg) {
+        $this->issirtfi = $arg;
 
         return $this;
     }
@@ -136,7 +136,7 @@ class Contact
         $this->type = $contact->getType();
         $this->phone = $contact->getPhone();
         $this->email = $contact->getEmail();
-        $this->issirfty = $contact->isSirfti();
+        $this->issirtfi = $contact->isSirtfi();
     }
 
     public function getId() {
@@ -177,8 +177,8 @@ class Contact
      * @return string
      */
     public function getTypeToForm() {
-        if ($this->issirfty) {
-            return 'other-sirfti';
+        if ($this->issirtfi) {
+            return 'other-sirtfi';
         }
 
         return $this->type;
@@ -187,17 +187,17 @@ class Contact
     /**
      * @return bool
      */
-    public function isSirfti() {
-        return $this->issirfty;
+    public function isSirtfi() {
+        return $this->issirtfi;
     }
 
     public function setAllInfoNoProvider($fname, $sname, $type, $mail) {
         $this->email = $mail;
         $this->givenname = $fname;
 
-        if ($type === 'other-sirfti') {
+        if ($type === 'other-sirtfi') {
             $this->type = 'other';
-            $this->issirfty = true;
+            $this->issirtfi = true;
         } else {
             $this->type = $type;
         }
@@ -209,9 +209,9 @@ class Contact
     public function setAllInfo($fname, $sname, $type, $mail, Provider $provider) {
         $this->email = $mail;
         $this->givenname = $fname;
-        if ($type === 'other-sirfti') {
+        if ($type === 'other-sirtfi') {
             $this->type = 'other';
-            $this->issirfty = true;
+            $this->issirtfi = true;
         } else {
             $this->type = $type;
         }
@@ -228,9 +228,9 @@ class Contact
         $this->setType($c['type']);
         $this->setPhone($c['phone']);
         $this->setEmail($c['email']);
-        if (array_key_exists('issirfti', $c)) {
-            $sirfti = (bool)$c['issirfti'];
-            $this->setEmail($sirfti);
+        if (array_key_exists('issirtfi', $c)) {
+            $sirtfi = (bool)$c['issirtfi'];
+            $this->setEmail($sirtfi);
         }
 
         return $this;
@@ -244,7 +244,7 @@ class Contact
             'type'      => $this->getType(),
             'phone'     => $this->getPhone(),
             'email'     => $this->getEmail(),
-            'issirfti'  => $this->isSirfti()
+            'issirtfi'  => $this->isSirtfi()
         );
     }
 
@@ -252,8 +252,8 @@ class Contact
     /**
      * @PostPersist
      */
-    public function verifySirfty() {
-        if ($this->issirfty) {
+    public function verifySirtfi() {
+        if ($this->issirtfi) {
             $this->type = 'other';
         }
 

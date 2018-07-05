@@ -196,7 +196,7 @@ class Providertoxml
                 foreach ($v as $v1) {
                     $v1Url = $v1->getUrl();
                     if ($v1Url === 'https://refeds.org/sirtfi' && $k === 'urn:oasis:names:tc:SAML:attribute:assurance-certification') {
-                        $ent->setSirfty(true);
+                        $ent->setSirtfi(true);
                     }
                     $xml->startElementNs('saml', 'AttributeValue', null);
                     $xml->text($v1Url);
@@ -222,16 +222,16 @@ class Providertoxml
     }
 
     private function createContacts(\XMLWriter $xml, \models\Provider $ent) {
-        $isProviderSirfti = (bool)$ent->isSirfty();
+        $isProviderSirtfi = (bool)$ent->isSirtfi();
         $contacts = $ent->getContacts();
         foreach ($contacts as $c) {
             $givenName = $c->getGivenname();
             $surName = $c->getSurname();
             $email = $c->getEmail();
-            $isContactSirfti = $c->isSirfti();
+            $isContactSirtifi = $c->isSirtfi();
             $xml->startElementNs('md', 'ContactPerson', null);
             $xml->writeAttribute('contactType', $c->getType());
-            if ($isProviderSirfti && $isContactSirfti) {
+            if ($isProviderSirtfi && $isContactSirtfi) {
                 $xml->writeAttributeNs('remd', 'contactType', 'http://refeds.org/metadata', 'http://refeds.org/metadata/contactType/security');
             }
             if (!empty($givenName)) {

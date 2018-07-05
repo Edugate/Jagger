@@ -398,7 +398,7 @@ class Providerdetails
             'support' => lang('rr_cnt_type_support'),
             'billing' => lang('rr_cnt_type_bill'),
             'other' => lang('rr_cnt_type_other'),
-            'other-sirfti' => lang('rr_cnt_type_other-sirfti'),
+            'other-sirtfi' => lang('rr_cnt_type_other-sirtfi'),
         );
         if (count($contacts) > 0) {
             foreach ($contacts as $c) {
