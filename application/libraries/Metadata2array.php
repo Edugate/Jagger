@@ -606,16 +606,16 @@ class Metadata2array
     }
 
     private function contactPersonConvert(\DOMElement $node) {
-        $isSirfty = false;
+        $isSirtfi = false;
         if ($node->hasAttributeNS('http://refeds.org/metadata', 'contactType')) {
-            $isSirfty = true;
+            $isSirtfi = true;
         }
         $cnt = array(
             'type' => $node->getAttribute('contactType'),
             'surname' => null,
             'givenname' => null,
             'email' => null,
-            'issirfti' => $isSirfty
+            'issirtfi' => $isSirtfi
         );
         foreach ($node->childNodes as $cnode) {
             if ($cnode->localName === 'SurName') {
