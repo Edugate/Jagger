@@ -206,7 +206,7 @@ class Formelement
             'support'        => lang('rr_cnt_type_support'),
             'billing'        => lang('rr_cnt_type_bill'),
             'other'          => lang('rr_cnt_type_other'),
-            'other-sirfti'   => lang('rr_cnt_type_other-sirfti'),
+            'other-sirtfi'   => lang('rr_cnt_type_other-sirtfi'),
         );
         $sessform = (null === $ses) ? false : true;
         $result = array();
