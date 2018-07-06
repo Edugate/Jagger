@@ -228,7 +228,7 @@ class Providertoxml
             $givenName = $c->getGivenname();
             $surName = $c->getSurname();
             $email = $c->getEmail();
-            $isContactSirtifi = $c->isSirtfi();
+            $isContactSirtfi = $c->isSirtfi();
             $xml->startElementNs('md', 'ContactPerson', null);
             $xml->writeAttribute('contactType', $c->getType());
             if ($isProviderSirtfi && $isContactSirtfi) {
