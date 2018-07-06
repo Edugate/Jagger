@@ -151,7 +151,7 @@ class Leavefed extends MY_Controller
                 $data['success_message'] = lang('rr_youleftfed') . ': ' . $federation->getName() . '<br />' . $rm_arp_msg;
             } catch (Exception $e) {
                 log_message('error', __METHOD__ . ' ' . $e);
-                $data['error_message'] = 'Unknown error occured';
+                $data['error_message'] = 'Unknown error occurred';
             }
             $data['content_view'] = 'manage/leavefederation_view';
 

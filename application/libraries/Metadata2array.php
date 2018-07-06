@@ -314,7 +314,7 @@ class Metadata2array
         try {
             $entity['metadata'] = $this->doc->saveXML($node);
         } catch (Exception $e) {
-            log_message('warning', 'Couldn store xml: ' . $e);
+            log_message('warning', 'Couldnt store xml: ' . $e);
         }
         $this->metaArray[$entity['entityid']] = $entity;
     }

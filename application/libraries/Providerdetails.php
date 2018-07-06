@@ -469,7 +469,7 @@ class Providerdetails
 
         $extend = $ent->getExtendMetadata();
         /**
-         * get first assinged logo to display on site
+         * get first assigned logo to display on site
          */
         $isLogo = false;
         foreach ($extend as $v) {

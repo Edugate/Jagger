@@ -374,7 +374,7 @@ class Entitystate extends MY_Controller
                 $this->em->flush();
                 $data['success_message'] = lang('rr_entstate_updated');
             } catch (Exception $e) {
-                $data['error'] = 'Unkwown error occured during saving changes';
+                $data['error'] = 'Unknown error occurred during saving changes';
                 log_message('error', __METHOD__ . ' ' . $e);
             }
         }

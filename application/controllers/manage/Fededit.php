@@ -149,7 +149,7 @@ class Fededit extends MY_Controller
                 $data['titlepage'] = lang('rr_federation') . ': <a href="' . base_url() . 'federations/manage/show/' . $fedurl . '">' . html_escape($fedname) . '</a>';
             } catch (Exception $e) {
                 log_message('error', $e);
-                $data['error_message'] = 'Error occured';
+                $data['error_message'] = 'Error occurred';
             }
         } else {
 

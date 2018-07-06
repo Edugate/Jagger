@@ -127,7 +127,7 @@ class Auth extends MY_Controller
                 $this->session->sess_regenerate(true);
             }
         } catch (Exception $e) {
-            return $this->output->set_status_header(500)->set_output('Unknown error occured');
+            return $this->output->set_status_header(500)->set_output('Unknown error occurred');
         }
 
         return $this->output->set_status_header(200)->set_output('' . lang('userregreceived') . '');
@@ -142,7 +142,7 @@ class Auth extends MY_Controller
             show_error('Federated access is not enabled', 403);
         }
         if (empty($spsp['location']) || !file_exists($spsp['location'])) {
-            log_message('error', 'location of simeplsamlphp is not set or not exist. check config file and check $[simplesamlphp][location]');
+            log_message('error', 'location of simplesamlphp is not set or not exist. check config file and check $[simplesamlphp][location]');
             show_error('Server error', 500);
         }
 
@@ -166,15 +166,15 @@ class Auth extends MY_Controller
             if (is_array($attributes['' . $mapped['username'] . '']) && count($attributes['' . $mapped['username'] . '']) == 1) {
                 $username = reset($attributes['' . $mapped['username'] . '']);
                 if (empty($username)) {
-                    show_error('Missing atribute from IdP', 403);
+                    show_error('Missing attribute from IdP', 403);
                 }
             } else {
                 log_message('warning', 'Missing or multiple values found for attr: ' . $mapped['username'] . ' ');
                 show_error('Missing or multiple values found for attr', 403);
             }
         } else {
-            log_message('warning', 'Couldn find ' . $mapped['username'] . ' provider by simplesaml');
-            show_error('Missing atribute from IdP to map as username', 403);
+            log_message('warning', 'Couldnt find ' . $mapped['username'] . ' provided by simplesaml');
+            show_error('Missing attribute from IdP to map as username', 403);
         }
         $mail = null;
         if (!empty($attributes['' . $mapped['mail'] . ''])) {

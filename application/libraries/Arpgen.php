@@ -160,7 +160,7 @@ class Arpgen
     }
 
 
-    /// may contain unsuported attrs
+    /// may contain unsupported attrs
     public function genGlobal(\models\Provider $idp) {
         /**
          * @var $globals models\AttributeReleasePolicy[]
@@ -456,7 +456,7 @@ class Arpgen
                 }
             }
             if (count($spdets['final']) == 0) {
-                $xml->writeComment('Ommited requester: ' . $spdets['entityid'] . '');
+                $xml->writeComment('Omitted requester: ' . $spdets['entityid'] . '');
                 continue;
             }
 
@@ -471,7 +471,7 @@ class Arpgen
                 }
             }
             if (count($releases) == 0) {
-                $xml->writeComment('Ommited requester: ' . $spdets['entityid'] . '');
+                $xml->writeComment('Omitted requester: ' . $spdets['entityid'] . '');
                 continue;
             }
             $xml->writeComment('Requester: ' . $spdets['entityid'] . '');
@@ -708,7 +708,7 @@ class Arpgen
                 }
             }
             if (count($spdets['final']) == 0) {
-                $xml->writeComment('Ommited requester: ' . $spdets['entityid'] . '');
+                $xml->writeComment('Omitted requester: ' . $spdets['entityid'] . '');
                 continue;
             }
 
@@ -723,7 +723,7 @@ class Arpgen
                 }
             }
             if (count($releases) == 0) {
-                $xml->writeComment('Ommited requester: ' . $spdets['entityid'] . '');
+                $xml->writeComment('Omitted requester: ' . $spdets['entityid'] . '');
                 continue;
             }
             $xml->writeComment('Requester: ' . $spdets['entityid'] . '');

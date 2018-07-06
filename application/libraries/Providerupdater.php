@@ -1037,8 +1037,8 @@ class Providerupdater
         $type = $ent->getType();
         $isAdmin = $this->ci->jauth->isAdministrator();
 
-        $dissalowedparts = $this->getDisallowedParts();
-        log_message('debug', 'disallowedpart: ' . serialize($dissalowedparts));
+        $disallowedparts = $this->getDisallowedParts();
+        log_message('debug', 'disallowedpart: ' . serialize($disallowedparts));
 
 
         $extendChanges = array();
@@ -1061,7 +1061,7 @@ class Providerupdater
             /**
              * set scopes
              */
-            if (array_key_exists('scopes', $ch) && !in_array('scope', $dissalowedparts, true)) {
+            if (array_key_exists('scopes', $ch) && !in_array('scope', $disallowedparts, true)) {
                 $newScopesByType = array('idpsso' => array(), 'aa' => array());
                 foreach (array('idpsso', 'aa') as $scopeType) {
                     if (array_key_exists($scopeType, $ch['scopes']) && !empty($ch['scopes'][$scopeType])) {
@@ -1097,7 +1097,7 @@ class Providerupdater
         }
         if (array_key_exists('entityid', $ch) && !empty($ch['entityid'])) {
             if (!empty($entid)) {
-                if (strcmp($ent->getEntityId(), $ch['entityid']) != 0 && !in_array('entityid', $dissalowedparts, true)) {
+                if (strcmp($ent->getEntityId(), $ch['entityid']) != 0 && !in_array('entityid', $disallowedparts, true)) {
                     $changeList['EntityID'] = array('before' => $ent->getEntityId(), 'after' => $ch['entityid']);
                     $this->ci->tracker->renameProviderResourcename($ent->getEntityId(), $ch['entityid']);
                     $ent->setEntityId(trim($ch['entityid']));

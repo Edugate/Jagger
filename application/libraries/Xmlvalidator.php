@@ -66,7 +66,7 @@ class Xmlvalidator
         } else {
             if (!$xmlDOM->loadXML($xml)) {
                 $this->ci->globalerrors[] = 'Metadata validation: couldnt load xml document';
-                log_message('error', __METHOD__ . ' couldn load xml into DOMDocument');
+                log_message('error', __METHOD__ . ' couldnt load xml into DOMDocument');
 
                 return false;
             }

@@ -321,7 +321,7 @@ class MY_form_validation extends CI_form_validation
             $attr = 'sysname';
         } else {
             \log_message('error', __METHOD__ . ' missing argtype');
-            $this->set_message('federation_unique', 'error ocured during validation');
+            $this->set_message('federation_unique', 'error occurred during validation');
             return false;
         }
         $fed = $this->em->getRepository("models\Federation")->findOneBy(array('' . $attr . '' => $arg));

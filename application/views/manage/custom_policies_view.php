@@ -31,7 +31,7 @@ echo '<div class="small-3 column text-right">';
 echo form_label(''.lang('permdenvalues').'','values');
 echo '</div>';
 echo '<div class="small-9 column">';
-echo '<span class="label secondary">'.lang('rr_usecommaasdelimeter').';<b>note:</b> '.lang('rr_customattrscopednote').'</span>';
+echo '<span class="label secondary">'.lang('rr_usecommaasdelimiter').';<b>note:</b> '.lang('rr_customattrscopednote').'</span>';
 echo form_textarea(
       array('id'=>'values',
             'name'=>'values',
