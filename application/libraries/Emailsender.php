@@ -378,8 +378,8 @@ class Emailsender
     public function membershipStateChanged(\models\FederationMembers $membership) {
         $sbj = 'Membership status change';
         $body = 'Dear user,' . PHP_EOL .
-            'You have received this mail becuase ' . PHP_EOL .
-            'you email address is on the notification list' . PHP_EOL .
+            'You have received this mail because ' . PHP_EOL .
+            'your email address is on the notification list' . PHP_EOL .
             'User ' . $this->ci->jauth->getLoggedinUsername() . ' from ' . $this->ci->input->ip_address() .
             'has changed membership status: ' . PHP_EOL .
             'entityId: ' . html_escape($membership->getProvider()->getEntityId()) . PHP_EOL .
@@ -417,7 +417,7 @@ class Emailsender
             'your email address is on the notification list' . PHP_EOL .
             'User from ' . $this->ci->input->ip_address() .
             ' using federated access has applied for an account.' . PHP_EOL .
-            'Please review the request and make appriopriate ' .
+            'Please review the request and make appropriate ' .
             'action (reject/approve)' . PHP_EOL .
             'Details about the request: ' . base_url('reports/awaitinglist') . PHP_EOL;
 

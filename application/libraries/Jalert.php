@@ -73,7 +73,7 @@ class Jalert
                 if (isset($res['validTo_time_t'])) {
                     $cfingerprint = generateFingerprint($ncert, 'sha1');
                     if($res['validTo_time_t'] == -1) {
-                        $result[] = array('msg' => 'The crtificate (sha1: ' . $cfingerprint . ') expire time could not be calculated', 'level' => 'warning');
+                        $result[] = array('msg' => 'The certificate (sha1: ' . $cfingerprint . ') expire time could not be calculated', 'level' => 'warning');
                     } else {
                         $validto = new DateTime();
                         $validto->setTimestamp($res['validTo_time_t']);
@@ -82,7 +82,7 @@ class Jalert
                         if ($diffTimeStamp <= 0) {
                             $result[] = array('msg' => 'The certificate (sha1: ' . $cfingerprint . ') expired on: ' . $validto->format('Y-m-d H:i:s'), 'level' => 'alert');
                         } elseif ($diffTimeStamp < 2628000) { // will expire within month
-                            $result[] = array('msg' => 'The crtificate (sha1: ' . $cfingerprint . ') will expire on: ' . $validto->format('Y-m-d H:i:s'), 'level' => 'warning');
+                            $result[] = array('msg' => 'The certificate (sha1: ' . $cfingerprint . ') will expire on: ' . $validto->format('Y-m-d H:i:s'), 'level' => 'warning');
                         }
                     }
                 }

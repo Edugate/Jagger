@@ -1191,7 +1191,7 @@ class Formelement
             }
 
             $result[] = '';
-            $result[] = '<fieldset><legend>' . lang('atributeauthoritydescriptor') . '</legend>' . implode('', $aalo) . '</fieldset>';
+            $result[] = '<fieldset><legend>' . lang('attributeauthoritydescriptor') . '</legend>' . implode('', $aalo) . '</fieldset>';
             $result[] = '';
             /**
              * end AttributeAuthorityDescriptor Location

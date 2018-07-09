@@ -121,8 +121,8 @@ function cleanPEMToOneLine($value){
     return '';
 }
 
-// Get PEM formated certificate from quickform input
-// if raw is true, then ommit the begin/end certificate delimiter
+// Get PEM formatted certificate from quickform input
+// if raw is true, then omit the begin/end certificate delimiter
 function getPEM($value=null, $raw = false)
 {
     if(empty($value))

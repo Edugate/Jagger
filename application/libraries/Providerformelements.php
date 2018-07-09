@@ -17,7 +17,7 @@ class Providerformelements
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
         if (!is_array($params) || !isset($params['provider'])) {
-            throw new Exception('Missing paramss');
+            throw new Exception('Missing params');
         }
         $this->ent = $params['provider'];
         $this->ses = $params['session'];

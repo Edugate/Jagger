@@ -398,7 +398,7 @@ $lang['rr_keyname'] = 'KeyName';
 $lang['rr_fingerprint'] = 'Fingerprint';
 $lang['rr_certbody']='Cuerpo del certificado';
 $lang['rr_daystoexpire'] = 'días para expirar';
-$lang['rr_usecommaasdelimeter'] = 'usar coma como delimitador';
+$lang['rr_usecommaasdelimiter'] = 'usar coma como delimitador';
 $lang['rr_customattrscopednote'] = 'Si el atributo es de tipo \'Scoped\' y su IdP es Shibboleth, entonces use valores sin scope, ya que el IdP lo agregará posteriormente';
 
 $lang['rr_userslist'] = 'Lista de usuarios en el sistema';

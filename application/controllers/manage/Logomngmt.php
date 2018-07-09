@@ -197,7 +197,7 @@ class Logomngmt extends MY_Controller
             return $this->output->set_status_header(200)->set_output(lang('rr_logoisunsigned'));
         } catch (Exception $e) {
             log_message('error', __METHOD__ . ' ' . $e);
-            return $this->output->set_status_header(500)->set_output('Server Error occured');
+            return $this->output->set_status_header(500)->set_output('Server Error occurred');
         }
     }
 
@@ -295,7 +295,7 @@ class Logomngmt extends MY_Controller
 
             if (substr($upload_logos_path, 0, 1) == '/') {
                 log_message('error', 'upload_logos_path in you config must not begin with forward slash');
-                return $this->output->set_status_header(500)->set_output('System error ocurred');
+                return $this->output->set_status_header(500)->set_output('System error occurred');
             }
             $path = realpath(APPPATH . '../' . $upload_logos_path);
             $config = array(

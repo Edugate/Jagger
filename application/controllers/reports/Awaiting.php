@@ -431,7 +431,7 @@ class Awaiting extends MY_Controller
 
 
         } catch (Exception $e) {
-            $this->error_message = 'Error occured during storing data in database';
+            $this->error_message = 'Error occurred during storing data in database';
             log_message('error', __METHOD__ . ' ' . $e);
 
             return false;
@@ -709,7 +709,7 @@ class Awaiting extends MY_Controller
                         return $this->load->view(MY_Controller::$page, $data);
                     } catch (Exception $e) {
                         log_message('error', __METHOD__ . ' ' . $e);
-                        $data['error_message'] = 'Error occured';
+                        $data['error_message'] = 'Error occurred';
                         $data['content_view'] = 'error_message';
 
                         return $this->load->view(MY_Controller::$page, $data);
@@ -834,7 +834,7 @@ class Awaiting extends MY_Controller
                     return $this->load->view(MY_Controller::$page, $data);
                 } catch (Exception $e) {
                     log_message('error', __METHOD__ . ' ' . $e);
-                    $data = array('content_view' => 'error_message', 'error_message' => 'Problem occured');
+                    $data = array('content_view' => 'error_message', 'error_message' => 'Problem occurred');
 
                     return $this->load->view(MY_Controller::$page, $data);
                 }

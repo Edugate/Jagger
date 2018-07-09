@@ -188,20 +188,20 @@ class Subscriber extends MY_Controller
             $user = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $username . ''));
         }
         if ($user === null) {
-            return $this->output->set_status_header(403)->set_output('error occured');
+            return $this->output->set_status_header(403)->set_output('error occurred');
         }
         $isAdministator = $this->jauth->isAdministrator();
         $decodeduser = base64url_decode($encodeduser);
         $requetmatchuser = (boolean)(strcmp($username, $decodeduser) == 0);
         if (!($isAdministator || $requetmatchuser)) {
-            return $this->output->set_status_header(403)->set_output('mismatch error occured');
+            return $this->output->set_status_header(403)->set_output('mismatch error occurred');
         }
         if ($requetmatchuser) {
             $subscriber = $user;
         } else {
             $subscriber = $this->em->getRepository("models\User")->findOneBy(array('username' => '' . $decodeduser . ''));
             if (empty($subscriber)) {
-                return $this->output->set_status_header(403)->set_output('error occured');
+                return $this->output->set_status_header(403)->set_output('error occurred');
             }
         }
 

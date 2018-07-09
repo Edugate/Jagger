@@ -578,7 +578,7 @@ class Metadata2import
                     $duplicateControl[] = $r['name'];
                 }
             } else {
-                log_message('warning', 'Attr couldnt be set as required becuase doesnt exist in attrs table: ' . $r['name']);
+                log_message('warning', 'Attribute couldnt be set as required because it doesnt exist in attrs table: ' . $r['name']);
             }
         }
 
