@@ -112,7 +112,7 @@ class ServiceLocation {
 
     public function setUrl($url)
     {
-        $this->url = $url;
+        $this->url = htmlspecialchars_decode($url);
         return $this;
     }
 
@@ -150,7 +150,7 @@ class ServiceLocation {
 
     public function setRequestInitiator($url, $binding = NULL)
     {
-        $this->url = $url;
+        $this->setUrl($url);
         $this->type = 'RequestInitiator';
         if (empty($binding))
         {
@@ -167,7 +167,7 @@ class ServiceLocation {
     {
         $this->type = 'DiscoveryResponse';
         $this->bindingName = 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol';
-        $this->url = $url;
+        $this->setUrl($url);
         $this->ordered_no = $index;
         return $this;
     }
@@ -176,7 +176,7 @@ class ServiceLocation {
     {
         $this->type = $type;
         $this->bindingName = $bind;
-        $this->url = $url;
+        $this->setUrl($url);
         $this->ordered_no = $idx;
         return $this;
     }
