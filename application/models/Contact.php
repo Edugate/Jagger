@@ -48,7 +48,7 @@ class Contact
     /**
      * @Column(type="boolean", nullable=false)
      */
-    protected $issirtfi;
+    protected $issirfty;
 
     /**
      * @Column(type="string", length=24, nullable=true)
@@ -64,7 +64,7 @@ class Contact
 
 
     public function __construct() {
-        $this->issirtfi = false;
+        $this->issirfty = false;
     }
 
     // Begin generic set/get methods
@@ -114,7 +114,7 @@ class Contact
      * @return $this
      */
     public function setSirtfi($arg) {
-        $this->issirtfi = $arg;
+        $this->issirfty = $arg;
 
         return $this;
     }
@@ -136,7 +136,7 @@ class Contact
         $this->type = $contact->getType();
         $this->phone = $contact->getPhone();
         $this->email = $contact->getEmail();
-        $this->issirtfi = $contact->isSirtfi();
+        $this->issirfty = $contact->isSirtfi();
     }
 
     public function getId() {
@@ -177,7 +177,7 @@ class Contact
      * @return string
      */
     public function getTypeToForm() {
-        if ($this->issirtfi) {
+        if ($this->issirfty) {
             return 'other-sirtfi';
         }
 
@@ -188,7 +188,7 @@ class Contact
      * @return bool
      */
     public function isSirtfi() {
-        return $this->issirtfi;
+        return $this->issirfty;
     }
 
     public function setAllInfoNoProvider($fname, $sname, $type, $mail) {
@@ -197,7 +197,7 @@ class Contact
 
         if ($type === 'other-sirtfi') {
             $this->type = 'other';
-            $this->issirtfi = true;
+            $this->issirfty = true;
         } else {
             $this->type = $type;
         }
@@ -211,7 +211,7 @@ class Contact
         $this->givenname = $fname;
         if ($type === 'other-sirtfi') {
             $this->type = 'other';
-            $this->issirtfi = true;
+            $this->issirfty = true;
         } else {
             $this->type = $type;
         }
@@ -253,7 +253,7 @@ class Contact
      * @PostPersist
      */
     public function verifySirtfi() {
-        if ($this->issirtfi) {
+        if ($this->issirfty) {
             $this->type = 'other';
         }
 
