@@ -48,7 +48,7 @@ class Contact
     /**
      * @Column(type="boolean", nullable=false)
      */
-    protected $issirtfi
+    protected $issirtfi;
 
     /**
      * @Column(type="string", length=24, nullable=true)
