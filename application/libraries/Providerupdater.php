@@ -1061,7 +1061,9 @@ class Providerupdater
             /**
              * set scopes
              */
-            if (array_key_exists('scopes', $ch) && !in_array('scope', $disallowedparts, true)) {
+
+            if (array_key_exists('scopes', $ch)) {
+
                 $newScopesByType = array('idpsso' => array(), 'aa' => array());
                 foreach (array('idpsso', 'aa') as $scopeType) {
                     if (array_key_exists($scopeType, $ch['scopes']) && !empty($ch['scopes'][$scopeType])) {
@@ -1071,7 +1073,8 @@ class Providerupdater
                         $newScopesByType['' . $scopeType . ''] = array();
                     }
                 }
-                if (empty($entid)) {
+
+                if (empty($entid) || $isAdmin === true) {
                     foreach (array('idpsso', 'aa') as $scopeType) {
                         $origScopes = implode(',', $ent->getScope($scopeType));
                         if (array_key_exists($scopeType, $ch['scopes']) && !empty($ch['scopes'][$scopeType])) {
@@ -1087,13 +1090,16 @@ class Providerupdater
                         }
                     }
                 } else {
-                    $queueApplied = $this->ci->approval->applyForScopeChange($ent, $newScopesByType);
-                    if ($queueApplied === true) {
-                        $this->ci->emailsender->applyForEntityUpdate($ent, $newScopesByType);
+                    if (!in_array('scope', $disallowedparts, true)) {
+                        $queueApplied = $this->ci->approval->applyForScopeChange($ent, $newScopesByType);
+                        if ($queueApplied === true) {
+                            $this->ci->emailsender->applyForEntityUpdate($ent, $newScopesByType);
+                        }
                     }
-
                 }
             }
+
+
         }
         if (array_key_exists('entityid', $ch) && !empty($ch['entityid'])) {
             if (!empty($entid)) {
