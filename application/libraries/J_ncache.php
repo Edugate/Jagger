@@ -189,8 +189,7 @@ class J_ncache
      * @return bool
      */
     public function cleanMcirclceMeta($providerId) {
-        $this->ci->cache->delete('mcricle_' . $providerId . '');
-
+        $this->ci->cache->delete('mcircle_' . $providerId . '');
         return true;
     }
 
