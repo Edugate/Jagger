@@ -229,7 +229,7 @@ class Curl {
     public function execute() {
         // Set two default options, and merge any extra ones in
         if (!isset($this->options[CURLOPT_TIMEOUT]))
-            $this->options[CURLOPT_TIMEOUT] = 30;
+            $this->options[CURLOPT_TIMEOUT] = 60;
         if (!isset($this->options[CURLOPT_RETURNTRANSFER]))
             $this->options[CURLOPT_RETURNTRANSFER] = TRUE;
         if (!isset($this->options[CURLOPT_FAILONERROR]))
