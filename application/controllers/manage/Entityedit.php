@@ -774,7 +774,11 @@ class Entityedit extends MY_Controller
         $this->aascope = $ent->getScope('aa');
         $this->type = $ent->getType();
         $this->checkPermissions($id);
-        $data['jsAddittionalFiles'][] = 'https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places';
+        $apikey = '';
+        if($this->config->item('googlemapsapikey') !== null){
+            $apikey = 'key='.$this->config->item('googlemapsapikey').'&';
+        }
+        $data['jsAddittionalFiles'][] = 'https://maps.googleapis.com/maps/api/js?'.$apikey.'v=3&libraries=places';
 
 
         if ($this->input->post('discard')) {
@@ -880,9 +884,13 @@ class Entityedit extends MY_Controller
             'registerForm' => true,
             'error_messages2' => &$this->tmpError
         );
-        $data['jsAddittionalFiles'][] = 'https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places';
-
+        $apikey = '';
+        if($this->config->item('googlemapsapikey') !== null){
+            $apikey = 'key='.$this->config->item('googlemapsapikey').'&';
+        }
+        $data['jsAddittionalFiles'][] = 'https://maps.googleapis.com/maps/api/js?'.$apikey.'v=3&libraries=places';
         $t = trim($t);
+
         if (empty($t) || !(strcmp($t, 'idp') == 0 || strcmp($t, 'sp') == 0 || strcmp($t, 'both') == 0)) {
             show_error('Not found', 404);
         }
