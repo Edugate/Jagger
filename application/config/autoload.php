@@ -105,7 +105,6 @@ if ($jagger_docker === '1') {
 $autoload['language'] = array();
 
 
-
 /*
 | -------------------------------------------------------------------
 |  Auto-load Models
@@ -117,7 +116,6 @@ $autoload['language'] = array();
 */
 
 $autoload['model'] = array();
-
 
 /* End of file autoload.php */
 /* Location: ./application/config/autoload.php */

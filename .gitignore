@@ -19,6 +19,7 @@ application/vendor/*
 application/extplugins/*
 builder/node_modules/*
 builder/bower_components/*
+signedmetadata/*
 logos/*
 vendor/*
 !index.html

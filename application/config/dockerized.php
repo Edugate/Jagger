@@ -1,31 +1,38 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 /*
- *
+ * 
  */
 
-if(empty($config['base_url'])){
- $vhost =  getenv('VIRTUAL_HOST')?:getenv('HOSTNAME');
- $config['base_url'] = 'https://'.$vhost.'/rr3/';
+if (empty($config['base_url'])) {
+    $vhost = getenv('VIRTUAL_HOST') ?: getenv('HOSTNAME');
+    $config['base_url'] = 'https://' . $vhost . '/rr3/';
 }
 
 $config['rabbitmq'] = array(
-    'enabled' => true,
-    'vhost' => getenv('RABBITMQ_VHOST')?:'/',
-    'host'=>getenv('RABBITMQ_HOST')?:'rabbitmq',
-    'port'=> 5672,
-    'user'=>getenv('RABBITMQ_USER')?:'admin',
-    'password'=>getenv('RABBITMQ_PASS')?:'password'
+    'enabled'  => true,
+    'vhost'    => getenv('RABBITMQ_VHOST') ?: '/',
+    'host'     => getenv('RABBITMQ_HOST') ?: 'rabbitmq',
+    'port'     => 5672,
+    'user'     => getenv('RABBITMQ_USER') ?: 'admin',
+    'password' => getenv('RABBITMQ_PASS') ?: 'password'
 );
 
 $JAGGERSETUP = getenv('JAGGER_SETUP');
-if($JAGGERSETUP === true || $JAGGERSETUP === 'true')
-{
-   $config['rr_setup_allowed'] = true;
+if ($JAGGERSETUP === true || $JAGGERSETUP === 'true') {
+    $config['rr_setup_allowed'] = true;
 }
 
-$config['syncpass'] = getenv('JAGGER_SYNC_PASS')?:'';
-$config['log_path'] = getenv('JAGGER_LOGS')?: 'application/logs/';
+$config['syncpass'] = getenv('JAGGER_SYNC_PASS') ?: '';
+$config['log_path'] = getenv('JAGGER_LOGS') ?: 'application/logs/';
 
 $config['sess_driver'] = 'memcached';
-$MEMCACHED_HOST = getenv('MEMCACHE_HOST')?: 'localhost';
-$config['sess_save_path'] = ''.$MEMCACHED_HOST.':11211';
+$MEMCACHED_HOST = getenv('MEMCACHE_HOST') ?: 'localhost';
+$config['sess_save_path'] = '' . $MEMCACHED_HOST . ':11211';
+$jaggerlogo = getenv('JAGGER_LOGO');
+if ($jaggerlogo) {
+    $config['site_logo_url'] = $jaggerlogo;
+}
+if (getenv('BEHIND_PROXY') === '1') {
+    $config['proxy_ips'] = isset($_SERVER["REMOTE_ADDR"]) ? $_SERVER["REMOTE_ADDR"]
+        : '';
+}
