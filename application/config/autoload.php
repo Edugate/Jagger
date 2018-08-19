@@ -82,12 +82,18 @@ $autoload['helper'] = array('url', 'form', 'encoder', 'cert', 'random_generator'
 |
 */
 
-$autoload['config'] = array('config_rr', 'jcache', 'email');
+
+/**
+ * load additional config if it is docker instance
+ */
 $jagger_docker = getenv('JAGGER_DOCKER');
 if ($jagger_docker === '1') {
-    $autoload['config'][] = 'config_rr_override';
-    $autoload['config'][] = 'dockerized';
+    $autoload['config'] = array('config','config_rr', 'jcache', 'email', 'config_rr_override', 'dockerized');
+
+} else {
+    $autoload['config'] = array('config_rr', 'jcache', 'email');
 }
+
 
 /*
 | -------------------------------------------------------------------
@@ -116,6 +122,7 @@ $autoload['language'] = array();
 */
 
 $autoload['model'] = array();
+
 
 /* End of file autoload.php */
 /* Location: ./application/config/autoload.php */
