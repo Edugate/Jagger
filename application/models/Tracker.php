@@ -32,7 +32,7 @@ namespace models;
  */
 class Tracker {
 
-
+    protected $ci;
     /**
      * @Id
      * @Column(type="bigint", nullable=false)
@@ -85,6 +85,10 @@ class Tracker {
     protected $detail;
 
 
+    public function __construct() {
+        $this->ci = &get_instance();
+    }
+
     public function setResourceType($type = null)
     {
         $this->resourcetype = $type;
@@ -96,11 +100,6 @@ class Tracker {
         $this->resourcename = $name;
     }
 
-    public function setType($type = null)
-    {
-        $this->type = $type;
-        return $this;
-    }
 
     public function setSubType($subtype = null)
     {
@@ -179,11 +178,8 @@ class Tracker {
      */
     public function created()
     {
-        $this->createdAt = new \DateTime("now", new \DateTimeZone('UTC'));
-        if (isset($_SERVER['REMOTE_ADDR']))
-        {
-            $this->sourceip = $_SERVER['REMOTE_ADDR'];
-        }
+        $this->createdAt = new \DateTime('now', new \DateTimeZone('UTC'));
+        $this->sourceip = $this->ci->input->ip_address();
         if (isset($_SERVER['HTTP_USER_AGENT']))
         {
             $this->agent = substr($_SERVER['HTTP_USER_AGENT'],0,127);
