@@ -28,6 +28,15 @@ class Mdqsigner
 
 
 
+    public function storeMetadada($entityInSha, $xml){
+        $tmpStorageDir = '/opt/Jagger/signedmetadata/mdq';
+        $fullDirPath = $tmpStorageDir.'/'.$entityInSha;
+        if(!is_dir($fullDirPath) && !mkdir($fullDirPath) && !is_dir($fullDirPath)){
+            throw new Exception('hhhh');
+        }
+
+        file_put_contents($fullDirPath.'/metadata.xml',$xml);
+    }
     /**
      * @param $xml
      * @param null|array $signKey
@@ -99,7 +108,6 @@ class Mdqsigner
         $objDSig->appendSignature($doc->documentElement);
 
         // Save the signed XML
-
         return $doc->saveXML();
         //return false;
     }

@@ -56,6 +56,7 @@ if (!defined('BASEPATH')) {
  * @property Mq $mq
  * @property Gworkertemplates $gworkertemplates
  * @property Metadata2import $metadata2import
+ * @property Mdqsigner $mdqsigner
  */
 class MY_Controller extends CI_Controller
 {

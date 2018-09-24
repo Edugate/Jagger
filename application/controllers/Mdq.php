@@ -25,6 +25,7 @@ class Mdq extends MY_Controller
         if (null === $entity) {
             return $this->output->set_status_header(404)->set_output("Not found");
         }
+        $entityInSha = sha1($entity->getEntityId());
         $this->load->library('providertoxml');
         $this->load->library('mdqsigner');
         $options['attrs'] = 1;
@@ -57,9 +58,16 @@ class Mdq extends MY_Controller
 
         if ($unsignedMetadata !== null) {
 
-            $signeMetadata = $this->mdqsigner->signXML($unsignedMetadata, null);
+            try {
+                $signeMetadata = $this->mdqsigner->signXML($unsignedMetadata, null);
+            }
+            catch (Exception $e){
+                log_message('error',__METHOD__.' '.$e);
+                return $this->output->set_status_header(500)->set_output("Problem with signing");
+            }
+            $this->mdqsigner->storeMetadada($entityInSha,$signeMetadata);
             return $this->output->set_content_type('application/samlmetadata+xml')->set_output($signeMetadata);
-            //$this->load->view('metadata_view', array('out' => $signeMetadata));
+
 
         }
         return $this->output->set_status_header(404)->set_output("Not found");
@@ -102,39 +110,13 @@ class Mdq extends MY_Controller
 
     }
 
-    private function trustgraphjson() {
+    public function trustgraphjson() {
 
         $result = $this->trustgraph();
 
         return $this->output->set_content_type('application/json')->set_output(json_encode(array('providers' => $result)));
 
     }
-
-
-    private function generator() {
-
-
-        /**
-         * @var models\FederationMembers[] $allFedsMembers
-         */
-        $allFedsMembers = $this->em->getRepository('models\FederationMembers')->findAll();
-        $result = array();
-        foreach ($allFedsMembers as $m) {
-            if ($m->isBanned() === true || $m->isDisabled() === true || $m->getJoinState() === 2) {
-                continue;
-            }
-            if ($m->getProvider()->getAvailable() !== true) {
-                continue;
-            }
-            $sha1entity = sha1($m->getProvider()->getEntityId());
-            $result[$sha1entity][] = $m->getFederation()->getId();
-        }
-
-        return $result;
-
-
-    }
-
 
     private function getmdq($entityid){
 
