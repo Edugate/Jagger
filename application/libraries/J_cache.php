@@ -105,7 +105,7 @@ class J_cache
 		// Clean given arguments to a 0-index array
 		$arguments = array_values($arguments);
 
-		$cache_file = $property.DIRECTORY_SEPARATOR.do_hash($method.serialize($arguments), 'sha1');
+		$cache_file = $property.DIRECTORY_SEPARATOR.hash('sha1', $method.serialize($arguments));
 
 		// See if we have this cached or delete if $expires is negative
 		if($expires >= 0)
