@@ -126,7 +126,15 @@ class Mdq extends MY_Controller
         $this->genMetada($entity);
     }
 
-    public function circle($arg1 = null, $arg2 = null, $arg3 = null) {
+    public function circle($hash = null,$arg1 = null, $arg2 = null, $arg3 = null) {
+        $isSHA1 = false;
+
+        if(strtolower($hash) === 'sha1'){
+            $isSHA1 = true;
+        }
+        else if($hash !== 'nohash'){
+            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Page not found: incorrect hash type');
+        }
 
         $encodedEntityID = trim($arg1);
         if ($encodedEntityID === '') {
@@ -160,17 +168,10 @@ class Mdq extends MY_Controller
         /**
          *
          */
-        $isSHA1 = false;
-        $seg3Decoded = urldecode($arg3);
-       // echo $seg3Decoded.PHP_EOL;
-        if (strpos($seg3Decoded, '{sha1}') === 0) {
-            $isSHA1 = true;
-            $entityidInSHA = str_replace('{sha1}', '', $seg3Decoded);
-        }
-        else {
-            $entityidInSHA = sha1($seg3Decoded);
-        }
 
+        $seg3Decoded = urldecode($arg3);
+
+        $entityidInSHA = $seg3Decoded;
 
         $trust = $this->trustgraph();
         $feds1 = array();

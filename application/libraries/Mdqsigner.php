@@ -76,9 +76,13 @@ class Mdqsigner
 
         }
 
-
         $doc = new DOMDocument();
         $doc->loadXML($xml);
+        $mdqValidDays = $this->ci->config->item('mdq_validuntil_days')?: 5;
+
+        $validfor = new \DateTime('now', new \DateTimezone('UTC'));
+        $validfor->modify('+' . $mdqValidDays . ' day');
+        $doc->documentElement->setAttribute('validUntil',$validfor->format('Y-m-d\TH:i:s\Z'));
         $objDSig = new XMLSecurityDSig();
 
         $objDSig->setCanonicalMethod(XMLSecurityDSig::EXC_C14N);
@@ -86,7 +90,7 @@ class Mdqsigner
         $objDSig->addReference(
             $doc->documentElement,
             XMLSecurityDSig::SHA256,
-            array('http://www.w3.org/2000/09/xmldsig#enveloped-signature'), array('force_uri' => true,)
+            array('http://www.w3.org/2000/09/xmldsig#enveloped-signature'), array('force_uri' => false, 'id_name'=> 'ID')
         );
 
 
