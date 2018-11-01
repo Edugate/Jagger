@@ -21,7 +21,7 @@ class Mdq extends MY_Controller
      * @param \models\Provider $entity
      * @return CI_Output
      */
-    private function genMetada(\models\Provider $entity){
+    private function    genMetada(\models\Provider $entity) {
         if (null === $entity) {
             return $this->output->set_status_header(404)->set_output("Not found");
         }
@@ -60,52 +60,35 @@ class Mdq extends MY_Controller
 
             try {
                 $signeMetadata = $this->mdqsigner->signXML($unsignedMetadata, null);
-            }
-            catch (Exception $e){
-                log_message('error',__METHOD__.' '.$e);
+            } catch (Exception $e) {
+                log_message('error', __METHOD__ . ' ' . $e);
+
                 return $this->output->set_status_header(500)->set_output("Problem with signing");
             }
-            $this->mdqsigner->storeMetadada($entityInSha,$signeMetadata);
+            $this->mdqsigner->storeMetadada($entityInSha, $signeMetadata);
+
             return $this->output->set_content_type('application/samlmetadata+xml')->set_output($signeMetadata);
 
 
         }
+
         return $this->output->set_status_header(404)->set_output("Not found");
 
     }
 
 
-    private function trustgraph(){
+    private function trustgraph() {
         $this->load->library('j_ncache');
-        $cached = $this->j_ncache->getTrustGraph();
-        if($cached) {
+        $this->load->library('trustgraph');
+        $cached = null;
+        //$cached = $this->j_ncache->getTrustGraph();
+        if ($cached) {
             return $cached;
         }
 
-        /**
-         * @var models\FederationMembers[] $allFedsMembers
-         */
-        $allFedsMembers = $this->em->getRepository('models\FederationMembers')->findAll();
-        $result = array();
-        foreach ($allFedsMembers as $m) {
-            if ($m->isBanned() === true || $m->isDisabled() === true || $m->getJoinState() === 2) {
-                continue;
-            }
-            if ($m->getProvider()->getAvailable() !== true) {
-                continue;
-            }
-            $entityID = $m->getProvider()->getEntityId();
-            $sha1entity = sha1($entityID);
-            if(!array_key_exists($sha1entity,$result)){
-                 $result[$sha1entity] = array();
-            }
-
-            if(!array_key_exists('entityid',$result[$sha1entity])){
-                $result[$sha1entity]['entityid'] = $entityID;
-            }
-            $result[$sha1entity]['feds'][] = $m->getFederation()->getId();
-        }
+        $result = $this->trustgraph->genTrustLight();
         $this->j_ncache->saveTrustGraph($result);
+
         return $result;
 
     }
@@ -118,7 +101,7 @@ class Mdq extends MY_Controller
 
     }
 
-    private function getmdq($entityid){
+    private function getmdq($entityid) {
 
 
         $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityid));
@@ -126,13 +109,12 @@ class Mdq extends MY_Controller
         $this->genMetada($entity);
     }
 
-    public function circle($hash = null,$arg1 = null, $arg2 = null, $arg3 = null) {
+    public function circle($hash = null, $arg1 = null, $arg2 = null, $arg3 = null) {
         $isSHA1 = false;
 
-        if(strtolower($hash) === 'sha1'){
+        if (strtolower($hash) === 'sha1') {
             $isSHA1 = true;
-        }
-        else if($hash !== 'nohash'){
+        } else if ($hash !== 'nohash') {
             return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Page not found: incorrect hash type');
         }
 
@@ -146,7 +128,7 @@ class Mdq extends MY_Controller
 
         $entityID = base64url_decode($encodedEntityID);
 
-       // echo $entityID.PHP_EOL;
+        // echo $entityID.PHP_EOL;
         /**
          * @var $provider models\Provider
          */
@@ -170,25 +152,25 @@ class Mdq extends MY_Controller
          */
 
         $seg3Decoded = urldecode($arg3);
-
-        $entityidInSHA = $seg3Decoded;
+        
+        $entityidInSHA = sha1($seg3Decoded);
 
         $trust = $this->trustgraph();
         $feds1 = array();
 
-        if(array_key_exists(sha1($provider->getEntityId()), $trust)){
-            $feds1 = $trust[''.sha1($provider->getEntityId()).'']['feds'];
+        if (array_key_exists(sha1($provider->getEntityId()), $trust)) {
+            $feds1 = $trust['' . sha1($provider->getEntityId()) . '']['feds'];
         }
         $feds2 = array();
-        if(array_key_exists($entityidInSHA,$trust)){
-            $feds2 = $trust[''.$entityidInSHA.'']['feds'];
+        if (array_key_exists($entityidInSHA, $trust)) {
+            $feds2 = $trust['' . $entityidInSHA . '']['feds'];
         }
 
-        $fedIntersection = array_intersect($feds1,$feds2);
+        $fedIntersection = array_intersect($feds1, $feds2);
 
 
-        if(count($fedIntersection) === 0){
-            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Metadata not found ::: (no trust between '.html_escape($entityID).' and '.html_escape("{SHA1}".$entityidInSHA).')');
+        if (count($fedIntersection) === 0) {
+            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Metadata not found ::: (no trust between ' . html_escape($entityID) . ' and ' . html_escape("{SHA1}" . $entityidInSHA) . ')');
         }
 
 

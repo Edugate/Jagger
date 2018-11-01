@@ -57,6 +57,7 @@ if (!defined('BASEPATH')) {
  * @property Gworkertemplates $gworkertemplates
  * @property Metadata2import $metadata2import
  * @property Mdqsigner $mdqsigner
+ * @property Trustgraph $trustgraph
  */
 class MY_Controller extends CI_Controller
 {
