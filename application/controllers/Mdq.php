@@ -12,8 +12,23 @@ if (!defined('BASEPATH')) {
  */
 class Mdq extends MY_Controller
 {
+    protected static $metaPaths;
+    protected static $prefixPath = "/opt/Jagger/";
     public function __construct() {
         parent::__construct();
+        $this->load->library('mdqsigner');
+        self::$metaPaths = array(
+            'circle' => 'signedmetadata/mdq/circle/',
+            'entity' => 'signedmetadata/mdq/entity/',
+            'federation' => 'signedmetadata/mdq/federation/'
+        );
+    }
+
+    /**
+     * @return bool
+     */
+    private function isFeatureEnabled(){
+        return true;
     }
 
 
@@ -21,13 +36,12 @@ class Mdq extends MY_Controller
      * @param \models\Provider $entity
      * @return CI_Output
      */
-    private function    genMetada(\models\Provider $entity) {
+    private function genMetada(\models\Provider $entity) {
         if (null === $entity) {
             return $this->output->set_status_header(404)->set_output("Not found");
         }
         $entityInSha = sha1($entity->getEntityId());
-        $this->load->library('providertoxml');
-        $this->load->library('mdqsigner');
+        $this->load->library(array('providertoxml','mdqsigner'));
         $options['attrs'] = 1;
         $isStatic = $entity->isStaticMetadata();
         $unsignedMetadata = null;
@@ -65,7 +79,12 @@ class Mdq extends MY_Controller
 
                 return $this->output->set_status_header(500)->set_output("Problem with signing");
             }
-            $this->mdqsigner->storeMetadada($entityInSha, $signeMetadata);
+            try {
+                $this->mdqsigner->storeMetadada($entityInSha, $signeMetadata);
+            }
+            catch (Exception $e){
+                log_message('ERROR', __METHOD__.' '.$e);
+            }
 
             return $this->output->set_content_type('application/samlmetadata+xml')->set_output($signeMetadata);
 
@@ -78,19 +97,14 @@ class Mdq extends MY_Controller
 
 
     private function trustgraph() {
-        $this->load->library('j_ncache');
-        $this->load->library('trustgraph');
-        $cached = null;
-        //$cached = $this->j_ncache->getTrustGraph();
-        if ($cached) {
+        $this->load->library(array('j_ncache','trustgraph'));
+        $cached = $this->j_ncache->getTrustGraph();
+        if (is_array($cached)) {
             return $cached;
         }
-
         $result = $this->trustgraph->genTrustLight();
         $this->j_ncache->saveTrustGraph($result);
-
         return $result;
-
     }
 
     public function trustgraphjson() {
@@ -101,8 +115,21 @@ class Mdq extends MY_Controller
 
     }
 
+    private function validForInSecs($days){
+        return (86400 * $days);
+    }
+
     private function getmdq($entityid) {
 
+        $this->load->library('mdqsigner');
+        $metadata = $this->mdqsigner->getStoredMetadata(sha1($entityid));
+        if(null !== $metadata){
+            $now = new \DateTime('now', new \DateTimezone('UTC'));
+            $diff = (int) $now->format('U') - (int) $metadata['modified'];
+            if($diff < $this->validForInSecs(2)) {
+                return $this->output->set_content_type('application/samlmetadata+xml')->set_output($metadata['metadata']);
+            }
+        }
 
         $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityid));
 
@@ -110,6 +137,14 @@ class Mdq extends MY_Controller
     }
 
     public function circle($hash = null, $arg1 = null, $arg2 = null, $arg3 = null) {
+
+
+        $mpaths = Mdqsigner::getMdqStoragePaths();
+
+        if(!$this->isFeatureEnabled()){
+            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Page not found: MDQ is not enabled');
+        }
+
         $isSHA1 = false;
 
         if (strtolower($hash) === 'sha1') {
@@ -145,15 +180,22 @@ class Mdq extends MY_Controller
 
         if (trim($arg3) === '') {
 
-            return $this->output->set_status_header(301)->set_header('Location: ' . base_url('signedmetadata/provider/' . $arg1 . '/metadata.xml') . '');
+
+            return $this->output->set_status_header(301)->set_header('Location: ' . base_url($mpaths['entity']. $arg1 . '/metadata.xml') . '');
         }
         /**
          *
          */
 
-        $seg3Decoded = urldecode($arg3);
-        
-        $entityidInSHA = sha1($seg3Decoded);
+        if($isSHA1){
+            $entityidInSHA  = $arg3;
+        }
+        else {
+            $seg3Decoded = urldecode($arg3);
+
+            $entityidInSHA = sha1($seg3Decoded);
+        }
+
 
         $trust = $this->trustgraph();
         $feds1 = array();
@@ -173,10 +215,8 @@ class Mdq extends MY_Controller
             return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Metadata not found ::: (no trust between ' . html_escape($entityID) . ' and ' . html_escape("{SHA1}" . $entityidInSHA) . ')');
         }
 
-
         $metadaEntityID = $trust[$entityidInSHA]['entityid'];
         $this->getmdq($metadaEntityID);
-
     }
 
     public function federation($seg1 = null, $seg2 = null, $seg3 = null) {
