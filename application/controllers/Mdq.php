@@ -28,7 +28,8 @@ class Mdq extends MY_Controller
      * @return bool
      */
     private function isFeatureEnabled(){
-        return true;
+        $isEnabled = $this->config->item('mdq')?: false;
+        return $isEnabled;
     }
 
 
@@ -131,18 +132,23 @@ class Mdq extends MY_Controller
             }
         }
 
-        $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityid));
+        try {
+            $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityid));
+        }
+        catch (Exception $e){
+            log_message('ERROR',__METHOD__.': '.$e);
+            return $this->output->set_status_header(500)->set_output('Internal server error');
+        }
 
         $this->genMetada($entity);
     }
 
     public function circle($hash = null, $arg1 = null, $arg2 = null, $arg3 = null) {
-
-        $mpaths = $this->mdqsigner->getMdqStoragePaths();
+        
         if(!$this->isFeatureEnabled()){
             return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Page not found: MDQ is not enabled');
         }
-
+        $mpaths = $this->mdqsigner->getMdqStoragePaths();
         $isSHA1 = false;
 
         if (strtolower($hash) === 'sha1') {
@@ -215,7 +221,15 @@ class Mdq extends MY_Controller
         $metadaEntityID = $trust[$entityidInSHA]['entityid'];
         $this->getmdq($metadaEntityID);
     }
-    public function federation($seg1 = null, $seg2 = null, $seg3 = null) {
+
+    /**
+     * @todo finish
+     * @param null $seg1
+     * @param null $seg2
+     * @param null $seg3
+     * @return CI_Output
+     */
+    private function federation($seg1 = null, $seg2 = null, $seg3 = null) {
 
         if (trim($seg1) === '') {
             return $this->output->set_status_header(404)->set_output("Not found");

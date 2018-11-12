@@ -39,4 +39,10 @@ if(getenv('BEHIND_PROXY') === '1')
 	   $config['proxy_ips'] = isset($_SERVER["REMOTE_ADDR"]) ? $_SERVER["REMOTE_ADDR"]  
 		           : '';
 }
+$JAGGERMDQ = getenv('JAGGER_MDQ');
+if($JAGGERMDQ === 1 || $JAGGERMDQ === '1')
+{
+   $config['mdq'] = true;
+}
+
 
