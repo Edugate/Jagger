@@ -12,16 +12,23 @@ if (!defined('BASEPATH')) {
  */
 class Mdq extends MY_Controller
 {
+    protected $metadataNS;
     public function __construct() {
         parent::__construct();
-        $this->load->library('mdqsigner');
+        $this->metadataNS = h_metadataNamespaces();
+        $additionalNs = $this->config->item('metadatans');
+        if (is_array($additionalNs)) {
+            $this->metadataNS = array_merge($this->metadataNS, $additionalNs);
+        }
+        $this->load->library(array('mdqsigner','providertoxml'));
     }
 
     /**
      * @return bool
      */
-    private function isFeatureEnabled(){
-        $isEnabled = $this->config->item('mdq')?: false;
+    private function isFeatureEnabled() {
+        $isEnabled = $this->config->item('mdq') ?: false;
+
         return $isEnabled;
     }
 
@@ -75,9 +82,8 @@ class Mdq extends MY_Controller
             }
             try {
                 $this->mdqsigner->storeMetadada($entityInSha, $signeMetadata);
-            }
-            catch (Exception $e){
-                log_message('ERROR', __METHOD__.' '.$e);
+            } catch (Exception $e) {
+                log_message('ERROR', __METHOD__ . ' ' . $e);
             }
 
             return $this->output->set_content_type('application/samlmetadata+xml')->set_output($signeMetadata);
@@ -91,13 +97,14 @@ class Mdq extends MY_Controller
 
 
     private function trustgraph() {
-        $this->load->library(array('j_ncache','trustgraph'));
+        $this->load->library(array('j_ncache', 'trustgraph'));
         $cached = $this->j_ncache->getTrustGraph();
         if (is_array($cached)) {
             return $cached;
         }
         $result = $this->trustgraph->genTrustLight();
         $this->j_ncache->saveTrustGraph($result);
+
         return $result;
     }
 
@@ -109,7 +116,7 @@ class Mdq extends MY_Controller
 
     }
 
-    private function validForInSecs($days){
+    private function validForInSecs($days) {
         return (86400 * $days);
     }
 
@@ -117,19 +124,19 @@ class Mdq extends MY_Controller
 
 
         $metadata = $this->mdqsigner->getStoredMetadata(sha1($entityid));
-        if(null !== $metadata){
+        if (null !== $metadata) {
             $now = new \DateTime('now', new \DateTimezone('UTC'));
-            $diff = (int) $now->format('U') - (int) $metadata['modified'];
-            if($diff < $this->validForInSecs(2)) {
+            $diff = (int)$now->format('U') - (int)$metadata['modified'];
+            if ($diff < $this->validForInSecs(2)) {
                 return $this->output->set_content_type('application/samlmetadata+xml')->set_output($metadata['metadata']);
             }
         }
 
         try {
             $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityid));
-        }
-        catch (Exception $e){
-            log_message('ERROR',__METHOD__.': '.$e);
+        } catch (Exception $e) {
+            log_message('ERROR', __METHOD__ . ': ' . $e);
+
             return $this->output->set_status_header(500)->set_output('Internal server error');
         }
 
@@ -137,8 +144,8 @@ class Mdq extends MY_Controller
     }
 
     public function circle($hash = null, $arg1 = null, $arg2 = null, $arg3 = null) {
-        
-        if(!$this->isFeatureEnabled()){
+
+        if (!$this->isFeatureEnabled()) {
             return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Page not found: MDQ is not enabled');
         }
         $mpaths = $this->mdqsigner->getMdqStoragePaths();
@@ -178,16 +185,15 @@ class Mdq extends MY_Controller
         if (trim($arg3) === '') {
 
 
-            return $this->output->set_status_header(301)->set_header('Location: ' . base_url($mpaths['entity']. $arg1 . '/metadata.xml') . '');
+            return $this->output->set_status_header(301)->set_header('Location: ' . base_url($mpaths['entity'] . $arg1 . '/metadata.xml') . '');
         }
         /**
          *
          */
 
-        if($isSHA1){
-            $entityidInSHA  = $arg3;
-        }
-        else {
+        if ($isSHA1) {
+            $entityidInSHA = $arg3;
+        } else {
             $seg3Decoded = urldecode($arg3);
 
             $entityidInSHA = sha1($seg3Decoded);
@@ -213,6 +219,43 @@ class Mdq extends MY_Controller
 
         $metadaEntityID = $trust[$entityidInSHA]['entityid'];
         $this->getmdq($metadaEntityID);
+    }
+
+
+    private function regenerateStatic(models\Provider $entity) {
+
+        $standardNS = h_metadataNamespaces();
+
+        $xmlOut = $this->providertoxml->createXMLDocument();
+        $this->providertoxml->entityStaticConvert($xmlOut, $entity);
+        $xmlOut->endDocument();
+
+
+        $outPut = $xmlOut->outputMemory();
+        $domXML = new DOMDocument();
+
+        $domXML->loadXML($outPut, LIBXML_NOERROR | LIBXML_NOWARNING);
+        $xpath = new DOMXPath($domXML);
+        $xpath->registerNamespace('', 'urn:oasis:names:tc:SAML:2.0:metadata');
+        foreach ($standardNS as $key => $val) {
+            $xpath->registerNamespace('' . $key . '', '' . $val . '');
+        }
+        /**
+         * @var \DOMElement $element
+         */
+        $element = $domXML->getElementsByTagName('EntityDescriptor')->item(0);
+        if ($element === null) {
+            $element = $domXML->getElementsByTagName('md:EntityDescriptor')->item(0);
+        }
+        if ($element !== null) {
+            $element->setAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
+            foreach ($standardNS as $key => $val) {
+                $element->setAttribute('xmlns:' . $key . '', '' . $val . '');
+            }
+        }
+        $out = $domXML->saveXML();
+
+        return $out;
     }
 
     /**
