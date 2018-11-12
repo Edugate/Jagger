@@ -18,18 +18,22 @@ class Mdqsigner
 {
     protected $ci;
     protected $em;
+    protected $metaPaths;
 
     public function __construct() {
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
+        $this->metaPaths = $this->getMdqStoragePaths();
     }
 
-    public static function getMdqStoragePaths() {
-        $prefix = '/opt/Jagger/';
+    public function getMdqStoragePaths(){
+
+
+        $prefix = dirname(APPPATH);
         $metaPaths = array(
-            'circle'     => $prefix.'signedmetadata/mdq/circle/',
-            'entity'     => $prefix.'signedmetadata/mdq/entity/',
-            'federation' => $prefix.'signedmetadata/mdq/federation/'
+            'circle'     => $prefix.'/signedmetadata/mdq/circle/',
+            'entity'     => $prefix.'/signedmetadata/mdq/entity/',
+            'federation' => $prefix.'/signedmetadata/mdq/federation/'
         );
         return $metaPaths;
     }
@@ -39,8 +43,8 @@ class Mdqsigner
 
         $modtime = new \DateTime('now', new \DateTimezone('UTC'));
 
-        $tmpStorageDir = '/opt/Jagger/signedmetadata/mdq/entity';
-        $filePath = $tmpStorageDir . '/' . $entityInSha . '/metadata.xml';
+        $tmpStorageDir = $this->metaPaths['entity'];
+        $filePath = $tmpStorageDir . '' . $entityInSha . '/metadata.xml';
         $result = array();
         if (is_file($filePath)) {
 
@@ -54,8 +58,9 @@ class Mdqsigner
     }
 
     public function storeMetadada($entityInSha, $xml) {
-        $tmpStorageDir = '/opt/Jagger/signedmetadata/mdq/entity';
-        $fullDirPath = $tmpStorageDir . '/' . $entityInSha;
+         $tmpStorageDir = $this->metaPaths['entity'];
+        //$tmpStorageDir = '/opt/Jagger/signedmetadata/mdq/entity';
+        $fullDirPath = $tmpStorageDir . '' . $entityInSha;
         if (!is_dir($fullDirPath) && !mkdir($fullDirPath, 0777, true) && !is_dir($fullDirPath)) {
             throw new Exception('hhhh');
         }

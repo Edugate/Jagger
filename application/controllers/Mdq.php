@@ -138,9 +138,7 @@ class Mdq extends MY_Controller
 
     public function circle($hash = null, $arg1 = null, $arg2 = null, $arg3 = null) {
 
-
-        $mpaths = Mdqsigner::getMdqStoragePaths();
-
+        $mpaths = $this->mdqsigner->getMdqStoragePaths();
         if(!$this->isFeatureEnabled()){
             return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Page not found: MDQ is not enabled');
         }
@@ -196,7 +194,6 @@ class Mdq extends MY_Controller
             $entityidInSHA = sha1($seg3Decoded);
         }
 
-
         $trust = $this->trustgraph();
         $feds1 = array();
 
@@ -218,7 +215,6 @@ class Mdq extends MY_Controller
         $metadaEntityID = $trust[$entityidInSHA]['entityid'];
         $this->getmdq($metadaEntityID);
     }
-
     public function federation($seg1 = null, $seg2 = null, $seg3 = null) {
 
         if (trim($seg1) === '') {
