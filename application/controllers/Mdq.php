@@ -12,16 +12,9 @@ if (!defined('BASEPATH')) {
  */
 class Mdq extends MY_Controller
 {
-    protected static $metaPaths;
-    protected static $prefixPath = "/opt/Jagger/";
     public function __construct() {
         parent::__construct();
         $this->load->library('mdqsigner');
-        self::$metaPaths = array(
-            'circle' => 'signedmetadata/mdq/circle/',
-            'entity' => 'signedmetadata/mdq/entity/',
-            'federation' => 'signedmetadata/mdq/federation/'
-        );
     }
 
     /**
@@ -42,7 +35,7 @@ class Mdq extends MY_Controller
             return $this->output->set_status_header(404)->set_output("Not found");
         }
         $entityInSha = sha1($entity->getEntityId());
-        $this->load->library(array('providertoxml','mdqsigner'));
+        $this->load->library(array('providertoxml'));
         $options['attrs'] = 1;
         $isStatic = $entity->isStaticMetadata();
         $unsignedMetadata = null;
@@ -122,7 +115,7 @@ class Mdq extends MY_Controller
 
     private function getmdq($entityid) {
 
-        $this->load->library('mdqsigner');
+
         $metadata = $this->mdqsigner->getStoredMetadata(sha1($entityid));
         if(null !== $metadata){
             $now = new \DateTime('now', new \DateTimezone('UTC'));
