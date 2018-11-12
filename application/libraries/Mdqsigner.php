@@ -85,7 +85,7 @@ class Mdqsigner
             $certFile = $keyStorage . '/' . $keyStorageSeg1 . '/public.crt';
             $privKeyFile = $keyStorage . '/' . $keyStorageSeg1 . '/priv.key';
             if (file_exists($keyStorage . '/' . $keyStorageSeg1 . '/priv.pass')) {
-                $privKeyPassword = file_get_contents($keyStorage . '/' . $keyStorageSeg1 . '/priv.pass');
+                $privKeyPassword = trim(file_get_contents($keyStorage . '/' . $keyStorageSeg1 . '/priv.pass'));
             }
 
         } else {
@@ -102,7 +102,7 @@ class Mdqsigner
             if (isset($signKey['password'])) {
                 $privKeyPassword = $signKey['password'];
             } elseif (isset($signKey['passwordfile'])) {
-                $privKeyPassword = file_get_contents($keyStorage . '/' . $signKey['dir'] . '/' . $signKey['passwordfile']);
+                $privKeyPassword = trim(file_get_contents($keyStorage . '/' . $signKey['dir'] . '/' . $signKey['passwordfile']));
             }
 
         }
