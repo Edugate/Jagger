@@ -27,6 +27,16 @@ class Providers
         $this->providers = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
+    public function getTrustgraph(){
+        $currentTime = new \DateTime("now", new \DateTimeZone('UTC'));
+        $query = $this->em->createQuery("
+        SELECT partial p.{id,entityid},m, partial f.{id} FROM models\Provider p LEFT JOIN p.membership m  LEFT JOIN m.federation f WHERE    p.is_active = '1' AND p.is_approved = '1' AND (p.validto is null OR p.validto >= :now) AND (p.validfrom is null OR p.validfrom <= :now) AND m.joinstate != '2' AND m.isDisabled = '0' AND m.isBanned='0' AND f.is_active = '1'
+        
+        ");
+        $query->setParameter('now', $currentTime);
+        $query->setHint(\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD, true);
+        return $query->getResult();
+    }
 
     public function getTrustedActiveFeds(Provider $provider) {
         $feds = new \Doctrine\Common\Collections\ArrayCollection();

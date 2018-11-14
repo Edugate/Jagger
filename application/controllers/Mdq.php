@@ -102,9 +102,8 @@ class Mdq extends MY_Controller
         if (is_array($cached)) {
             return $cached;
         }
-        $result = $this->trustgraph->genTrustLight();
+        $result = $this->trustgraph->getTrustGraphLight();
         $this->j_ncache->saveTrustGraph($result);
-
         return $result;
     }
 

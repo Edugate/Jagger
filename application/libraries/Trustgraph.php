@@ -12,30 +12,21 @@ class Trustgraph
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
     }
+    public function getTrustGraphLight(){
 
-    public function genTrustLight(){
-        /**
-         * @var models\FederationMembers[] $allFedsMembers
-         */
-        $allFedsMembers = $this->em->getRepository('models\FederationMembers')->findAll();
-        $result = array();
-        foreach ($allFedsMembers as $m) {
-            if ($m->isBanned() === true || $m->isDisabled() === true || $m->getJoinState() === 2) {
-                continue;
-            }
-            if ($m->getProvider()->getAvailable() !== true) {
-                continue;
-            }
-            $entityID = $m->getProvider()->getEntityId();
+        $providers = new models\Providers();
+        $query = $providers->getTrustgraph();
+        $result = [];
+        foreach ($query as $q){
+            $entityID = $q->getEntityId();
             $sha1entity = sha1($entityID);
-            if (!array_key_exists($sha1entity, $result)) {
-                $result[$sha1entity] = array();
+            $result[$sha1entity] = array(
+                'entityid' => $entityID,
+                'feds'=>[]);
+            $feds = $q->getMembership();
+            foreach ($feds as $f){
+               $result[$sha1entity]['feds'][] = $f->getFederation()->getId();
             }
-
-            if (!array_key_exists('entityid', $result[$sha1entity])) {
-                $result[$sha1entity]['entityid'] = $entityID;
-            }
-            $result[$sha1entity]['feds'][] = $m->getFederation()->getId();
         }
         return $result;
     }
