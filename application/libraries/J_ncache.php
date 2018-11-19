@@ -298,7 +298,6 @@ class J_ncache
     {
         $cacheid = 'discof';
         $this->ci->cache->save($cacheid, $data, 12000);
-
         return true;
     }
 

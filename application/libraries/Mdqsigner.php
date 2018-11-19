@@ -68,6 +68,102 @@ class Mdqsigner
         file_put_contents($fullDirPath . '/metadata.xml', $xml);
     }
 
+
+    public function getEntity($entityid){
+        /**
+         * @var $entity \models\Provider
+         */
+        $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityid));
+        return $entity;
+    }
+
+
+
+
+    private function regenerateStatic(models\Provider $entity) {
+
+        $standardNS = h_metadataNamespaces();
+
+        $xmlOut = $this->ci->providertoxml->createXMLDocument();
+        $this->ci->providertoxml->entityStaticConvert($xmlOut, $entity);
+        $xmlOut->endDocument();
+
+
+        $outPut = $xmlOut->outputMemory();
+        $domXML = new DOMDocument();
+
+        $domXML->loadXML($outPut, LIBXML_NOERROR | LIBXML_NOWARNING);
+        $xpath = new DOMXPath($domXML);
+        $xpath->registerNamespace('', 'urn:oasis:names:tc:SAML:2.0:metadata');
+        foreach ($standardNS as $key => $val) {
+            $xpath->registerNamespace('' . $key . '', '' . $val . '');
+        }
+        /**
+         * @var \DOMElement $element
+         */
+        $element = $domXML->getElementsByTagName('EntityDescriptor')->item(0);
+        if ($element === null) {
+            $element = $domXML->getElementsByTagName('md:EntityDescriptor')->item(0);
+        }
+        if ($element !== null) {
+            $element->setAttribute('xmlns', 'urn:oasis:names:tc:SAML:2.0:metadata');
+            foreach ($standardNS as $key => $val) {
+                $element->setAttribute('xmlns:' . $key . '', '' . $val . '');
+            }
+        }
+        return $domXML->saveXML();
+    }
+
+    /**
+     * @param \models\Provider $entity
+     * @return CI_Output
+     */
+    private function genMetadata(\models\Provider $entity) {
+        $entityInSha = sha1($entity->getEntityId());
+        $this->ci->load->library(array('providertoxml'));
+        $options['attrs'] = 1;
+        $isStatic = $entity->isStaticMetadata();
+        $unsignedMetadata = null;
+        /**
+         * @var \XMLWriter $xmlOut
+         */
+        if ($isStatic) {
+            $unsignedMetadata = $this->regenerateStatic($entity);
+        } else {
+            $xmlOut = $this->ci->providertoxml->entityConvertNewDocument($entity, $options);
+            if (!empty($xmlOut)) {
+                $unsignedMetadata = $xmlOut->outputMemory();
+            } else {
+                throw new Exception("Empty xmlout");
+            }
+        }
+
+        if ($unsignedMetadata !== null) {
+            try {
+                $signeMetadata = $this->signXML($unsignedMetadata, null);
+            } catch (Exception $e) {
+                log_message('error', __METHOD__ . ' ' . $e);
+                throw new Exception($e);
+            }
+            try {
+                $this->storeMetadada($entityInSha, $signeMetadata);
+            } catch (Exception $e) {
+                log_message('ERROR', __METHOD__ . ' ' . $e);
+            }
+            return $signeMetadata;
+        }
+        throw new Exception("empty metadata");
+    }
+
+
+    public function sign($entityid){
+        $entity = $this->getEntity($entityid);
+        $unsignedMetadata = $this->genMetadata($entity);
+        $this->signXML($unsignedMetadata);
+        return true;
+    }
+
+
     /**
      * @param $xml
      * @param null|array $signKey
