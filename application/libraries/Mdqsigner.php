@@ -61,8 +61,11 @@ class Mdqsigner
     public function storeMetadada($entityInSha, $xml) {
         $tmpStorageDir = $this->metaPaths['entity'];
         $fullDirPath = $tmpStorageDir . '' . $entityInSha;
-        if (!is_dir($fullDirPath) && !mkdir($fullDirPath, 0777, true) && !is_dir($fullDirPath)) {
-            throw new Exception('hhhh');
+
+        if (!is_dir($fullDirPath)) {
+            if (!mkdir($fullDirPath, 0777, true) && !is_dir($fullDirPath)) {
+                throw new Exception('hhhh');
+            }
         }
 
         file_put_contents($fullDirPath . '/metadata.xml', $xml);
