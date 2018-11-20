@@ -26,15 +26,16 @@ class Mdqsigner
         $this->metaPaths = $this->getMdqStoragePaths();
     }
 
-    public function getMdqStoragePaths(){
+    public function getMdqStoragePaths() {
 
 
         $prefix = dirname(APPPATH);
         $metaPaths = array(
-            'circle'     => $prefix.'/signedmetadata/mdq/circle/',
-            'entity'     => $prefix.'/signedmetadata/mdq/entity/',
-            'federation' => $prefix.'/signedmetadata/mdq/federation/'
+            'circle'     => $prefix . '/signedmetadata/mdq/circle/',
+            'entity'     => $prefix . '/signedmetadata/mdq/entity/',
+            'federation' => $prefix . '/signedmetadata/mdq/federation/'
         );
+
         return $metaPaths;
     }
 
@@ -58,8 +59,7 @@ class Mdqsigner
     }
 
     public function storeMetadada($entityInSha, $xml) {
-         $tmpStorageDir = $this->metaPaths['entity'];
-        //$tmpStorageDir = '/opt/Jagger/signedmetadata/mdq/entity';
+        $tmpStorageDir = $this->metaPaths['entity'];
         $fullDirPath = $tmpStorageDir . '' . $entityInSha;
         if (!is_dir($fullDirPath) && !mkdir($fullDirPath, 0777, true) && !is_dir($fullDirPath)) {
             throw new Exception('hhhh');
@@ -69,15 +69,29 @@ class Mdqsigner
     }
 
 
-    public function getEntity($entityid){
+    public function getEntity($entityid) {
         /**
          * @var $entity \models\Provider
          */
-        $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityid));
+        $entity = null;
+        $maxAttempts = 10;
+        $attempt = 1;
+
+        while ($attempt < $maxAttempts) {
+            try {
+                $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityid));
+                $attempt = $maxAttempts;
+            } catch (Exception $e) {
+                $this->em->getConnection()->close();
+                $this->em->getConnection()->connect();
+                $attempt++;
+                sleep(2);
+            }
+
+        }
+
         return $entity;
     }
-
-
 
 
     private function regenerateStatic(models\Provider $entity) {
@@ -111,6 +125,7 @@ class Mdqsigner
                 $element->setAttribute('xmlns:' . $key . '', '' . $val . '');
             }
         }
+
         return $domXML->saveXML();
     }
 
@@ -150,16 +165,18 @@ class Mdqsigner
             } catch (Exception $e) {
                 log_message('ERROR', __METHOD__ . ' ' . $e);
             }
+
             return $signeMetadata;
         }
         throw new Exception("empty metadata");
     }
 
 
-    public function sign($entityid){
+    public function sign($entityid) {
         $entity = $this->getEntity($entityid);
         $unsignedMetadata = $this->genMetadata($entity);
         $this->signXML($unsignedMetadata);
+
         return true;
     }
 

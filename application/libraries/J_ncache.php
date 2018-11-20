@@ -304,7 +304,7 @@ class J_ncache
     public function saveTrustGraph($data)
     {
         $cacheid = 'trustgraph';
-        $this->ci->cache->save($cacheid, $data, 6000);
+        $this->ci->cache->save($cacheid, $data, 12000);
         return true;
     }
 

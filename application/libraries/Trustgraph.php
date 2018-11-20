@@ -13,7 +13,6 @@ class Trustgraph
         $this->em = $this->ci->doctrine->em;
     }
     public function getTrustGraphLight(){
-
         $providers = new models\Providers();
         $query = $providers->getTrustgraph();
         $result = [];
