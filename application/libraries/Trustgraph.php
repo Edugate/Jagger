@@ -27,6 +27,7 @@ class Trustgraph
                $result[$sha1entity]['feds'][] = $f->getFederation()->getId();
             }
         }
+        $this->em->clear();
         return $result;
     }
 
