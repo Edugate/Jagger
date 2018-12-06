@@ -12,6 +12,10 @@ class Trustgraph
         $this->ci = &get_instance();
         $this->em = $this->ci->doctrine->em;
     }
+
+    /**
+     * beware of loading objects partially
+     */
     public function getTrustGraphLight(){
         $providers = new models\Providers();
         $query = $providers->getTrustgraph();
@@ -27,7 +31,7 @@ class Trustgraph
                $result[$sha1entity]['feds'][] = $f->getFederation()->getId();
             }
         }
-        $this->em->clear();
+
         return $result;
     }
 

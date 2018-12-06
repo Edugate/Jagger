@@ -139,6 +139,8 @@ class Mdq extends MY_Controller
             return $this->output->set_status_header(500)->set_output('Internal server error');
         }
 
+        $this->em->refresh($entity);
+
         $this->genMetada($entity);
     }
 
