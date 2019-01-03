@@ -73,6 +73,13 @@ class AttributeReleasePolicy {
      */
     protected $rawdata;
 
+    /**
+     * @Column(type="text", nullable=true)
+     */
+    protected $comments;
+
+
+
     public function getId()
     {
         return $this->id;
@@ -135,6 +142,17 @@ class AttributeReleasePolicy {
     public function getRawdata()
     {
         return unserialize($this->rawdata);
+    }
+
+
+    public function getComments(){
+        return @unserialize($this->comments)?:array();
+    }
+
+    public function getCommentsToHtml(){
+        $comments = $this->getComments();
+
+        return implode('<br />', $comments);
     }
 
     /**
@@ -245,6 +263,14 @@ class AttributeReleasePolicy {
     {
         $this->rawdata = serialize($rawdata);
         return $this;
+    }
+
+    public function addComments($a){
+        $comments = $this->getComments();
+        $comments[] = trim($a);
+        $this->comments = serialize($comments);
+        return $this;
+
     }
 
 }
