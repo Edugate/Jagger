@@ -2440,20 +2440,20 @@ $(document).ready(function () {
                         tbl += '</tr></thead>';
 
                         $.each(data.data.global, function (i, a) {
-                            policy = parseInt(a);
+                            policy = parseInt(a.policy);
                             supplbl = '';
                             tbl += '<tr><td>' + data.definitions.attrs[i] + '</td><td>';
                             if (policy === 0) {
-                                tbl += '<span class="label alert">' + data.definitions.policy[a] + '</span>';
+                                tbl += '<span class="label alert">' + data.definitions.policy[a.policy] + '</span>';
                             }
                             else if (policy === 1) {
-                                tbl += '<span class="label warning">' + data.definitions.policy[a] + '</span>';
+                                tbl += '<span class="label warning">' + data.definitions.policy[a.policy] + '</span>';
                             }
                             else if (policy === 2) {
-                                tbl += '<span class="label success">' + data.definitions.policy[a] + '</span>';
+                                tbl += '<span class="label success">' + data.definitions.policy[a.policy] + '</span>';
                             }
                             else {
-                                tbl += '<span class="label">' + data.definitions.policy[a] + '</span>';
+                                tbl += '<span class="label">' + data.definitions.policy[a.policy] + '</span>';
                             }
 
                             idf = support.indexOf(parseInt(i));
@@ -2463,10 +2463,11 @@ $(document).ready(function () {
                                 datajaggersup = '0';
                             }
                             tbl += supplbl;
+                            tbl += '<br /><small>'+a.comments.reverse().join(';')+'</small>';
                             tbl += '</td><td>';
 
 
-                            tbl += '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + a + '" data-jagger-attrsupport="' + datajaggersup + '" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="edit" data-jagger-arp="global"><i class="fa fa-pencil"></i></a>';
+                            tbl += '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + a + '" data-jagger-attrsupport="' + datajaggersup + '" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="edit" data-jagger-arp="global"><i class="fa fa-edit"></i></a>';
                             if (idf === -1) {
                                 tbl += '&nbsp;&nbsp;&nbsp;<a href="#" class="modalconfirm" data-jagger-attrsupport="' + datajaggersup + '" data-jagger-attrname="' + data.definitions.attrs[i] + '" data-jagger-attrid="' + i + '" data-jagger-action="delete" data-jagger-arp="global"><i class="fa fa-trash alert"></i></a>';
 
@@ -2514,7 +2515,7 @@ $(document).ready(function () {
                             }
                             $.each(v, function (j, w) {
                                 labelclass = '';
-                                fpolicy = parseInt(w);
+                                fpolicy = parseInt(w.policy);
                                 idf = supportCopy.indexOf(parseInt(j));
 
                                 if (fpolicy === 0) {
@@ -2526,7 +2527,7 @@ $(document).ready(function () {
                                 else if (fpolicy === 2) {
                                     labelclass = 'success';
                                 }
-                                tbl += '<tr><td>' + data.definitions.attrs[j] + '</td><td><span class="label ' + labelclass + '">' + data.definitions.policy[w] + '</span>';
+                                tbl += '<tr><td>' + data.definitions.attrs[j] + '</td><td><span class="label ' + labelclass + '">' + data.definitions.policy[w.policy] + '</span><br/><small>'+w.comments.reverse().join('<br/>')+'</small>';
                                 if (idf === -1) {
                                     tbl += '&nbsp;<span class="label alert">' + data.definitions.lang.unsupported + '</span>';
                                 }
@@ -2534,10 +2535,10 @@ $(document).ready(function () {
                                     supportCopy.splice(idf, 1);
                                 }
 
-                                tbl += '</td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-attrpolicy="' + w + '" data-jagger-arp="fed" data-jagger-action="edit" data-jagger-fedid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-attrname="' + data.definitions.attrs[j] + '"><i class="fa fa-pencil"></i></a></td></tr>';
+                                tbl += '</td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-attrpolicy="' + w.policy + '" data-jagger-arp="fed" data-jagger-action="edit" data-jagger-fedid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-attrname="' + data.definitions.attrs[j] + '"><i class="fa fa-edit"></i></a></td></tr>';
                             });
                             $.each(supportCopy, function (jk, wk) {
-                                tbl += '<tr><td>' + data.definitions.attrs[wk] + '</td><td><span class="label secondary">' + data.definitions.policy[100] + '</span></td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-attrname="' + data.definitions.attrs[wk] + '" data-jagger-attrpolicy="100" data-jagger-fedid="' + i + '" data-jagger-action="edit" data-jagger-attrid="' + wk + '"><i class="fa fa-pencil"></i></a></td></tr>';
+                                tbl += '<tr><td>' + data.definitions.attrs[wk] + '</td><td><span class="label secondary">' + data.definitions.policy[100] + '</span></td><td></td><td colspan="' + nrcols2 + '"><a href="#" class="modalconfirm" data-jagger-arp="fed" data-jagger-attrname="' + data.definitions.attrs[wk] + '" data-jagger-attrpolicy="100" data-jagger-fedid="' + i + '" data-jagger-action="edit" data-jagger-attrid="' + wk + '"><i class="fa fa-edit"></i></a></td></tr>';
                             });
 
 
@@ -2574,7 +2575,7 @@ $(document).ready(function () {
                                     unsupwttr = '&nbsp;<span class="label alert">' + data.definitions.policy[1000] + '</span>';
                                 }
                                 labelclass = '';
-                                entpolicy = parseInt(w);
+                                entpolicy = parseInt(w.policy);
                                 if (entpolicy === 0) {
                                     labelclass = 'alert';
                                 }
@@ -2587,7 +2588,7 @@ $(document).ready(function () {
 
 
                                 tbl += '<tr>';
-                                tbl += '<td>' + data.definitions.attrs[j] + '</td><td><span class="label ' + labelclass + '">' + data.definitions.policy[w] + '</span>' + unsupwttr + '</td><td><a href="#" class="modalconfirm" data-jagger-arp="entcat" data-jagger-entcatid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-arp="entcat" data-jagger-action="edit" data-jagger-attrname="' + data.definitions.attrs[j] + '" data-jagger-attrpolicy="' + w + '"><i class="fa fa-pencil"></i></a></td>';
+                                tbl += '<td>' + data.definitions.attrs[j] + '</td><td><span class="label ' + labelclass + '">' + data.definitions.policy[w.policy] + '</span>' + unsupwttr + '<br /><small>'+w.comments.reverse().join('<br />')+'</small></td><td><a href="#" class="modalconfirm" data-jagger-arp="entcat" data-jagger-entcatid="' + i + '" data-jagger-attrid="' + j + '" data-jagger-arp="entcat" data-jagger-action="edit" data-jagger-attrname="' + data.definitions.attrs[j] + '" data-jagger-attrpolicy="' + w.policy + '"><i class="fa fa-edit"></i></a></td>';
                                 tbl += '</tr>';
                             });
 
@@ -2642,8 +2643,6 @@ $(document).ready(function () {
                                         }
                                     }
                                     $.each(v.spec, function (j, l) {
-
-
                                         customattrpol = '';
                                         supportedStatus = '';
                                         idf = support.indexOf(parseInt(j));
@@ -2680,12 +2679,18 @@ $(document).ready(function () {
                                             }
                                         }
 
-                                        tbl += '<tr><td>' + attrName + '</td>' +
-                                            '<td><span class="label ' + policyLabels[l] + '">' + data.definitions.policy[l] + '</span>  ' + supportedStatus + ' ' + customattrpol + '</td>' +
+
+                                        tbl += '<td>' + attrName + '</td>' +
+                                            '<td><span class="label ' +
+                                            policyLabels[l.policy] +
+                                            '">' +
+                                            data.definitions.policy[l.policy] +
+                                            '</span>  ' + supportedStatus + ' ' +
+                                            customattrpol + '<br /><small>'+l.comments.reverse().join('<br />')+'</small></td>'+ '</td>' +
                                             '<td>' + data.definitions.req[spReqAttrStr] + '</td>' +
                                             '<td>' +
-                                            '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + l + '" data-jagger-entityid="' + data.definitions.sps[i].entityid + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + j + '">' +
-                                            '<i class="fa fa-pencil"></i></a></td></tr>';
+                                            '<a href="#" class="modalconfirm" data-jagger-attrpolicy="' + l.policy + '" data-jagger-entityid="' + data.definitions.sps[i].entityid + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + j + '">' +
+                                            '<i class="fa fa-edit"></i></a></td></tr>';
                                     });
                                     for (var vkey in spReqAttr) {
                                         if (spReqAttr.hasOwnProperty(vkey)) {
@@ -2717,7 +2722,7 @@ $(document).ready(function () {
                                                 tbl += '<tr><td>' + attrName + '</td>' +
                                                     '<td><span class="label ' + policyLabels['100'] + '">' + data.definitions.policy['100'] + '</span>  ' + supportedStatus + ' ' + customattrpol + '</td>' +
                                                     '<td>' + data.definitions.req[spReqAttr[vkey]] + '</td>' +
-                                                    '<td><a href="#" class="modalconfirm" data-jagger-attrpolicy="100" data-jagger-entityid="' + data.definitions.sps[i].entityid + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fa fa-pencil"></i></i></td></tr>';
+                                                    '<td><a href="#" class="modalconfirm" data-jagger-attrpolicy="100" data-jagger-entityid="' + data.definitions.sps[i].entityid + '" data-jagger-attrname="' + attrName + '" data-jagger-spid="' + i + '" data-jagger-arp="sp" data-jagger-action="edit" data-jagger-attrid="' + vkey + '"><i class="fa fa-edit"></i></i></td></tr>';
                                             }
                                         }
                                     }
@@ -2803,6 +2808,7 @@ $(document).ready(function () {
                     modal.find('span.attributename').first().html(attrname);
                     modal.find('input[name="attrid"]').first().val(attrid);
                     modal.find('input[name="fedid"]').first().val(fedid);
+                    modal.find('textarea[name="comment"]').first().val('');
                     modal.find('[name="policy"] option').prop('selected', false).filter('[value="' + attrpolicy + '"]').prop('selected', true);
                     modal.foundation('open');
                 }
@@ -2812,6 +2818,7 @@ $(document).ready(function () {
                     modal.find('span.attributename').first().html(attrname);
                     modal.find('input[name="attrid"]').first().val(attrid);
                     modal.find('input[name="entcatid"]').first().val(entcatid);
+                    modal.find('textarea[name="comment"]').first().val('');
                     modal.find('[name="policy"] option').prop('selected', false).filter('[value="' + attrpolicy + '"]').prop('selected', true);
                     modal.foundation('open');
                 }
@@ -2823,6 +2830,7 @@ $(document).ready(function () {
                     modal.find('span.requestersp').first().html(entityid);
                     modal.find('input[name="attrid"]').first().val(attrid);
                     modal.find('input[name="spid"]').first().val(spid);
+                    modal.find('textarea[name="comment"]').first().val('');
                     modal.find('[name="policy"] option').prop('selected', false).filter('[value="' + attrpolicy + '"]').prop('selected', true);
 
                     var sourcelink = modal.attr('data-jagger-getdata');

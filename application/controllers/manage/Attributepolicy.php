@@ -38,6 +38,14 @@ class Attributepolicy extends MY_Controller
         return $ent;
     }
 
+
+    private function fullComment($comment){
+        $username = $this->jauth->getLoggedinUsername();
+        $createdAt = new \DateTime('now', new \DateTimeZone('UTC'));
+        return $username. ' ('.$createdAt->format('Y-m-d').') : '.$comment;
+
+    }
+
     /**
      * @param null $idpid
      */
@@ -293,7 +301,7 @@ class Attributepolicy extends MY_Controller
                 $this->em->remove($encatpol);
                 continue;
             }
-            $entcatPolicies[$requester][$encatpol->getAttribute()->getId()] = $encatpol->getPolicy();
+            $entcatPolicies[$requester][$encatpol->getAttribute()->getId()] = array('policy'=>$encatpol->getPolicy(),'comments'=>$encatpol->getComments());
         }
         $result['data']['entcats'] = $entcatPolicies;
 
@@ -323,7 +331,14 @@ class Attributepolicy extends MY_Controller
         $customenable = $this->input->post('customenabled');
         $custompolicy = $this->input->post('custompolicy');
         $customvals = $this->input->post('customvals');
+        $comment = trim($this->input->post('comment'));
 
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('comment', 'Comment', 'trim|required|min_length[5]|alpha_numeric_spaces');
+        if ($this->form_validation->run() == FALSE)
+        {
+            return $this->output->set_status_header(403)->set_output( validation_errors());
+        }
 
         if (!in_array($policy, array('0', '1', '2', '100'))) {
             return $this->output->set_status_header(403)->set_output('Posted invalid data');
@@ -357,6 +372,7 @@ class Attributepolicy extends MY_Controller
         if ($policy !== '100') {
             $attrPolicy = new models\AttributeReleasePolicy();
             $attrPolicy->setSpecificPolicy($ent, $attribute, $spid, $policy);
+            $attrPolicy->addComments($this->fullComment($comment));
             $this->em->persist($attrPolicy);
         }
         if ($customenable === 'yes' && !empty($custompolicy) && in_array($custompolicy, array('permit', 'deny'), true) && !empty($customvals)) {
@@ -376,6 +392,7 @@ class Attributepolicy extends MY_Controller
                 $customAttrPolicy->setType('customsp');
                 $customAttrPolicy->setRequester($spid);
                 $customAttrPolicy->setRawdata(array('' . $custompolicy . '' => $customRawDataArray));
+                $customAttrPolicy->addComments($this->fullComment($comment));
                 $this->em->persist($customAttrPolicy);
             }
 
@@ -402,7 +419,13 @@ class Attributepolicy extends MY_Controller
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
-
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('comment', 'Comment', 'trim|required|min_length[5]|alpha_numeric_spaces');
+        if ($this->form_validation->run() == FALSE)
+        {
+            return $this->output->set_status_header(403)->set_output( validation_errors());
+        }
+        $comment = trim($this->input->post('comment'));
         $entcatid = trim($this->input->post('entcatid'));
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
@@ -428,6 +451,7 @@ class Attributepolicy extends MY_Controller
         } else {
             $findPolicy->setPolicy($policy);
         }
+        $findPolicy->addComments($this->fullComment($comment));
         $this->em->persist($findPolicy);
         try {
             $this->em->flush();
@@ -476,7 +500,7 @@ class Attributepolicy extends MY_Controller
                 $this->em->remove($fedpolicy);
                 continue;
             }
-            $fedpoliciesByRequester[$fedpolicy->getRequester()][$fedpolicy->getAttribute()->getId()] = $fedpolicy->getPolicy();
+            $fedpoliciesByRequester[$fedpolicy->getRequester()][$fedpolicy->getAttribute()->getId()] = array('policy'=>$fedpolicy->getPolicy(),'comments'=>$fedpolicy->getComments());
         }
 
         $activeFederation = $this->arpgen->getActiveFederations($ent);
@@ -628,7 +652,13 @@ class Attributepolicy extends MY_Controller
             return $this->output->set_status_header(403)->set_output($e->getMessage());
         }
 
-
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('comment', 'Comment', 'trim|required|min_length[5]|alpha_numeric_spaces');
+        if ($this->form_validation->run() == FALSE)
+        {
+            return $this->output->set_status_header(403)->set_output( validation_errors());
+        }
+        $comment = trim($this->input->post('comment'));
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
         $entcatid = trim($this->input->post('entcatid'));
@@ -661,9 +691,11 @@ class Attributepolicy extends MY_Controller
         } elseif ($attrPolicy === null) {
             $attrPolicy = new models\AttributeReleasePolicy();
             $attrPolicy->setEntCategoryPolicy($ent, $attribute, $entcatid, $policy);
+            $attrPolicy->addComments($this->fullComment($comment));
             $this->em->persist($attrPolicy);
         } else {
             $attrPolicy->setPolicy($policy);
+            $attrPolicy->addComments($this->fullComment($comment));
             $this->em->persist($attrPolicy);
         }
 
@@ -688,7 +720,19 @@ class Attributepolicy extends MY_Controller
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
         $fedid = trim($this->input->post('fedid'));
-        if (!ctype_digit($attrid) || !ctype_digit($policy) || !ctype_digit($fedid) || !in_array($policy, array('0', '1', '2', '100'))) {
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('comment', 'Comment', 'trim|required|min_length[5]|alpha_numeric_spaces');
+        if ($this->form_validation->run() == FALSE)
+        {
+            return $this->output->set_status_header(403)->set_output( validation_errors());
+        }
+        $comment = trim($this->input->post('comment'));
+
+
+
+
+
+        if (!ctype_digit($attrid) || !ctype_digit($policy) || !ctype_digit($fedid) || !in_array($policy, array('0', '1', '2', '100')) ) {
             return $this->output->set_status_header(403)->set_output('Posted invalid data');
         }
         /**
@@ -707,6 +751,7 @@ class Attributepolicy extends MY_Controller
          * @var $attrPolicy models\AttributeReleasePolicy
          */
         $attrPolicy = $this->em->getRepository('models\AttributeReleasePolicy')->findOneBy(array('attribute' => $attrid, 'idp' => $ent->getId(), 'type' => 'fed', 'requester' => $fedid));
+
         if ($policy === '100' && $attrPolicy !== null) {
             $this->em->remove($attrPolicy);
         } elseif ($attrPolicy === null) {
@@ -715,9 +760,11 @@ class Attributepolicy extends MY_Controller
                 return $this->output->set_status_header(403)->set_output('Federation not found');
             }
             $attrPolicy->setFedPolicy($ent, $attribute, $federation, $policy);
+            $attrPolicy->addComments($this->fullComment($comment));
             $this->em->persist($attrPolicy);
         } else {
             $attrPolicy->setPolicy($policy);
+            $attrPolicy->addComments($this->fullComment($comment));
             $this->em->persist($attrPolicy);
         }
 
@@ -740,6 +787,8 @@ class Attributepolicy extends MY_Controller
         $this->form_validation->set_rules('attrid', 'Attribute', 'trim|required|is_natural_no_zero');
         $this->form_validation->set_rules('spid', 'Service Provider ID', 'trim|required|is_natural_no_zero');
         $this->form_validation->set_rules('policy', 'Policy', 'trim|is_natural');
+        $this->form_validation->set_rules('comment', 'Comment', 'trim|required|min_length[5]|alpha_numeric_spaces');
+
 
 
         return $this->form_validation->run();
@@ -761,6 +810,7 @@ class Attributepolicy extends MY_Controller
         if (!ctype_digit($attrid) || !ctype_digit($policy) || !ctype_digit($spid) || !in_array($policy, array('0', '1', '2', '100'))) {
             return $this->output->set_status_header(403)->set_output('Posted invalid data');
         }
+
         $customvals = trim($this->input->post('customvals'));
 
         /**
@@ -785,6 +835,7 @@ class Attributepolicy extends MY_Controller
         $customattrPolicy = $this->em->getRepository('models\AttributeReleasePolicy')->findOneBy(array('attribute' => $attrid, 'idp' => $ent->getId(), 'type' => 'customsp', 'requester' => $spid));
 
 
+        $comment = $this->input->post('comment');
         if ($policy === '100') {
             if ($attrPolicy !== null) {
                 $this->em->remove($attrPolicy);
@@ -797,6 +848,7 @@ class Attributepolicy extends MY_Controller
             } else {
                 $attrPolicy->setPolicy($policy);
             }
+            $attrPolicy->addComments($this->fullComment($comment));
             $this->em->persist($attrPolicy);
         }
 
@@ -824,6 +876,7 @@ class Attributepolicy extends MY_Controller
                 $customattrPolicy->setProvider($ent);
                 $customattrPolicy->setType('customsp');
                 $customattrPolicy->setRequester($spid);
+                $customattrPolicy->addComments($this->fullComment($comment));
                 $this->em->persist($customattrPolicy);
             }
         }

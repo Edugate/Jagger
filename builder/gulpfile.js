@@ -41,13 +41,12 @@ gulp.task('concatf6', function () {
         .pipe(addsrc.append('src/js/jqplot.highlighter.js'))
         .pipe(addsrc.append('src/js/jquery.tablesorter.js'))
         .pipe(addsrc.append('bower_components/motion-ui/motion-ui.js')) // foundation6
-        .pipe(addsrc.append('bower_components/what-input/what-input.js')) // foundation6
+        .pipe(addsrc.append('bower_components/what-input/dist/what-input.js')) // foundation6
         .pipe(addsrc.append('bower_components/foundation-sites/dist/js/foundation.js')) // foundation6
         .pipe(addsrc.append('bower_components/Chart.js/Chart.js'))
         .pipe(addsrc.append('bower_components/select2/dist/js/select2.js'))
         .pipe(addsrc.append('src/js/dataTables/datatables.js'))
         .pipe(addsrc.append('src/js/dataTables/dataTables.foundation.js'))
-        //.pipe(addsrc.append('bower_components/highlight/src/highlight.js'))
         .pipe(addsrc.append('src/js/highlight.pack.js'))
         .pipe(concat('f6-thirdpartylibs.min.js', {newLine: '\r\n'}))
         .pipe(uglify())

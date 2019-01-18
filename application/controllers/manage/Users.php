@@ -357,9 +357,9 @@ class Users extends MY_Controller
             'content_view' => 'manage/userdetail_view'
         );
         if ($isAdmin) {
-            $data['sideicons'][] = '<a href="' . base_url('manage/userprofile/edit/' . $encodedUsername . '') . '"><i class="fa fa-pencil"></i></a>';
+            $data['sideicons'][] = '<a href="' . base_url('manage/userprofile/edit/' . $encodedUsername . '') . '"><i class="fa fa-edit"></i></a>';
         } else {
-            $data['sideicons'][] = '<a href="' . base_url('manage/userprofile/edit') . '"><i class="fa fa-pencil"></i></a>';
+            $data['sideicons'][] = '<a href="' . base_url('manage/userprofile/edit') . '"><i class="fa fa-edit"></i></a>';
         }
 
         $this->load->view(MY_Controller::$page, $data);
@@ -394,7 +394,7 @@ class Users extends MY_Controller
             $roles = $u->getRoleNames();
             $editLink = '';
             if ($isAdmin) {
-                $editLink = '<a href="' . $editLinkPrefix . '/' . $encodedUsername . '"><i class="fa fa-pencil"></i></a>';
+                $editLink = '<a href="' . $editLinkPrefix . '/' . $encodedUsername . '"><i class="fa fa-edit"></i></a>';
             }
             if (in_array('Administrator', $roles, true)) {
                 $action = '';

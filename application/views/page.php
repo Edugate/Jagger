@@ -57,6 +57,7 @@ $foundation = $base_url . 'foundation/';
         '<meta content=\'rr\' name=\'description\'>' . PHP_EOL .
         '<meta content=\'\' name=\'author\'>' . PHP_EOL .
         '<meta content=\'width=device-width, initial-scale=1.0, user-scalable=0\' name=\'viewport\'>' . PHP_EOL .
+        '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">'.
         '<link rel="stylesheet" type="text/css" href="' . $base_url . 'styles/' . $colorTheme . '.css" />' . PHP_EOL;
     ?>
     <style>
@@ -300,7 +301,9 @@ if ($breadcrumbsEnabled === true) {
 </div>
 
 <?php
-echo '<script type="text/javascript" src="' . $base_url . 'js/f6-thirdpartylibs.min.4510195e.js"></script>' . PHP_EOL;
+//echo '<script type="text/javascript" src="' . $base_url . 'js/jquery.js"></script>' . PHP_EOL;
+//echo '<script type="text/javascript" src="' . $base_url . 'js/foundation.js"></script>' . PHP_EOL;
+echo '<script type="text/javascript" src="' . $base_url . 'js/f6-thirdpartylibs.min.a3db42c8.js"></script>' . PHP_EOL;
 
 if (!empty($load_matrix_js)) {
     echo '<script type="text/javascript">';
@@ -343,7 +346,7 @@ if (!$loggedin) {
 <?php
 // load local final js
 
-echo '<script type="text/javascript" src="' . $base_url . 'js/local-f6.min.7dcd4068.js"></script>' . PHP_EOL;
+echo '<script type="text/javascript" src="' . $base_url . 'js/local-f6.min.f7f9ad32.js"></script>' . PHP_EOL;
 
 // raw js from array
 if (!empty($rawJs) && is_array($rawJs)) {

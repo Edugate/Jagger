@@ -976,6 +976,7 @@ $lang['rr_addpoint']                = 'Add point';
 $lang['rr_modify']                  = 'Modify';
 $lang['rr_runprocess']              = 'run process';
 $lang['rr_removing']                = 'Removing';
+$lang['rr_comment']                 = 'Comment';
 $lang['rr_lock_entity']             = 'Lock entity';
 $lang['title_confirm']                 = 'Confirm';
 $lang['rr_chngentsettings']         = 'Change Entity Settings';

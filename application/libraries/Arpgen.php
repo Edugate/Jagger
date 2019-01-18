@@ -115,13 +115,13 @@ class Arpgen
             $valuePolicy = $entry->getPolicy();
             if ($entryType === 'customsp') {
                 $valuePolicy = $entry->getRawdata();
-                $result[$entryType][$entry->getRequester()][$entry->getAttribute()->getId()] = $valuePolicy;
+                $result[$entryType][$entry->getRequester()][$entry->getAttribute()->getId()] = array('comments'=>$entry->getComments(),'policy'=>$valuePolicy);
                 continue;
             } elseif ($entryType === 'fed' && !in_array($entry->getRequester(), $federations)) {
                 continue;
             }
 
-            $result[$entryType][$entry->getAttribute()->getId()][$entry->getRequester()] = $valuePolicy;
+            $result[$entryType][$entry->getAttribute()->getId()][$entry->getRequester()] = array('comments'=>$entry->getComments(),'policy'=>$valuePolicy);
         }
 
         return $result;
@@ -168,7 +168,7 @@ class Arpgen
         $globals = $this->tempARPolsInstance->getGlobalPolicyAttributes($idp);
         $result = array();
         foreach ($globals as $g) {
-            $result[$g->getAttribute()->getId()] = $g->getPolicy();
+            $result[$g->getAttribute()->getId()] = array('policy'=>$g->getPolicy(),'comments'=>$g->getComments());
         }
         $supportedAttrs = $this->getSupportAttributes($idp);
         foreach ($supportedAttrs as $v) {

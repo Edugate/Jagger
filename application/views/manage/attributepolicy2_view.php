@@ -129,6 +129,10 @@ echo '<div class="row">';
 echo '<div class="medium-3 column medium-text-right"><label>' . lang('policy') . '</label></div>';
 echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
 echo '</div>';
+echo '<div class="row">';
+echo '<div class="medium-3 column medium-text-right"><label>' . lang('rr_comment') . '</label></div>';
+echo '<div class="medium-9 column"><textarea name="comment"></textarea></div>';
+echo '</div>';
 $buttons = array(
     '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
     '<div class="yes button">' . lang('btnupdate') . '</div>'
@@ -147,6 +151,10 @@ echo form_open(base_url('manage/attributepolicy/updateattrentcat/' . $idpid . ''
 echo '<div class="row">';
 echo '<div class="medium-3 column medium-text-right"><label>' . lang('policy') . '</label></div>';
 echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
+echo '</div>';
+echo '<div class="row">';
+echo '<div class="medium-3 column medium-text-right"><label>' . lang('rr_comment') . '</label></div>';
+echo '<div class="medium-9 column"><textarea name="comment"></textarea></div>';
 echo '</div>';
 $buttons = array(
     '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
@@ -186,7 +194,10 @@ echo '<div class="row">';
 echo '<div class="medium-3 column medium-text-right"><label>' . lang('rr_valuessplitbycomma') . '</label></div>';
 echo '<div class="medium-9 column"><textarea name="customvals"></textarea></div>';
 echo '</div>';
-
+echo '<div class="row">';
+echo '<div class="medium-3 column medium-text-right"><label>' . lang('rr_comment') . '</label></div>';
+echo '<div class="medium-9 column"><textarea name="comment"></textarea></div>';
+echo '</div>';
 
 $buttons = array(
     '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
@@ -213,6 +224,10 @@ echo '</div>';
 echo '<div class="row">';
 echo '<div class="medium-3 column medium-text-right"><label>' . lang('policy') . '</label></div>';
 echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
+echo '</div>';
+echo '<div class="row">';
+echo '<div class="medium-3 column medium-text-right"><label>' . lang('rr_comment') . '</label></div>';
+echo '<div class="medium-9 column"><textarea name="comment"></textarea></div>';
 echo '</div>';
 $buttons = array(
     '<button type="reset" name="cancel" value="cancel" class="button alert" data-close>' . lang('rr_cancel') . '</button>',
@@ -250,7 +265,11 @@ echo '<div id="arpmaddspecattr" class="reveal medium" data-reveal><h4>' . lang('
     '<div class="row">' .
     '<div class="medium-3 column medium-text-right"><label>' . lang('rr_valuessplitbycomma') . '</label></div>' .
     '<div class="medium-9 column"><textarea name="customvals"></textarea></div>' .
-    '</div>' . revealBtnsRow($buttons) . form_close() . '<a class="close-button" data-close aria-label="Close">&#215;</a>' .
+    '</div>'.
+    '<div class="row"><div class="medium-3 column medium-text-right"><label>' . lang('rr_comment') . '</label></div>'.
+    '<div class="medium-9 column"><textarea name="comment"></textarea></div>'.
+    '</div>'.
+    revealBtnsRow($buttons) . form_close() . '<a class="close-button" data-close aria-label="Close">&#215;</a>' .
     '</div>';
 
 echo '<div id="ecmembers" class="reveal small" data-reveal>';

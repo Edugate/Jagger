@@ -192,7 +192,7 @@ class Fedcategory extends MY_Controller
             }
             $editlink = '';
             if ($isAdmin) {
-                $editlink = '<a href="' . $baseurl . 'manage/fedcategory/edit/' . $c->getId() . '"><i class="fa fa-pencil"></i></a>';
+                $editlink = '<a href="' . $baseurl . 'manage/fedcategory/edit/' . $c->getId() . '"><i class="fa fa-edit"></i></a>';
             }
             $result[] = array(
                 'name' => $c->getName() . '  ' . $default,

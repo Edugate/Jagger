@@ -1160,7 +1160,7 @@ class Providerdetails
         }
         if (($hasManageAccess || $hasWriteAccess) && $isLocal) {
 
-            $d[++$i] = array('name' => lang('regpols_menulink'), 'value' => '<a href="' . base_url() . 'manage/entitystate/regpolicies/' . $ent->getId() . '" class="button"><i class="fa fa-pencil"> </i> ' . lang('rr_edit') . '');
+            $d[++$i] = array('name' => lang('regpols_menulink'), 'value' => '<a href="' . base_url() . 'manage/entitystate/regpolicies/' . $ent->getId() . '" class="button"><i class="fa fa-edit"> </i> ' . lang('rr_edit') . '');
         }
 
         ksort($subresult);

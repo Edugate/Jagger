@@ -17,7 +17,7 @@ foreach ($datas as $x => $y) {
 			} else {
 				$cell[] = '<span class="label alert" data-jagger-name="status">' . lang('rr_disabled') . '</span>';
 			}
-			$cell[] = '<a href="' . base_url() . 'smanage/sysprefs/retgconf/' . $v['confname'] . '" class="updateprefs" data-jagger-record="' . $v['confname'] . '"><i class="fa fa-pencil"></i></a>';
+			$cell[] = '<a href="' . base_url() . 'smanage/sysprefs/retgconf/' . $v['confname'] . '" class="updateprefs" data-jagger-record="' . $v['confname'] . '"><i class="fa fa-edit"></i></a>';
 
 		}
 		elseif($v['type'] === 'bool')
@@ -31,7 +31,7 @@ foreach ($datas as $x => $y) {
 			} else {
 				$cell[] = '<span class="label alert" data-jagger-name="status">' . lang('rr_disabled') . '</span>';
 			}
-			$cell[] = '<a href="' . base_url() . 'smanage/sysprefs/retgconf/' . $v['confname'] . '" class="updateprefs" data-jagger-record="' . $v['confname'] . '"><i class="fa fa-pencil"></i></a>';
+			$cell[] = '<a href="' . base_url() . 'smanage/sysprefs/retgconf/' . $v['confname'] . '" class="updateprefs" data-jagger-record="' . $v['confname'] . '"><i class="fa fa-edit"></i></a>';
 
 		}
 
