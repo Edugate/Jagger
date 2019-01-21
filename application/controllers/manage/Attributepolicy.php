@@ -219,7 +219,7 @@ class Attributepolicy extends MY_Controller
         }
 
         $result['type'] = 'sp';
-        $policyDefs =  $this->arpgen->genPolicyDefs($ent);
+        $policyDefs =  $this->arpgen->genPolicyDefsWithComments($ent);
 
         $result['data'] = $policyDefs['data'];
 

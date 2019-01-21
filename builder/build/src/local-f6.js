@@ -2440,17 +2440,17 @@ $(document).ready(function () {
                         tbl += '</tr></thead>';
 
                         $.each(data.data.global, function (i, a) {
-                            policy = parseInt(a.policy);
+                            policy = parseInt(a);
                             supplbl = '';
                             tbl += '<tr><td>' + data.definitions.attrs[i] + '</td><td>';
                             if (policy === 0) {
-                                tbl += '<span class="label alert">' + data.definitions.policy[a.policy] + '</span>';
+                                tbl += '<span class="label alert">' + data.definitions.policy[a] + '</span>';
                             }
                             else if (policy === 1) {
-                                tbl += '<span class="label warning">' + data.definitions.policy[a.policy] + '</span>';
+                                tbl += '<span class="label warning">' + data.definitions.policy[a] + '</span>';
                             }
                             else if (policy === 2) {
-                                tbl += '<span class="label success">' + data.definitions.policy[a.policy] + '</span>';
+                                tbl += '<span class="label success">' + data.definitions.policy[a] + '</span>';
                             }
                             else {
                                 tbl += '<span class="label">' + data.definitions.policy[a.policy] + '</span>';
@@ -2463,7 +2463,6 @@ $(document).ready(function () {
                                 datajaggersup = '0';
                             }
                             tbl += supplbl;
-                            tbl += '<br /><small>'+a.comments.reverse().join(';')+'</small>';
                             tbl += '</td><td>';
 
 
@@ -2663,22 +2662,23 @@ $(document).ready(function () {
                                         }
                                         if (v.custom !== undefined && v.custom[j] !== undefined) {
 
-                                            if (v.custom[j].deny !== undefined) {
+                                            if (v.custom[j].policy.deny !== undefined) {
                                                 customattrpol += '<span class="label alert">denied values:  ';
-                                                $.each(v.custom[j].deny, function (ip, iv) {
+                                                $.each(v.custom[j].policy.deny, function (ip, iv) {
                                                     customattrpol += iv + ', ';
                                                 });
                                                 customattrpol += '</span>';
                                             }
                                             else {
                                                 customattrpol += '<span class="label success">permited values: ';
-                                                $.each(v.custom[j].permit, function (ip, iv) {
+                                                $.each(v.custom[j].policy.permit, function (ip, iv) {
                                                     customattrpol += iv + ', ';
                                                 });
                                                 customattrpol += '</span>';
                                             }
                                         }
 
+                                        console.log(l);
 
                                         tbl += '<td>' + attrName + '</td>' +
                                             '<td><span class="label ' +

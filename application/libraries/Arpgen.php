@@ -97,6 +97,37 @@ class Arpgen
         return self::$supportedAttrs[$idpID];
     }
 
+    private function getPoliciesWithComments(\models\Provider $idp){
+        $federations = $this->getActiveFederations($idp);
+        /**
+         * @var $policies models\AttributeReleasePolicy[]
+         */
+        $policies = $this->em->getRepository('models\AttributeReleasePolicy')->findBy(
+            array(
+                'idp'  => $idp,
+                //    'attribute' => $this->getSupportAttributes($idp),
+                'type' => array('fed', 'sp', 'entcat', 'customsp')
+            )
+        );
+        $result = array('fed' => array(), 'sp' => array(), 'entcat' => array(), 'customsp' => array());
+        foreach ($policies as $entry) {
+            $entryType = $entry->getType();
+            $valuePolicy = $entry->getPolicy();
+            $comments = $entry->getComments();
+            if ($entryType === 'customsp') {
+                $valuePolicy = $entry->getRawdata();
+                $result[$entryType][$entry->getRequester()][$entry->getAttribute()->getId()] = array('policy'=>$valuePolicy,'comments'=>$comments);
+                continue;
+            } elseif ($entryType === 'fed' && !in_array($entry->getRequester(), $federations)) {
+                continue;
+            }
+
+            $result[$entryType][$entry->getAttribute()->getId()][$entry->getRequester()] = array('policy'=>$valuePolicy,'comments'=>$comments);
+        }
+
+        return $result;
+    }
+
     private function getPoliciec(\models\Provider $idp) {
         $federations = $this->getActiveFederations($idp);
         /**
@@ -179,6 +210,24 @@ class Arpgen
 
         return $result;
     }
+    public function genGlobalWithComments(\models\Provider $idp) {
+        /**
+         * @var $globals models\AttributeReleasePolicy[]
+         */
+        $globals = $this->tempARPolsInstance->getGlobalPolicyAttributes($idp);
+        $result = array();
+        foreach ($globals as $g) {
+            $result[$g->getAttribute()->getId()] = array('policy'=>$g->getPolicy(),'comments'=>$g->getComments());
+        }
+        $supportedAttrs = $this->getSupportAttributes($idp);
+        foreach ($supportedAttrs as $v) {
+            if (!array_key_exists($v, $result)) {
+                $result[$v] = array('policy'=>0, 'comments' => array());
+            }
+        }
+
+        return $result;
+    }
 
 
     private function mergeFedPolicies(array $source, array $limit) {
@@ -217,6 +266,113 @@ class Arpgen
         }
 
         return $result;
+    }
+
+
+    public function genPolicyDefsWithComments(\models\Provider $idp){
+        $globalPolicy = $this->genGlobalWithComments($idp);
+        $policies = $this->getPoliciesWithComments($idp);
+        $supportedAttrs = $this->getSupportAttributes($idp);
+        $supAttrsFlipped = array_flip($supportedAttrs);
+        /**
+         * @var $members models\Provider[]
+         */
+        $members = $this->getMembers($idp, $idp->getExcarps());
+        $result = array(
+            'definitions'       => array(
+                'attrs' => $this->attrDefsSmplArray,
+                'ec'    => $this->entityCategories,
+            ),
+            'memberof'          => $this->getActiveFederations($idp),
+            'supported'         => $supportedAttrs,
+            'global'            => $globalPolicy,
+            'ecPolicies'        => $policies['entcat'],
+            'fedPolicies'       => $policies['fed'],
+            'fedPoliciesPerFed' => array(),
+            'reqAttrByFeds'     => $this->attrRequiredByFeds,
+            'spPolicies'        => $policies['sp'],
+            'sps'               => array()
+        );
+
+        foreach ($policies['fed'] as $k => $v) {
+            foreach ($v as $k2 => $v2) {
+                $result['fedPoliciesPerFed'][$k2][$k] = $v2;
+            }
+        }
+
+        $membersIDs = array();
+        foreach ($members as $member) {
+            $membersIDs[] = $member->getId();
+        };
+        $result['sps'] = array_fill_keys($membersIDs, array('active' => true, 'entcat' => array(), 'customsp' => array(), 'req' => array(), 'feds' => array(), 'spec' => array(), 'prefinal' => $globalPolicy));
+
+
+
+        // get required attrs by all SP and fille reseult 'req'
+        $req = $this->getSPRequirements(array_keys($result['sps']));
+        foreach ($req as $kreq => $kvalu) {
+            $result['sps'][$kreq]['req'] = $kvalu['req'];
+        }
+
+
+        foreach ($members as $member) {
+
+            $pid = $member->getId();
+            if (isset($policies['customsp'][$pid])) {
+                $result['sps'][$pid]['custom'] = $policies['customsp'][$pid];
+            }
+            $result['sps'][$pid]['type'] = $member->getType();
+            $result['sps'][$pid]['entid'] = $member->getId();
+            $result['sps'][$pid]['entityid'] = $member->getEntityId();
+            $feds = $member->getActiveFederations();
+            foreach ($feds as $f) {
+                $result['sps'][$pid]['feds'][] = $f->getId();
+            }
+
+            if (count($result['sps'][$pid]['req']) == 0) {
+                $result['sps'][$pid]['req'] = $this->mergeReqAttrsByFeds(array_flip($result['sps'][$pid]['feds']));
+            }
+
+
+            // start entityCategory
+
+            $pp = $member->getCoc();
+            foreach ($pp as $d) {
+                $t = $d->getType();
+                if ($t === 'entcat') {
+                    $result['sps'][$pid]['entcat'][] = $d->getId();
+                }
+            }
+            // end entityCategory
+
+
+        }
+
+
+
+
+        foreach ($policies['sp'] as $attrid => $spPolArr) {
+
+            foreach ($spPolArr as $spId => $spPolicy) {
+                $result['sps'][$spId]['spec'][$attrid] = $spPolicy;
+            }
+
+        }
+
+        foreach ($result['sps'] as $spid => $spdet) {
+
+            if (array_key_exists('active', $spdet)) {
+                $result['sps'][$spid]['final'] = array_replace($spdet['prefinal'], $this->mergeFedPolicies($result['fedPoliciesPerFed'], $spdet['feds']), $spdet['spec']);
+                //remeain only supported attrs
+                $result['sps'][$spid]['final'] = array_intersect_key($result['sps'][$spid]['final'], $supAttrsFlipped);
+                $result['sps'][$spid]['final'] = array_intersect_key($result['sps'][$spid]['final'], $spdet['req']);
+            }
+        }
+
+
+
+        return array('created' => time(), 'data' => $result);
+
     }
 
     public function genPolicyDefs(\models\Provider $idp) {
@@ -258,11 +414,13 @@ class Arpgen
         };
         $result['sps'] = array_fill_keys($membersIDs, array('active' => true, 'entcat' => array(), 'customsp' => array(), 'req' => array(), 'feds' => array(), 'spec' => array(), 'prefinal' => $globalPolicy));
 
+
         // get required attrs by all SP and fille reseult 'req'
         $req = $this->getSPRequirements(array_keys($result['sps']));
         foreach ($req as $kreq => $kvalu) {
             $result['sps'][$kreq]['req'] = $kvalu['req'];
         }
+
         foreach ($members as $member) {
 
             $pid = $member->getId();
@@ -295,7 +453,9 @@ class Arpgen
 
 
         }
-
+        /*
+      * DDDDD
+      */
 
         foreach ($policies['sp'] as $attrid => $spPolArr) {
 
