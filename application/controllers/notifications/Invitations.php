@@ -173,9 +173,16 @@ class Invitations extends MY_Controller
         $this->load->library('emailsender');
         $this->emailsender->addToMailQueue(null,null,$subject,$body,array($this->input->post('email')),false);
 
-        $this->em->flush();
+        try {
+            $this->em->flush();
+            return $this->output->set_status_header('200')->set_output('Invitaion sent');
+        } catch (Exception $e){
+            log_message('error', $e);
+            return $this->output->set_status_header('500')->set_output('DB ERROR');
 
-        return $this->output->set_status_header('401')->set_output('fdddff');
+        }
+
+
 
     }
 
