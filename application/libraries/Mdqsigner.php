@@ -49,6 +49,11 @@ class Mdqsigner
         $result = array();
         if (is_file($filePath)) {
 
+            $fileSize = (int) filesize($filePath);
+            if($fileSize == 0){
+                log_message('error', __METHOD__.' : empty metadata file :'.$filePath);
+                return null;
+            }
             $result['modified'] = date("U", filemtime($filePath));
             $result['metadata'] = file_get_contents($filePath);
 

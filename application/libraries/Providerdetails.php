@@ -173,11 +173,31 @@ class Providerdetails
                 $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srvCircleMetalinkSigned . '&nbsp;</span>&nbsp; ' . anchor_popup($srvCircleMetalinkSigned, '<i class="fa fa-arrow-right"></i>');
             }
         }
+        $mdqEnabled = $this->CI->config->item('mdq') ?: false;
+        if($mdqEnabled) {
+            $d[++$i] = array(
+                'name' => 'MDQ enpoint for url encoded entityIDs',
+                'value' => base_url('mdq/circle/nohash/'.base64url_encode($ent->getEntityId()).'/entities/')
+            );
+            $d[++$i] = array(
+                'name' => 'MDQ enpoint for hashed SHA1 entityIDs',
+                'value' => base_url('mdq/circle/sha1/'.base64url_encode($ent->getEntityId()).'/entities/')
+            );
+        }
+
+
         $isMQEnabled = $this->CI->mq->isClientEnabled();
         if ($isLocal && $hasWriteAccess && $isMQEnabled && $circleEnabled) {
             $d[++$i]['name'] = lang('signmetadata') . showBubbleHelp(lang('rhelp_signmetadata'));
             $d[$i]['value'] = '<a href="' . base_url() . 'msigner/signer/provider/' . $ent->getId() . '" id="providermetasigner" class="button">' . lang('btn_signmetadata') . '</a>';
         }
+
+
+
+
+
+
+
         $wayfhide = false;
 
         if ((isset($feathide['discojuice']) && $feathide['discojuice'] === true) || (isset($featdisable['discojuice']) && $featdisable['discojuice'] === true)) {
@@ -204,6 +224,8 @@ class Providerdetails
                 }
             }
         }
+
+
         /**
          * Federation
          */
@@ -298,6 +320,7 @@ class Providerdetails
             }
         }
         $d[$i]['value'] = '<p>' . $federationsString . '</p><p>' . $manage_membership . '</p>';
+
         if ($no_feds > 0) {
             $d[++$i]['name'] = '';
             $d[$i]['value'] = '<a href="' . base_url() . 'providers/detail/showmembers/' . $id . '" id="getmembers"><button type="button" class="button secondary arrowdownicon ">' . lang('showmemb_btn') . '</button></a>';
