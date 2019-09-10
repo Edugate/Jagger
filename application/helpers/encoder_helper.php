@@ -82,6 +82,6 @@ function arrayWithKeysToHtml($a) {
 }
 
 function doubleDashXmlComment($str){
-    return str_replace("--",'&#x002d;&#x002d',str);
+    return str_replace("--",'&#x002d;&#x002d',$str);
 
 }
