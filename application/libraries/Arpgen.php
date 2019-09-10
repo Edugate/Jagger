@@ -528,7 +528,7 @@ class Arpgen
         }
 
 
-        $xml->writeComment($comment);
+        $xml->writeComment(doubleDashXmlComment($comment));
 
 ///////////////// ENTITY CATEGORIES /////////////////////////
         $ecPolicies = $policy['ecPolicies'];
@@ -543,7 +543,7 @@ class Arpgen
 
 
         foreach ($ecPoliciesByEntCat as $lkey => $lval) {
-            $xml->writeComment('EntityCategory: ' . $policy['definitions']['ec'][$lkey]['value']);
+            $xml->writeComment('EntityCategory: ' . doubleDashXmlComment($policy['definitions']['ec'][$lkey]['value']));
             $xml->startElementNs('afp', 'AttributeFilterPolicy', null);
             $xml->startAttribute('id');
             $xml->text('EntityAttribute-' . $lkey);
@@ -616,7 +616,7 @@ class Arpgen
                 }
             }
             if (count($spdets['final']) == 0) {
-                $xml->writeComment('Omitted requester: ' . $spdets['entityid'] . '');
+                $xml->writeComment('Omitted requester: ' . doubleDashXmlComment($spdets['entityid'] ). '');
                 continue;
             }
 
@@ -631,10 +631,10 @@ class Arpgen
                 }
             }
             if (count($releases) == 0) {
-                $xml->writeComment('Omitted requester: ' . $spdets['entityid'] . '');
+                $xml->writeComment('Omitted requester: ' . doubleDashXmlComment($spdets['entityid']) . '');
                 continue;
             }
-            $xml->writeComment('Requester: ' . $spdets['entityid'] . '');
+            $xml->writeComment('Requester: ' . doubleDashXmlComment($spdets['entityid']) . '');
             $xml->startElementNs('afp', 'AttributeFilterPolicy', null);
             $xml->startAttribute('id');
             $xml->text($spdets['entityid']);
@@ -778,7 +778,7 @@ class Arpgen
         $xml = $this->setElementAttrs($xml, $attrsE);
 
 
-        $xml->writeComment($comment);
+        $xml->writeComment(doubleDashXmlComment($comment));
 
 ///////////////// ENTITY CATEGORIES /////////////////////////
         $ecPolicies = $policy['ecPolicies'];
@@ -793,7 +793,7 @@ class Arpgen
 
 
         foreach ($ecPoliciesByEntCat as $lkey => $lval) {
-            $xml->writeComment('EntityCategory: ' . $policy['definitions']['ec'][$lkey]['value']);
+            $xml->writeComment('EntityCategory: ' . doubleDashXmlComment($policy['definitions']['ec'][$lkey]['value']));
             $xml->startElement('AttributeFilterPolicy');
             $xml->startAttribute('id');
             $xml->text('EntityAttribute-' . $lkey);
@@ -868,7 +868,7 @@ class Arpgen
                 }
             }
             if (count($spdets['final']) == 0) {
-                $xml->writeComment('Omitted requester: ' . $spdets['entityid'] . '');
+                $xml->writeComment('Omitted requester: ' . doubleDashXmlComment($spdets['/coid'] ). '');
                 continue;
             }
 
@@ -883,10 +883,10 @@ class Arpgen
                 }
             }
             if (count($releases) == 0) {
-                $xml->writeComment('Omitted requester: ' . $spdets['entityid'] . '');
+                $xml->writeComment('Omitted requester: ' . doubleDashXmlComment($spdets['entityid'] . ''));
                 continue;
             }
-            $xml->writeComment('Requester: ' . $spdets['entityid'] . '');
+            $xml->writeComment('Requester: ' . doubleDashXmlComment($spdets['entityid']) . '');
             $xml->startElement('AttributeFilterPolicy');
 
             $xml->startAttribute('id');

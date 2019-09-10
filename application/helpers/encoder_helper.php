@@ -80,3 +80,8 @@ function arrayWithKeysToHtml($a) {
     return $str;
 
 }
+
+function doubleDashXmlComment($str){
+    return str_replace("--",'&#x002d;&#x002d',str);
+
+}
