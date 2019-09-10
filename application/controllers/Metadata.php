@@ -84,7 +84,7 @@ class Metadata extends MY_Controller
         $now = new \DateTime('now', new \DateTimeZone('UTC'));
         // EntitiesDescriptor
         $xmlOut->startComment();
-        $xmlOut->text('Metadata was generated on: ' . $now->format('Y-m-d H:i') . ' UTC' . PHP_EOL . 'TERMS OF USE' . PHP_EOL . $federation->getTou() . PHP_EOL);
+        $xmlOut->text('Metadata was generated on: ' . $now->format('Y-m-d H:i') . ' UTC' . PHP_EOL . 'TERMS OF USE' . PHP_EOL . doubleDashXmlComment($federation->getTou()) . PHP_EOL);
         if ($excludeType !== null) {
             $xmlOut->text('Note: ' . $excludeType . ' type of entities have been exluded from the generated metadata' . PHP_EOL);
         }
@@ -108,7 +108,7 @@ class Metadata extends MY_Controller
         foreach ($members as $k => $m) {
             $mtype = $m->getType();
             $xmlOut->startComment();
-            $xmlOut->text(PHP_EOL . $m->getEntityId() . PHP_EOL);
+            $xmlOut->text(PHP_EOL . doubleDashXmlComment($m->getEntityId()) . PHP_EOL);
 
             if (strcmp($mtype, 'IDP') == 0) {
                 $metadataCached = $this->j_ncache->getMcircleMeta($m->getId());
@@ -445,7 +445,7 @@ class Metadata extends MY_Controller
         foreach ($members as $keyMember => $valueMember) {
             $metadataCached = $this->j_ncache->getMcircleMeta($valueMember->getId());
             $xmlOut->startComment();
-            $xmlOut->text($valueMember->getEntityId());
+            $xmlOut->text(doubleDashXmlComment($valueMember->getEntityId()));
             if (!empty($metadataCached)) {
 
                 $xmlOut->endComment();
