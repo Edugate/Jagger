@@ -124,7 +124,7 @@ class Queue {
      * @PrePersist 
      */
     public function doStuffOnPrePersist() {
-        $this->createdAt = date('Y-m-d H:m:s');
+        $this->createdAt = date('Y-m-d H:i:s');
     }
 
     public function inviteProvider($obj)
