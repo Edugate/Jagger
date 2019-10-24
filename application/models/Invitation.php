@@ -234,7 +234,7 @@ class Invitation
      */
     public function doStuffOnPrePersist()
     {
-        $this->createdAt = date('Y-m-d H:m:s');
+        $this->createdAt = date('Y-m-d H:i:s');
         if ($this->validto === null) {
             $oneDay = time() + (24 * 60 * 60);
             $this->validto = $oneDay;
