@@ -117,9 +117,14 @@ function h_metadataNamespaces()
 		'mdattr' => 'urn:oasis:names:tc:SAML:metadata:attribute',
 		'mdrpi' => 'urn:oasis:names:tc:SAML:metadata:rpi',
 		'idpdisc' => 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol',
+                'xenc' => 'http://www.w3.org/2001/04/xmlenc#',
 		'init' => 'urn:oasis:names:tc:SAML:profiles:SSO:request-init',
 		'xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
 		'xi' => 'http://www.w3.org/2001/XInclude',
+                'alg' => 'urn:oasis:names:tc:SAML:metadata:algsupport',
+                'algsupport' => 'urn:oasis:names:tc:SAML:metadata:algsupport',
+                'remd' => 'http://refeds.org/metadata',
+                'hoksso' => 'urn:oasis:names:tc:SAML:2.0:profiles:holder-of-key:SSO:browser'
 	);
 	return $t;
 
