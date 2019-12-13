@@ -118,6 +118,7 @@ function h_metadataNamespaces()
 		'mdrpi' => 'urn:oasis:names:tc:SAML:metadata:rpi',
 		'idpdisc' => 'urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol',
                 'xenc' => 'http://www.w3.org/2001/04/xmlenc#',
+                'xrd' => 'http://docs.oasis-open.org/ns/xri/xrd-1.0',
 		'init' => 'urn:oasis:names:tc:SAML:profiles:SSO:request-init',
 		'xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
 		'xi' => 'http://www.w3.org/2001/XInclude',
