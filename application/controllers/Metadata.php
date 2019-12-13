@@ -309,7 +309,7 @@ class Metadata extends MY_Controller
 
     private function regenerateStatic(models\Provider $entity) {
 
-        $standardNS = h_metadataNamespaces();
+        $standardNS = $this->metadataNS;
 
         $xmlOut = $this->providertoxml->createXMLDocument();
         $this->providertoxml->entityStaticConvert($xmlOut, $entity);
