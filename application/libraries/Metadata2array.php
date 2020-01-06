@@ -165,12 +165,27 @@ class Metadata2array
 
     private function entityConvert(\DOMElement $node, $full = false) {
 
+        /**
+         * @var \DOMDocument $tmpEntityDomDoc
+         */
+        $tmpEntityDomDoc = new \DOMDocument();
+        $tmpEntityDomDoc->loadXML('<md:EntitiesDescriptor></md:EntitiesDescriptor>');
+        $tmpEntityXpath = new \DOMXPath(($tmpEntityDomDoc));
+        $tmpNamespaces = h_metadataNamespaces();
+        foreach ($tmpNamespaces as $key => $value) {
+            $tmpEntityXpath->registerNamespace($key, $value);
+        }
+        $tmpNode = $tmpEntityDomDoc->importNode($node, true);
+        $tmpEntityDomDoc->documentElement->appendChild($tmpNode);
+
+
+
         $isIdp = false;
         $isSp = false;
         $entity = array(
             'metadata' => null,
-            'entityid' => $node->getAttribute('entityID'),
-            'validuntil' => $node->getAttribute('validUntil'),
+            'entityid' => $tmpNode->getAttribute('entityID'),
+            'validuntil' => $tmpNode->getAttribute('validUntil'),
             'rigistrar' => null,
             'regdate' => null,
             'coc' => array(),
@@ -184,7 +199,7 @@ class Metadata2array
             ),
         );
 
-        foreach ($node->childNodes as $gnode) {
+        foreach ($tmpNode->childNodes as $gnode) {
 
             if ($gnode->localName === 'IDPSSODescriptor') {
                 $isIdp = true;
@@ -312,7 +327,7 @@ class Metadata2array
         }
 
         try {
-            $entity['metadata'] = $this->doc->saveXML($node);
+            $entity['metadata'] = $tmpEntityDomDoc->saveXML($tmpNode);
         } catch (Exception $e) {
             log_message('warning', 'Couldnt store xml: ' . $e);
         }
