@@ -2,6 +2,7 @@
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPRuntimeException;
+use PhpAmqpLib\Exception\AMQPIOException;
 use PhpAmqpLib\Message\AMQPMessage;
 
 
@@ -145,6 +146,7 @@ class Mdqworker extends MY_Controller
             throw new Exception('rabbitmq not enabled');
         }
 
+        $usleepTime = 1000000;
 
         while (true) {
 
@@ -155,21 +157,29 @@ class Mdqworker extends MY_Controller
                 $this->processConnection($connection);
             } catch (AMQPRuntimeException $e) {
                 echo $e->getMessage() . PHP_EOL;
+                log_message('error', __METHOD__ . ' '.$e);
                 $this->cleanup_connection($connection);
-                usleep(1000000);
+                usleep($usleepTime);
             } catch (\RuntimeException $e) {
                 echo "Runtime exception " . PHP_EOL;
+                log_message('error', __METHOD__ . ' '.$e);
                 $this->cleanup_connection($connection);
-                usleep(1000000);
+                usleep($usleepTime);
             } catch (\ErrorException $e) {
                 echo "Error exception " .$e. PHP_EOL;
+                log_message('error', __METHOD__ . ' '.$e);
                 $this->cleanup_connection($connection);
-                usleep(1000000);
-            } catch (Exception $e){
+                usleep($usleepTime);
+            } catch (AMQPIOException $e){
                 echo "Error exception " .$e. PHP_EOL;
+                log_message('error', __METHOD__ . ' '.$e);
                 $this->cleanup_connection($connection);
-                usleep(1000000);
-
+                usleep($usleepTime);
+            }  catch (Exception $e){
+                echo "Error exception " .$e. PHP_EOL;
+                log_message('error', __METHOD__ . ' '.$e);
+                $this->cleanup_connection($connection);
+                usleep($usleepTime);
             }
              
         }
