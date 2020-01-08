@@ -108,6 +108,9 @@ class Mdqworker extends MY_Controller
         $channel->queue_declare('mdq', false, true, false, false);
         echo " [*] Waiting for messages. To exit press CTRL+C\n";
         $channel->basic_consume('mdq', '', false, true, false, false, $callback);
+        while ($channel->is_consuming()) {
+           $channel->wait();
+        }
 
 
     }
@@ -159,10 +162,16 @@ class Mdqworker extends MY_Controller
                 $this->cleanup_connection($connection);
                 usleep(1000000);
             } catch (\ErrorException $e) {
-                echo "Error exception " . PHP_EOL;
+                echo "Error exception " .$e. PHP_EOL;
                 $this->cleanup_connection($connection);
                 usleep(1000000);
+            } catch (Exception $e){
+                echo "Error exception " .$e. PHP_EOL;
+                $this->cleanup_connection($connection);
+                usleep(1000000);
+
             }
+             
         }
     }
 
