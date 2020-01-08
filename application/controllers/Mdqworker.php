@@ -129,16 +129,16 @@ class Mdqworker extends MY_Controller
         }
     }
 
-    function shutdown($connection)
-    {
-        $connection->close();
-    }
 
     public function worker()
     {
         if (!is_cli()) {
             die();
         }
+        $shutdown = function ($connection)
+        {
+           $connection->close();
+        };
         $connection = null;
         $conf = $this->config->item('rabbitmq');
         if (!isset($conf['enabled'])) {
