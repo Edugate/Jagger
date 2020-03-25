@@ -136,7 +136,6 @@ class Mdqsigner
      * @param \models\Provider $entity
      */
     private function genMetadata(\models\Provider $entity) {
-        $entity = null;
         if(null === $entity){
             throw new Exception(__CLASS__.' '.__METHOD__." MDQ : entity object is null");
         }
