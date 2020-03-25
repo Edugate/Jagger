@@ -110,7 +110,7 @@ class Mdqworker extends MY_Controller
         echo " [*] Waiting for messages. To exit press CTRL+C\n";
         $channel->basic_consume('mdq', '', false, true, false, false, $callback);
         while ($channel->is_consuming()) {
-           $channel->wait();
+            $channel->wait();
         }
 
 
@@ -129,9 +129,12 @@ class Mdqworker extends MY_Controller
         }
     }
 
-    function shutdown($connection)
+
+    public function shutdown($connection)
     {
+
         $connection->close();
+
     }
 
     public function worker()
@@ -152,36 +155,35 @@ class Mdqworker extends MY_Controller
 
             try {
                 $connection = $this->connect();
-                register_shutdown_function('shutdown', $connection);
-
+                register_shutdown_function([$this, 'shutdown'], $connection);
                 $this->processConnection($connection);
             } catch (AMQPRuntimeException $e) {
                 echo $e->getMessage() . PHP_EOL;
-                log_message('error', __METHOD__ . ' '.$e);
+                log_message('error', __METHOD__ . ' ' . $e);
                 $this->cleanup_connection($connection);
                 usleep($usleepTime);
             } catch (\RuntimeException $e) {
                 echo "Runtime exception " . PHP_EOL;
-                log_message('error', __METHOD__ . ' '.$e);
+                log_message('error', __METHOD__ . ' ' . $e);
                 $this->cleanup_connection($connection);
                 usleep($usleepTime);
             } catch (\ErrorException $e) {
-                echo "Error exception " .$e. PHP_EOL;
-                log_message('error', __METHOD__ . ' '.$e);
+                echo "Error exception " . $e . PHP_EOL;
+                log_message('error', __METHOD__ . ' ' . $e);
                 $this->cleanup_connection($connection);
                 usleep($usleepTime);
-            } catch (AMQPIOException $e){
-                echo "Error exception " .$e. PHP_EOL;
-                log_message('error', __METHOD__ . ' '.$e);
+            } catch (AMQPIOException $e) {
+                echo "Error exception " . $e . PHP_EOL;
+                log_message('error', __METHOD__ . ' ' . $e);
                 $this->cleanup_connection($connection);
                 usleep($usleepTime);
-            }  catch (Exception $e){
-                echo "Error exception " .$e. PHP_EOL;
-                log_message('error', __METHOD__ . ' '.$e);
+            } catch (Exception $e) {
+                echo "Error exception " . $e . PHP_EOL;
+                log_message('error', __METHOD__ . ' ' . $e);
                 $this->cleanup_connection($connection);
                 usleep($usleepTime);
             }
-             
+
         }
     }
 

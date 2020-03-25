@@ -30,20 +30,15 @@ class Mdqsigner
 
 
         $prefix = dirname(APPPATH);
-        $metaPaths = array(
+        return array(
             'circle'     => $prefix . '/signedmetadata/mdq/circle/',
             'entity'     => $prefix . '/signedmetadata/mdq/entity/',
             'federation' => $prefix . '/signedmetadata/mdq/federation/'
         );
-
-        return $metaPaths;
     }
 
 
     public function getStoredMetadata($entityInSha) {
-
-        $modtime = new \DateTime('now', new \DateTimezone('UTC'));
-
         $tmpStorageDir = $this->metaPaths['entity'];
         $filePath = $tmpStorageDir . '' . $entityInSha . '/metadata.xml';
         $result = array();
@@ -59,7 +54,6 @@ class Mdqsigner
 
             return $result;
         }
-
         return null;
     }
 
@@ -90,6 +84,7 @@ class Mdqsigner
                 $entity = $this->em->getRepository("models\Provider")->findOneBy(array('entityid' => $entityid));
                 $attempt = $maxAttempts;
             } catch (Exception $e) {
+                log_message('error',__CLASS__.'::'.__METHOD__.': '.$e);
                 $this->em->getConnection()->close();
                 $this->em->getConnection()->connect();
                 $attempt++;
@@ -139,10 +134,14 @@ class Mdqsigner
 
     /**
      * @param \models\Provider $entity
-     * @return CI_Output
      */
     private function genMetadata(\models\Provider $entity) {
+        $entity = null;
+        if(null === $entity){
+            throw new Exception(__CLASS__.' '.__METHOD__." MDQ : entity object is null");
+        }
         $entityInSha = sha1($entity->getEntityId());
+        log_message('debug',__CLASS__.'MDQ:: entityInSha '.$entityInSha);
         $this->ci->load->library(array('providertoxml'));
         $options['attrs'] = 1;
         $isStatic = $entity->isStaticMetadata();
@@ -182,10 +181,18 @@ class Mdqsigner
 
     public function sign($entityid) {
         $entity = $this->getEntity($entityid);
-        $unsignedMetadata = $this->genMetadata($entity);
-        $this->signXML($unsignedMetadata);
+        try {
+            $unsignedMetadata = $this->genMetadata($entity);
+            $this->signXML($unsignedMetadata);
+            return true;
+        }
+        catch (Exception $e){
+            log_message('error',$e);
+        }
 
-        return true;
+        return false;
+
+
     }
 
 
