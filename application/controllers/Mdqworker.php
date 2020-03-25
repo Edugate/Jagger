@@ -130,6 +130,7 @@ class Mdqworker extends MY_Controller
     }
 
 
+
     public function shutdown($connection)
     {
 
@@ -137,11 +138,13 @@ class Mdqworker extends MY_Controller
 
     }
 
+
     public function worker()
     {
         if (!is_cli()) {
             die();
         }
+
         $connection = null;
         $conf = $this->config->item('rabbitmq');
         if (!isset($conf['enabled'])) {
@@ -188,3 +191,4 @@ class Mdqworker extends MY_Controller
     }
 
 }
+        
