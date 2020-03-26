@@ -49,6 +49,7 @@ class Mdqworker extends MY_Controller
 
     }
 
+
     private function mdqCallback($msg)
     {
         echo ' [x] mdqCallback Received ', $msg->body, "\n";
@@ -62,7 +63,6 @@ class Mdqworker extends MY_Controller
             } else {
                 $newdata = $data;
             }
-
             foreach ($newdata as $job) {
                 if (array_key_exists('action', $job)) {
                     if ($job['action'] === 'sign') {
@@ -70,20 +70,20 @@ class Mdqworker extends MY_Controller
                         continue;
                     }
                     if ($job['action'] === 'refresh') {
-
                         $this->refresh($job);
                         continue;
                     }
                 }
             }
         }
-
-
         sleep(substr_count($msg->body, '.'));
         echo " [x] mdqCallback Done\n";
 
     }
 
+    /**
+     * @return AMQPStreamConnection
+     */
     private function connect()
     {
         $vhost = '/';
@@ -91,9 +91,28 @@ class Mdqworker extends MY_Controller
         if (isset($conf['vhost'])) {
             $vhost = $conf['vhost'];
         }
-        return new AMQPStreamConnection($conf['host'], $conf['port'], $conf['user'], $conf['password'], $vhost);
+        return new AMQPStreamConnection(
+            $conf['host'],
+            $conf['port'],
+            $conf['user'],
+            $conf['password'],
+            $vhost,
+            false,
+            'AMQPLAIN',
+            null,
+            'en_US',
+            3.0,
+            3.0,
+            null,
+            true,
+            30,
+            0.0,
+            null);
     }
 
+    /**
+     * @param $connection AMQPStreamConnection
+     */
     private function processConnection($connection)
     {
         $callback = function ($msg) {
@@ -105,12 +124,16 @@ class Mdqworker extends MY_Controller
         };
 
 
+
         $channel = $connection->channel();
         $channel->queue_declare('mdq', false, true, false, false);
         echo " [*] Waiting for messages. To exit press CTRL+C\n";
         $channel->basic_consume('mdq', '', false, true, false, false, $callback);
         while ($channel->is_consuming()) {
+            log_message('debug','MDQWORKER in consuming state');
             $channel->wait();
+
+
         }
 
 
@@ -157,9 +180,11 @@ class Mdqworker extends MY_Controller
         while (true) {
 
             try {
+                log_message('debug','MDQWORKER connecting to rabbitmqserver');
                 $connection = $this->connect();
                 register_shutdown_function([$this, 'shutdown'], $connection);
                 $this->processConnection($connection);
+                log_message('debug','MDQWORKER connection to rabbitmqserver established');
             } catch (AMQPRuntimeException $e) {
                 echo $e->getMessage() . PHP_EOL;
                 log_message('error', __METHOD__ . ' ' . $e);

@@ -133,6 +133,7 @@ class Msigner extends MY_Controller
             $vhost = $conf['vhost'];
         }
 
+        log_message('debug','MDQ signing request sent');
         /**
          * sign metadata
          */
@@ -154,9 +155,14 @@ class Msigner extends MY_Controller
          * re-sign mdq if enabled
          */
         $isMDQ = $this->config->item('mdq') ?: false;
-
         if($isMDQ){
-            $connection = new AMQPStreamConnection('' . $conf['host'], $conf['port'], '' . $conf['user'] . '', '' . $conf['password'] . '', $vhost);
+            try {
+                $connection = new AMQPStreamConnection('' . $conf['host'], $conf['port'], '' . $conf['user'] . '', '' . $conf['password'] . '', $vhost);
+            }
+            catch (Exception $e){
+                log_message('error',$e);
+            }
+
             $channel = $connection->channel();
             $channel->queue_declare('mdq', false, true, false, false);
             $data = urlsafeB64Encode(json_encode($options));
