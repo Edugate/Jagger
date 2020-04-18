@@ -19,6 +19,7 @@ class Gworkertemplates
     protected $em;
     protected $digestmethod;
     protected $ispreworkers;
+    protected $internalprefixurl;
 
     public function __construct() {
         $this->ci = &get_instance();
@@ -32,6 +33,14 @@ class Gworkertemplates
         if (empty($this->ispreworkers) || !is_array($this->ispreworkers)) {
             $this->ispreworkers = array();
         }
+        $this->internalprefixurl = $this->ci->config->item('internalprefixurl');
+        if(!filter_var($this->internalprefixurl, FILTER_VALIDATE_URL)){
+            $this->internalprefixurl =  rtrim($this->internalprefixurl, '/') . '/';
+        }
+        else {
+            $this->internalprefixurl = base_url();
+        }
+
     }
 
 
@@ -59,7 +68,7 @@ class Gworkertemplates
             $digest1 = $this->digestmethod;
         }
         $encodedentity = base64url_encode($provider->getEntityId());
-        $sourceurl = base_url() . 'metadata/circle/' . $encodedentity . '/metadata.xml';
+        $sourceurl = $this->internalprefixurl . 'metadata/circle/' . $encodedentity . '/metadata.xml';
         $options = array('src' => '' . $sourceurl . '', 'type' => 'provider', 'encname' => '' . $encodedentity . '', 'digest' => '' . $digest1 . '');
         $result = array(
             'fname'   => $funcname,
@@ -85,7 +94,7 @@ class Gworkertemplates
         $result[] = array(
             'fname'   => 'metadatasigner',
             'fparams' => array(
-                'src'     => '' . base_url() . 'metadata/federation/' . $fed->getSysname() . '/metadata.xml',
+                'src'     => '' . $this->internalprefixurl . 'metadata/federation/' . $fed->getSysname() . '/metadata.xml',
                 'type'    => 'federation',
                 'encname' => $fed->getSysname(),
                 'digest'  => '' . $digest1 . ''
@@ -96,7 +105,7 @@ class Gworkertemplates
             $result[] = array(
                 'fname'   => 'metadatasigner',
                 'fparams' => array(
-                    'src'     => '' . base_url() . 'metadata/federationexport/' . $fed->getSysname() . '/metadata.xml',
+                    'src'     => '' . $this->internalprefixurl . 'metadata/federationexport/' . $fed->getSysname() . '/metadata.xml',
                     'type'    => 'federationexport',
                     'encname' => '' . $fed->getSysname() . '',
                     'digest'  => '' . $digest2 . ''
