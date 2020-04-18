@@ -44,5 +44,7 @@ if($JAGGERMDQ === 1 || $JAGGERMDQ === '1')
 {
    $config['mdq'] = true;
 }
+if(empty($config['internalprefixurl'])){
 
-
+   $config['internalprefixurl'] = getenv('JAGGERINTERNALURL');
+}
