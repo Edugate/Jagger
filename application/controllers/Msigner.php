@@ -18,6 +18,13 @@ class Msigner extends MY_Controller
 
     public function __construct() {
         parent::__construct();
+        $this->internalprefixurl = $this->ci->config->item('internalprefixurl');
+        if(!filter_var($this->internalprefixurl, FILTER_VALIDATE_URL)){
+            $this->internalprefixurl =  rtrim($this->internalprefixurl, '/') . '/';
+        }
+        else {
+            $this->internalprefixurl = base_url();
+        }
     }
 
     private function genOptions($hash, $type, $oid) {
@@ -40,7 +47,7 @@ class Msigner extends MY_Controller
             }
             log_message('debug', __METHOD__ . ' final digestsign is set to: ' . $digest1 . 'and for export-federation if enabled set to: ' . $digest2);
             $encfedname = $fed->getSysname();
-            $sourceurl = base_url('metadata/federation/' . $encfedname . '/metadata.xml');
+            $sourceurl = $this->internalprefixurl .'metadata/federation/' . $encfedname . '/metadata.xml';
             $options[] = array(
                 'action'  => 'sign',
                 'src'     => '' . $sourceurl . '',
@@ -49,7 +56,7 @@ class Msigner extends MY_Controller
                 'digest'  => '' . $digest1 . '');
             $localexport = $fed->getLocalExport();
             if (!empty($localexport)) {
-                $options[] = array('src' => '' . base_url() . 'metadata/federationexport/' . $encfedname . '/metadata.xml', 'type' => 'federationexport', 'encname' => '' . $encfedname . '', 'digest' => '' . $digest2 . '');
+                $options[] = array('src' => '' . $this->internalprefixurl . 'metadata/federationexport/' . $encfedname . '/metadata.xml', 'type' => 'federationexport', 'encname' => '' . $encfedname . '', 'digest' => '' . $digest2 . '');
             }
 
             return $options;
@@ -72,7 +79,7 @@ class Msigner extends MY_Controller
                 $digest1 = $hash;
             }
             $encodedentity = base64url_encode($provider->getEntityId());
-            $sourceurl = base_url('metadata/circle/' . $encodedentity . '/metadata.xml');
+            $sourceurl =$this->internalprefixurl. 'metadata/circle/' . $encodedentity . '/metadata.xml';
             $options[] = array(
                 'action'  => 'sign',
                 'src'     => '' . $sourceurl . '',
