@@ -19,7 +19,7 @@ class Msigner extends MY_Controller
     public function __construct() {
         parent::__construct();
         $this->internalprefixurl = $this->config->item('internalprefixurl');
-        if(!filter_var($this->internalprefixurl, FILTER_VALIDATE_URL)){
+        if(filter_var($this->internalprefixurl, FILTER_VALIDATE_URL)){
             $this->internalprefixurl =  rtrim($this->internalprefixurl, '/') . '/';
         }
         else {

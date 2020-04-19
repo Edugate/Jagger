@@ -34,7 +34,7 @@ class Gworkertemplates
             $this->ispreworkers = array();
         }
         $this->internalprefixurl = $this->ci->config->item('internalprefixurl');
-        if(!filter_var($this->internalprefixurl, FILTER_VALIDATE_URL)){
+        if(filter_var($this->internalprefixurl, FILTER_VALIDATE_URL)){
             $this->internalprefixurl =  rtrim($this->internalprefixurl, '/') . '/';
         }
         else {
