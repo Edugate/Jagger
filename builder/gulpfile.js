@@ -81,7 +81,17 @@ gulp.task('sass-f6-theme02', function () { // preparing for foundation6
         .pipe(gulp.dest('../styles/'));
 });
 
-gulp.task('sass', gulp.parallel('copyfonts',  'sass-f6-default-theme', 'sass-f6-theme01', 'sass-f6-theme02'));
+gulp.task('sass-f6-theme03', function () { // preparing for foundation6
+
+    console.log('RUN::::sass-f6-theme03');
+    return gulp
+        .src('scss/f6-app-theme03.scss')
+        .pipe(sass({includePaths: sassFoundation6Paths, outputStyle: 'compressed'}))
+        .pipe(rename('theme03.css'))
+        .pipe(gulp.dest('../styles/'));
+});
+
+gulp.task('sass', gulp.parallel('copyfonts',  'sass-f6-default-theme', 'sass-f6-theme01', 'sass-f6-theme02','sass-f6-theme03'));
 
 gulp.task('clean', function () {
     return gulp

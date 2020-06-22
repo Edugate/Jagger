@@ -1,0 +1,15 @@
+
+$foundation-palette: (
+        primary: #014289,
+        secondary: #59595b,
+        success: #43AC6A,
+        warning:  #ecc530,
+        alert: #cc5430,
+        info: #a0d3e8,
+);
+
+$topbar-background: #014289;
+$footer-background: #031134;
+$tab-background:#1E4D2B;
+$tab-background-second-level: lighten($tab-background, 10%);
+//#16346B

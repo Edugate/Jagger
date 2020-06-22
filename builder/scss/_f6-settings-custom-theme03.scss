@@ -1,0 +1,81 @@
+
+
+$topbar-input-width: 200px;
+$topbar-unstack-breakpoint: medium;
+$topbar-link-color: $white;
+
+$footer-background: #031134 !default;
+$footer-text: $white;
+
+$jagger-selected-bgcolor: #074e68;
+$jagger-selected-color: #fff;
+
+@if variable-exists(j-side-icon-bg) {
+  $final-side-icon-bg: $j-side-icon-bg;
+} 
+
+$final-side-icon-bg-final: $primary-color !default;
+
+@if variable-exists(j-side-icon-font-color) {
+  $final-side-icon-font-color: $j-side-icon-font-color;
+} 
+  $final-side-icon-font-color: $white !default;
+
+@if variable-exists(jagger-selected-bgcolor) {
+  $final-jagger-selected-bgcolor: $jagger-selected-bgcolor;
+} 
+
+$final-jagger-selected-bgcolor: #5897fb !default;
+
+
+@if variable-exists(jagger-selected-color) {
+  $final-jagger-selected-color: $jagger-selected-color;
+} 
+  $final-jagger-selected-color: #fff !default;
+
+
+$facebook-color: #3b5998;
+$twitter-color: #55acee;
+$google-color: #d50f25;
+$fedlogin-color: $primary-color;
+$icon-size: 2rem;
+
+// TABS
+
+// $tab-item-color: foreground($tab-background);
+$tab-item-color: white;
+
+$tab-item-color-hover: $black;
+$tab-background-active: lighten($black,25%);
+
+$tab-background-second-level: lighten($black,10%);
+
+
+// box header (dashboard)
+//$box-header-background: #454545;
+$box-header-background: #13316A;
+$box-header-font: lighten($box-header-background,80%);
+
+$section-header-background:  #454545;
+//$section-header-background:  red;
+$section-header-font: lighten($section-header-background, 80%);
+
+.gblock {
+  background-color: #f1f1f1;
+  padding: 0.5rem !important;
+
+}
+
+.lbl-active {
+
+  color: white !important
+}
+.lbl-local {
+
+  color: white !important
+}
+tabs-title > a:focus, .tabs-title > a[aria-selected="true"]{
+   color: white !important
+
+
+}
