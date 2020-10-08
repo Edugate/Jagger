@@ -39,7 +39,7 @@ class Sp_list extends MY_Controller
         $has_read_access = $this->zacl->check_acl($resource, $action, $group, '');
         if (!$has_read_access) {
             $data['content_view'] = 'nopermission';
-            $data['error'] = lang('rerror_nopermtolistidps');
+            $data['error'] = lang('rerror_nopermtolistisps');
             return $this->load->view(MY_Controller::$page, $data);
 
         }
