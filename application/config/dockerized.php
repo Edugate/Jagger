@@ -48,3 +48,9 @@ if(empty($config['internalprefixurl'])){
 
    $config['internalprefixurl'] = getenv('JAGGERINTERNALURL');
 }
+$config['feduserapplyform'] = false;
+$JAGGERFEDUSERAPPLYFORM = getenv('JAGGER_FEDUSER_APPLY_FORM');
+if($JAGGERFEDUSERAPPLYFORM === 1 || $JAGGERFEDUSERAPPLYFORM === '1'){
+  $config['feduserapplyform'] = true
+}
+

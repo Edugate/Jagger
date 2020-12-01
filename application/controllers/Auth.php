@@ -38,12 +38,16 @@ class Auth extends MY_Controller
     }
 
     public function fedregister() {
+        $canApplyForAccount = (bool)$this->config->item("feduserapplyform") || false;
         $method = $this->input->method(true);
         if (!$this->input->is_ajax_request() || $method !== 'POST') {
             return $this->output->set_status_header(403)->set_output('Permission Denied');
         }
         if ($this->jauth->isLoggedIn()) {
             return $this->output->set_status_header(403)->set_output('Already authenticated');
+        }
+        if($canApplyForAccount !== true){
+            return $this->output->set_status_header(403)->set_output('Registration is disabled. Please contact support.');
         }
 
         $fedidentity = $this->session->userdata('fedidentity');
@@ -311,6 +315,19 @@ class Auth extends MY_Controller
         return null;
     }
 
+    private function getShibAffiliation(){
+        $affiliationVarName = $this->config->item('Shib_affiliation');
+        $affiliation = $this->input->server($affiliationVarName);
+        if($affiliation !== null) {
+            return $affiliation;
+        }
+        $affiliation = $this->input->server('REDIRECT_' . $affiliationVarName);
+        if($affiliation !== null) {
+            return $affiliation;
+        }
+        return '';
+    }
+
     private function getShibMail() {
         $emailVarName = $this->config->item('Shib_mail');
         $email = $this->input->server($emailVarName);
@@ -522,10 +539,16 @@ class Auth extends MY_Controller
 
             if (!$canAutoRegister) {
                 log_message('error', 'User authorization failed: ' . $userValue . ' doesnt exist in RR');
+                $canApplyForAccount = (bool) $this->config->item("feduserapplyform") || false;
 
-                $fedidentity = array('fedusername' => $userValue, 'fedfname' => $this->getShibFname(), 'fedsname' => $this->getShibSname(), 'fedemail' => $this->getShibMail());
-                $this->session->set_userdata(array('fedidentity' => $fedidentity));
-                $data['content_view'] = 'feduserregister_view';
+                if($canApplyForAccount === true) {
+                    $fedidentity = array('fedusername' => $userValue, 'fedfname' => $this->getShibFname(), 'fedsname' => $this->getShibSname(), 'fedemail' => $this->getShibMail());
+                    $this->session->set_userdata(array('fedidentity' => $fedidentity));
+                    $data['content_view'] = 'feduserregister_view';
+                }
+                else {
+                    $data['content_view'] = 'feduserregisterdisabled_view';
+                }
 
                 return $this->load->view(MY_Controller::$page, $data);
             } else {

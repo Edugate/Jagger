@@ -15,7 +15,8 @@ class Oidcauth extends MY_Controller
     private $oidcEnabled;
     private $oidcOps;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->oidcEnabled = $this->config->item('oidc_enabled');
         $this->oidcOps = $this->config->item('oidc_ops');
@@ -25,7 +26,8 @@ class Oidcauth extends MY_Controller
      * testing against different jwt library
      */
 
-    public function authn() {
+    public function authn()
+    {
 
         try {
             $this->checkGlobal();
@@ -45,7 +47,7 @@ class Oidcauth extends MY_Controller
             $provider = $this->oidcOps[$openProvider];
             $client = new Jagger\oidc\Client($provider['openid_configuration']);
             $client->addScope($provider['scopes']);
-            if(array_key_exists('claims',$provider)) {
+            if (array_key_exists('claims', $provider)) {
                 $client->setClaimRequest($provider['claims']);
             }
             $client->setProviderURL($openProvider);
@@ -58,12 +60,13 @@ class Oidcauth extends MY_Controller
 
             return $this->output->set_header('application/json')->set_status_header(200)->set_output(json_encode(array('redirect' => $authzRedirectUrl)));
         }
-            return $this->output->set_status_header(403)->set_output('Missing');
+        return $this->output->set_status_header(403)->set_output('Missing');
 
     }
 
 
-    public function callback() {
+    public function callback()
+    {
         try {
             $this->checkGlobal();
         } catch (Exception $e) {
@@ -106,17 +109,15 @@ class Oidcauth extends MY_Controller
 
             return $this->load->view(MY_Controller::$page, array('content_view' => 'error_message', 'error_message' => html_escape($error_message)));
         }
-        $mapUsername =null;
+        $mapUsername = null;
 
-        if(isset($provider['mapping_claims']['username'])){
+        if (isset($provider['mapping_claims']['username'])) {
             $mapUsername = $provider['mapping_claims']['username'];
         }
 
         $mapEmail = null;
-        $mapGivenname= null;
+        $mapGivenname = null;
         $mapSurname = null;
-
-
 
 
         $fname = null;
@@ -124,12 +125,11 @@ class Oidcauth extends MY_Controller
         $email = null;
 
 
-
         if (isset($provider['mapping_claims']['fname'])) {
-            $mapGivenname =$provider['mapping_claims']['fname'];
+            $mapGivenname = $provider['mapping_claims']['fname'];
         }
         if (isset($provider['mapping_claims']['sname'])) {
-            $mapSurname =  $provider['mapping_claims']['sname'];
+            $mapSurname = $provider['mapping_claims']['sname'];
 
         }
 
@@ -139,24 +139,24 @@ class Oidcauth extends MY_Controller
         }
         $userinfo = $client->requestUserinfo();
         $username = null;
-        if($mapUsername === null){
-            $username  = (string)$claims['sub'] . '@' . $claims['iss'];
-        }elseif ($userinfo->$mapUsername){
+        if ($mapUsername === null) {
+            $username = (string)$claims['sub'] . '@' . $claims['iss'];
+        } elseif ($userinfo->$mapUsername) {
             $username = $userinfo->$mapUsername;
         }
 
-        if(isset($userinfo->$mapEmail)){
+        if (isset($userinfo->$mapEmail)) {
             $email = $userinfo->$mapEmail;
         }
-        if(isset($userinfo->$mapGivenname)){
+        if (isset($userinfo->$mapGivenname)) {
             $fname = $userinfo->$mapGivenname;
         }
 
-        if(isset($userinfo->$mapSurname)){
+        if (isset($userinfo->$mapSurname)) {
             $sname = $userinfo->$mapSurname;
         }
 
-        if(trim($username) === ''){
+        if (trim($username) === '') {
             show_error('missing information from OP', 403);
         }
 
@@ -227,6 +227,7 @@ class Oidcauth extends MY_Controller
 
 
             $canAutoRegister = $this->config->item('autoregister_federated');
+            $canApplyForAccount = (bool)$this->config->item("feduserapplyform") || false;
             if ($email === null) {
                 log_message('warning', __METHOD__ . ' User hasnt provided email attr during oidc access');
                 show_error(lang('error_noemail'), 403);
@@ -234,10 +235,14 @@ class Oidcauth extends MY_Controller
 
             if (!$canAutoRegister) {
                 log_message('error', 'User authorization failed: ' . $username . ' doesnt exist in RR');
-
-                $fedidentity = array('fedusername' => $username, 'fedfname' => $fname, 'fedsname' => $sname, 'fedemail' => $email);
-                $this->session->set_userdata(array('fedidentity' => $fedidentity));
-                $data['content_view'] = 'feduserregister_view';
+                if ($canApplyForAccount === true) {
+                    $fedidentity = array('fedusername' => $username, 'fedfname' => $fname, 'fedsname' => $sname, 'fedemail' => $email);
+                    $this->session->set_userdata(array('fedidentity' => $fedidentity));
+                    $data['content_view'] = 'feduserregister_view';
+                }
+                else {
+                    $data['content_view'] = 'feduserregisterdisabled_view';
+                }
 
                 return $this->load->view(MY_Controller::$page, $data);
             } else {
@@ -269,7 +274,8 @@ class Oidcauth extends MY_Controller
     }
 
 
-    private function checkGlobal() {
+    private function checkGlobal()
+    {
         if ($this->oidcEnabled !== true || !is_array($this->oidcOps) || count($this->oidcOps) == 0 || !class_exists('Jagger\oidc\Client')) {
             throw new Exception('OpenID Connect not enabled or extension not found');
         }
