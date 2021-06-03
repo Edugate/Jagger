@@ -162,11 +162,19 @@ class Disco extends MY_Controller
         if (empty($result)) {
             $overwayf = $ent->getWayfList();
             $white = false;
+            $black = false;
 
-            if (is_array($overwayf) && array_key_exists('white', $overwayf) && count($overwayf['white']) > 0) {
-                $white = true;
-                $this->wayfList = $overwayf['white'];
+            if(is_array($overwayf)){
+                if (array_key_exists('white', $overwayf) && count($overwayf['white']) > 0) {
+                    $white = true;
+                    $this->wayfList = $overwayf['white'];
+                }
+                if(array_key_exists('black',$overwayf) && count($overwayf['black']) > 0){
+                    $black = true;
+                }
             }
+
+
             $tmpProviders = new models\Providers;
             /**
              * @var $providersForWayf models\Provider[]
@@ -179,7 +187,11 @@ class Disco extends MY_Controller
             $icounter = 0;
             foreach ($providersForWayf as $ents) {
                 $allowed = true;
-                if ($white && !in_array($ents->getEntityId(), $this->wayfList, true)) {
+                $entityToCheck = $ents->getEntityId();
+                if ($white && !in_array($entityToCheck, $this->wayfList, true)) {
+                    $allowed = false;
+                }
+                if($black && in_array($entityToCheck,$overwayf['black'], true)){
                     $allowed = false;
                 }
                 if ($allowed) {
