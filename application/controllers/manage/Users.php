@@ -29,7 +29,7 @@ class Users extends MY_Controller
         $this->form_validation->set_rules('email', 'E-mail', 'trim|required|min_length[5]|max_length[128]|valid_email');
         $this->form_validation->set_rules('access', 'Access type', 'trim|required');
         $accesstype = trim($this->input->post('access'));
-        if ($accesstype === 'fed') {
+        if ($accesstype !== 'fed') {
             $this->form_validation->set_rules('password', '' . lang('rr_password') . '', 'required|min_length[5]|max_length[23]|matches[passwordconf]');
             $this->form_validation->set_rules('passwordconf', '' . lang('rr_passwordconf') . '', 'required|min_length[5]|max_length[23]');
         }
