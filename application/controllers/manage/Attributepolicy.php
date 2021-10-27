@@ -151,6 +151,7 @@ class Attributepolicy extends MY_Controller
                     '0' => lang('dropnever'),
                     '1' => lang('dropokreq'),
                     '2' => lang('dropokreqdes'),
+                    '3' => lang('dropokalways'),
                     '100' => lang('dropnotset'),
                     '1000' => lang('notsupported'))
             ),
@@ -253,11 +254,12 @@ class Attributepolicy extends MY_Controller
         $result['definitions']['req'] = array(
             '1' => lang('droprequired'),
             '2' => lang('dropdesired'),
+            '3' => lang('dropokalways'),
             '100' => '',
 
         );
 
-        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => lang('notsupported'));
+        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '3'=>lang('dropokalways'),'100' => lang('dropnotset'), '1000' => lang('notsupported'));
 
         return $this->output->set_content_type('application/json')->set_output(json_encode($result));
     }
@@ -278,7 +280,7 @@ class Attributepolicy extends MY_Controller
         $result['definitions']['columns'] = array(lang('attrname'), lang('policy'), lang('rr_action'));
         $result['definitions']['ecmembers'] = base_url('manage/regpolicy/getmembers/');
         $result['definitions']['attrs'] = $this->arpgen->getAttrDefs();
-        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'), '1000' => lang('notsupported'));
+        $result['definitions']['policy'] = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '3'=>lang('dropokalways'), '100' => lang('dropnotset'), '1000' => lang('notsupported'));
 
         /**
          * @var $cocsColl models\Coc[]
@@ -340,7 +342,7 @@ class Attributepolicy extends MY_Controller
             return $this->output->set_status_header(403)->set_output( validation_errors());
         }
 
-        if (!in_array($policy, array('0', '1', '2', '100'))) {
+        if (!in_array($policy, array('0', '1', '2', '3','100'))) {
             return $this->output->set_status_header(403)->set_output('Posted invalid data');
         }
         try {
@@ -354,7 +356,7 @@ class Attributepolicy extends MY_Controller
             return $this->output->set_status_header(500)->set_output('Internal Server Error');
         }
         if ($controlCheck !== null) {
-            return $this->output->set_status_header(403)->set_output('Policy alredy exists. please use edit instead');
+            return $this->output->set_status_header(403)->set_output('The policy already exists. Please edit existing one instead');
         }
 
 
@@ -429,7 +431,7 @@ class Attributepolicy extends MY_Controller
         $entcatid = trim($this->input->post('entcatid'));
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
-        if (!ctype_digit($entcatid) || !ctype_digit($attrid) || !ctype_digit($policy) || !in_array($policy, array('0', '1', '2'))) {
+        if (!ctype_digit($entcatid) || !ctype_digit($attrid) || !ctype_digit($policy) || !in_array($policy, array('0', '1', '2','3'))) {
             return $this->output->set_status_header(403)->set_output('Posted invalid data');
         }
         /**
@@ -512,6 +514,7 @@ class Attributepolicy extends MY_Controller
                     '0' => lang('dropnever'),
                     '1' => lang('dropokreq'),
                     '2' => lang('dropokreqdes'),
+                    '3'=>lang('dropokalways'),
                     '100' => lang('dropnotset'),
                     '1000' => lang('notsupported')
                 ),
@@ -595,7 +598,7 @@ class Attributepolicy extends MY_Controller
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
         $supportintput = trim($this->input->post('support'));
-        if (!ctype_digit($attrid) || !ctype_digit($policy) || !in_array($policy, array('0', '1', '2', '100'))) {
+        if (!ctype_digit($attrid) || !ctype_digit($policy) || !in_array($policy, array('0', '1', '2','3', '100'))) {
             return $this->output->set_status_header(403)->set_output('Posted invalid data');
         }
         /**
@@ -662,7 +665,7 @@ class Attributepolicy extends MY_Controller
         $attrid = trim($this->input->post('attrid'));
         $policy = trim($this->input->post('policy'));
         $entcatid = trim($this->input->post('entcatid'));
-        if (!ctype_digit($attrid) || !ctype_digit($policy) || !ctype_digit($entcatid) || !in_array($policy, array('0', '1', '2', '100'))) {
+        if (!ctype_digit($attrid) || !ctype_digit($policy) || !ctype_digit($entcatid) || !in_array($policy, array('0', '1', '2', '3','100'))) {
             return $this->output->set_status_header(403)->set_output('Posted invalid data');
         }
         /**
@@ -732,7 +735,7 @@ class Attributepolicy extends MY_Controller
 
 
 
-        if (!ctype_digit($attrid) || !ctype_digit($policy) || !ctype_digit($fedid) || !in_array($policy, array('0', '1', '2', '100')) ) {
+        if (!ctype_digit($attrid) || !ctype_digit($policy) || !ctype_digit($fedid) || !in_array($policy, array('0', '1', '2','3', '100')) ) {
             return $this->output->set_status_header(403)->set_output('Posted invalid data');
         }
         /**
@@ -807,7 +810,7 @@ class Attributepolicy extends MY_Controller
         $spid = trim($this->input->post('spid'));
         $customenabled = trim($this->input->post('customenabled'));
         $custompolicy = trim($this->input->post('custompolicy'));
-        if (!ctype_digit($attrid) || !ctype_digit($policy) || !ctype_digit($spid) || !in_array($policy, array('0', '1', '2', '100'))) {
+        if (!ctype_digit($attrid) || !ctype_digit($policy) || !ctype_digit($spid) || !in_array($policy, array('0', '1', '2', '3', '100'))) {
             return $this->output->set_status_header(403)->set_output('Posted invalid data');
         }
 

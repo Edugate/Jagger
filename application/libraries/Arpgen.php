@@ -415,6 +415,7 @@ class Arpgen
         $result['sps'] = array_fill_keys($membersIDs, array('active' => true, 'entcat' => array(), 'customsp' => array(), 'req' => array(), 'feds' => array(), 'spec' => array(), 'prefinal' => $globalPolicy));
 
 
+
         // get required attrs by all SP and fille reseult 'req'
         $req = $this->getSPRequirements(array_keys($result['sps']));
         foreach ($req as $kreq => $kvalu) {
@@ -436,7 +437,7 @@ class Arpgen
             }
 
             if (count($result['sps'][$pid]['req']) == 0) {
-                $result['sps'][$pid]['req'] = $this->mergeReqAttrsByFeds(array_flip($result['sps'][$pid]['feds']));
+                   $result['sps'][$pid]['req'] = $this->mergeReqAttrsByFeds(array_flip($result['sps'][$pid]['feds']));
             }
 
 
@@ -453,6 +454,7 @@ class Arpgen
 
 
         }
+
         /*
       * DDDDD
       */
@@ -465,15 +467,77 @@ class Arpgen
 
         }
 
+
+        /// @todo FIX
+
         foreach ($result['sps'] as $spid => $spdet) {
 
+
             if (array_key_exists('active', $spdet)) {
+
+
                 $result['sps'][$spid]['final'] = array_replace($spdet['prefinal'], $this->mergeFedPolicies($result['fedPoliciesPerFed'], $spdet['feds']), $spdet['spec']);
+                //
+////
+        /*        if($spid === 34){
+                    echo '<pre>';
+                    echo 'ddddddddddd'.PHP_EOL;
+                    print_r($result['sps'][$spid]);
+                    echo 'ddddddddddd'.PHP_EOL;
+                    echo '</pre>';
+
+                }*/
+
+
                 //remeain only supported attrs
                 $result['sps'][$spid]['final'] = array_intersect_key($result['sps'][$spid]['final'], $supAttrsFlipped);
+
+                $addsPol = array();
+                foreach ($result['sps'][$spid]['final'] as $a => $b){
+                    if($b === 3){
+                        $ifExistsInGlobal = (array_key_exists($a, $globalPolicy) && ($globalPolicy[$a] === $b));
+                        if($ifExistsInGlobal !== true){
+                            $addsPol[$a] = $b;
+
+                        }
+                    }
+                }
+
+
+
                 $result['sps'][$spid]['final'] = array_intersect_key($result['sps'][$spid]['final'], $spdet['req']);
+
+                foreach ($addsPol as $a => $b){
+                    $result['sps'][$spid]['final'][$a] = $b;
+                }
+             /*   if($spid === 34){
+                    echo '<pre>';
+
+                    print_r($result['sps'][$spid]['prefinal']);
+
+                    echo 'FINAL 1'.PHP_EOL;
+                    print_r($result['sps'][$spid]['final']);
+                    echo '<pre>';
+                }*/
+                foreach ($globalPolicy as $a=>$b){
+                    if($b === 3 ){
+                        if(array_key_exists($a,$spdet['prefinal']) && array_key_exists($a,$spdet['spec'])&& ($spdet['spec'][$a]!==3 || array_key_exists($a,$spdet['custom'])) ){
+                            $result['sps'][$spid]['final'][$a] = $spdet['spec'][$a];
+                        }
+                    }
+                }
+            /*    if($spid === 34){
+                    echo '<pre>';
+                    echo 'FINAL 2'.PHP_EOL;
+                    print_r($result['sps'][$spid]['final']);
+                    echo '<pre>';
+                }*/
+
             }
         }
+
+   //die();
+
 
         return array('created' => time(), 'data' => $result);
 
@@ -753,14 +817,13 @@ class Arpgen
             $this->CI->j_ncache->savePolicyDefs($idp->getId(), $policyDefs);
         }
         $policy = $policyDefs['data'];
-
         $xml = $this->createXMLHead();
         $jate = new \DateTime('now', new \DateTimeZone('UTC'));
         $jate->setTimestamp($policyDefs['created']);
         $comment = PHP_EOL . '
 			Experimental verion Attribute Release Policy for ' . $idp->getEntityId() . PHP_EOL . '
                         generated omn ' . $jate->format('D M j G:i:s T Y') . PHP_EOL . '
-                        compatible with shibboleth idp ff version: 3.x
+                        compatible with shibboleth idp version: 3.x, 4.0.x, 4.1.x
 			' . PHP_EOL;
 
 
@@ -779,6 +842,39 @@ class Arpgen
 
 
         $xml->writeComment(doubleDashXmlComment($comment));
+
+        //////// Default permit uncoditional //////
+        $globalPermit = array();
+        foreach ($policy['global'] as $k=>$v){
+            if($v === 3 && in_array($k, $policy['supported'])){
+                $globalPermit[$k] = $v;
+            }
+        }
+        if(count($globalPermit)>0){
+             $xml->startElement('AttributeFilterPolicy');
+                      $xml->startAttribute('id');
+                      $xml->text('Attributes-permit');
+                      $xml->endAttribute();
+                      ///
+            foreach ($globalPermit as $k=>$v){
+                $xml->startElement('AttributeRule');
+                $xml->startAttribute('attributeID');
+                $xml->text($policy['definitions']['attrs'][$k]);
+                $xml->endAttribute();
+                $xml->startElement('PermitValueRule');
+                $xml->startAttribute('xsi:type');
+                $xml->text('ANY');
+                $xml->endAttribute();
+                $xml->endElement();
+                $xml->endElement();
+            }
+            ///
+            ///
+
+                       $xml->endElement();
+        }
+
+
 
 ///////////////// ENTITY CATEGORIES /////////////////////////
         $ecPolicies = $policy['ecPolicies'];
@@ -820,17 +916,21 @@ class Arpgen
                 $xml->text($policy['definitions']['attrs'][$attr1ID]);
                 $xml->endAttribute();
 
-
-                /**
-                 * @todo decide if always add saml:AttributeInMetadata
-                 */
                 if ($attrP === 0) {
                     $xml->startElement('DenyValueRule');
                     $xml->startAttributeNs('xsi', 'type', null);
                     $xml->text('ANY');
                     $xml->endAttribute();
                     $xml->endElement();
-                } else {
+                }
+                elseif ($attrP === 3){
+                    $xml->startElement('PermitValueRule');
+                    $xml->startAttributeNs('xsi', 'type', null);
+                    $xml->text('ANY');
+                    $xml->endAttribute();
+                    $xml->endElement();
+                }
+                else {
                     $xml->startElement('PermitValueRule');
                     $xml->startAttributeNs('xsi', 'type', null);
                     $xml->text('AttributeInMetadata');
@@ -854,8 +954,9 @@ class Arpgen
             $xml->endElement();
         }
 ///////////////////////END ENTITY CATEGORIES //////////////////////////
+
         /// start per sp
-        foreach ($policy['sps'] as $spdets) {
+        foreach ($policy['sps'] as $kl => $spdets) {
             if (!array_key_exists('active', $spdets)) {
                 continue;
             }
@@ -868,17 +969,51 @@ class Arpgen
                 }
             }
             if (count($spdets['final']) == 0) {
-                $xml->writeComment('Omitted requester: ' . doubleDashXmlComment($spdets['/coid'] ). '');
+                $xml->writeComment('Omitted requester: ' . doubleDashXmlComment($spdets['entityid'] ). '');
                 continue;
             }
 
             $releases = array();
+            /*if($kl === 34) {
+                echo '<pre>';
+                print_r($spdets);
+                echo '</pre>';
+                die();
+            }*/
 
 
             foreach ($spdets['final'] as $finattrid => $finpolicy) {
+                $hasCustomValues = false;
+                $isInGlobalPermit = false;
+                if(array_key_exists($finattrid,$globalPermit) && $globalPermit[$finattrid] === 3){
+                    $isInGlobalPermit = true;
+                }
+                if(array_key_exists($finattrid,$spdets['custom'])){
+                    $hasCustomValues = true;
+                }
+                if($finpolicy === 3){
+                    if($isInGlobalPermit && !$hasCustomValues){
+                        unset($releases[$finattrid]);
+                    }
+                    else {
+                         $releases[$finattrid] = 1;
+                    }
+                    continue;
+                }
+                if(!array_key_exists($finattrid,$spdets['req'])){
+                    $releases[$finattrid] = 0;
+                    continue;
+                }
                 if ($finpolicy >= $spdets['req'][$finattrid]) {
-                    $releases[$finattrid] = 1;
-                } elseif (array_key_exists($finattrid, $policy['ecPolicies'])) {
+                    if($isInGlobalPermit && !$hasCustomValues){
+                        unset($releases[$finattrid]);
+                    }
+                    else {
+                        $releases[$finattrid] = 1;
+                    }
+                    continue;
+                }
+                if (array_key_exists($finattrid, $policy['ecPolicies'])) {
                     $releases[$finattrid] = 0;
                 }
             }

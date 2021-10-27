@@ -122,21 +122,24 @@ class AttributeReleasePolicy {
 
     public function getRelease()
     {
-        $result = '';
         $policy = $this->getPolicy();
         if ($policy === 0)
         {
-            $result = 'never permit';
+            return 'never permit';
         }
-        elseif ($policy === 1)
+        if ($policy === 1)
         {
-            $result = 'permit only if required';
+            return 'permit only if required';
         }
-        elseif ($policy === 2)
+        if ($policy === 2)
         {
-            $result = 'permit when required or desired';
+            return 'permit when required or desired';
         }
-        return $result;
+        if ($policy === 3)
+        {
+            return 'permit uncoditionaly';
+        }
+        return 'err: policy not recognized';
     }
 
     public function getRawdata()

@@ -13,17 +13,17 @@ echo '
 
 echo '<div id="attrpols" class="tabs-content row" data-tabs-content="attrpolstab" data-jagger-providerdetails="' . base_url('providers/detail/show/') . '">
         <section class="tabs-panel is-active row" id="introtab">
-            INFORMATION GUIDE SOON!
+         
 
 <ul>
-            <li>Default Attribute Release Policy - it does not include rules based on Entity Categories: <br />
+            <li><span class="label warning">Deprecated</span>: Attribute Release Policy - it does not include rules based on Entity Categories etc: <br />
             <small>' . base_url('arp/format2/' . $encodedentity . '/arp.xml') . '</small> <a href="' . base_url('arp/format2/' . $encodedentity . '/arp.xml') . '"><i class="fa fa-link"></i></a>
 </li>
-<li>Experimental Attribute Release Policy for ShibbolethIDP ver 2.x - it does include rules based on Entity Categories: <br />
+<li><span class="label warning">Deprecated</span>: Attribute Release Policy for ShibbolethIDP ver 2.x - it does include rules based on Entity Categories: <br />
             <small>' . base_url('arp/format2exp/' . $encodedentity . '/arp.xml') . '</small> <a href="' . base_url('arp/format2exp/' . $encodedentity . '/arp.xml') . '"><i class="fa fa-link"></i></a>
             </li>
 
-<li>Experimental Attribute Release Policy for ShibbolethIDP ver 3.x - it does include rules based on Entity Categories: <br />
+<li>Recommended: Attribute Release Policy for ShibbolethIDP ver 3.x/4.x - it does include rules based on Entity Categories and uncondtional attribute release: <br />
             <small>' . base_url('arp/format3exp/' . $encodedentity . '/arp.xml') . '</small> <a href="' . base_url('arp/format3exp/' . $encodedentity . '/arp.xml') . '"><i class="fa fa-link"></i></a>
             </li>
             </ul>
@@ -65,14 +65,14 @@ echo '<div id="arpmeditglobalattr" class="reveal medium" data-reveal>
 $hidden = array('attrid' => '', 'idpid' => '');
 echo form_open(base_url('manage/attributepolicy/updateattrglobal/' . $idpid . ''), null, $hidden);
 echo '<div class="row">';
-echo '<div class="small-5 medium-3 column"><label class="text-right">' . lang('attrsupported') . '</lable></div>';
+echo '<div class="small-5 medium-3 column"><label class="text-right">' . lang('attrsupported') . '</label></div>';
 echo '<div class="small-7 medium-9 column">';
 echo '<div class="switch small"><input id="CheckboxSwitch" type="checkbox" name="support" value="enabled"><label for="CheckboxSwitch"></label></div>';
 echo '</div>';
 echo '</div>';
 echo '<div class="row">';
 echo '<div class="medium-3 column medium-text-right"><label>' . lang('policy') . '</label></div>';
-echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
+echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'),'3' => lang('dropokalways'), '100' => lang('dropnotset'))) . '</div>';
 echo '</div>';
 
 
@@ -103,7 +103,7 @@ echo '<div class="medium-9 column">' . form_dropdown('attrid', $attrdefs) . '</d
 echo '</div>';
 echo '<div class="row">';
 echo '<div class="medium-3 column medium-text-right"><label>' . lang('policy') . '</label></div>';
-echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'))) . '</div>';
+echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'),'3' => lang('dropokalways'))) . '</div>';
 echo '</div>';
 
 $buttons = array(
@@ -127,7 +127,7 @@ $hidden = array('attrid' => '', 'fedid' => '');
 echo form_open(base_url('manage/attributepolicy/updateattrfed/' . $idpid . ''), null, $hidden);
 echo '<div class="row">';
 echo '<div class="medium-3 column medium-text-right"><label>' . lang('policy') . '</label></div>';
-echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
+echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '3' => lang('dropokalways'),'100' => lang('dropnotset'))) . '</div>';
 echo '</div>';
 echo '<div class="row">';
 echo '<div class="medium-3 column medium-text-right"><label>' . lang('rr_comment') . '</label></div>';
@@ -150,7 +150,7 @@ $hidden = array('attrid' => '', 'entcatid' => '');
 echo form_open(base_url('manage/attributepolicy/updateattrentcat/' . $idpid . ''), null, $hidden);
 echo '<div class="row">';
 echo '<div class="medium-3 column medium-text-right"><label>' . lang('policy') . '</label></div>';
-echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
+echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'),'3' => lang('dropokalways'), '100' => lang('dropnotset'))) . '</div>';
 echo '</div>';
 echo '<div class="row">';
 echo '<div class="medium-3 column medium-text-right"><label>' . lang('rr_comment') . '</label></div>';
@@ -178,7 +178,7 @@ $hidden = array('attrid' => '', 'spid' => '');
 echo form_open(base_url('manage/attributepolicy/updateattrsp/' . $idpid . ''), null, $hidden);
 echo '<div class="row">';
 echo '<div class="medium-3 column medium-text-right"><label>' . lang('policy') . '</label></div>';
-echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
+echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '3' => lang('dropokalways'), '100' => lang('dropnotset'))) . '</div>';
 echo '</div>';
 
 echo '<div class="row">';
@@ -223,7 +223,7 @@ echo '<div class="medium-9 column">' . form_dropdown('entcatid', array()) . '</d
 echo '</div>';
 echo '<div class="row">';
 echo '<div class="medium-3 column medium-text-right"><label>' . lang('policy') . '</label></div>';
-echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>';
+echo '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'),'3' => lang('dropokalways'), '100' => lang('dropnotset'))) . '</div>';
 echo '</div>';
 echo '<div class="row">';
 echo '<div class="medium-3 column medium-text-right"><label>' . lang('rr_comment') . '</label></div>';
@@ -252,7 +252,7 @@ echo '<div id="arpmaddspecattr" class="reveal medium" data-reveal><h4>' . lang('
     '</div>' .
     '<div class="row">' .
     '<div class="medium-3 column medium-text-right"><label>' . lang('policy') . '</label></div>' .
-    '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'))) . '</div>' .
+    '<div class="medium-9 column">' . form_dropdown('policy', array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'),'3' => lang('dropokalways'), '100' => lang('dropnotset'))) . '</div>' .
     '</div>' .
     '<div class="row">' .
     '<div class="medium-3 column medium-text-right"><label>' . lang('customenabled') . '</label></div>' .

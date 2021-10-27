@@ -10,6 +10,7 @@ if (!defined('BASEPATH')) {
  * @copyright 2014 HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  *
+ *
  */
 class Attribute_policyajax extends MY_Controller
 {
@@ -82,7 +83,7 @@ class Attribute_policyajax extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Access Denied');
         }
 
-        $dropdownInLang = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '100' => lang('dropnotset'));
+        $dropdownInLang = array('0' => lang('dropnever'), '1' => lang('dropokreq'), '2' => lang('dropokreqdes'), '3'=>lang('dropokalways'), '100' => lang('dropnotset'));
 
         /**
          * @var models\Attribute $attribute
@@ -233,7 +234,7 @@ class Attribute_policyajax extends MY_Controller
             return $this->output->set_status_header(403)->set_output('Attribute not found');
         }
 
-        if (!in_array($policy, array('1', '2', '0', '100'))) {
+        if (!in_array($policy, array('1', '2', '3','0', '100'))) {
             log_message('error', 'wrong policy in post: ' . $policy);
 
             return $this->output->set_status_header(403)->set_output(lang('wrongpolicyval'));
@@ -302,7 +303,7 @@ class Attribute_policyajax extends MY_Controller
         $postAttrID = trim($this->input->post('attribute'));
         $postPolicy = trim($this->input->post('policy'));
         $postFedID = trim($this->input->post('fedid'));
-        $allowedPols = array(0, 1, 2, 100);
+        $allowedPols = array(0, 1, 2, 3,100);
         if (!ctype_digit($postFedID) || !ctype_digit($postAttrID) || !ctype_digit($postIdpID) || !ctype_digit($postPolicy) || strcasecmp($postIdpID, $idpID) != 0 || !in_array($postPolicy, $allowedPols)) {
             return $this->output->set_status_header(403)->set_output('Access denied');
         }
@@ -366,7 +367,7 @@ class Attribute_policyajax extends MY_Controller
         $postIdpID = trim($this->input->post('idpid'));
         $postAttrID = trim($this->input->post('attribute'));
         $postPolicy = trim($this->input->post('policy'));
-        $allowedPols = array(0, 1, 2, 100);
+        $allowedPols = array(0, 1, 2, 3, 100);
         if (!ctype_digit($postAttrID) || !ctype_digit($postIdpID) || !ctype_digit($postPolicy) || strcasecmp($postIdpID, $idpID) != 0 || !in_array($postPolicy, $allowedPols)) {
             return $this->output->set_status_header(403)->set_output('Access denied');
         }
