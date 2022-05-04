@@ -75,7 +75,7 @@ function j_KeyEncryptionAlgorithms()
 		'http://www.w3.org/2001/04/xmlenc#aes192-cbc',
 		'http://www.w3.org/2001/04/xmlenc#aes256-cbc',
                 'http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p',
-		'http://www.w3.org/2001/04/xmldsig-more#camellia128-cb',
+		'http://www.w3.org/2001/04/xmldsig-more#camellia128-cbc',
 		'http://www.w3.org/2001/04/xmldsig-more#camellia192-cbc',
 		'http://www.w3.org/2001/04/xmldsig-more#camellia256-cbc',
                 'http://www.w3.org/2009/xmlenc11#aes128-gcm',
