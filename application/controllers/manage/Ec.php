@@ -119,7 +119,7 @@ class Ec extends MY_Controller
         $this->form_validation->set_rules('name', lang('entcat_displayname'), 'required|trim|cocname_unique');
         $this->form_validation->set_rules('attrname', lang('rr_attr_name'), 'trim|required');
         $attrname = $this->input->post('attrname');
-        $this->form_validation->set_rules('url', lang('entcat_value'), 'required|trim|valid_url|ecUrlInsert[' . $attrname . ']');
+        $this->form_validation->set_rules('url', lang('entcat_value'), 'required|trim|ecUrlInsert[' . $attrname . ']');
         $this->form_validation->set_rules('description', lang('entcat_description'), 'trim');
         $this->form_validation->set_rules('cenabled', lang('entcat_enabled'), 'trim');
         $this->form_validation->set_rules('availfor', lang('rravailforenttypelng'), 'trim|required');
@@ -131,7 +131,7 @@ class Ec extends MY_Controller
         $this->form_validation->set_rules('name', lang('entcat_displayname'), 'trim|required|cocname_unique_update[' . $entcatId . ']');
         $this->form_validation->set_rules('attrname', lang('rr_attr_name'), 'trim|required');
         $ecUrlUpdateParams = serialize(array('id' => $entcatId, 'subtype' => $attrname));
-        $this->form_validation->set_rules('url', lang('entcat_value'), 'trim|required|valid_url|ecUrlUpdate[' . $ecUrlUpdateParams . ']');
+        $this->form_validation->set_rules('url', lang('entcat_value'), 'trim|required|ecUrlUpdate[' . $ecUrlUpdateParams . ']');
         $this->form_validation->set_rules('description', lang('entcat_description'), 'trim');
         $this->form_validation->set_rules('cenabled', lang('entcat_enabled'), 'trim');
         $this->form_validation->set_rules('availfor', lang('rravailforenttypelng'), 'trim|required');

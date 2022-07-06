@@ -62,20 +62,22 @@ function attrsEntCategoryList($entype = null)
         }
         elseif (strcmp($entype, 'SP') == 0)
         {
-            return array('http://macedir.org/entity-category','urn:oasis:names:tc:SAML:attribute:assurance-certification');
+            return array('http://macedir.org/entity-category','urn:oasis:names:tc:SAML:attribute:assurance-certification','urn:oasis:names:tc:SAML:profiles:subject-id:req');
         }
         else
         {
             return array(
                 'http://macedir.org/entity-category-support',
-                'http://macedir.org/entity-category','urn:oasis:names:tc:SAML:attribute:assurance-certification'
+                'http://macedir.org/entity-category','urn:oasis:names:tc:SAML:attribute:assurance-certification',
+                'urn:oasis:names:tc:SAML:profiles:subject-id:req'
             );
         }
     }
     return array(
         'http://macedir.org/entity-category-support',
         'http://macedir.org/entity-category',
-        'urn:oasis:names:tc:SAML:attribute:assurance-certification'
+        'urn:oasis:names:tc:SAML:attribute:assurance-certification',
+        'urn:oasis:names:tc:SAML:profiles:subject-id:req'
     );
 }
 
