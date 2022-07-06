@@ -27,9 +27,7 @@ class Mdq extends MY_Controller
      * @return bool
      */
     private function isFeatureEnabled() {
-        $isEnabled = $this->config->item('mdq') ?: false;
-
-        return $isEnabled;
+        return $this->config->item('mdq') ?: false;
     }
 
 
@@ -119,7 +117,8 @@ class Mdq extends MY_Controller
         return (86400 * $days);
     }
 
-    private function getmdq($entityid) {
+    private function getmdq($entityid,$contentType="application/samlmetadata+xml") {
+
 
 
         $metadata = $this->mdqsigner->getStoredMetadata(sha1($entityid));
@@ -127,7 +126,7 @@ class Mdq extends MY_Controller
             $now = new \DateTime('now', new \DateTimezone('UTC'));
             $diff = (int)$now->format('U') - (int)$metadata['modified'];
             if ($diff < $this->validForInSecs(2)) {
-                return $this->output->set_content_type('application/samlmetadata+xml')->set_output($metadata['metadata']);
+                return $this->output->set_content_type(''.$contentType.'')->set_output($metadata['metadata']);
             }
         }
 
@@ -142,6 +141,18 @@ class Mdq extends MY_Controller
         $this->em->refresh($entity);
 
         $this->genMetada($entity);
+    }
+
+    public function provider($encodedEntityId=null,$fileName = null){
+        if (!$this->isFeatureEnabled()) {
+            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Page not found: MDQ is not enabled');
+        }
+        $encodedEntityId = trim($encodedEntityId);
+        if (($encodedEntityId === '') || ($fileName !== 'metadata.xml')) {
+            return $this->output->set_status_header(404)->set_content_type('text/html')->set_output('Page not found');
+        }
+        $entityId = base64url_decode($encodedEntityId);
+        $this->getmdq($entityId,"application/xml");
     }
 
     public function circle($hash = null, $arg1 = null, $arg2 = null, $arg3 = null) {

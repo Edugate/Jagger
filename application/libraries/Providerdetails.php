@@ -132,6 +132,7 @@ class Providerdetails
     }
 
     private function genFedView(\models\Provider $ent) {
+        $mdqEnabled = $this->CI->config->item('mdq') ?: false;
         $lockicon = genIcon('locked');
         $id = $ent->getId();
         $hasWriteAccess = $this->CI->zacl->check_acl($id, 'write', 'entity', '');
@@ -153,6 +154,11 @@ class Providerdetails
             $d[++$i]['header'] = lang('rr_metadata');
             $d[++$i]['name'] = '<a name="metadata"></a>' . lang('rr_servicemetadataurl');
             $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalink . '&nbsp;</span>&nbsp; ' . anchor($srv_metalink, '<i class="fa fa-arrow-right"></i>', '');
+            if($mdqEnabled){
+                $srv_metalinksignedmdq = base_url('mdq/provider/' . base64url_encode($ent->getEntityId()) . '/metadata.xml');
+                $d[++$i]['name'] =  "Service: signed metadata (mdq)";
+                $d[$i]['value'] ='<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srv_metalinksignedmdq . '&nbsp;</span>&nbsp; ' . anchor($srv_metalinksignedmdq, '<i class="fa fa-arrow-right"></i>', '');
+            }
         }
         $circleEnabled = !((isset($featdisable['circlemeta']) && $featdisable['circlemeta'] === true) || (isset($feathide['circlemeta']) && $feathide['circlemeta'] === true));
 
@@ -173,7 +179,7 @@ class Providerdetails
                 $d[$i]['value'] = '<span class="accordionButton">' . lang('rr_metadataurl') . ':</span> <span class="accordionContent"><br />' . $srvCircleMetalinkSigned . '&nbsp;</span>&nbsp; ' . anchor_popup($srvCircleMetalinkSigned, '<i class="fa fa-arrow-right"></i>');
             }
         }
-        $mdqEnabled = $this->CI->config->item('mdq') ?: false;
+
         if($mdqEnabled) {
             $d[++$i] = array(
                 'name' => 'MDQ enpoint for url encoded entityIDs',
@@ -709,6 +715,12 @@ class Providerdetails
             }
         }
         $d[++$i] = &$entityIdRecord;
+
+        $entSha1 = sha1($ent->getEntityId());
+        $d[++$i] = array(
+            'name' => 'EntityID: sha1 hash',
+            'value' => $entSha1
+        );
 
         /**
          * @var models\ExtendMetadata[] $algs

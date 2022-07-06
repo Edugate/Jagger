@@ -205,7 +205,7 @@ class Mdqsigner
         $privKeyPassword = null;
         $keyStorage = $this->ci->config->item('keystorage');
         if ($keyStorage === null) {
-            throw new Exception('Key storage (\"keystorage\") is not defined in configuration');
+            throw new Exception('Key storage ("keystorage") is not defined in configuration');
         }
         if ($signKey === null) {
             $keyStorageSeg1 = 'default';
