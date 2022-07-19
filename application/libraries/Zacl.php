@@ -2,7 +2,9 @@
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
-
+use Laminas\Permissions\Acl\Acl;
+use Laminas\Permissions\Acl\Role\GenericRole as GenericRole;
+use Laminas\Permissions\Acl\Resource\GenericResource as GenericResource;
 /**
  * @package   Jagger
  * @author    Middleware Team HEAnet
@@ -33,8 +35,8 @@ class Zacl
 
 
     public function initiateAcls() {
-        $this->acl = new Zend\Permissions\Acl\Acl();
-        $this->acl->addRole(new Zend\Permissions\Acl\Role\GenericRole('default_role'));
+        $this->acl = new Acl();
+        $this->acl->addRole(new GenericRole('default_role'));
         /**
          * @var models\AclRole[] $aclRoles
          */
@@ -46,7 +48,7 @@ class Zacl
          */
         $roleArray = array();
         foreach ($aclRoles as $r) {
-            $role = new Zend\Permissions\Acl\Role\GenericRole($r->getName());
+            $role = new GenericRole($r->getName());
             $parent = $r->getParent();
             if ($parent !== null) {
                 $this->acl->addRole($role, $r->getParent()->getName());
@@ -104,14 +106,14 @@ class Zacl
         } else {
             $this->acl->addRole('current_user', 'default_role');
         }
-        $this->acl->addResource(new Zend\Permissions\Acl\Resource\GenericResource('root_resource'));
+        $this->acl->addResource(new GenericResource('root_resource'));
 
         /**
          * @var models\AclResource[] $defined_resources
          */
         $defined_resources = $this->em->getRepository("models\AclResource")->findAll();
         foreach ($defined_resources as $res) {
-            $resource = new Zend\Permissions\Acl\Resource\GenericResource($res->getResource());
+            $resource = new GenericResource($res->getResource());
             $r_parent = $res->getParent();
 
             if ($r_parent !== null) {
@@ -365,9 +367,7 @@ class Zacl
         } else {
             $s_user = $user;
         }
-        $result = $this->processAddAccessToUser($resource, $action, $s_user, $group, null);
-
-        return $result;
+        return $this->processAddAccessToUser($resource, $action, $s_user, $group, null);
     }
 
     public function add_access_toUser($resource, $action, $user, $group, $resource_type = null) {
