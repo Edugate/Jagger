@@ -867,8 +867,9 @@ class Arpgen
                     }
                 }
             }
+
             if (count($spdets['final']) == 0) {
-                $xml->writeComment('Omitted requester: ' . doubleDashXmlComment($spdets['/coid'] ). '');
+                $xml->writeComment('Omitted requester: ' . doubleDashXmlComment(" ". $spdets['entityid'] ). ' ');
                 continue;
             }
 

@@ -102,7 +102,8 @@ class Arp_generator {
 
         foreach ($release as $key => $value)
         {
-            // remove all  deny records from array and skip generating filterpolicy for sp if no attrs founs 
+            // remove all  deny records from array and skip generating filterpolicy for sp if no attrs founs
+
             $value['attributes'] = array_filter($value['attributes']);
             if (count($value['attributes']) == 0)
             {
@@ -125,7 +126,7 @@ class Arp_generator {
             $c = $docXML->createComment(str_replace('--', '-' . chr(194) . chr(173) . '-', $comment));
             $AttributeFilterPolicyGroup->appendChild($c);
             $AttributeFilterPolicyGroup->appendChild($AttributeFilterPolicy);
-            if (count($value > 0))
+            if (count($value)> 0)
             {
                 $PolicyRequirementRule = $docXML->CreateElementNS('urn:mace:shibboleth:2.0:afp', 'PolicyRequirementRule');
                 $PolicyRequirementRule->setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', 'basic:AttributeRequesterString');
