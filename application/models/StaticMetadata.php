@@ -66,8 +66,7 @@ class StaticMetadata
      */
     public function getMetadata($addNS = null) {
         $mresult = base64_decode($this->metadata);
-
-        $mresult = preg_replace('/\<\?xml(.*)\>/', '', $mresult);
+        $mresult = preg_replace('/\<\?xml[^\>]*\>/', '', $mresult);
 
         if ($addNS) {
             $top = '<EntitiesDescriptor
