@@ -197,7 +197,7 @@ class Userprofile extends MY_Controller
                     }
 
                 }
-                if (is_array($newAccessRoles) && count($newAccessRoles > 0)) {
+                if (is_array($newAccessRoles) && count($newAccessRoles) > 0) {
                     $newAclRoles = $this->em->getRepository('models\AclRole')->findBy(array('type' => 'system', 'name' => $newAccessRoles));
                     foreach ($newAclRoles as $nAclR) {
                         $user->setRole($nAclR);
