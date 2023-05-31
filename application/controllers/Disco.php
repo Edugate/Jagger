@@ -34,6 +34,7 @@ class Disco extends MY_Controller
      * @return mixed
      */
     private function providerToDisco(models\Provider $ent, $type) {
+        
         $result['entityID'] = $ent->getEntityId();
         $result['title'] = $ent->getNameToWebInLang('en');
         $doFilter = array('t' => array('' . $type . ''), 'n' => array('mdui'), 'e' => array('GeolocationHint', 'Logo'));
@@ -65,6 +66,22 @@ class Disco extends MY_Controller
             }
         }
 
+        if ($type === 'sp') {
+            
+            $doFilterIdPDisc = array('t'=>array('DiscoveryResponse'));
+            $idpDiscoUrls = $ent->getServiceLocations()->filter(
+                function (models\ServiceLocation $entry) use ($doFilterIdPDisc){
+                    return in_array($entry->getType(),$doFilterIdPDisc['t'],true);
+                });
+
+            
+            
+
+            foreach($idpDiscoUrls as $u){
+                
+                $result['idpdisc'][] = $u->getUrl();
+            }    
+        }
         return $result;
     }
 
