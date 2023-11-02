@@ -10,6 +10,7 @@ if (!defined('BASEPATH')) {
  * @copyright 2016, HEAnet Limited (http://www.heanet.ie)
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
  */
+
 class MY_form_validation extends CI_form_validation
 {
 
@@ -159,8 +160,9 @@ class MY_form_validation extends CI_form_validation
      *
      */
     public function valid_urnorurl($str) {
-        $urnRegex = '/^urn:[a-z0-9][a-z0-9-]{1,31}:([a-z0-9()+,-.:=@;$_!*\']|%(0[1-9a-f]|[1-9a-f][0-9a-f]))+$/i';
-        $isUrnValid = (bool)preg_match($urnRegex, $str);
+#        $urnRegex = '/^urn:[a-z0-9][a-z0-9-]{1,31}:([a-z0-9()+,-.:=@;$_!*\']|%(0[1-9a-f]|[1-9a-f][0-9a-f]))+$/';
+        $urnRegex = '/^urn:[a-zA-Z0-9][a-zA-Z0-9-]{0,31}:(?:[a-zA-Z0-9-._~:\/?#@!$&\'()*+,;=]|%[0-9a-fA-F]{2})+$/';
+        $isUrnValid = (bool) preg_match($urnRegex, $str);
         if ($isUrnValid) {
             return true;
         }
