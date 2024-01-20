@@ -208,7 +208,7 @@ class Entityedit extends MY_Controller
         $y = $this->input->post();
         $isStaticDefault = false;
         if (isset($y['f'])) {
-            $this->form_validation->set_rules('f[usestatic]', 'use metadata', "valid_static[" . base64_encode($this->input->post('f[static]')) . ":::" . $this->input->post('f[entityid]') . " ]");
+            $this->form_validation->set_rules('f[usestatic]', 'use metadata', "valid_static[" . base64_encode($this->input->post('f[static]') ?? '') . ":::" . $this->input->post('f[entityid]') . " ]");
 
 
             // required if not static is set
