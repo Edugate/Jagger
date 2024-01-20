@@ -1640,7 +1640,7 @@ class Provider
     }
 
     public function getLocalName() {
-        $p = unserialize($this->lname);
+        $p = unserialize($this->lname ?? '');
         if (empty($p)) {
             return array();
         } else {
