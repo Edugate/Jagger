@@ -452,23 +452,7 @@ mysql -u root
 
 # Code fixes
 
-1. ```text
-   /opt/rr3/application/libraries/Jauth.php
-   ```
-
-   ```text
-   public function isLoggedIn() {
-       $loggedin = trim($this->ci->session->userdata('logged') ?? '');
-       $username = trim($this->ci->session->userdata('username') ?? '');
-   ```
-
-2. ```text
-   /opt/rr3/application/libraries/Zacl.php
-   ```
-
-   ```text
-   public function addAccessToUserByFedadmin($federationID, $resource, $action, $user, $group, $resource_type = null)
-   ```
+Take a look to my Pull Request on: https://github.com/Edugate/Jagger/pulls
 
 [TOC](#table-of-contents)
 
