@@ -327,7 +327,7 @@ class Zacl
         }
     }
 
-    public function addAccessToUserByFedadmin($federationID = null, $resource, $action, $user, $group, $resource_type = null) {
+    public function addAccessToUserByFedadmin($federationID, $resource, $action, $user, $group, $resource_type = null) {
         $roleExists = $this->acl->hasRole('selected_user');
         if ($roleExists) {
             $this->acl->removeRole('selected_user');
