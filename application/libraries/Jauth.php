@@ -178,8 +178,8 @@ class Jauth
      * @return bool
      */
     public function isLoggedIn() {
-        $loggedin = trim($this->ci->session->userdata('logged'));
-        $username = trim($this->ci->session->userdata('username'));
+        $loggedin = trim($this->ci->session->userdata('logged') ?? '');
+        $username = trim($this->ci->session->userdata('username') ?? '');
         if (!empty($loggedin) && !empty($username)) {
             return true;
         }
