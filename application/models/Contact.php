@@ -75,26 +75,26 @@ class Contact
     }
 
     public function setSurName($name) {
-        $this->surname = trim($name);
+        $this->surname = trim($name ?? '');
 
         return $this;
     }
 
     public function setGivenName($name) {
-        $this->givenname = trim($name);
+        $this->givenname = trim($name ?? '');
 
         return $this;
     }
 
     public function setEmail($mail) {
         $mail = str_replace('mailto:', '', $mail);
-        $this->email = trim($mail);
+        $this->email = trim($mail ?? '');
 
         return $this;
     }
 
     public function setPhone($phone) {
-        $this->phone = trim($phone);
+        $this->phone = trim($phone ?? '');
 
         return $this;
     }
