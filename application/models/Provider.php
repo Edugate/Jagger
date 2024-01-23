@@ -1640,7 +1640,7 @@ class Provider
     }
 
     public function getLocalName() {
-        $p = unserialize($this->lname);
+        $p = unserialize($this->lname ?? '');
         if (empty($p)) {
             return array();
         } else {
@@ -1923,7 +1923,7 @@ class Provider
 
     public function getLocalHelpdeskUrl() {
         if (!empty($this->lhelpdeskurl)) {
-            return unserialize($this->lhelpdeskurl);
+            return unserialize($this->lhelpdeskurl ?? '');
         } else {
             return array();
         }
@@ -1931,7 +1931,7 @@ class Provider
 
     public function getHelpdeskUrlLocalized() {
         $t['en'] = $this->helpdeskurl;
-        $p = unserialize($this->lhelpdeskurl);
+        $p = unserialize($this->lhelpdeskurl ?? '');
         if (is_array($p)) {
             if (!array_key_exists('en', $p) && !empty($t['en'])) {
                 $p['en'] = $t['en'];
