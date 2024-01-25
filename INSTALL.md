@@ -310,7 +310,7 @@ sudo apt install apache2
    - ```txt
      vim /opt/rr3/application/composer.json
      ```
-     and replace `"mtdowling/cron-expression": "1.1.*",` `"dragonmantank/cron-expression": "3.*",`
+     and replace `"mtdowling/cron-expression": "1.1.*",` with `"dragonmantank/cron-expression": "3.*",`
       
    - ```txt
      cd /opt/rr3/application ; sudo composer install
