@@ -322,7 +322,7 @@ sudo apt install apache2
      cp /opt/codeigniter/index.php /opt/rr3/
      ```
 
-     by setting `$system_path = "/opt/codeigniter/system"`.
+     by setting `$system_path = '/opt/codeigniter/system'`.
 
 [TOC](#table-of-contents)
 
@@ -386,9 +386,10 @@ mysql -u root
   - `$config['encryption_key'] = '<ENCRYPTION-KEY>';`
 
      `<ENCRYPTION-KEY>` generation:
-        ```text
-        tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null;echo
-        ```
+    
+     ```text
+     tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null;echo
+     ```
 
 - ```text
   cp config_rr-default.php config_rr.php
@@ -401,9 +402,10 @@ mysql -u root
   - `$config['syncpass'] = <SYNCPASS>`
   
     `<SYNCPASS>` generation:
-        ```text
-        tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null;echo
-        ```
+    
+    ```text
+    tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null;echo
+    ```
       
   - `$config['Shib_required'] = array('Shib_mail','Shib_username');`
   - `$config['nameids'] and all its content has to be removed.`
