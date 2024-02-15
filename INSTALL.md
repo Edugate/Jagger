@@ -386,9 +386,10 @@ mysql -u root
   - `$config['encryption_key'] = '<ENCRYPTION-KEY>';`
 
      `<ENCRYPTION-KEY>` generation:
-        ```text
-        tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null;echo
-        ```
+
+     ```text
+     tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null;echo
+     ```
 
 - ```text
   cp config_rr-default.php config_rr.php
