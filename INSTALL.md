@@ -402,9 +402,10 @@ mysql -u root
   - `$config['syncpass'] = <SYNCPASS>`
   
     `<SYNCPASS>` generation:
-        ```text
-        tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null;echo
-        ```
+    
+    ```text
+    tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null;echo
+    ```
       
   - `$config['Shib_required'] = array('Shib_mail','Shib_username');`
   - `$config['nameids'] and all its content has to be removed.`
