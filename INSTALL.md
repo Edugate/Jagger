@@ -232,7 +232,7 @@ sudo apt install apache2
 5.  Verify that SSL certificate file matches the CA certificate file with:
 
     - ``` text
-      openssl verify --CAfile /etc/ssl/certs/ssl-ca.pem /etc/ssl/certs/$(hostname -f).crt
+      openssl verify --CAfile /etc/ssl/certs/ca-cert.pem /etc/ssl/certs/$(hostname -f).crt
       ```
 
     and make sure you get an `OK` as an outcome.
