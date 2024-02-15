@@ -322,7 +322,7 @@ sudo apt install apache2
      cp /opt/codeigniter/index.php /opt/rr3/
      ```
 
-     by setting `$system_path = "/opt/codeigniter/system"`.
+     by setting `$system_path = '/opt/codeigniter/system'`.
 
 [TOC](#table-of-contents)
 
