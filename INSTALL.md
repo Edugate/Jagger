@@ -423,11 +423,11 @@ mysql -u root
   - `$db['default']['dsn']      = 'mysql:host=127.0.0.1;port=3306;dbname=rr3';`
   
 - ```text
-  email-default.php email.php
+  cp email-default.php email.php
   ```
   
 - ```text
-  memcached-default.php memcached.php
+  cp memcached-default.php memcached.php
   ```
 
 [TOC](#table-of-contents)
