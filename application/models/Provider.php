@@ -1774,8 +1774,10 @@ class Provider
     public function getDisplayNameLocalized() {
         if (!empty($this->ldisplayname)) {
             $p = unserialize($this->ldisplayname);
-            if (!array_key_exists('en', $p)) {
-                $p['en'] = $this->displayname;
+            if (is_array($p)){
+                if (!array_key_exists('en', $p)) {
+                   $p['en'] = $this->displayname;
+                }
             }
 
             return $p;
