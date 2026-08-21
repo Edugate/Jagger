@@ -20,6 +20,15 @@ throughout, instead of attempting a big-bang rewrite that can't be verified unti
 - A request is never "half handled" by both: the allow-list check happens before either
   framework boots.
 
+## First thing to do with real PHP/Composer access
+
+`app4/public/index.php` and `app4/app/Config/Paths.php` were hand-written against CI4's
+documented bootstrap sequence without being able to run `composer install` and actually boot the
+app anywhere (`docs/AUDIT.md` §6). Before migrating anything else: `composer install
+--working-dir=app4`, hit `/dashboard` while logged out, confirm it renders instead of fatal-erroring,
+*then* start migrating more controllers. If the bootstrap needs fixing, fix it here rather than
+working around it per-controller.
+
 ## How to migrate the next controller
 
 1. Pick the next `Not started` row below (roughly in dependency order — things `Dashboard`/other
