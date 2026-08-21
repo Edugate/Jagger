@@ -14,10 +14,18 @@ Features:
 7. Notification subsystem with subscription options
 
 
-Installation: check INSTALL.txt
+Installation: [docs/INSTALL.md](docs/INSTALL.md) (Ubuntu 26.04 LTS / Debian 13.6.0 — `.deb`
+package or `install.sh`)
 
+Upgrades: [docs/UPGRADE.md](docs/UPGRADE.md)
 
-Upgrades: UPGRADE.txt
+Troubleshooting: [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
+
+Uninstall: [docs/UNINSTALL.md](docs/UNINSTALL.md)
+
+This fork's modernization for production deployment (dependency upgrades, a CodeIgniter 4
+migration in progress, systemd units, a dedicated service user, `.deb` packaging, CI): see
+[docs/AUDIT.md](docs/AUDIT.md) and [docs/CI4_MIGRATION.md](docs/CI4_MIGRATION.md).
 
 
 Documentation (Admin guide) - http://jagger.heanet.ie/jaggerdocadmin/ (not final yet)
