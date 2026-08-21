@@ -1,7 +1,9 @@
 <?php
 define('APPPATH', dirname(__FILE__) . '/');
-define('BASEPATH',  '/opt/codeigniter/system/');
-define('ENVIRONMENT', 'development');
+// CodeIgniter 3 is now a Composer dependency (codeigniter/framework, see composer.json)
+// instead of a manually-downloaded tarball unpacked to /opt/codeigniter.
+define('BASEPATH', APPPATH . 'vendor/codeigniter/framework/system/');
+define('ENVIRONMENT', getenv('CI_ENVIRONMENT') ?: 'production');
 define('ATTR_DEFAULT_TABLE_COLLATE', 'utf8_general_ci');
 define('ATTR_DEFAULT_TABLE_CHARSET', 'utf8');
 chdir(APPPATH);

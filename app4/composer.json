@@ -1,0 +1,21 @@
+{
+  "name": "edugate/jagger-app4",
+  "description": "CodeIgniter 4 application shell for the in-progress CI3->CI4 migration. See ../docs/CI4_MIGRATION.md.",
+  "license": "MIT",
+  "require": {
+    "php": "^8.3",
+    "codeigniter4/framework": "^4.7",
+    "doctrine/orm": "^2.19"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "platform": {
+      "php": "8.3"
+    }
+  }
+}

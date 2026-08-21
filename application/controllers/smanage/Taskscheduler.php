@@ -137,7 +137,9 @@ class Taskscheduler extends MY_Controller
 
             $task->setJparams($paramsToSet);
             try {
-                $cronToTest = Cron\CronExpression::factory($task->getCronToStr());
+                // dragonmantank/cron-expression 3.x dropped the ::factory() shorthand
+                // (mtdowling/cron-expression 1.x API) in favor of the constructor.
+                $cronToTest = new Cron\CronExpression($task->getCronToStr());
                 $cronToTest->getNextRunDate()->format('Y-m-d H:i:s');
                 $this->em->persist($task);
                 $this->em->flush();
@@ -212,7 +214,7 @@ class Taskscheduler extends MY_Controller
         $tasks = $this->em->getRepository("models\Jcrontab")->findAll();
         $rows = array();
         foreach ($tasks as $t) {
-            $cron = Cron\CronExpression::factory($t->getCronToStr());
+            $cron = new Cron\CronExpression($t->getCronToStr());
             $isDue = lang('rr_no');
             if ($cron->isDue()) {
 
