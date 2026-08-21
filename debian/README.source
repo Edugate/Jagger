@@ -1,0 +1,21 @@
+Building this package
+======================
+
+    dpkg-buildpackage -b -uc -us
+
+`debian/rules`'s `override_dh_auto_build` runs `composer install` (network
+access required) for both `application/` and `app4/` during the build,
+vendoring third-party PHP dependencies straight into the binary package.
+That's a deliberate departure from strict Debian-archive practice (where
+every build dependency must itself be a packaged, offline build-dependency)
+because this package is not intended for upload to the official Debian
+archive -- it is built and distributed as a GitHub Release artifact /
+private apt repository entry for deploying this fork. If this package is
+ever proposed for the official archive, `application/composer.json` and
+`app4/composer.json`'s dependencies would need to be packaged individually
+first.
+
+No test suite runs during the build (`override_dh_auto_test` is a no-op):
+this build environment has no PHP/Composer/MySQL to run one against (see
+docs/AUDIT.md #6). CI (`.github/workflows/`) builds and boots the package
+in an Ubuntu and a `debian:13` container as the real verification step.

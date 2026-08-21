@@ -1,0 +1,16 @@
+jagger (1.0.0-1) unstable; urgency=medium
+
+  * First packaged release, built as part of the Ubuntu 26.04 LTS /
+    Debian 13.6.0 production-deployment modernization. Upstream (the
+    Edugate/Jagger project) does not itself version-tag releases; this
+    changelog and version number belong to the packaging in this fork,
+    not to an upstream release.
+  * See docs/AUDIT.md for the full list of what changed and why:
+    dependency modernization (Doctrine, phpseclib, php-amqplib,
+    cron-expression, CodeIgniter 3 now Composer-managed), a
+    CodeIgniter 4 migration scaffold (docs/CI4_MIGRATION.md), a
+    dedicated least-privilege 'jagger' system user, systemd units,
+    PHP-FPM instead of mod_php, TLS 1.2/1.3-only Apache config, and
+    randomly-generated secrets instead of shipped defaults.
+
+ -- Jagger Maintainers <jagger-maintainers@example.org>  Fri, 21 Aug 2026 15:45:04 +0500
