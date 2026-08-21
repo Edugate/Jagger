@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
-use Doctrine\Common\ClassLoader;
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Configuration;
@@ -67,6 +66,16 @@ abstract class BaseController extends Controller
      */
     private function bridgeLegacySession(): void
     {
+        // Reading $_SESSION only works if something actually called
+        // session_start() first -- CI4 doesn't do that automatically just
+        // because Config\App::$sessionCookieName is set, only when its own
+        // Session service is actively used, which nothing here does.
+        // Without this, isLoggedIn() would silently always return false
+        // even for an actually-logged-in CI3 user.
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_name('rr3sess'); // must match $config['sess_cookie_name'], config-default.php
+            session_start();
+        }
         $this->legacySession = $_SESSION ?? [];
     }
 
@@ -81,12 +90,13 @@ abstract class BaseController extends Controller
 
         $db = $this->loadDatabaseConfig();
 
-        $entitiesClassLoader = new ClassLoader('models', rtrim($legacyAppPath, '/'));
-        $entitiesClassLoader->register();
-
-        $proxiesClassLoader = new ClassLoader('Proxies', $legacyAppPath . 'models');
-        $proxiesClassLoader->register();
-
+        // Doctrine\Common\ClassLoader was removed in doctrine/common 3.x
+        // (pulled in transitively by doctrine/orm ^2.19) and isn't needed
+        // anyway: app4/composer.json declares the same "models\\"/"Proxies\\"
+        // PSR-4 mappings (pointed at ../application/models) that the
+        // ClassLoader calls used to set up by hand, resolved by Composer's
+        // own autoloader. See application/libraries/Doctrine.php for the
+        // same fix applied on the CI3 side.
         $cache = new ArrayCache();
         if (ENVIRONMENT === 'production' && extension_loaded('apcu')) {
             $cache = new ApcCache();
@@ -106,9 +116,10 @@ abstract class BaseController extends Controller
     }
 
     /**
-     * Reads the exact same file CI3's application/config/database.php
-     * shims to (see packaging/etc/jagger/database.php + M4), so both
-     * frameworks always connect with identical credentials.
+     * Reads /etc/jagger/database.php -- the same file
+     * application/config/database.php is symlinked to by
+     * packaging/scripts/provision.sh -- so both frameworks always connect
+     * with identical credentials.
      */
     private function loadDatabaseConfig(): array
     {
@@ -123,13 +134,24 @@ abstract class BaseController extends Controller
 
         require $configPath;
         /** @var array $db */
-        return [
+        $connectionOptions = [
             'driver'   => 'pdo_mysql',
             'user'     => $db['default']['username'],
             'password' => $db['default']['password'],
             'dbname'   => $db['default']['database'],
-            'host'     => parse_url('mysql://' . $db['default']['hostname'])['host'] ?? $db['default']['hostname'],
+            'host'     => $db['default']['hostname'],
             'charset'  => $db['default']['char_set'] ?? 'utf8',
         ];
+        // Matches application/libraries/Doctrine.php::getDBDriver()'s
+        // handling of the same file: 'port' isn't set by
+        // database-default.php's template (it's embedded in the 'dsn'
+        // string instead, which this CI4 side doesn't parse), but an
+        // admin can still add it by hand, and both sides need to honor it
+        // the same way if they do.
+        if (isset($db['default']['port'])) {
+            $connectionOptions['port'] = $db['default']['port'];
+        }
+
+        return $connectionOptions;
     }
 }

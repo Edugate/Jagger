@@ -1,5 +1,16 @@
 # Troubleshooting
 
+## After an OS upgrade bumps the default PHP version past 8.4
+
+Every path in this project that mentions PHP 8.4 (`debian/rules`'s pool-conf install path,
+`install.sh`'s printed instructions, this doc, `packaging/README.md`) is hardcoded to `8.4`
+because that's the actual default on Ubuntu 26.04/Debian 13.6.0 today, not auto-detected. If a
+later point release (or the next OS version) defaults to a newer PHP, the `.deb`'s pool conf
+would still land in `/etc/php/8.4/fpm/pool.d/`, which a system now running e.g. `php8.5-fpm`
+won't read -- symptom: `php8.5-fpm` runs fine, but `/run/php/jagger-fpm.sock` never appears and
+Apache 502s. Fix: `cp /etc/php/8.4/fpm/pool.d/jagger.conf /etc/php/<new-version>/fpm/pool.d/` and
+update the version in the paths above for next time.
+
 ## 502 Bad Gateway from Apache
 
 Almost always PHP-FPM either isn't running or Apache can't reach its socket.

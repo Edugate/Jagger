@@ -6,6 +6,8 @@
     "php": "^8.3",
     "codeigniter/framework": "^3.1.13",
     "doctrine/orm": "^2.19",
+    "doctrine/annotations": "^1.14",
+    "doctrine/cache": "^1.14",
     "laminas/laminas-permissions-acl": "^2.10",
     "dragonmantank/cron-expression": "^3.3",
     "phpseclib/phpseclib": "^3.0",
@@ -16,10 +18,13 @@
   "require-dev": {
     "phpmd/phpmd": "^2.15"
   },
-  "config": {
-    "sort-packages": true,
-    "platform": {
-      "php": "8.3"
+  "autoload": {
+    "psr-4": {
+      "models\\": "models/",
+      "Proxies\\": "models/Proxies/"
     }
+  },
+  "config": {
+    "sort-packages": true
   }
 }

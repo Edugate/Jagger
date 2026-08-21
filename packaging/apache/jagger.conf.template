@@ -56,7 +56,13 @@ SSLStaplingCache shmcb:/var/run/ocsp(128000)
 
             RewriteEngine On
             RewriteBase /
-            RewriteCond %{REQUEST_URI} !^/(Shibboleth\.sso|index\.php|logos|signedmetadata|flags|images|app|schemas|fonts|styles|js|robots\.txt|pub|includes)
+            # The trailing (/|$) matters: without it "app" as a bare prefix
+            # also matches "/app4/...", accidentally letting requests to the
+            # CI4 scaffold's own directory skip the rewrite (and with it,
+            # the CI3/CI4 dispatch in index.php) entirely -- app4/app and
+            # app4/writable are separately <Directory>-denied below as
+            # defense in depth, but this regex was the actual bug.
+            RewriteCond %{REQUEST_URI} !^/(Shibboleth\.sso|index\.php|logos|signedmetadata|flags|images|app|schemas|fonts|styles|js|robots\.txt|pub|includes)(/|$)
             RewriteRule ^(.*)$ /index.php?/$1 [L,QSA]
 
             # Hand off *.php to the jagger PHP-FPM pool instead of mod_php.
@@ -65,15 +71,15 @@ SSLStaplingCache shmcb:/var/run/ocsp(128000)
             </FilesMatch>
         </Directory>
 
-        # The CI3 "application" and "app4/app|writable" directories must
-        # never be served directly -- only reachable through index.php.
+        # The CI3 "application" directory and everything under app4/ must
+        # never be served directly -- only reachable through the repo-root
+        # index.php's `require app4/public/index.php` dispatch, never as a
+        # direct HTTP request to app4/public/index.php or anything else in
+        # here. Belt-and-suspenders alongside the rewrite-rule fix above.
         <Directory /opt/jagger/application>
             Require all denied
         </Directory>
-        <Directory /opt/jagger/app4/app>
-            Require all denied
-        </Directory>
-        <Directory /opt/jagger/app4/writable>
+        <Directory /opt/jagger/app4>
             Require all denied
         </Directory>
     </VirtualHost>

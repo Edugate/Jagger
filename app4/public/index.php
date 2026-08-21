@@ -15,10 +15,17 @@ define('APP4_START', microtime(true));
 // share a dependency graph during the transition).
 define('APP4_PATH', realpath(__DIR__ . '/..'));
 
-// Config\Paths is required directly, not via Composer autoload: it's what
-// tells the framework where everything else -- including vendor/ itself --
-// lives, so it has to work before any autoloading exists.
+// Config\Paths and Config\Constants (APP_NAMESPACE, needed by
+// Config\Autoload) are required directly, not via Composer autoload: they
+// tell the framework where everything else -- including vendor/ itself --
+// lives, so they have to work before any autoloading exists. Required here
+// explicitly rather than trusting system/bootstrap.php to require
+// Constants.php itself at the right point, since this project's vendor/
+// layout differs from a standalone CI4 appstarter checkout (see the
+// vendor/autoload.php comment below) and an undefined APP_NAMESPACE is a
+// PHP 8 fatal error, not a warning.
 require APP4_PATH . '/app/Config/Paths.php';
+require APP4_PATH . '/app/Config/Constants.php';
 
 // Required explicitly here rather than relying on system/bootstrap.php to
 // find it via a systemDirectory-relative guess, since this project's

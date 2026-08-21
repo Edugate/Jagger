@@ -138,6 +138,8 @@ jobs:
           docker exec jaggerbox test -f /etc/jagger/config_rr.php
           docker exec jaggerbox bash -c '! grep -q CHANGEME /etc/jagger/config.php'
           docker exec jaggerbox bash -c '! grep -q CHANGEME /etc/jagger/config_rr.php'
+          docker exec jaggerbox test -d /var/lib/jagger/sessions
+          docker exec jaggerbox bash -c '[ "$(stat -c %U /var/lib/jagger/sessions)" = "jagger" ]'
 
       - name: Point database.php at the mysql service and create the schema
         run: |
@@ -152,7 +154,6 @@ jobs:
 
       - name: Start php-fpm + jagger-gearman-worker + jagger-mdq-worker, verify they come up
         run: |
-          docker exec jaggerbox cp /etc/php/8.4/fpm/pool.d/jagger.conf /etc/php/8.4/fpm/pool.d/jagger.conf.installed || true
           docker exec jaggerbox systemctl enable --now php8.4-fpm
           docker exec jaggerbox systemctl start jagger-gearman-worker.service jagger-mdq-worker.service || true
           # ^ these two legitimately fail to *stay* running without gearman-job-server

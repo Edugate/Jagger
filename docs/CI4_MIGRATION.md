@@ -22,12 +22,19 @@ throughout, instead of attempting a big-bang rewrite that can't be verified unti
 
 ## First thing to do with real PHP/Composer access
 
-`app4/public/index.php` and `app4/app/Config/Paths.php` were hand-written against CI4's
-documented bootstrap sequence without being able to run `composer install` and actually boot the
-app anywhere (`docs/AUDIT.md` §6). Before migrating anything else: `composer install
---working-dir=app4`, hit `/dashboard` while logged out, confirm it renders instead of fatal-erroring,
-*then* start migrating more controllers. If the bootstrap needs fixing, fix it here rather than
-working around it per-controller.
+`app4/public/index.php`, `app4/app/Config/*.php` were hand-written against CI4's documented
+bootstrap sequence without being able to run `composer install` and actually boot the app
+anywhere (`docs/AUDIT.md` §6). A subsequent static review pass (`docs/AUDIT.md` §10) already
+caught and fixed several would-have-been-fatal issues this way (two entirely missing required
+config files, a session bridge that never called `session_start()`, a wrong property type) --
+but that process has an inherent ceiling: it can't replace actually booting the app. Before
+migrating anything else: `composer install --working-dir=app4`, hit `/dashboard` while logged
+out, confirm it renders instead of fatal-erroring, log in via the legacy CI3 flow and confirm
+`/dashboard` then shows the logged-in view (this exercises the session bridge --
+`BaseController::bridgeLegacySession()` -- which is the part of this scaffold with the least
+margin for silent failure: if it's wrong, it just always looks logged-out rather than throwing an
+error you'd notice), *then* start migrating more controllers. If the bootstrap needs fixing, fix
+it here rather than working around it per-controller.
 
 ## How to migrate the next controller
 

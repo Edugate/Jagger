@@ -26,11 +26,19 @@ class Doctrine
         // load database configuration and custom config from CodeIgniter
         require APPPATH . 'config/database.php';
 
-        $entitiesClassLoader = new \Doctrine\Common\ClassLoader('models', rtrim(APPPATH, '/'));
-        $entitiesClassLoader->register();
-
-        $proxiesClassLoader = new \Doctrine\Common\ClassLoader('Proxies', APPPATH . 'models');
-        $proxiesClassLoader->register();
+        // Doctrine\Common\ClassLoader (a PSR-0 autoloader Doctrine used to
+        // ship) was removed in doctrine/common 3.x, which doctrine/orm
+        // ^2.19 (composer.json) pulls in -- it's no longer available to
+        // call here. It's also no longer needed: Composer's own autoloader
+        // is already active by the time this constructor runs (required in
+        // application/doctrine.php and by application/config/autoload.php's
+        // $config['composer_autoload']), and application/composer.json now
+        // declares the same "models\\" -> models/ and "Proxies\\" ->
+        // models/Proxies/ PSR-4 mappings the ClassLoader calls used to set
+        // up by hand. Unlike a classmap, PSR-4 resolves by convention at
+        // runtime, so Doctrine's dynamically-generated proxy classes (new
+        // files appearing in models/Proxies/ after `composer install` already
+        // ran) are still found correctly without needing `composer dump-autoload`.
         $cache = new \Doctrine\Common\Cache\ArrayCache;
 
         // Choose caching method based on application mode
@@ -39,7 +47,19 @@ class Doctrine
         }
         $config = new Configuration;
 
-        // Metadata driver
+        // Metadata driver. newDefaultAnnotationDriver() is deprecated as of
+        // later doctrine/orm 2.x releases (in favor of ORMSetup::create*, and
+        // ultimately PHP 8 attributes in ORM 3.x) but is kept working
+        // throughout the 2.x line under Doctrine's deprecate-in-2.x/
+        // remove-in-3.x policy -- staying on this call, rather than
+        // rewriting all 39 files under application/models from bare
+        // @Entity/@Column annotations to attributes, is a deliberate choice
+        // (see docs/AUDIT.md): that rewrite is real work with real blast
+        // radius, out of scope for dependency-compatibility fixes. Needs
+        // doctrine/annotations pinned to ^1.14 (composer.json) -- 2.x
+        // removed SimpleAnnotationReader, which is what makes the bare
+        // (non-@ORM\-prefixed) annotation style these models use resolve
+        // at all.
         $driverImpl = $config->newDefaultAnnotationDriver(APPPATH . 'models');
         $config->setMetadataDriverImpl($driverImpl);
 

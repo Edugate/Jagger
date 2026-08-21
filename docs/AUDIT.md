@@ -124,9 +124,97 @@ own project) so it isn't mistaken for an oversight.
 - Dependency/PHP 8.4 compatibility fixes: see composer.json + code changes in this branch.
 - CodeIgniter 4 migration plan and tracking: `docs/CI4_MIGRATION.md`.
 - systemd units, dedicated `jagger` user, secrets-out-of-repo: `packaging/systemd/`,
-  `packaging/etc/jagger/`.
+  `packaging/scripts/provision.sh` (generates `/etc/jagger/*.php` at install time -- there's no
+  static `packaging/etc/jagger/` template directory; the templates it generates from are
+  `application/config/*-default.php`, already in the repo).
 - Debian packaging: `debian/`.
 - OS-aware idempotent installer: `install.sh`.
 - CI: `.github/workflows/`.
 - Install/upgrade/troubleshoot/uninstall docs: `docs/INSTALL.md` (replaces the old
   `INSTALL.md`), `docs/UPGRADE.md`, `docs/TROUBLESHOOTING.md`, `docs/UNINSTALL.md`.
+
+## 10. QA pass findings (post-initial-implementation)
+
+A full static/manual review pass (no PHP/Composer/MySQL/Docker available here either, and the
+GitHub Actions run on this branch's first push failed before any job ran -- the account's Actions
+runner was billing-locked, not a code failure) found and fixed the following real bugs introduced
+by the initial M1-M8 work:
+
+- **`doctrine/orm` bumped straight to `^2.19` broke entity loading outright.**
+  `application/libraries/Doctrine.php` (and its `app4/` counterpart) used
+  `Doctrine\Common\ClassLoader` (removed in doctrine/common 3.x, which orm ^2.19 pulls in) and
+  `Doctrine\Common\Cache\ArrayCache`/`ApcCache` (removed in doctrine/cache 2.x). Fixed by: replacing
+  `ClassLoader` with Composer PSR-4 autoload entries (`models\\`, `Proxies\\`) in both
+  `composer.json` files, and explicitly pinning `doctrine/cache: ^1.14` and
+  `doctrine/annotations: ^1.14` (the last 1.x line, which still has `SimpleAnnotationReader` --
+  needed because all 39 files in `application/models` use bare `@Entity`/`@Column` annotations,
+  not `@ORM\Entity`; doctrine/annotations 2.x removed support for that style entirely). This is a
+  deliberate, minimal-blast-radius fix -- not a rewrite of 39 model files to attribute-based
+  mapping, which was never in scope for a dependency-compatibility pass.
+- **`provision.sh`'s blanket permission lockdown stripped the executable bit from `install.sh`
+  and `application/doctrine`**, breaking the exact `./doctrine orm:schema-tool:...` command
+  documented in `docs/INSTALL.md`/`docs/UPGRADE.md`, and making `install.sh` fail on any re-run
+  after its first. Fixed by chmod'ing files with relative permission bits
+  (`u+rw,g+r,g-w,o-rwx`) instead of an absolute `0640` that clobbered existing `+x`.
+- **The same blanket lockdown reached into `.git`** when `JAGGER_HOME` is a live git checkout
+  (the `install.sh` path -- `docs/UPGRADE.md` documents running `git pull` there), which would
+  have broken that `git pull` for whichever non-root user is expected to run it. Fixed by
+  excluding `.git` from the chown/chmod sweep.
+- **Upgrading an existing (pre-packaging) manual install would have silently destroyed its real
+  config.** `provision.sh`'s symlink step used `ln -sf`, which overwrites an existing regular
+  file -- if `application/config/config.php` etc. already existed with real production values
+  (the old, pre-modernization install method), it would be replaced by a symlink to a
+  freshly-generated blank template, discarding the real `base_url`/`encryption_key`/Shib mapping
+  with no backup. Fixed: an existing regular (non-symlink) config file is now detected and moved
+  into `/etc/jagger` first, before the symlink is created.
+- **The CI3<->CI4 session bridge never actually started a session.** `app4/app/Controllers/
+  BaseController.php` read `$_SESSION` directly without ever calling `session_start()` --
+  nothing else in the CI4 request path does either, so `isLoggedIn()` would always have returned
+  false for a real, actively-logged-in CI3 user. Fixed by starting the session explicitly with
+  the matching cookie name before reading it.
+- **`app4/app/Config/Constants.php` and `Config/Events.php` didn't exist.** `system/bootstrap.php`
+  requires both directly; the former defines `APP_NAMESPACE`, which `Config/Autoload.php`
+  references -- an undefined constant is a fatal error as of PHP 8, not a warning. Both files
+  were missing entirely from the M3 scaffold. Added.
+- **`Config\App::$sessionTimeToUpdate` was declared as a `bool`; it's an `int`** (seconds between
+  session ID regeneration) in CI4. Fixed the type and restored the actual default (300).
+- **The Apache rewrite exclusion regex's bare `app` prefix also matched `/app4/...`**
+  (`!^/(...|app|...)` has no boundary after the alternation, so `/app4/anything` satisfies the
+  same branch as `/app`), letting requests to the CI4 scaffold's own directory skip the
+  index.php rewrite -- and with it, the CI3/CI4 dispatch check -- entirely. The `<Directory>`
+  `Require all denied` blocks already covered `application/` and `app4/app`+`app4/writable` as a
+  second layer, so this wasn't a full bypass, but `app4/public/index.php` itself had no such
+  deny and would have been directly reachable. Fixed the regex to require a `/` or end-of-string
+  boundary after each alternative, and widened the deny to cover all of `app4/` (previously just
+  `app4/app` and `app4/writable`, missing `app4/vendor` and `app4/composer.json`).
+- **`open_basedir` on the PHP-FPM pool didn't include wherever PHP's session save path actually
+  resolves to.** CI3's session library is autoloaded on every request
+  (`application/config/autoload.php`); if `session.save_path` isn't under `open_basedir`, PHP
+  can't read or write session files at all -- this would have broken login/sessions for every
+  real user, not just produced a log warning. Rather than guess Debian/Ubuntu's exact php.ini
+  default, `session.save_path` is now explicitly pinned (FPM pool config, and `-d
+  session.save_path=...` on both systemd worker units) to `/var/lib/jagger/sessions`, a
+  dedicated directory `provision.sh` creates and owns.
+- **`application/composer.json`'s and `app4/composer.json`'s `config.platform.php` override**
+  (hardcoded to `"8.3"`) was unnecessary and a maintenance footgun: every install path in this
+  project runs `composer install` on the actual target machine right after installing that
+  machine's real PHP, so there's no cross-machine version-mismatch scenario for the override to
+  protect against, and it would silently stay stuck at "8.3" as OS defaults move forward. Removed.
+- **`builder/` (Bower/Grunt/Gulp frontend source, §8 above) was being shipped in the `.deb`**
+  despite nothing in `application/views` referencing it -- unnecessary bloat and exposed
+  build-tooling source in a production package. Removed from `debian/rules`'s install list; it
+  stays in git for frontend development.
+- Minor: a dead `cp ... .installed` debug leftover in `.github/workflows/ci.yml` removed; a
+  stale `packaging/etc/jagger/` reference (that directory never existed -- config is generated
+  dynamically, not templated from a static tree) corrected in two places; `app4/app/Controllers/
+  BaseController.php`'s DB connection builder now honors an optional `$db['default']['port']`
+  the same way `application/libraries/Doctrine.php` already does, instead of silently ignoring it.
+
+**Still unverified** (same root cause as every other "unverified" item in this document: no
+PHP/Composer/MySQL/Docker in this sandbox, and CI hasn't successfully run yet): whether
+`doctrine/orm ^2.19` actually accepts `doctrine/cache ^1.14`/`doctrine/annotations ^1.14` as
+satisfiable constraints (a real version-conflict here would surface as a `composer install`
+failure, not a silent bug -- loud and CI-catchable, not a production landmine), and whether
+`Configuration::newDefaultAnnotationDriver()` is still present on `doctrine/orm 2.19` (deprecated
+per Doctrine's 2.x compatibility policy, but not, as far as could be confirmed without running
+it, removed). Both are flagged in code comments at the exact call sites.

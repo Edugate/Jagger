@@ -5,17 +5,18 @@
   "require": {
     "php": "^8.3",
     "codeigniter4/framework": "^4.7",
-    "doctrine/orm": "^2.19"
+    "doctrine/orm": "^2.19",
+    "doctrine/annotations": "^1.14",
+    "doctrine/cache": "^1.14"
   },
   "autoload": {
     "psr-4": {
-      "App\\": "app/"
+      "App\\": "app/",
+      "models\\": "../application/models/",
+      "Proxies\\": "../application/models/Proxies/"
     }
   },
   "config": {
-    "sort-packages": true,
-    "platform": {
-      "php": "8.3"
-    }
+    "sort-packages": true
   }
 }

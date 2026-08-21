@@ -12,7 +12,7 @@ Type=simple
 User=jagger
 Group=jagger
 WorkingDirectory=/opt/jagger
-ExecStart=/usr/bin/php /opt/jagger/index.php gworkers worker
+ExecStart=/usr/bin/php -d session.save_path=/var/lib/jagger/sessions /opt/jagger/index.php gworkers worker
 Restart=on-failure
 RestartSec=5
 Environment=CI_ENVIRONMENT=production
@@ -33,7 +33,12 @@ MemoryDenyWriteExecute=true
 SystemCallArchitectures=native
 CapabilityBoundingSet=
 AmbientCapabilities=
-ReadWritePaths=/var/log/jagger /opt/jagger/signedmetadata /opt/jagger/application/cache /opt/jagger/application/logs /opt/jagger/application/models/Proxies
+# /var/lib/jagger/sessions: CI3's session library is autoloaded on every
+# request (application/config/autoload.php: $autoload['drivers'] =
+# array('session');), including this CLI worker. -d session.save_path=...
+# above points PHP at a known, jagger-owned directory instead of
+# depending on whatever Debian/Ubuntu's stock php.ini defaults to.
+ReadWritePaths=/var/log/jagger /opt/jagger/signedmetadata /opt/jagger/application/cache /opt/jagger/application/logs /opt/jagger/application/models/Proxies /var/lib/jagger/sessions
 
 [Install]
 WantedBy=multi-user.target

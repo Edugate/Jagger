@@ -19,7 +19,7 @@ Type=simple
 User=jagger
 Group=jagger
 WorkingDirectory=/opt/jagger
-ExecStart=/usr/bin/php /opt/jagger/index.php mdqworker worker
+ExecStart=/usr/bin/php -d session.save_path=/var/lib/jagger/sessions /opt/jagger/index.php mdqworker worker
 Restart=on-failure
 RestartSec=5
 Environment=CI_ENVIRONMENT=production
@@ -40,7 +40,10 @@ MemoryDenyWriteExecute=true
 SystemCallArchitectures=native
 CapabilityBoundingSet=
 AmbientCapabilities=
-ReadWritePaths=/var/log/jagger /opt/jagger/signedmetadata /opt/jagger/application/cache /opt/jagger/application/logs /opt/jagger/application/models/Proxies
+# /var/lib/jagger/sessions: see the same entry in
+# jagger-gearman-worker.service -- CI3's session library is autoloaded on
+# every request, including this CLI worker.
+ReadWritePaths=/var/log/jagger /opt/jagger/signedmetadata /opt/jagger/application/cache /opt/jagger/application/logs /opt/jagger/application/models/Proxies /var/lib/jagger/sessions
 
 [Install]
 WantedBy=multi-user.target
