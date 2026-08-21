@@ -1,0 +1,46 @@
+[Unit]
+Description=Jagger MDQ metadata-signing AMQP worker
+Documentation=https://github.com/Edugate/Jagger
+After=network-online.target rabbitmq-server.service mysql.service mariadb.service
+Wants=network-online.target
+# Only meaningful when $config['rabbitmq']['enabled'] = TRUE in
+# config_rr.php (see /etc/jagger/config_rr.php).
+#
+# This, together with application/libraries/Mdqsigner.php (pure-PHP XML
+# signing via robrichards/xmlseclibs, already a Composer dependency),
+# replaces the old external "xmlsectool + JDK + cron" signing flow
+# documented in the pre-modernization INSTALL.txt -- see docs/AUDIT.md #7.
+# There was no periodic "resign everything" job in this codebase to
+# preserve; signing happens when Mdqworker's queue receives a job, driven
+# by entity changes and Msigner's on-demand AJAX signing action.
+
+[Service]
+Type=simple
+User=jagger
+Group=jagger
+WorkingDirectory=/opt/jagger
+ExecStart=/usr/bin/php /opt/jagger/index.php mdqworker worker
+Restart=on-failure
+RestartSec=5
+Environment=CI_ENVIRONMENT=production
+
+# --- systemd hardening ---
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+AmbientCapabilities=
+ReadWritePaths=/var/log/jagger /opt/jagger/signedmetadata /opt/jagger/application/cache /opt/jagger/application/logs /opt/jagger/application/models/Proxies
+
+[Install]
+WantedBy=multi-user.target

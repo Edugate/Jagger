@@ -1,0 +1,80 @@
+# Apache2 vhost for Jagger Federation Registry, targeting Ubuntu 26.04 / Debian 13.
+#
+# Replaces the RC4/TLSv1-permitting example that shipped in the old
+# INSTALL.md (docs/AUDIT.md #5) and switches PHP execution from mod_php to
+# the jagger PHP-FPM pool (packaging/php-fpm/jagger.pool.conf) via
+# mod_proxy_fcgi, so PHP runs as the dedicated `jagger` user instead of
+# always as www-data.
+#
+# Before enabling: replace every {{JAGGER_FQDN}} and {{ADMIN_EMAIL}}
+# placeholder (install.sh does this for you from the values you provide).
+#
+# Required modules:
+#   a2enmod ssl rewrite headers proxy_fcgi setenvif alias
+
+SSLUseStapling on
+SSLStaplingResponderTimeout 5
+SSLStaplingReturnResponderErrors off
+SSLStaplingCache shmcb:/var/run/ocsp(128000)
+
+<VirtualHost *:80>
+    ServerName {{JAGGER_FQDN}}
+    RedirectMatch permanent ^/(.*)$ https://{{JAGGER_FQDN}}/$1
+</VirtualHost>
+
+<IfModule mod_ssl.c>
+    <VirtualHost _default_:443>
+        ServerName {{JAGGER_FQDN}}:443
+        ServerAdmin {{ADMIN_EMAIL}}
+
+        CustomLog /var/log/apache2/{{JAGGER_FQDN}}.log combined
+        ErrorLog /var/log/apache2/{{JAGGER_FQDN}}-error.log
+
+        DocumentRoot /opt/jagger
+
+        SSLEngine On
+        # TLS 1.2/1.3 only -- the old suite's "-TLSv1 -TLSv1.1" plus an
+        # explicit RC4 cipher entry allowed a weak fallback; both are gone.
+        SSLProtocol -all +TLSv1.2 +TLSv1.3
+        SSLCipherSuite "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305"
+        SSLHonorCipherOrder off
+        SSLSessionTickets off
+
+        <IfModule headers_module>
+            Header always set X-Frame-Options DENY
+            Header always set X-Content-Type-Options nosniff
+            Header always set Strict-Transport-Security "max-age=63072000;includeSubDomains;preload"
+        </IfModule>
+
+        SSLCertificateFile /etc/ssl/certs/{{JAGGER_FQDN}}.crt
+        SSLCertificateKeyFile /etc/ssl/private/{{JAGGER_FQDN}}.key
+        SSLCACertificateFile /etc/ssl/certs/ca-cert.pem
+
+        <Directory /opt/jagger>
+            Require all granted
+            Options -Indexes -FollowSymLinks
+
+            RewriteEngine On
+            RewriteBase /
+            RewriteCond %{REQUEST_URI} !^/(Shibboleth\.sso|index\.php|logos|signedmetadata|flags|images|app|schemas|fonts|styles|js|robots\.txt|pub|includes)
+            RewriteRule ^(.*)$ /index.php?/$1 [L,QSA]
+
+            # Hand off *.php to the jagger PHP-FPM pool instead of mod_php.
+            <FilesMatch "\.php$">
+                SetHandler "proxy:unix:/run/php/jagger-fpm.sock|fcgi://localhost"
+            </FilesMatch>
+        </Directory>
+
+        # The CI3 "application" and "app4/app|writable" directories must
+        # never be served directly -- only reachable through index.php.
+        <Directory /opt/jagger/application>
+            Require all denied
+        </Directory>
+        <Directory /opt/jagger/app4/app>
+            Require all denied
+        </Directory>
+        <Directory /opt/jagger/app4/writable>
+            Require all denied
+        </Directory>
+    </VirtualHost>
+</IfModule>

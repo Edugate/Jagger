@@ -1,0 +1,39 @@
+[Unit]
+Description=Jagger Gearman background worker
+Documentation=https://github.com/Edugate/Jagger
+After=network-online.target gearman-job-server.service mysql.service mariadb.service
+Wants=network-online.target
+# Only meaningful when $config['gearman'] = TRUE in config_rr.php (see
+# /etc/jagger/config_rr.php) -- harmless to enable otherwise, the worker
+# just idles waiting on jobs that are never queued.
+
+[Service]
+Type=simple
+User=jagger
+Group=jagger
+WorkingDirectory=/opt/jagger
+ExecStart=/usr/bin/php /opt/jagger/index.php gworkers worker
+Restart=on-failure
+RestartSec=5
+Environment=CI_ENVIRONMENT=production
+
+# --- systemd hardening ---
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+AmbientCapabilities=
+ReadWritePaths=/var/log/jagger /opt/jagger/signedmetadata /opt/jagger/application/cache /opt/jagger/application/logs /opt/jagger/application/models/Proxies
+
+[Install]
+WantedBy=multi-user.target

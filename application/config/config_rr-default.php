@@ -7,7 +7,10 @@ if (!defined('BASEPATH'))
 $config['rr_setup_allowed'] = FALSE;
 $config['site_logo'] = 'logo-default.png';
 
-$config['syncpass'] = 'verystrongpasss';
+// CHANGEME: generated automatically by the packaged installer (install.sh /
+// debian/postinst) -- see application/config/config-default.php for the
+// same generation command used for encryption_key.
+$config['syncpass'] = 'CHANGEME';
 
 $config['support_mailto'] = 'support@example.com';
 
@@ -204,8 +207,8 @@ $config['rabbitmq'] = array(
     'vhost' => '/',
     'host'=>'127.0.0.1',
     'port'=> 5672,
-    'user'=>'guest',
-    'password'=>'guest'
+    'user'=>'CHANGEME', // do not leave as the RabbitMQ default ('guest') -- create a
+    'password'=>'CHANGEME', // dedicated jagger vhost/user; 'guest' can't log in remotely by default anyway
 );
 
 
