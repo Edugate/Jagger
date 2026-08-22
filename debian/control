@@ -1,0 +1,40 @@
+Source: jagger
+Section: web
+Priority: optional
+Maintainer: Jagger Maintainers <jagger-maintainers@example.org>
+Build-Depends: debhelper-compat (= 13), composer, php-cli (>= 8.3)
+Standards-Version: 4.6.2
+Homepage: https://github.com/Edugate/Jagger
+Rules-Requires-Root: no
+
+Package: jagger
+Architecture: all
+Depends: ${misc:Depends},
+ php (>= 8.3) | php8.3 | php8.4,
+ php-fpm,
+ php-curl,
+ php-mysql,
+ php-intl,
+ php-xml,
+ php-mbstring,
+ php-soap,
+ php-bcmath,
+ php-cli,
+ php-zip,
+ php-apcu,
+ apache2,
+ adduser,
+Recommends: default-mysql-server | mariadb-server, php-gearman, php-memcached, gearman-job-server, rabbitmq-server
+Suggests: shibboleth-sp2-utils
+Description: SAML federation metadata registry and attribute-release policy manager
+ Jagger manages SAML federation metadata, attribute-release ("ARP") policy,
+ and a GUI for the Shibboleth SAML Identity Provider. It can synchronize
+ metadata from another federation, run a single circle of trust, and sign
+ MDQ metadata.
+ .
+ This package installs Jagger under /opt/jagger, provisions a dedicated
+ least-privilege 'jagger' system user, and installs systemd units for its
+ PHP-FPM pool and background workers. See /opt/jagger/docs/ (README.md,
+ UPGRADE.md, TROUBLESHOOTING.md, UNINSTALL.md) after install for the
+ remaining manual steps (TLS certificate, MySQL database, Apache vhost
+ enable) that a package cannot safely automate for you.

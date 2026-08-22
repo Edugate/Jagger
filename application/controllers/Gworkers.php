@@ -148,7 +148,9 @@ class Gworkers extends MY_Controller
                 $cronEntries = $this->em->getRepository("models\Jcrontab")->findBy(array('isenabled' => true));
                 $currentTime = new \DateTime('now');
                 foreach ($cronEntries as $c) {
-                    $cron = Cron\CronExpression::factory($c->getCronToStr());
+                    // dragonmantank/cron-expression 3.x dropped the ::factory() shorthand
+                    // (mtdowling/cron-expression 1.x API) in favor of the constructor.
+                    $cron = new Cron\CronExpression($c->getCronToStr());
                     if ($cron->isDue()) {
 
                         $didRunInRange = $c->isLastRunMatchRange($currentTime, 60);

@@ -224,7 +224,10 @@ $config['cache_path'] = '';
 | MUST set an encryption key. See the user guide for info.
 |
 */
-$config['encryption_key'] = 'jhiufhi34hfhewhfsdfhsd';
+// CHANGEME: generate with
+//   tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null; echo
+// (the packaged installer does this automatically -- see install.sh / debian/postinst)
+$config['encryption_key'] = 'CHANGEME';
 
 /*
 |--------------------------------------------------------------------------

@@ -1,0 +1,40 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE = 1
+INSTALL_ROOT = debian/jagger/opt/jagger
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	composer install --no-dev --optimize-autoloader --no-interaction --working-dir=application
+	composer install --no-dev --optimize-autoloader --no-interaction --working-dir=app4
+
+override_dh_auto_install:
+	install -d $(INSTALL_ROOT)
+	# Ship the application source tree as-is, minus VCS/dev-only cruft;
+	# packaging/scripts/provision.sh (run from postinst) handles ownership,
+	# the jagger user, and generating /etc/jagger/*.php on top of this.
+	#
+	# builder/ (Bower/Grunt/Gulp frontend source -- docs/AUDIT.md #8) is
+	# deliberately NOT shipped: nothing in application/views references it
+	# (its already-built output lives in the top-level js/styles/ that ARE
+	# shipped), so it's dead weight and unnecessary exposed source in a
+	# production package. Still in git for anyone doing frontend dev.
+	cp -a application app4 fonts images js logos packaging schemas styles \
+		docs index.php app4_routes.php install.sh README.md LICENSE \
+		$(INSTALL_ROOT)/
+	find $(INSTALL_ROOT) -name '.git*' -prune -exec rm -rf {} + 2>/dev/null || true
+	install -d debian/jagger/etc/apache2/sites-available
+	install -d debian/jagger/etc/php/8.4/fpm/pool.d
+	install -m 0644 packaging/apache/jagger.conf.template debian/jagger/etc/apache2/sites-available/jagger.conf.template
+	install -m 0644 packaging/php-fpm/jagger.pool.conf debian/jagger/etc/php/8.4/fpm/pool.d/jagger.conf
+
+override_dh_installsystemd:
+	dh_installsystemd --name=jagger-gearman-worker --no-enable --no-start packaging/systemd/jagger-gearman-worker.service
+	dh_installsystemd --name=jagger-mdq-worker --no-enable --no-start packaging/systemd/jagger-mdq-worker.service
+
+override_dh_auto_test:
+	# No local PHP/Composer/MySQL available in this build environment to run
+	# a test suite against (docs/AUDIT.md #6) -- CI (.github/workflows/) is
+	# the real test harness. Left as a no-op rather than faked green.

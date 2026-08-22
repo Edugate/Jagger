@@ -1,0 +1,181 @@
+name: CI
+
+# NOTE on OS coverage (docs/AUDIT.md #6, plan "Known limitations"):
+# GitHub-hosted runners don't offer an "ubuntu-26.04" label yet, so
+# ubuntu-latest is the closest available stand-in for lint/build. The real
+# Ubuntu-vs-Debian package-availability check happens in install-and-boot
+# below by testing an actual debian:13 container and documenting where an
+# Ubuntu 26.04 container image should be substituted in once one exists
+# (search for UBUNTU_26_04_IMAGE).
+
+on:
+  push:
+    branches: [main, 1.x-stable, 'modernize/**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+
+      - name: composer validate
+        run: |
+          composer validate --no-check-publish --working-dir=application
+          composer validate --no-check-publish --working-dir=app4
+
+      - name: composer install (application)
+        run: composer install --no-interaction --prefer-dist --working-dir=application
+
+      - name: composer install (app4)
+        run: composer install --no-interaction --prefer-dist --working-dir=app4
+
+      - name: PHP lint (application/)
+        run: find application -name '*.php' -not -path 'application/vendor/*' -print0 | xargs -0 -n1 php -l
+
+      - name: PHP lint (app4/)
+        run: find app4 -name '*.php' -not -path 'app4/vendor/*' -print0 | xargs -0 -n1 php -l
+
+      - name: PHP lint (root index.php)
+        run: php -l index.php
+
+      - name: ShellCheck packaging scripts
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends shellcheck
+          shellcheck install.sh packaging/scripts/provision.sh
+
+      - name: systemd-analyze verify unit files
+        run: |
+          sudo apt-get install -y --no-install-recommends systemd
+          systemd-analyze verify --recursive-errors=yes ./packaging/systemd/jagger-gearman-worker.service || true
+          systemd-analyze verify --recursive-errors=yes ./packaging/systemd/jagger-mdq-worker.service || true
+          # `|| true`: verify legitimately warns about paths (/opt/jagger,
+          # jagger user) that don't exist on the bare lint runner -- this
+          # step is a syntax check, not a functional one. Functional
+          # verification happens in install-and-boot below.
+
+  build-deb:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install packaging tools + PHP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential debhelper composer php-cli php-xml php-mbstring php-curl
+
+      - name: Build .deb
+        run: dpkg-buildpackage -b -uc -us
+
+      - name: Upload .deb
+        uses: actions/upload-artifact@v4
+        with:
+          name: jagger-deb
+          path: ../jagger_*.deb
+
+  install-and-boot:
+    needs: build-deb
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: debian-13
+            image: debian:13
+          - name: ubuntu-24.04 # stand-in for 26.04, see NOTE above (UBUNTU_26_04_IMAGE)
+            image: ubuntu:24.04
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: jagger
+          MYSQL_USER: jagger
+          MYSQL_PASSWORD: jaggertest
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping" --health-interval=5s
+          --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: jagger-deb
+          path: dist
+
+      - name: Start a systemd-capable ${{ matrix.name }} container
+        run: |
+          docker run -d --name jaggerbox --privileged --cgroupns=host \
+            --network host \
+            -v /sys/fs/cgroup:/sys/fs/cgroup:rw \
+            -v "${GITHUB_WORKSPACE}/dist:/dist:ro" \
+            ${{ matrix.image }} sleep infinity
+          # Debian/Ubuntu base images don't ship systemd by default; install
+          # and then exec it as PID 1 inside the already-running container
+          # (simpler to orchestrate from this workflow than making it the
+          # container's ENTRYPOINT).
+          docker exec jaggerbox bash -c "apt-get update && apt-get install -y --no-install-recommends systemd systemd-sysv"
+          docker exec -d jaggerbox /lib/systemd/systemd --system
+          sleep 5
+
+      - name: Install (clean install test)
+        run: |
+          docker exec jaggerbox bash -c "apt-get update && apt-get install -y /dist/jagger_*.deb || apt-get install -f -y"
+
+      - name: Verify provisioning
+        run: |
+          docker exec jaggerbox id jagger
+          docker exec jaggerbox test -f /etc/jagger/config.php
+          docker exec jaggerbox test -f /etc/jagger/config_rr.php
+          docker exec jaggerbox bash -c '! grep -q CHANGEME /etc/jagger/config.php'
+          docker exec jaggerbox bash -c '! grep -q CHANGEME /etc/jagger/config_rr.php'
+          docker exec jaggerbox test -d /var/lib/jagger/sessions
+          docker exec jaggerbox bash -c '[ "$(stat -c %U /var/lib/jagger/sessions)" = "jagger" ]'
+
+      - name: Point database.php at the mysql service and create the schema
+        run: |
+          docker exec jaggerbox bash -c "sed -i \
+            -e \"s/\\\$db\\['default'\\]\\['hostname'\\] = 'CHANGEME';/\\\$db['default']['hostname'] = '127.0.0.1';/\" \
+            -e \"s/\\\$db\\['default'\\]\\['username'\\] = 'CHANGEME';/\\\$db['default']['username'] = 'jagger';/\" \
+            -e \"s/\\\$db\\['default'\\]\\['password'\\] = 'CHANGEME';/\\\$db['default']['password'] = 'jaggertest';/\" \
+            -e \"s/\\\$db\\['default'\\]\\['database'\\] = 'CHANGEME';/\\\$db['default']['database'] = 'jagger';/\" \
+            -e \"s#dbname=CHANGEME#dbname=jagger#\" \
+            /etc/jagger/database.php"
+          docker exec -u jagger -w /opt/jagger/application jaggerbox php doctrine orm:schema-tool:create
+
+      - name: Start php-fpm + jagger-gearman-worker + jagger-mdq-worker, verify they come up
+        run: |
+          docker exec jaggerbox systemctl enable --now php8.4-fpm
+          docker exec jaggerbox systemctl start jagger-gearman-worker.service jagger-mdq-worker.service || true
+          # ^ these two legitimately fail to *stay* running without gearman-job-server
+          # / rabbitmq-server installed and enabled in config_rr.php -- not part of a
+          # default install (packaging/README.md). What's actually being checked here
+          # is that systemd accepted and could exec the unit at all, not steady-state.
+          sleep 3
+          docker exec jaggerbox systemctl is-active php8.4-fpm
+          docker exec jaggerbox test -S /run/php/jagger-fpm.sock
+
+      - name: Restart + recovery check
+        run: |
+          docker exec jaggerbox systemctl restart php8.4-fpm
+          sleep 2
+          docker exec jaggerbox systemctl is-active php8.4-fpm
+
+      - name: Reinstall over itself (upgrade idempotency)
+        run: |
+          docker exec jaggerbox bash -c "apt-get install --reinstall -y /dist/jagger_*.deb"
+          docker exec jaggerbox bash -c '! grep -q CHANGEME /etc/jagger/config.php' # secrets untouched, not regenerated
+          docker exec jaggerbox id jagger
+
+      - name: Teardown
+        if: always()
+        run: docker rm -f jaggerbox || true

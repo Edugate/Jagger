@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+case "$1" in
+    purge)
+        echo "Note: /etc/jagger (config/secrets), /var/log/jagger, and the"
+        echo "'jagger' system user/group were intentionally left in place --"
+        echo "purge does not delete a database or secrets for you."
+        echo "docs/UNINSTALL.md (read it BEFORE purging, since it's removed"
+        echo "along with the rest of /opt/jagger by this step) has the full"
+        echo "manual cleanup checklist if you really want those gone too."
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0

@@ -16,6 +16,9 @@ application/config/email.php
 application/config/memcached.php
 application/controllers/c/*
 application/vendor/*
+app4/vendor/*
+app4/writable/*
+!app4/writable/.gitkeep
 application/extplugins/*
 builder/node_modules/*
 builder/bower_components/*
@@ -23,4 +26,6 @@ signedmetadata/*
 logos/*
 vendor/*
 !index.html
-index.php
+# composer.lock is intentionally NOT ignored: it must be committed (by whoever
+# runs `composer update` with real network/Composer access) for reproducible
+# builds. See docs/AUDIT.md §3 and §6 for why it isn't generated in this change.

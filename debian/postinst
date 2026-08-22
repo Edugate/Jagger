@@ -1,0 +1,29 @@
+#!/bin/bash
+set -e
+
+case "$1" in
+    configure)
+        /opt/jagger/packaging/scripts/provision.sh
+
+        echo ""
+        echo "Jagger installed to /opt/jagger."
+        echo "Remaining manual steps (a package cannot do these safely for you):"
+        echo "  1. Edit /etc/jagger/database.php with your MySQL credentials."
+        echo "  2. Create the database: see /opt/jagger/docs/INSTALL.md."
+        echo "  3. Run the Doctrine schema tool (first install only):"
+        echo "       cd /opt/jagger/application && sudo -u jagger ./doctrine orm:schema-tool:create"
+        echo "  4. Copy packaging/apache/jagger.conf.template to"
+        echo "     /etc/apache2/sites-available/<your-fqdn>.conf, fill in the"
+        echo "     placeholders, install your TLS certificate, then:"
+        echo "       a2enmod ssl rewrite headers proxy_fcgi setenvif alias"
+        echo "       a2ensite <your-fqdn> && systemctl reload apache2"
+        echo "  5. systemctl enable --now php8.4-fpm"
+        echo "  6. Visit https://<your-fqdn>/setup to create the admin user, then"
+        echo "     set \$config['rr_setup_allowed'] = FALSE; in /etc/jagger/config_rr.php"
+        echo "See /opt/jagger/docs/INSTALL.md for the full walkthrough."
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0
