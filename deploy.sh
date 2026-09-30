@@ -45,17 +45,14 @@ set -Eeuo pipefail
 # ----------------------------------------------------------------------------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_FILE="/var/log/jagger-deploy-$(date +%Y%m%d-%H%M%S).log"
-STEP_TOTAL=16
 STEP_CURRENT=0
 STEP_TIMES=()
-# Rough relative time cost of each of the 16 steps (arbitrary units, not
-# seconds) -- these vary wildly in practice (PyFF's pip install alone can
-# take 5+ minutes while several other steps finish in under a second), so a
-# flat "average time per completed step so far" estimate badly undershoots
-# once a slow step is reached. Weighting lets the ETA anticipate that before
-# it gets there, then self-calibrates to this machine's actual speed using
-# the ratio of real elapsed time to weight-of-work-done-so-far.
-STEP_WEIGHTS=(2 2 60 15 20 10 15 300 60 90 5 5 10 15 10 3)
+# STEP_TOTAL/STEP_WEIGHTS are set for real just before the run_step sequence
+# starts (Main, below), once DEPLOY_KIND is known - migrate mode inserts two
+# extra steps (a backup and a restore) that fresh mode doesn't have. See the
+# comment there for what the weight values mean.
+STEP_TOTAL=0
+STEP_WEIGHTS=()
 ASSUME_YES=0
 SECONDS=0
 
@@ -1028,7 +1025,14 @@ chmod 600 "$LOG_FILE"
 
 # Two extra steps bookend the normal sequence when migrating: a backup right
 # at the start (before anything is touched) and a restore right after the
-# schema is (re)created near the end.
+# schema is (re)created near the end. STEP_WEIGHTS are rough relative time
+# costs (arbitrary units, not seconds) per step, in the same order as the
+# run_step calls below - these vary wildly in practice (PyFF's pip install
+# alone can take 5+ minutes while several other steps finish in under a
+# second), so a flat "average time per completed step so far" estimate badly
+# undershoots once a slow step is reached. Weighting lets the ETA anticipate
+# that before it gets there, then self-calibrates to this machine's actual
+# speed using the ratio of real elapsed time to weight-of-work-done-so-far.
 if [[ "$DEPLOY_KIND" == "migrate" ]]; then
     STEP_TOTAL=18
     STEP_WEIGHTS=(20 2 2 60 15 20 15 10 300 60 90 5 5 10 15 20 10 3)
