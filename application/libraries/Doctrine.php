@@ -64,6 +64,10 @@ class Doctrine
         }
 
 
+        // tolerate legacy serialized ArrayCollection (PHP 8.2+)
+        require_once APPPATH . 'libraries/LegacyArrayType.php';
+        \Doctrine\DBAL\Types\Type::overrideType('array', LegacyArrayType::class);
+
         $connectionOptions = self::getDBDriver($db);
 
         // Create EntityManager
